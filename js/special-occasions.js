@@ -365,21 +365,26 @@ GW.specialOccasions = [
 
         //  Replace logo.
         let newLogoLink = URLFromString("/dropcap#halloween");
-        doWhenMatchMedia(matchMedia("(min-width: 1180px)"), "GW.setHalloweenPageLogoForViewportWidth",
-           (mediaQuery) => {
-        	injectSpecialPageLogo("halloween", {
-        		mode: "dark", 
-        		sequence: "previousBeforeSaved",
-        		link: newLogoLink
-        	});
-        }, (mediaQuery) => {
-			injectSpecialPageLogo("halloween", {
-				mode: "dark",
-				identifier: "1",
-				link: newLogoLink
-			});
-        }, (mediaQuery) => {
-        	resetPageLogo();
+        doWhenMatchMedia(matchMedia("(min-width: 1180px)"), {
+        	name: "GW.setHalloweenPageLogoForViewportWidth",
+        	ifMatchesOrAlwaysDo:(mediaQuery) => {
+				injectSpecialPageLogo("halloween", {
+					mode: "dark", 
+					sequence: "previousBeforeSaved",
+					link: newLogoLink
+				});
+			}, 
+        	otherwiseDo: (mediaQuery) => {
+				injectSpecialPageLogo("halloween", {
+					mode: "dark",
+					identifier: "1",
+					link: newLogoLink
+				});
+			},
+        	whenCanceledDo: (mediaQuery) => {
+				resetPageLogo();
+			},
+        	callWhenAdd: true
         });
       }, () => {
         document.body.classList.remove("special-halloween-dark", "special-halloween-light");
@@ -396,49 +401,54 @@ GW.specialOccasions = [
 
         //  Replace logo.
         let newLogoLink = URLFromString("/dropcap#christmas");
-        doWhenMatchMedia(matchMedia(""), "GW.setChristmasPageLogo",
-           (mediaQuery) => {
-			injectSpecialPageLogo("christmas", {
-				mode: DarkMode.computedMode(),
-				sequence: "previousBeforeSaved",
-				link: newLogoLink
-			});
-			doWhenPageLoaded(() => {
-				colorizeElements([
-					[ "ul > li:nth-of-type(odd)", "--list-bullet", "#f00", "--list-bullet-dark-mode-invert-filter" ],
-					[ "ul > li:nth-of-type(even)", "--list-bullet", "#0f0", "--list-bullet-dark-mode-invert-filter" ],
-					[ "div[class^='horizontal-rule']:nth-of-type(odd) hr", "--icon-image", "#f00", "--icon-dark-mode-invert-filter" ],
-					[ "div[class^='horizontal-rule']:nth-of-type(even) hr", "--icon-image", "#0b0", "--icon-dark-mode-invert-filter" ],
-					[ "#x-of-the-day", "--ornament-image-left", "#f00", "--ornament-dark-mode-invert-filter" ],
-					[ "#x-of-the-day", "--ornament-image-right", "#f00", "--ornament-dark-mode-invert-filter" ],
-					[ "#footer-decoration-container .footer-logo", "--logo-image", "#c00", "--logo-image-dark-mode-invert-filter" ]
-				]);
-				doWhenElementExists(() => {
+        doWhenMatchMedia(matchMedia(""), {
+        	name: "GW.setChristmasPageLogo",
+        	ifMatchesOrAlwaysDo: (mediaQuery) => {
+				injectSpecialPageLogo("christmas", {
+					mode: DarkMode.computedMode(),
+					sequence: "previousBeforeSaved",
+					link: newLogoLink
+				});
+				doWhenPageLoaded(() => {
 					colorizeElements([
-						[ "#x-of-the-day .site-of-the-day blockquote", "--background-image", "#126512" ],
-						[ "#x-of-the-day .site-of-the-day blockquote", "--background-image-sides", "#126512" ]
+						[ "ul > li:nth-of-type(odd)", "--list-bullet", "#f00", "--list-bullet-dark-mode-invert-filter" ],
+						[ "ul > li:nth-of-type(even)", "--list-bullet", "#0f0", "--list-bullet-dark-mode-invert-filter" ],
+						[ "div[class^='horizontal-rule']:nth-of-type(odd) hr", "--icon-image", "#f00", "--icon-dark-mode-invert-filter" ],
+						[ "div[class^='horizontal-rule']:nth-of-type(even) hr", "--icon-image", "#0b0", "--icon-dark-mode-invert-filter" ],
+						[ "#x-of-the-day", "--ornament-image-left", "#f00", "--ornament-dark-mode-invert-filter" ],
+						[ "#x-of-the-day", "--ornament-image-right", "#f00", "--ornament-dark-mode-invert-filter" ],
+						[ "#footer-decoration-container .footer-logo", "--logo-image", "#c00", "--logo-image-dark-mode-invert-filter" ]
 					]);
-				}, "#x-of-the-day .site-of-the-day");
-			});
-        }, null, (mediaQuery) => {        	
-			resetPageLogo();
-			doWhenPageLoaded(() => {
-				uncolorizeElements([
-					[ "ul > li", "--list-bullet", "--list-bullet-dark-mode-invert-filter" ],
-					[ "hr", "--icon-image", "--icon-dark-mode-invert-filter" ],
-					[ "#x-of-the-day", "--ornament-image-left", "--ornament-dark-mode-invert-filter" ],
-					[ "#x-of-the-day", "--ornament-image-right", "--ornament-dark-mode-invert-filter" ],
-					[ "#x-of-the-day .site-of-the-day blockquote", "--background-image" ],
-					[ "#x-of-the-day .site-of-the-day blockquote", "--background-image-sides" ]
-					[ "#footer-decoration-container .footer-logo", "--logo-image", "--logo-image-dark-mode-invert-filter" ]
-				]);
-				doWhenElementExists(() => {
+					doWhenElementExists(() => {
+						colorizeElements([
+							[ "#x-of-the-day .site-of-the-day blockquote", "--background-image", "#126512" ],
+							[ "#x-of-the-day .site-of-the-day blockquote", "--background-image-sides", "#126512" ]
+						]);
+					}, "#x-of-the-day .site-of-the-day");
+				});
+			},
+			otherwiseDo: null,
+			whenCanceledDo: (mediaQuery) => {        	
+				resetPageLogo();
+				doWhenPageLoaded(() => {
 					uncolorizeElements([
+						[ "ul > li", "--list-bullet", "--list-bullet-dark-mode-invert-filter" ],
+						[ "hr", "--icon-image", "--icon-dark-mode-invert-filter" ],
+						[ "#x-of-the-day", "--ornament-image-left", "--ornament-dark-mode-invert-filter" ],
+						[ "#x-of-the-day", "--ornament-image-right", "--ornament-dark-mode-invert-filter" ],
 						[ "#x-of-the-day .site-of-the-day blockquote", "--background-image" ],
 						[ "#x-of-the-day .site-of-the-day blockquote", "--background-image-sides" ]
+						[ "#footer-decoration-container .footer-logo", "--logo-image", "--logo-image-dark-mode-invert-filter" ]
 					]);
-				}, "#x-of-the-day .site-of-the-day");
-			});
+					doWhenElementExists(() => {
+						uncolorizeElements([
+							[ "#x-of-the-day .site-of-the-day blockquote", "--background-image" ],
+							[ "#x-of-the-day .site-of-the-day blockquote", "--background-image-sides" ]
+						]);
+					}, "#x-of-the-day .site-of-the-day");
+				});
+			},
+			callWhenAdd: true
         });
       }, () => {
         document.body.classList.remove("special-christmas-dark", "special-christmas-light");

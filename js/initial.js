@@ -160,47 +160,75 @@ GW.isX11 = () => {
 /* ACTIVE MEDIA QUERIES */
 /************************/
 
-/*  This function provides two slightly different versions of its functionality,
-    depending on how many arguments it gets.
+/*  Add an active media query, which calls some function when the specified
+	media query starts or stops matching.
 
-    If one function is given (in addition to the media query and its name), it
-    is called whenever the media query changes (in either direction).
+    NOTE: If you want to to do something in response to a change in one 
+    direction only, set an empty closure (NOT null!) as the value of 
+    `ifMatchesOrAlwaysDo` or `otherwiseDo` (as appropriate).
 
-    If two functions are given (in addition to the media query and its name),
-    then the first function is called whenever the media query starts matching,
-    and the second function is called whenever the media query stops matching.
+	Available option fields:
 
-    If you want to call a function for a change in one direction only, pass an
-    empty closure (NOT null!) as one of the function arguments.
+	name (string) (required)
+		Can be any string.
 
-    There is also an optional fifth argument. This should be a function to be
-    called when the active media query is canceled.
+	ifMatchesOrAlwaysDo (function) (required)
+		If `otherwiseDo` is null, the value of this field is called whenever
+		the media query changes (in either direction). Otherwise, this function
+		is called whenever the media query starts matching only (but not when
+		it stops matching).
+
+	otherwiseDo (function)
+		Called whenever the media query stops matching (but not when it starts
+		matching).
+
+	whenCanceledDo (function)
+		Called when the active media query is canceled.
+
+	callWhenAdd (boolean)
+		If this is true (the default), then the responder function is called
+		immediately when the media query is added (i.e., the media query is
+		checked at once, and the appropriate provided function is called,
+		depending on whether the query matches or not). Otherwise, nothing will
+		be called until the value of the media query changes from whatever it
+		was when the active media query was added.
  */
-function doWhenMatchMedia(mediaQuery, name, ifMatchesOrAlwaysDo, otherwiseDo = null, whenCanceledDo = null) {
+function doWhenMatchMedia(mediaQuery, options) {
+	options = Object.assign({
+		name: null,
+		ifMatchesOrAlwaysDo: null,
+		otherwiseDo: null,
+		whenCanceledDo: null,
+		callWhenAdd: true
+	}, options);
+
     if (typeof GW.mediaQueryResponders == "undefined")
         GW.mediaQueryResponders = { };
 
     let mediaQueryResponder = (event, canceling = false) => {
         if (canceling) {
-            GWLog(`Canceling media query “${name}”`, "media queries", 1);
+            GWLog(`Canceling media query “${options.name}”`, "media queries", 1);
 
-            if (whenCanceledDo != null)
-                whenCanceledDo(mediaQuery);
+            if (options.whenCanceledDo != null)
+                options.whenCanceledDo(mediaQuery);
         } else {
             let matches = (typeof event == "undefined") ? mediaQuery.matches : event.matches;
 
-            GWLog(`Media query “${name}” triggered (matches: ${matches ? "YES" : "NO"})`, "media queries", 1);
+            GWLog(`Media query “${options.name}” triggered (matches: ${matches ? "YES" : "NO"})`, "media queries", 1);
 
-            if ((otherwiseDo == null) || matches)
-                ifMatchesOrAlwaysDo(mediaQuery);
+            if ((options.otherwiseDo == null) || matches)
+                options.ifMatchesOrAlwaysDo(mediaQuery);
             else
-                otherwiseDo(mediaQuery);
+                options.otherwiseDo(mediaQuery);
         }
     };
-    mediaQueryResponder();
+
+	if (options.callWhenAdd == true)
+	    mediaQueryResponder();
+
     mediaQuery.addListener(mediaQueryResponder);
 
-    GW.mediaQueryResponders[name] = mediaQueryResponder;
+    GW.mediaQueryResponders[options.name] = mediaQueryResponder;
 }
 
 /*  Deactivates and discards an active media query, after calling the function
@@ -213,7 +241,7 @@ function cancelDoWhenMatchMedia(name) {
 
     GW.mediaQueryResponders[name](null, true);
 
-    for (let [ key, mediaQuery ] of Object.entries(GW.mediaQueries))
+    for (let mediaQuery of Object.values(GW.mediaQueries))
         mediaQuery.removeListener(GW.mediaQueryResponders[name]);
 
     GW.mediaQueryResponders[name] = null;

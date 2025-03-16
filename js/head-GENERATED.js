@@ -1596,47 +1596,75 @@ GW.isX11 = () => {
 /* ACTIVE MEDIA QUERIES */
 /************************/
 
-/*  This function provides two slightly different versions of its functionality,
-    depending on how many arguments it gets.
+/*  Add an active media query, which calls some function when the specified
+	media query starts or stops matching.
 
-    If one function is given (in addition to the media query and its name), it
-    is called whenever the media query changes (in either direction).
+    NOTE: If you want to to do something in response to a change in one 
+    direction only, set an empty closure (NOT null!) as the value of 
+    `ifMatchesOrAlwaysDo` or `otherwiseDo` (as appropriate).
 
-    If two functions are given (in addition to the media query and its name),
-    then the first function is called whenever the media query starts matching,
-    and the second function is called whenever the media query stops matching.
+	Available option fields:
 
-    If you want to call a function for a change in one direction only, pass an
-    empty closure (NOT null!) as one of the function arguments.
+	name (string) (required)
+		Can be any string.
 
-    There is also an optional fifth argument. This should be a function to be
-    called when the active media query is canceled.
+	ifMatchesOrAlwaysDo (function) (required)
+		If `otherwiseDo` is null, the value of this field is called whenever
+		the media query changes (in either direction). Otherwise, this function
+		is called whenever the media query starts matching only (but not when
+		it stops matching).
+
+	otherwiseDo (function)
+		Called whenever the media query stops matching (but not when it starts
+		matching).
+
+	whenCanceledDo (function)
+		Called when the active media query is canceled.
+
+	callWhenAdd (boolean)
+		If this is true (the default), then the responder function is called
+		immediately when the media query is added (i.e., the media query is
+		checked at once, and the appropriate provided function is called,
+		depending on whether the query matches or not). Otherwise, nothing will
+		be called until the value of the media query changes from whatever it
+		was when the active media query was added.
  */
-function doWhenMatchMedia(mediaQuery, name, ifMatchesOrAlwaysDo, otherwiseDo = null, whenCanceledDo = null) {
+function doWhenMatchMedia(mediaQuery, options) {
+	options = Object.assign({
+		name: null,
+		ifMatchesOrAlwaysDo: null,
+		otherwiseDo: null,
+		whenCanceledDo: null,
+		callWhenAdd: true
+	}, options);
+
     if (typeof GW.mediaQueryResponders == "undefined")
         GW.mediaQueryResponders = { };
 
     let mediaQueryResponder = (event, canceling = false) => {
         if (canceling) {
-            GWLog(`Canceling media query “${name}”`, "media queries", 1);
+            GWLog(`Canceling media query “${options.name}”`, "media queries", 1);
 
-            if (whenCanceledDo != null)
-                whenCanceledDo(mediaQuery);
+            if (options.whenCanceledDo != null)
+                options.whenCanceledDo(mediaQuery);
         } else {
             let matches = (typeof event == "undefined") ? mediaQuery.matches : event.matches;
 
-            GWLog(`Media query “${name}” triggered (matches: ${matches ? "YES" : "NO"})`, "media queries", 1);
+            GWLog(`Media query “${options.name}” triggered (matches: ${matches ? "YES" : "NO"})`, "media queries", 1);
 
-            if ((otherwiseDo == null) || matches)
-                ifMatchesOrAlwaysDo(mediaQuery);
+            if ((options.otherwiseDo == null) || matches)
+                options.ifMatchesOrAlwaysDo(mediaQuery);
             else
-                otherwiseDo(mediaQuery);
+                options.otherwiseDo(mediaQuery);
         }
     };
-    mediaQueryResponder();
+
+	if (options.callWhenAdd == true)
+	    mediaQueryResponder();
+
     mediaQuery.addListener(mediaQueryResponder);
 
-    GW.mediaQueryResponders[name] = mediaQueryResponder;
+    GW.mediaQueryResponders[options.name] = mediaQueryResponder;
 }
 
 /*  Deactivates and discards an active media query, after calling the function
@@ -1649,7 +1677,7 @@ function cancelDoWhenMatchMedia(name) {
 
     GW.mediaQueryResponders[name](null, true);
 
-    for (let [ key, mediaQuery ] of Object.entries(GW.mediaQueries))
+    for (let mediaQuery of Object.values(GW.mediaQueries))
         mediaQuery.removeListener(GW.mediaQueryResponders[name]);
 
     GW.mediaQueryResponders[name] = null;
@@ -4147,12 +4175,16 @@ doWhenMainExists(() => {
 	startDynamicLayoutInContainer(document.main);
 
 	//	Add listener to redo layout when orientation changes.
-	doWhenMatchMedia(GW.mediaQueries.portraitOrientation, "Layout.updateLayoutWhenOrientationChanges", (mediaQuery) => {
-		document.main.querySelectorAll(".markdownBody").forEach(blockContainer => {
-			GW.layout.layoutProcessors.forEach(processorSpec => {
-				applyLayoutProcessorToBlockContainer(processorSpec, blockContainer, document.main);
+	doWhenMatchMedia(GW.mediaQueries.portraitOrientation, {
+		name: "Layout.updateLayoutWhenOrientationChanges",
+		ifMatchesOrAlwaysDo: (mediaQuery) => {
+			document.main.querySelectorAll(".markdownBody").forEach(blockContainer => {
+				GW.layout.layoutProcessors.forEach(processorSpec => {
+					applyLayoutProcessorToBlockContainer(processorSpec, blockContainer, document.main);
+				});
 			});
-		});
+		},
+		callWhenAdd: false
 	});
 });
 
@@ -5462,21 +5494,26 @@ GW.specialOccasions = [
 
         //  Replace logo.
         let newLogoLink = URLFromString("/dropcap#halloween");
-        doWhenMatchMedia(matchMedia("(min-width: 1180px)"), "GW.setHalloweenPageLogoForViewportWidth",
-           (mediaQuery) => {
-        	injectSpecialPageLogo("halloween", {
-        		mode: "dark", 
-        		sequence: "previousBeforeSaved",
-        		link: newLogoLink
-        	});
-        }, (mediaQuery) => {
-			injectSpecialPageLogo("halloween", {
-				mode: "dark",
-				identifier: "1",
-				link: newLogoLink
-			});
-        }, (mediaQuery) => {
-        	resetPageLogo();
+        doWhenMatchMedia(matchMedia("(min-width: 1180px)"), {
+        	name: "GW.setHalloweenPageLogoForViewportWidth",
+        	ifMatchesOrAlwaysDo:(mediaQuery) => {
+				injectSpecialPageLogo("halloween", {
+					mode: "dark", 
+					sequence: "previousBeforeSaved",
+					link: newLogoLink
+				});
+			}, 
+        	otherwiseDo: (mediaQuery) => {
+				injectSpecialPageLogo("halloween", {
+					mode: "dark",
+					identifier: "1",
+					link: newLogoLink
+				});
+			},
+        	whenCanceledDo: (mediaQuery) => {
+				resetPageLogo();
+			},
+        	callWhenAdd: true
         });
       }, () => {
         document.body.classList.remove("special-halloween-dark", "special-halloween-light");
@@ -5493,49 +5530,54 @@ GW.specialOccasions = [
 
         //  Replace logo.
         let newLogoLink = URLFromString("/dropcap#christmas");
-        doWhenMatchMedia(matchMedia(""), "GW.setChristmasPageLogo",
-           (mediaQuery) => {
-			injectSpecialPageLogo("christmas", {
-				mode: DarkMode.computedMode(),
-				sequence: "previousBeforeSaved",
-				link: newLogoLink
-			});
-			doWhenPageLoaded(() => {
-				colorizeElements([
-					[ "ul > li:nth-of-type(odd)", "--list-bullet", "#f00", "--list-bullet-dark-mode-invert-filter" ],
-					[ "ul > li:nth-of-type(even)", "--list-bullet", "#0f0", "--list-bullet-dark-mode-invert-filter" ],
-					[ "div[class^='horizontal-rule']:nth-of-type(odd) hr", "--icon-image", "#f00", "--icon-dark-mode-invert-filter" ],
-					[ "div[class^='horizontal-rule']:nth-of-type(even) hr", "--icon-image", "#0b0", "--icon-dark-mode-invert-filter" ],
-					[ "#x-of-the-day", "--ornament-image-left", "#f00", "--ornament-dark-mode-invert-filter" ],
-					[ "#x-of-the-day", "--ornament-image-right", "#f00", "--ornament-dark-mode-invert-filter" ],
-					[ "#footer-decoration-container .footer-logo", "--logo-image", "#c00", "--logo-image-dark-mode-invert-filter" ]
-				]);
-				doWhenElementExists(() => {
+        doWhenMatchMedia(matchMedia(""), {
+        	name: "GW.setChristmasPageLogo",
+        	ifMatchesOrAlwaysDo: (mediaQuery) => {
+				injectSpecialPageLogo("christmas", {
+					mode: DarkMode.computedMode(),
+					sequence: "previousBeforeSaved",
+					link: newLogoLink
+				});
+				doWhenPageLoaded(() => {
 					colorizeElements([
-						[ "#x-of-the-day .site-of-the-day blockquote", "--background-image", "#126512" ],
-						[ "#x-of-the-day .site-of-the-day blockquote", "--background-image-sides", "#126512" ]
+						[ "ul > li:nth-of-type(odd)", "--list-bullet", "#f00", "--list-bullet-dark-mode-invert-filter" ],
+						[ "ul > li:nth-of-type(even)", "--list-bullet", "#0f0", "--list-bullet-dark-mode-invert-filter" ],
+						[ "div[class^='horizontal-rule']:nth-of-type(odd) hr", "--icon-image", "#f00", "--icon-dark-mode-invert-filter" ],
+						[ "div[class^='horizontal-rule']:nth-of-type(even) hr", "--icon-image", "#0b0", "--icon-dark-mode-invert-filter" ],
+						[ "#x-of-the-day", "--ornament-image-left", "#f00", "--ornament-dark-mode-invert-filter" ],
+						[ "#x-of-the-day", "--ornament-image-right", "#f00", "--ornament-dark-mode-invert-filter" ],
+						[ "#footer-decoration-container .footer-logo", "--logo-image", "#c00", "--logo-image-dark-mode-invert-filter" ]
 					]);
-				}, "#x-of-the-day .site-of-the-day");
-			});
-        }, null, (mediaQuery) => {        	
-			resetPageLogo();
-			doWhenPageLoaded(() => {
-				uncolorizeElements([
-					[ "ul > li", "--list-bullet", "--list-bullet-dark-mode-invert-filter" ],
-					[ "hr", "--icon-image", "--icon-dark-mode-invert-filter" ],
-					[ "#x-of-the-day", "--ornament-image-left", "--ornament-dark-mode-invert-filter" ],
-					[ "#x-of-the-day", "--ornament-image-right", "--ornament-dark-mode-invert-filter" ],
-					[ "#x-of-the-day .site-of-the-day blockquote", "--background-image" ],
-					[ "#x-of-the-day .site-of-the-day blockquote", "--background-image-sides" ]
-					[ "#footer-decoration-container .footer-logo", "--logo-image", "--logo-image-dark-mode-invert-filter" ]
-				]);
-				doWhenElementExists(() => {
+					doWhenElementExists(() => {
+						colorizeElements([
+							[ "#x-of-the-day .site-of-the-day blockquote", "--background-image", "#126512" ],
+							[ "#x-of-the-day .site-of-the-day blockquote", "--background-image-sides", "#126512" ]
+						]);
+					}, "#x-of-the-day .site-of-the-day");
+				});
+			},
+			otherwiseDo: null,
+			whenCanceledDo: (mediaQuery) => {        	
+				resetPageLogo();
+				doWhenPageLoaded(() => {
 					uncolorizeElements([
+						[ "ul > li", "--list-bullet", "--list-bullet-dark-mode-invert-filter" ],
+						[ "hr", "--icon-image", "--icon-dark-mode-invert-filter" ],
+						[ "#x-of-the-day", "--ornament-image-left", "--ornament-dark-mode-invert-filter" ],
+						[ "#x-of-the-day", "--ornament-image-right", "--ornament-dark-mode-invert-filter" ],
 						[ "#x-of-the-day .site-of-the-day blockquote", "--background-image" ],
 						[ "#x-of-the-day .site-of-the-day blockquote", "--background-image-sides" ]
+						[ "#footer-decoration-container .footer-logo", "--logo-image", "--logo-image-dark-mode-invert-filter" ]
 					]);
-				}, "#x-of-the-day .site-of-the-day");
-			});
+					doWhenElementExists(() => {
+						uncolorizeElements([
+							[ "#x-of-the-day .site-of-the-day blockquote", "--background-image" ],
+							[ "#x-of-the-day .site-of-the-day blockquote", "--background-image-sides" ]
+						]);
+					}, "#x-of-the-day .site-of-the-day");
+				});
+			},
+			callWhenAdd: true
         });
       }, () => {
         document.body.classList.remove("special-christmas-dark", "special-christmas-light");
@@ -5855,10 +5897,14 @@ GW.notificationCenter.addHandlerForEvent("DarkMode.didSetMode", (info) => {
 		&& previousComputedMode != DarkMode.computedMode())	
 		GW.notificationCenter.fireEvent("DarkMode.computedModeDidChange");
 });
-doWhenMatchMedia(GW.mediaQueries.systemDarkModeActive, "DarkMode.fireComputedModeDidChangeEventForSystemDarkModeChange", (mediaQuery) => {
-	let previousComputedMode = DarkMode.computedMode(DarkMode.currentMode(), !(mediaQuery.matches));
-	if (previousComputedMode != DarkMode.computedMode())
-		GW.notificationCenter.fireEvent("DarkMode.computedModeDidChange");
+doWhenMatchMedia(GW.mediaQueries.systemDarkModeActive, {
+	name: "DarkMode.fireComputedModeDidChangeEventForSystemDarkModeChange",
+	ifMatchesOrAlwaysDo: (mediaQuery) => {
+		let previousComputedMode = DarkMode.computedMode(DarkMode.currentMode(), !(mediaQuery.matches));
+		if (previousComputedMode != DarkMode.computedMode())
+			GW.notificationCenter.fireEvent("DarkMode.computedModeDidChange");
+	},
+	callWhenAdd: true
 });
 ReaderMode = {
     active: false,

@@ -96,8 +96,12 @@ GW.notificationCenter.addHandlerForEvent("DarkMode.didSetMode", (info) => {
 		&& previousComputedMode != DarkMode.computedMode())	
 		GW.notificationCenter.fireEvent("DarkMode.computedModeDidChange");
 });
-doWhenMatchMedia(GW.mediaQueries.systemDarkModeActive, "DarkMode.fireComputedModeDidChangeEventForSystemDarkModeChange", (mediaQuery) => {
-	let previousComputedMode = DarkMode.computedMode(DarkMode.currentMode(), !(mediaQuery.matches));
-	if (previousComputedMode != DarkMode.computedMode())
-		GW.notificationCenter.fireEvent("DarkMode.computedModeDidChange");
+doWhenMatchMedia(GW.mediaQueries.systemDarkModeActive, {
+	name: "DarkMode.fireComputedModeDidChangeEventForSystemDarkModeChange",
+	ifMatchesOrAlwaysDo: (mediaQuery) => {
+		let previousComputedMode = DarkMode.computedMode(DarkMode.currentMode(), !(mediaQuery.matches));
+		if (previousComputedMode != DarkMode.computedMode())
+			GW.notificationCenter.fireEvent("DarkMode.computedModeDidChange");
+	},
+	callWhenAdd: true
 });

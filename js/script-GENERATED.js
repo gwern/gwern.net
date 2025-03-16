@@ -15918,17 +15918,21 @@ addContentInjectHandler(GW.contentInjectHandlers.addOrientationChangeMediaElemen
 
     let mediaElements = eventInfo.container.querySelectorAll(GW.dimensionSpecifiedMediaElementSelector);
 
-    doWhenMatchMedia(GW.mediaQueries.portraitOrientation, "Rewrite.updateMediaElementDimensionsWhenOrientationChanges", (mediaQuery) => {
-        mediaElements.forEach(mediaElement => {
-            mediaElement.maxHeight = null;
-        });
-        requestAnimationFrame(() => {
-            mediaElements.forEach(mediaElement => {
-                mediaElement.style.width = "";
-                setMediaElementDimensions(mediaElement, true);
-            });
-        });
-    });
+	doWhenMatchMedia(GW.mediaQueries.portraitOrientation, {
+		name: "Rewrite.updateMediaElementDimensionsWhenOrientationChanges",
+		ifMatchesOrAlwaysDo: (mediaQuery) => {
+			mediaElements.forEach(mediaElement => {
+				mediaElement.maxHeight = null;
+			});
+			requestAnimationFrame(() => {
+				mediaElements.forEach(mediaElement => {
+					mediaElement.style.width = "";
+					setMediaElementDimensions(mediaElement, true);
+				});
+			});
+		},
+		callWhenAdd: false
+	});
 }, "eventListeners", (info) => (   info.context == "popFrame"
 								&& Extracts.popFrameProvider.containingPopFrame(info.container).classList.contains("object")) == false);
 
@@ -16726,32 +16730,37 @@ addContentInjectHandler(GW.contentInjectHandlers.setMarginsOnFullWidthBlocks = (
     }
 
     //  Un-expand when mobile width, expand otherwise.
-    doWhenMatchMedia(GW.mediaQueries.mobileWidth, "updateFullWidthBlockExpansionForCurrentWidthClass", () => {
-        removeFullWidthBlockMargins();
-    }, () => {
-        allFullWidthBlocks.forEach(fullWidthBlock => {
-            //  Compensate for block indentation due to nesting (e.g., lists).
-            let additionalLeftAdjustmentPx = "0px";
-            let enclosingListItem = fullWidthBlock.closest("li");
-            if (enclosingListItem) {
-                let fullContentRect = fullWidthBlock.closest(".markdownBody").getBoundingClientRect();
-                let listContentRect = enclosingListItem.firstElementChild.getBoundingClientRect();
-                additionalLeftAdjustmentPx = (fullContentRect.x - listContentRect.x) + "px";
-            }
+    doWhenMatchMedia(GW.mediaQueries.mobileWidth, {
+    	name: "updateFullWidthBlockExpansionForCurrentWidthClass",
+    	ifMatchesOrAlwaysDo: (mediaQuery) => {
+			removeFullWidthBlockMargins();
+		},
+		otherwiseDo: (mediaQuery) => {
+			allFullWidthBlocks.forEach(fullWidthBlock => {
+				//  Compensate for block indentation due to nesting (e.g., lists).
+				let additionalLeftAdjustmentPx = "0px";
+				let enclosingListItem = fullWidthBlock.closest("li");
+				if (enclosingListItem) {
+					let fullContentRect = fullWidthBlock.closest(".markdownBody").getBoundingClientRect();
+					let listContentRect = enclosingListItem.firstElementChild.getBoundingClientRect();
+					additionalLeftAdjustmentPx = (fullContentRect.x - listContentRect.x) + "px";
+				}
 
-            fullWidthBlock.style.marginLeft = `calc(
-                                                    (-1 * (var(--GW-full-width-block-layout-left-adjustment) / 2.0))
-                                                  + (var(--GW-full-width-block-layout-side-margin))
-                                                  - ((var(--GW-full-width-block-layout-page-width) - 100%) / 2.0)
-                                                  + (${additionalLeftAdjustmentPx} / 2.0)
-                                                )`;
-            fullWidthBlock.style.marginRight = `calc(
-                                                     (var(--GW-full-width-block-layout-left-adjustment) / 2.0)
-                                                   + (var(--GW-full-width-block-layout-side-margin))
-                                                   - ((var(--GW-full-width-block-layout-page-width) - 100%) / 2.0)
-                                                   - (${additionalLeftAdjustmentPx} / 2.0)
-                                                )`;
-        });
+				fullWidthBlock.style.marginLeft = `calc(
+														(-1 * (var(--GW-full-width-block-layout-left-adjustment) / 2.0))
+													  + (var(--GW-full-width-block-layout-side-margin))
+													  - ((var(--GW-full-width-block-layout-page-width) - 100%) / 2.0)
+													  + (${additionalLeftAdjustmentPx} / 2.0)
+													)`;
+				fullWidthBlock.style.marginRight = `calc(
+														 (var(--GW-full-width-block-layout-left-adjustment) / 2.0)
+													   + (var(--GW-full-width-block-layout-side-margin))
+													   - ((var(--GW-full-width-block-layout-page-width) - 100%) / 2.0)
+													   - (${additionalLeftAdjustmentPx} / 2.0)
+													)`;
+			});
+		},
+		callWhenAdd: true
     });
 }, ">rewrite");
 
@@ -18203,8 +18212,12 @@ addContentInjectHandler(GW.contentInjectHandlers.rewriteDropcaps = (eventInfo) =
     GWLog("rewriteDropcaps", "rewrite.js", 1);
 
     //  Reset dropcaps when margin note mode changes.
-    doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "GW.dropcaps.resetDropcapsWhenMarginNoteModeChanges", (mediaQuery) => {
-        eventInfo.container.querySelectorAll(GW.dropcaps.dropcapBlockSelector).forEach(resetDropcapInBlock);
+    doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, {
+    	name: "GW.dropcaps.resetDropcapsWhenMarginNoteModeChanges",
+    	ifMatchesOrAlwaysDo: (mediaQuery) => {
+			eventInfo.container.querySelectorAll(GW.dropcaps.dropcapBlockSelector).forEach(resetDropcapInBlock);
+		},
+		callWhenAdd: true
     });
 
     //  A letter (capital or lowercase), optionally preceded by an opening quotation mark.
@@ -20704,26 +20717,32 @@ Sidenotes = { ...Sidenotes,
 			Add an active media query to rewrite the hash whenever the viewport
 			width media query changes.
 		 */
-		doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.rewriteHashForCurrentMode", (mediaQuery) => {
-			if (   Notes.hashMatchesFootnote()
-				|| Notes.hashMatchesSidenote()) {
-				relocate("#" + (mediaQuery.matches 
-								? Notes.sidenoteIdForNumber(Notes.noteNumberFromHash()) 
-								: Notes.footnoteIdForNumber(Notes.noteNumberFromHash())));
+		doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, {
+			name: "Sidenotes.rewriteHashForCurrentMode",
+			ifMatchesOrAlwaysDo: (mediaQuery) => {
+				if (   Notes.hashMatchesFootnote()
+					|| Notes.hashMatchesSidenote()) {
+					relocate("#" + (mediaQuery.matches 
+									? Notes.sidenoteIdForNumber(Notes.noteNumberFromHash()) 
+									: Notes.footnoteIdForNumber(Notes.noteNumberFromHash())));
 
-				//	Update targeting.
-				if (mediaQuery.matches)
-					Sidenotes.updateTargetCounterpart();
-				else
+					//	Update targeting.
+					if (mediaQuery.matches)
+						Sidenotes.updateTargetCounterpart();
+					else
+						updateFootnoteTargeting();
+				}
+			},
+			otherwiseDo: null,
+			whenCanceledDo: (mediaQuery) => {
+				if (Notes.hashMatchesSidenote()) {
+					relocate("#" + Notes.footnoteIdForNumber(Notes.noteNumberFromHash()));
+
+					//	Update targeting.
 					updateFootnoteTargeting();
-			}
-		}, null, (mediaQuery) => {
-			if (Notes.hashMatchesSidenote()) {
-				relocate("#" + Notes.footnoteIdForNumber(Notes.noteNumberFromHash()));
-
-				//	Update targeting.
-				updateFootnoteTargeting();
-			}
+				}
+			},
+			callWhenAdd: true
 		});
 
 		/*	We do not bother to construct sidenotes on mobile clients, and so
@@ -20757,8 +20776,12 @@ Sidenotes = { ...Sidenotes,
 		addContentLoadHandler(GW.contentLoadHandlers.addUpdateMarginNoteStyleForCurrentModeActiveMediaQuery = (eventInfo) => {
 			GWLog("addUpdateMarginNoteStyleForCurrentModeActiveMediaQuery", "sidenotes.js", 1);
 
-			doWhenMatchMedia(Sidenotes.mediaQueries.marginNoteViewportWidthBreakpoint, "Sidenotes.updateMarginNoteStyleForCurrentMode", (mediaQuery) => {
-				GW.contentInjectHandlers.setMarginNoteStyle(eventInfo);
+			doWhenMatchMedia(Sidenotes.mediaQueries.marginNoteViewportWidthBreakpoint, {
+				name: "Sidenotes.updateMarginNoteStyleForCurrentMode",
+				ifMatchesOrAlwaysDo: (mediaQuery) => {
+					GW.contentInjectHandlers.setMarginNoteStyle(eventInfo);
+				},
+				callWhenAdd: true
 			});
 		}, "rewrite", (info) => info.container == document.main, true);
 
@@ -20797,18 +20820,24 @@ Sidenotes = { ...Sidenotes,
 			in viewport width results in switching modes, as well as an event
 			handler to rewrite footnote reference links in transcluded content.
 		 */
-		doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.rewriteCitationTargetsForCurrentMode", (mediaQuery) => {
-			document.querySelectorAll("a.footnote-ref").forEach(citation => {
-				if (citation.pathname == location.pathname)
-					citation.hash = "#" + (mediaQuery.matches 
-										   ? Notes.sidenoteIdForNumber(Notes.noteNumber(citation))
-										   : Notes.footnoteIdForNumber(Notes.noteNumber(citation)));
-			});
-		}, null, (mediaQuery) => {
-			document.querySelectorAll("a.footnote-ref").forEach(citation => {
-				if (citation.pathname == location.pathname)
-					citation.hash = "#" + Notes.footnoteIdForNumber(Notes.noteNumber(citation));
-			});
+		doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, {
+			name: "Sidenotes.rewriteCitationTargetsForCurrentMode",
+			ifMatchesOrAlwaysDo: (mediaQuery) => {
+				document.querySelectorAll("a.footnote-ref").forEach(citation => {
+					if (citation.pathname == location.pathname)
+						citation.hash = "#" + (mediaQuery.matches 
+											   ? Notes.sidenoteIdForNumber(Notes.noteNumber(citation))
+											   : Notes.footnoteIdForNumber(Notes.noteNumber(citation)));
+				});
+			},
+			otherwiseDo: null,
+			whenCanceledDo: (mediaQuery) => {
+				document.querySelectorAll("a.footnote-ref").forEach(citation => {
+					if (citation.pathname == location.pathname)
+						citation.hash = "#" + Notes.footnoteIdForNumber(Notes.noteNumber(citation));
+				});
+			},
+			callWhenAdd: true
 		});
 
 		addContentLoadHandler(Sidenotes.rewriteCitationTargetsInLoadedContent = (eventInfo) => {
@@ -20844,123 +20873,129 @@ Sidenotes = { ...Sidenotes,
 		}, "eventListeners", (info) => (info.container.closest(".sidenote") != null));
 
 		//	Add event listeners, and the switch between modes.
-		doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.addOrRemoveEventHandlersForCurrentMode", (mediaQuery) => {
-			doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
-
-			/*  After the hash updates, properly highlight everything, if needed.
-				Also, if the hash points to a sidenote whose citation is in a
-				collapse block, expand it and all collapse blocks enclosing it.
-			 */
-			GW.notificationCenter.addHandlerForEvent("GW.hashDidChange", Sidenotes.updateStateAfterHashChange);
-
-			/*	Add event handler to (asynchronously) recompute sidenote positioning
-				when full-width media lazy-loads.
-			 */
-			GW.notificationCenter.addHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterFullWidthMediaDidLoad = (eventInfo) => {
-				if (isWithinCollapsedBlock(eventInfo.mediaElement))
-					return;
-
+		doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, {
+			name: "Sidenotes.addOrRemoveEventHandlersForCurrentMode",
+			ifMatchesOrAlwaysDo: (mediaQuery) => {
 				doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
-			});
 
-			/*	Add event handler to (asynchronously) recompute sidenote positioning
-				when collapse blocks are expanded/collapsed.
-			 */
-			GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange = (eventInfo) => {
-				let sidenote = eventInfo.collapseBlock.closest(".sidenote");
-				if (sidenote?.classList.contains("hovering")) {
-					sidenote.addEventListener("mouseleave", (event) => {
-						doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
-					}, { once: true });
-				} else {
-					doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
-				}
-			}, {
-				condition: (info) => (info.collapseBlock.closest("#markdownBody") != null)
-			});
+				/*  After the hash updates, properly highlight everything, if needed.
+					Also, if the hash points to a sidenote whose citation is in a
+					collapse block, expand it and all collapse blocks enclosing it.
+				 */
+				GW.notificationCenter.addHandlerForEvent("GW.hashDidChange", Sidenotes.updateStateAfterHashChange);
 
-			/*	Add event handler to (asynchronously) recompute sidenote positioning
-				when new content is loaded (e.g. via transclusion).
-			 */
-			GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", Sidenotes.updateSidenotePositionsAfterContentDidChange = (eventInfo) => {
-				let sidenote = eventInfo.where.closest(".sidenote");
-				if (sidenote?.classList.contains("hovering")) {
-					sidenote.addEventListener("mouseleave", (event) => {
-						doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
-					}, { once: true });
-				} else {
-					doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
-				}
-			}, {
-				condition: (info) => (   info.document == document
-									  && info.source == "transclude")
-			});
-
-			/*  Add a resize listener so that sidenote positions are recalculated when
-				the window is resized.
-			 */
-			addWindowResizeListener(Sidenotes.windowResized = (event) => {
-				GWLog("Sidenotes.windowResized", "sidenotes.js", 3);
-
-				doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
-			}, {
-				name: "Sidenotes.updateSidenotePositionsOnWindowResizeListener"
-			});
-
-			/*	Add handler to bind more sidenote-slide events if more
-				citations are injected (e.g., in a popup).
-			 */
-			addContentInjectHandler(Sidenotes.bindAdditionalSidenoteSlideEvents = (eventInfo) => {
-				GWLog("bindAdditionalSidenoteSlideEvents", "sidenotes.js", 3);
-
-				eventInfo.container.querySelectorAll("a.footnote-ref").forEach(citation => {
-					let sidenote = Sidenotes.counterpart(citation);
-					if (sidenote == null)
+				/*	Add event handler to (asynchronously) recompute sidenote positioning
+					when full-width media lazy-loads.
+				 */
+				GW.notificationCenter.addHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterFullWidthMediaDidLoad = (eventInfo) => {
+					if (isWithinCollapsedBlock(eventInfo.mediaElement))
 						return;
 
-					citation.addEventListener("mouseenter", citation.onCitationMouseEnterSlideSidenote = (event) => {
-						/*  Do not slide sidenote if the footnote the citation
-							points to is visible.
-						 */
-						if (Notes.allNotesForCitation(citation).findIndex(note => note.matches("li.footnote") && isOnScreen(note)) !== -1)
-							return null;
+					doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
+				});
 
-						Sidenotes.putAllSidenotesBack(sidenote);
-						requestAnimationFrame(() => {
-							Sidenotes.slideSidenoteIntoView(sidenote, true);
+				/*	Add event handler to (asynchronously) recompute sidenote positioning
+					when collapse blocks are expanded/collapsed.
+				 */
+				GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange = (eventInfo) => {
+					let sidenote = eventInfo.collapseBlock.closest(".sidenote");
+					if (sidenote?.classList.contains("hovering")) {
+						sidenote.addEventListener("mouseleave", (event) => {
+							doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
+						}, { once: true });
+					} else {
+						doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
+					}
+				}, {
+					condition: (info) => (info.collapseBlock.closest("#markdownBody") != null)
+				});
+
+				/*	Add event handler to (asynchronously) recompute sidenote positioning
+					when new content is loaded (e.g. via transclusion).
+				 */
+				GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", Sidenotes.updateSidenotePositionsAfterContentDidChange = (eventInfo) => {
+					let sidenote = eventInfo.where.closest(".sidenote");
+					if (sidenote?.classList.contains("hovering")) {
+						sidenote.addEventListener("mouseleave", (event) => {
+							doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
+						}, { once: true });
+					} else {
+						doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
+					}
+				}, {
+					condition: (info) => (   info.document == document
+										  && info.source == "transclude")
+				});
+
+				/*  Add a resize listener so that sidenote positions are recalculated when
+					the window is resized.
+				 */
+				addWindowResizeListener(Sidenotes.windowResized = (event) => {
+					GWLog("Sidenotes.windowResized", "sidenotes.js", 3);
+
+					doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
+				}, {
+					name: "Sidenotes.updateSidenotePositionsOnWindowResizeListener"
+				});
+
+				/*	Add handler to bind more sidenote-slide events if more
+					citations are injected (e.g., in a popup).
+				 */
+				addContentInjectHandler(Sidenotes.bindAdditionalSidenoteSlideEvents = (eventInfo) => {
+					GWLog("bindAdditionalSidenoteSlideEvents", "sidenotes.js", 3);
+
+					eventInfo.container.querySelectorAll("a.footnote-ref").forEach(citation => {
+						let sidenote = Sidenotes.counterpart(citation);
+						if (sidenote == null)
+							return;
+
+						citation.addEventListener("mouseenter", citation.onCitationMouseEnterSlideSidenote = (event) => {
+							/*  Do not slide sidenote if the footnote the citation
+								points to is visible.
+							 */
+							if (Notes.allNotesForCitation(citation).findIndex(note => note.matches("li.footnote") && isOnScreen(note)) !== -1)
+								return null;
+
+							Sidenotes.putAllSidenotesBack(sidenote);
+							requestAnimationFrame(() => {
+								Sidenotes.slideSidenoteIntoView(sidenote, true);
+							});
 						});
 					});
-				});
-			}, "eventListeners", (info) => info.document != document);
+				}, "eventListeners", (info) => info.document != document);
 
-			/*	Add a scroll listener to un-slide all sidenotes on scroll.
-			 */
-			addScrollListener((event) => {
-				Sidenotes.putAllSidenotesBack();
-			}, {
-				name: "Sidenotes.unSlideSidenotesOnScrollListener",
-				defer: true
-			});
-		}, (mediaQuery) => {
-			/*	Deactivate event handlers.
-			 */
-			GW.notificationCenter.removeHandlerForEvent("GW.hashDidChange", Sidenotes.updateStateAfterHashChange);
-			GW.notificationCenter.removeHandlerForEvent("Rewrite.contentDidChange", Sidenotes.updateSidenotePositionsAfterContentDidChange);
-			GW.notificationCenter.removeHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterFullWidthMediaDidLoad);
-			GW.notificationCenter.removeHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange);
-			GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", Sidenotes.bindAdditionalSidenoteSlideEvents);
-			removeScrollListener("Sidenotes.unSlideSidenotesOnScroll");
-			removeWindowResizeListener("Sidenotes.recalculateSidenotePositionsOnWindowResize");
-		}, (mediaQuery) => {
-			/*	Deactivate event handlers.
-			 */
-			GW.notificationCenter.removeHandlerForEvent("GW.hashDidChange", Sidenotes.updateStateAfterHashChange);
-			GW.notificationCenter.removeHandlerForEvent("Rewrite.contentDidChange", Sidenotes.updateSidenotePositionsAfterContentDidChange);
-			GW.notificationCenter.removeHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterFullWidthMediaDidLoad);
-			GW.notificationCenter.removeHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange);
-			GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", Sidenotes.bindAdditionalSidenoteSlideEvents);
-			removeScrollListener("Sidenotes.unSlideSidenotesOnScroll");
-			removeWindowResizeListener("Sidenotes.recalculateSidenotePositionsOnWindowResize");
+				/*	Add a scroll listener to un-slide all sidenotes on scroll.
+				 */
+				addScrollListener((event) => {
+					Sidenotes.putAllSidenotesBack();
+				}, {
+					name: "Sidenotes.unSlideSidenotesOnScrollListener",
+					defer: true
+				});
+			},
+			otherwiseDo: (mediaQuery) => {
+				/*	Deactivate event handlers.
+				 */
+				GW.notificationCenter.removeHandlerForEvent("GW.hashDidChange", Sidenotes.updateStateAfterHashChange);
+				GW.notificationCenter.removeHandlerForEvent("Rewrite.contentDidChange", Sidenotes.updateSidenotePositionsAfterContentDidChange);
+				GW.notificationCenter.removeHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterFullWidthMediaDidLoad);
+				GW.notificationCenter.removeHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange);
+				GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", Sidenotes.bindAdditionalSidenoteSlideEvents);
+				removeScrollListener("Sidenotes.unSlideSidenotesOnScroll");
+				removeWindowResizeListener("Sidenotes.recalculateSidenotePositionsOnWindowResize");
+			},
+			whenCanceledDo: (mediaQuery) => {
+				/*	Deactivate event handlers.
+				 */
+				GW.notificationCenter.removeHandlerForEvent("GW.hashDidChange", Sidenotes.updateStateAfterHashChange);
+				GW.notificationCenter.removeHandlerForEvent("Rewrite.contentDidChange", Sidenotes.updateSidenotePositionsAfterContentDidChange);
+				GW.notificationCenter.removeHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterFullWidthMediaDidLoad);
+				GW.notificationCenter.removeHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange);
+				GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", Sidenotes.bindAdditionalSidenoteSlideEvents);
+				removeScrollListener("Sidenotes.unSlideSidenotesOnScroll");
+				removeWindowResizeListener("Sidenotes.recalculateSidenotePositionsOnWindowResize");
+			},
+			callWhenAdd: true
 		});
 
 		//	Once the sidenotes are constructed, lay them out.
@@ -21255,8 +21290,12 @@ ImageFocus = {
 		</div>`);
 
 		//  On orientation change, reset the size & position.
-		doWhenMatchMedia(GW.mediaQueries.portraitOrientation, "ImageFocus.resetFocusedImagePositionWhenOrientationChanges", (mediaQuery) => {
-			requestAnimationFrame(ImageFocus.resetFocusedImagePosition);
+		doWhenMatchMedia(GW.mediaQueries.portraitOrientation, {
+			name: "ImageFocus.resetFocusedImagePositionWhenOrientationChanges",
+			ifMatchesOrAlwaysDo: (mediaQuery) => {
+				requestAnimationFrame(ImageFocus.resetFocusedImagePosition);
+			},
+			callWhenAdd: true
 		});
 
 		//  Add click listeners to the buttons.
@@ -22302,8 +22341,12 @@ DarkMode = { ...DarkMode,
 		/*	Add active media query to update mode selector state when system dark
 			mode setting changes. (This is relevant only for the ‘auto’ setting.)
 		 */
-		doWhenMatchMedia(GW.mediaQueries.systemDarkModeActive, "DarkMode.updateModeSelectorStateForSystemDarkMode", () => { 
-			DarkMode.updateModeSelectorState(modeSelector);
+		doWhenMatchMedia(GW.mediaQueries.systemDarkModeActive, {
+			name: "DarkMode.updateModeSelectorStateForSystemDarkMode",
+			ifMatchesOrAlwaysDo: (mediaQuery) => { 
+				DarkMode.updateModeSelectorState(modeSelector);
+			},
+			callWhenAdd: true
 		});
 	},
 

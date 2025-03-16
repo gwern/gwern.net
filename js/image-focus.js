@@ -92,8 +92,12 @@ ImageFocus = {
 		</div>`);
 
 		//  On orientation change, reset the size & position.
-		doWhenMatchMedia(GW.mediaQueries.portraitOrientation, "ImageFocus.resetFocusedImagePositionWhenOrientationChanges", (mediaQuery) => {
-			requestAnimationFrame(ImageFocus.resetFocusedImagePosition);
+		doWhenMatchMedia(GW.mediaQueries.portraitOrientation, {
+			name: "ImageFocus.resetFocusedImagePositionWhenOrientationChanges",
+			ifMatchesOrAlwaysDo: (mediaQuery) => {
+				requestAnimationFrame(ImageFocus.resetFocusedImagePosition);
+			},
+			callWhenAdd: true
 		});
 
 		//  Add click listeners to the buttons.

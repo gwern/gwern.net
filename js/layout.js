@@ -1411,12 +1411,16 @@ doWhenMainExists(() => {
 	startDynamicLayoutInContainer(document.main);
 
 	//	Add listener to redo layout when orientation changes.
-	doWhenMatchMedia(GW.mediaQueries.portraitOrientation, "Layout.updateLayoutWhenOrientationChanges", (mediaQuery) => {
-		document.main.querySelectorAll(".markdownBody").forEach(blockContainer => {
-			GW.layout.layoutProcessors.forEach(processorSpec => {
-				applyLayoutProcessorToBlockContainer(processorSpec, blockContainer, document.main);
+	doWhenMatchMedia(GW.mediaQueries.portraitOrientation, {
+		name: "Layout.updateLayoutWhenOrientationChanges",
+		ifMatchesOrAlwaysDo: (mediaQuery) => {
+			document.main.querySelectorAll(".markdownBody").forEach(blockContainer => {
+				GW.layout.layoutProcessors.forEach(processorSpec => {
+					applyLayoutProcessorToBlockContainer(processorSpec, blockContainer, document.main);
+				});
 			});
-		});
+		},
+		callWhenAdd: false
 	});
 });
 

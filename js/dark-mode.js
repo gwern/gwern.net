@@ -181,8 +181,12 @@ DarkMode = { ...DarkMode,
 		/*	Add active media query to update mode selector state when system dark
 			mode setting changes. (This is relevant only for the ‘auto’ setting.)
 		 */
-		doWhenMatchMedia(GW.mediaQueries.systemDarkModeActive, "DarkMode.updateModeSelectorStateForSystemDarkMode", () => { 
-			DarkMode.updateModeSelectorState(modeSelector);
+		doWhenMatchMedia(GW.mediaQueries.systemDarkModeActive, {
+			name: "DarkMode.updateModeSelectorStateForSystemDarkMode",
+			ifMatchesOrAlwaysDo: (mediaQuery) => { 
+				DarkMode.updateModeSelectorState(modeSelector);
+			},
+			callWhenAdd: true
 		});
 	},
 

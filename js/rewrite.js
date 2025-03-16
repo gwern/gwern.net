@@ -1341,17 +1341,21 @@ addContentInjectHandler(GW.contentInjectHandlers.addOrientationChangeMediaElemen
 
     let mediaElements = eventInfo.container.querySelectorAll(GW.dimensionSpecifiedMediaElementSelector);
 
-    doWhenMatchMedia(GW.mediaQueries.portraitOrientation, "Rewrite.updateMediaElementDimensionsWhenOrientationChanges", (mediaQuery) => {
-        mediaElements.forEach(mediaElement => {
-            mediaElement.maxHeight = null;
-        });
-        requestAnimationFrame(() => {
-            mediaElements.forEach(mediaElement => {
-                mediaElement.style.width = "";
-                setMediaElementDimensions(mediaElement, true);
-            });
-        });
-    });
+	doWhenMatchMedia(GW.mediaQueries.portraitOrientation, {
+		name: "Rewrite.updateMediaElementDimensionsWhenOrientationChanges",
+		ifMatchesOrAlwaysDo: (mediaQuery) => {
+			mediaElements.forEach(mediaElement => {
+				mediaElement.maxHeight = null;
+			});
+			requestAnimationFrame(() => {
+				mediaElements.forEach(mediaElement => {
+					mediaElement.style.width = "";
+					setMediaElementDimensions(mediaElement, true);
+				});
+			});
+		},
+		callWhenAdd: false
+	});
 }, "eventListeners", (info) => (   info.context == "popFrame"
 								&& Extracts.popFrameProvider.containingPopFrame(info.container).classList.contains("object")) == false);
 
@@ -2149,32 +2153,37 @@ addContentInjectHandler(GW.contentInjectHandlers.setMarginsOnFullWidthBlocks = (
     }
 
     //  Un-expand when mobile width, expand otherwise.
-    doWhenMatchMedia(GW.mediaQueries.mobileWidth, "updateFullWidthBlockExpansionForCurrentWidthClass", () => {
-        removeFullWidthBlockMargins();
-    }, () => {
-        allFullWidthBlocks.forEach(fullWidthBlock => {
-            //  Compensate for block indentation due to nesting (e.g., lists).
-            let additionalLeftAdjustmentPx = "0px";
-            let enclosingListItem = fullWidthBlock.closest("li");
-            if (enclosingListItem) {
-                let fullContentRect = fullWidthBlock.closest(".markdownBody").getBoundingClientRect();
-                let listContentRect = enclosingListItem.firstElementChild.getBoundingClientRect();
-                additionalLeftAdjustmentPx = (fullContentRect.x - listContentRect.x) + "px";
-            }
+    doWhenMatchMedia(GW.mediaQueries.mobileWidth, {
+    	name: "updateFullWidthBlockExpansionForCurrentWidthClass",
+    	ifMatchesOrAlwaysDo: (mediaQuery) => {
+			removeFullWidthBlockMargins();
+		},
+		otherwiseDo: (mediaQuery) => {
+			allFullWidthBlocks.forEach(fullWidthBlock => {
+				//  Compensate for block indentation due to nesting (e.g., lists).
+				let additionalLeftAdjustmentPx = "0px";
+				let enclosingListItem = fullWidthBlock.closest("li");
+				if (enclosingListItem) {
+					let fullContentRect = fullWidthBlock.closest(".markdownBody").getBoundingClientRect();
+					let listContentRect = enclosingListItem.firstElementChild.getBoundingClientRect();
+					additionalLeftAdjustmentPx = (fullContentRect.x - listContentRect.x) + "px";
+				}
 
-            fullWidthBlock.style.marginLeft = `calc(
-                                                    (-1 * (var(--GW-full-width-block-layout-left-adjustment) / 2.0))
-                                                  + (var(--GW-full-width-block-layout-side-margin))
-                                                  - ((var(--GW-full-width-block-layout-page-width) - 100%) / 2.0)
-                                                  + (${additionalLeftAdjustmentPx} / 2.0)
-                                                )`;
-            fullWidthBlock.style.marginRight = `calc(
-                                                     (var(--GW-full-width-block-layout-left-adjustment) / 2.0)
-                                                   + (var(--GW-full-width-block-layout-side-margin))
-                                                   - ((var(--GW-full-width-block-layout-page-width) - 100%) / 2.0)
-                                                   - (${additionalLeftAdjustmentPx} / 2.0)
-                                                )`;
-        });
+				fullWidthBlock.style.marginLeft = `calc(
+														(-1 * (var(--GW-full-width-block-layout-left-adjustment) / 2.0))
+													  + (var(--GW-full-width-block-layout-side-margin))
+													  - ((var(--GW-full-width-block-layout-page-width) - 100%) / 2.0)
+													  + (${additionalLeftAdjustmentPx} / 2.0)
+													)`;
+				fullWidthBlock.style.marginRight = `calc(
+														 (var(--GW-full-width-block-layout-left-adjustment) / 2.0)
+													   + (var(--GW-full-width-block-layout-side-margin))
+													   - ((var(--GW-full-width-block-layout-page-width) - 100%) / 2.0)
+													   - (${additionalLeftAdjustmentPx} / 2.0)
+													)`;
+			});
+		},
+		callWhenAdd: true
     });
 }, ">rewrite");
 
@@ -3626,8 +3635,12 @@ addContentInjectHandler(GW.contentInjectHandlers.rewriteDropcaps = (eventInfo) =
     GWLog("rewriteDropcaps", "rewrite.js", 1);
 
     //  Reset dropcaps when margin note mode changes.
-    doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "GW.dropcaps.resetDropcapsWhenMarginNoteModeChanges", (mediaQuery) => {
-        eventInfo.container.querySelectorAll(GW.dropcaps.dropcapBlockSelector).forEach(resetDropcapInBlock);
+    doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, {
+    	name: "GW.dropcaps.resetDropcapsWhenMarginNoteModeChanges",
+    	ifMatchesOrAlwaysDo: (mediaQuery) => {
+			eventInfo.container.querySelectorAll(GW.dropcaps.dropcapBlockSelector).forEach(resetDropcapInBlock);
+		},
+		callWhenAdd: true
     });
 
     //  A letter (capital or lowercase), optionally preceded by an opening quotation mark.
