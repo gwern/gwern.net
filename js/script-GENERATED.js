@@ -2247,21 +2247,17 @@ GW.floatingHeader = {
 
         //  Inject header.
         if (GW.isMobile()) {
-			GW.floatingHeader.header = addUIElement(  `<div id="floating-header" class="hidden position-bottom">`
+			GW.floatingHeader.header = addUIElement(  `<div id="floating-header" class="hidden mobile position-bottom">`
 													+ `<div class="scroll-indicator"></div>`
 													+ `<div class="link-chain"></div>`
 													+ `</div>`);
 
         } else {
-			GW.floatingHeader.header = addUIElement(  `<div id="floating-header" class="hidden position-top">`
+			GW.floatingHeader.header = addUIElement(  `<div id="floating-header" class="hidden desktop position-top">`
 													+ `<div class="link-chain"></div>`
 													+ `<div class="scroll-indicator"></div>`
 													+ `</div>`);
         }
-
-        //  Designate desktop version of header.
-        if (GW.isMobile() == false)
-            GW.floatingHeader.header.classList.add("desktop");
 
         //  Pre-query elements, so as not to waste cycles on each scroll event.
         GW.floatingHeader.linkChain = GW.floatingHeader.header.querySelector(".link-chain");
@@ -2272,7 +2268,7 @@ GW.floatingHeader = {
         GW.floatingHeader.firstSection = document.querySelector("section");
 
         //  Calculate minimum Y offset.
-        let thresholdElement = getComputedStyle(GW.floatingHeader.pageHeader).display != "none"
+        let thresholdElement = GW.floatingHeader.pageHeader.offsetParent != null
                                ? GW.floatingHeader.pageHeader
                                : document.querySelector("#sidebar");
         GW.floatingHeader.minimumYOffset = thresholdElement.getBoundingClientRect().top
