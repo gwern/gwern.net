@@ -3173,19 +3173,21 @@ function startDynamicLayoutInContainer(container) {
 				if (mutationRecord.target.closest(GW.layout.blockLayoutExclusionSelector) != null)
 					blockContainerEntry.doBlockLayout = false;
 
-				//	Avoid adding a block container twice.
-				if (affectedBlockContainers.findIndex(x => x.blockContainer == blockContainerEntry.blockContainer) == -1)
-					affectedBlockContainers.push(blockContainerEntry);
+				//	Add contained block containers.
+				let entries = [ blockContainerEntry ];
+				blockContainerEntry.blockContainer.querySelectorAll(blockContainersSelector).forEach(containedBlockContainer => {
+					entries.push({
+						blockContainer: containedBlockContainer,
+						doBlockLayout: blockContainerEntry.doBlockLayout
+					});
+				});
+				entries.forEach(entry => {
+					//	Avoid adding a block container twice.
+					if (affectedBlockContainers.findIndex(x => x.blockContainer == entry.blockContainer) == -1)
+						affectedBlockContainers.push(entry);
+				});
 			}			
 		}
-
-		/*	Exclude block containers that are contained within other block
-			containers in the list, to prevent redundant processing.
-		 */
-// 		affectedBlockContainers = affectedBlockContainers.filter(c => affectedBlockContainers.findIndex(x => {
-// 			//	This means “x contains c”.
-// 			return (c.blockContainer.compareDocumentPosition(x.blockContainer) & Node.DOCUMENT_POSITION_CONTAINS);
-// 		}) == -1);
 
 		/*	Add containers to list of containers needing layout processing, if
 			they are not there already.
@@ -4039,8 +4041,20 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 addLayoutProcessor("applyBlockSpacingInContainer", (blockContainer) => {
     GWLog("applyBlockSpacingInContainer", "layout.js", 2);
 
-	let blockElementsSelector = GW.layout.blockElements.join(", ");
+	//	Exclusion predicate.
 	let blockContainersSelector = GW.layout.blockContainers.join(", ");
+	let exclude = (block) => {
+		if (block.closest(GW.layout.blockLayoutExclusionSelector) != null)
+			return true;
+
+		if (   block.parentElement
+			&& block.parentElement.closest(blockContainersSelector) != blockContainer)
+			return true;
+
+		return false;
+	};
+
+	let blockElementsSelector = GW.layout.blockElements.join(", ");
 	let potentialBlockElementsSelector = [ blockElementsSelector, "block" ].join(", ");
 	blockContainer.querySelectorAll(potentialBlockElementsSelector).forEach(block => {
 		if (   block.parentElement
@@ -4071,7 +4085,7 @@ addLayoutProcessor("applyBlockSpacingInContainer", (blockContainer) => {
 
 	//	Triptychs require special treatment.
 	blockContainer.querySelectorAll(".triptych").forEach(triptych => {
-		if (triptych.closest(GW.layout.blockLayoutExclusionSelector))
+		if (exclude(triptych))
 			return;
 
 		if (triptych.classList.contains("aptych")) {
@@ -4092,7 +4106,7 @@ addLayoutProcessor("applyBlockSpacingInContainer", (blockContainer) => {
 
 	//	Lists require special treatment.
 	blockContainer.querySelectorAll("li:not(.footnote)").forEach(listItem => {
-		if (listItem.closest(GW.layout.blockLayoutExclusionSelector))
+		if (exclude(listItem))
 			return;
 
 		let firstBlockWithin = firstBlockOf(listItem);
@@ -4115,7 +4129,7 @@ addLayoutProcessor("applyBlockSpacingInContainer", (blockContainer) => {
 
 	//	Floats require special treatment on non-mobile layouts.
 	blockContainer.querySelectorAll(".float").forEach(floatBlock => {
-		if (floatBlock.closest(GW.layout.blockLayoutExclusionSelector))
+		if (exclude(floatBlock))
 			return;
 
 		//	Floating elements take on the top margin of the next block.
