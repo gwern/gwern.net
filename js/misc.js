@@ -1191,14 +1191,17 @@ function updatePageTOC(container = document) {
 
         //  Construct entry.
         let entry = newElement("LI");
-        let entryText = section.id == "footnotes"
-                        ? "Footnotes"
-                        : section.firstElementChild.querySelector("a").innerHTML;
-        entry.innerHTML = `<a
-                            class='decorate-not'
-                            id='toc-${section.id}'
-                            href='#${fixedEncodeURIComponent(section.id)}'
-                                >${entryText}</a>`;
+        let entryLink = newElement("A", {
+        	class: "decorate-not",
+        	id: "toc-" + section.id,
+        	href: "#" + fixedEncodeURIComponent(section.id)
+        });
+        if (section.id == "footnotes") {
+        	entryLink.append("Footnotes");
+        } else {
+        	entryLink.append(...(section.firstElementChild.querySelector("a").cloneNode(true).childNodes));
+        }
+        entry.append(entryLink);
 
         //  Get or construct the <ul> element.
         let subList = (   Array.from(parentTOCElement.childNodes).find(child => child.tagName == "UL")
