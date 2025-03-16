@@ -418,10 +418,10 @@ function startDynamicLayoutInContainer(container) {
 		/*	Exclude block containers that are contained within other block
 			containers in the list, to prevent redundant processing.
 		 */
-		affectedBlockContainers = affectedBlockContainers.filter(c => affectedBlockContainers.findIndex(x => {
-			//	This means “x contains c”.
-			return (c.blockContainer.compareDocumentPosition(x.blockContainer) & Node.DOCUMENT_POSITION_CONTAINS);
-		}) == -1);
+// 		affectedBlockContainers = affectedBlockContainers.filter(c => affectedBlockContainers.findIndex(x => {
+// 			//	This means “x contains c”.
+// 			return (c.blockContainer.compareDocumentPosition(x.blockContainer) & Node.DOCUMENT_POSITION_CONTAINS);
+// 		}) == -1);
 
 		/*	Add containers to list of containers needing layout processing, if
 			they are not there already.
@@ -989,9 +989,22 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 
 	let containingDocument = blockContainer.getRootNode();
 
+	//	Exclusion predicate.
+	let blockContainersSelector = GW.layout.blockContainers.join(", ");
+	let exclude = (block) => {
+		if (block.closest(GW.layout.blockLayoutExclusionSelector) != null)
+			return true;
+
+		if (   block.parentElement
+			&& block.parentElement.closest(blockContainersSelector) != blockContainer)
+			return true;
+
+		return false;
+	};
+
 	//	Designate headings.
 	blockContainer.querySelectorAll(range(1, 6).map(x => `h${x}`).join(", ")).forEach(heading => {
-		if (heading.closest(GW.layout.blockLayoutExclusionSelector))
+		if (exclude(heading))
 			return;
 
 		heading.classList.add("heading");
@@ -1004,14 +1017,14 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 	];
 	if (GW.mediaQueries.mobileWidth.matches == false) {
 		blockContainer.querySelectorAll(floatClasses.join(", ")).forEach(floatBlock => {
-			if (floatBlock.closest(GW.layout.blockLayoutExclusionSelector))
+			if (exclude(floatBlock))
 				return;
 
 			floatBlock.classList.add("float");
 		});
 	} else {
 		blockContainer.querySelectorAll(floatClasses.join(", ")).forEach(floatBlock => {
-			if (floatBlock.closest(GW.layout.blockLayoutExclusionSelector))
+			if (exclude(floatBlock))
 				return;
 
 			floatBlock.classList.remove("float");
@@ -1028,7 +1041,7 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 
 	//	Designate float-containing lists.
 	blockContainer.querySelectorAll(".markdownBody li .float").forEach(floatBlock => {
-		if (floatBlock.closest(GW.layout.blockLayoutExclusionSelector))
+		if (exclude(floatBlock))
 			return;
 
 		let options = {
@@ -1062,7 +1075,7 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 		return false;
 	};
 	blockContainer.querySelectorAll(".list").forEach(list => {
-		if (list.closest(GW.layout.blockLayoutExclusionSelector))
+		if (exclude(list))
 			return;
 
 		let bigList = isBigList(list);
@@ -1090,7 +1103,7 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 
 	//	Disable triptychs on mobile layouts.
 	blockContainer.querySelectorAll(".triptych").forEach(triptych => {
-		if (triptych.closest(GW.layout.blockLayoutExclusionSelector))
+		if (exclude(triptych))
 			return;
 
 		/*	Why “aptych”? Because on mobile it is laid out in one column
@@ -1102,7 +1115,7 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 
 	//	Apply special block sequence classes.
 	blockContainer.querySelectorAll(GW.layout.blockElements.join(", ")).forEach(block => {
-		if (block.closest(GW.layout.blockLayoutExclusionSelector))
+		if (exclude(block))
 			return;
 
 		/*	Designate blocks preceded by nothing (not counting floats and other
@@ -1263,8 +1276,13 @@ addLayoutProcessor("applyBlockSpacingInContainer", (blockContainer) => {
     GWLog("applyBlockSpacingInContainer", "layout.js", 2);
 
 	let blockElementsSelector = GW.layout.blockElements.join(", ");
+	let blockContainersSelector = GW.layout.blockContainers.join(", ");
 	let potentialBlockElementsSelector = [ blockElementsSelector, "block" ].join(", ");
 	blockContainer.querySelectorAll(potentialBlockElementsSelector).forEach(block => {
+		if (   block.parentElement
+			&& block.parentElement.closest(blockContainersSelector) != blockContainer)
+			return;
+
 		let isBlock = true;
 		if (   block.matches(blockElementsSelector) == false
 			|| block.closest(GW.layout.blockLayoutExclusionSelector) != null) {
