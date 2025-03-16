@@ -802,7 +802,10 @@ Sidenotes = { ...Sidenotes,
 			}, {
 				immediately: false,
 				doWhenDidInject: (info) => {
-					info.container.closest(".sidenote").style.visibility = "";
+					let sidenote = info.container.closest(".sidenote");
+					GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotePositionsDidUpdate", (positionUpdateEventInfo) => {
+						sidenote.style.visibility = "";
+					}, { once: true });
 				}
 			});
 		});
