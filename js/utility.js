@@ -1000,9 +1000,6 @@ function isNodeEmpty(node, options) {
 		}
 	}
 
-    if (node.childNodes.length == 0)
-        return true;
-
     for (let childNode of node.childNodes)
         if (isNodeEmpty(childNode, options) == false)
             return false;

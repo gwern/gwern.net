@@ -94,8 +94,15 @@ function GWStopWatch(f, ...args) {
     let fname = (f.name || f.toString().slice(0, f.toString().indexOf('{')));
     console.log(`[${GWTimestamp()}]  ${fname} [BEGIN]`);
     let rval = f(...args);
-    console.log(`[${GWTimestamp()}]  ${fname} [END]`);
+	console.log(`[${GWTimestamp()}]  ${fname} [END]`);
     return rval;
+}
+
+function GWTimer(f, ...args) {
+    let startTime = performance.now();
+    f(...args);
+    let endTime = performance.now();
+    return (endTime - startTime);
 }
 
 

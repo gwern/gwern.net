@@ -1000,9 +1000,6 @@ function isNodeEmpty(node, options) {
 		}
 	}
 
-    if (node.childNodes.length == 0)
-        return true;
-
     for (let childNode of node.childNodes)
         if (isNodeEmpty(childNode, options) == false)
             return false;
@@ -1533,8 +1530,15 @@ function GWStopWatch(f, ...args) {
     let fname = (f.name || f.toString().slice(0, f.toString().indexOf('{')));
     console.log(`[${GWTimestamp()}]  ${fname} [BEGIN]`);
     let rval = f(...args);
-    console.log(`[${GWTimestamp()}]  ${fname} [END]`);
+	console.log(`[${GWTimestamp()}]  ${fname} [END]`);
     return rval;
+}
+
+function GWTimer(f, ...args) {
+    let startTime = performance.now();
+    f(...args);
+    let endTime = performance.now();
+    return (endTime - startTime);
 }
 
 
@@ -3994,25 +3998,26 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 addLayoutProcessor("applyBlockSpacingInContainer", (blockContainer) => {
     GWLog("applyBlockSpacingInContainer", "layout.js", 2);
 
-	//	Remove block spacing metadata from what shouldn’t have it.
-	blockContainer.querySelectorAll(".block").forEach(block => {
-		if (   block.matches(GW.layout.blockElements.join(", ")) == false
+	let blockElementsSelector = GW.layout.blockElements.join(", ");
+	let potentialBlockElementsSelector = [ blockElementsSelector, "block" ].join(", ");
+	blockContainer.querySelectorAll(potentialBlockElementsSelector).forEach(block => {
+		let isBlock = true;
+		if (   block.matches(blockElementsSelector) == false
 			|| block.closest(GW.layout.blockLayoutExclusionSelector) != null) {
-			block.classList.remove("block");
-			block.style.removeProperty("--bsm");
-		}
-	});
-
-	//	Apply block spacing.
-	blockContainer.querySelectorAll(GW.layout.blockElements.join(", ")).forEach(block => {
-		if (block.closest(GW.layout.blockLayoutExclusionSelector))
-			return;
-
-		let bsm = getBlockSpacingMultiplier(block);
-		if (bsm != undefined) {
-			block.classList.add("block");
-			block.style.setProperty("--bsm", `${bsm}`);
+			isBlock = false;
 		} else {
+			let bsm = getBlockSpacingMultiplier(block);
+			if (bsm == undefined) {
+				isBlock = false;
+			} else {
+				//	Apply block spacing.
+				block.classList.add("block");
+				block.style.setProperty("--bsm", `${bsm}`);
+			}
+		}
+
+		//	Remove block spacing metadata from what shouldn’t have it.
+		if (isBlock == false) {
 			block.classList.remove("block");
 			block.style.removeProperty("--bsm");
 		}

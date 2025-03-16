@@ -1262,25 +1262,26 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 addLayoutProcessor("applyBlockSpacingInContainer", (blockContainer) => {
     GWLog("applyBlockSpacingInContainer", "layout.js", 2);
 
-	//	Remove block spacing metadata from what shouldn’t have it.
-	blockContainer.querySelectorAll(".block").forEach(block => {
-		if (   block.matches(GW.layout.blockElements.join(", ")) == false
+	let blockElementsSelector = GW.layout.blockElements.join(", ");
+	let potentialBlockElementsSelector = [ blockElementsSelector, "block" ].join(", ");
+	blockContainer.querySelectorAll(potentialBlockElementsSelector).forEach(block => {
+		let isBlock = true;
+		if (   block.matches(blockElementsSelector) == false
 			|| block.closest(GW.layout.blockLayoutExclusionSelector) != null) {
-			block.classList.remove("block");
-			block.style.removeProperty("--bsm");
-		}
-	});
-
-	//	Apply block spacing.
-	blockContainer.querySelectorAll(GW.layout.blockElements.join(", ")).forEach(block => {
-		if (block.closest(GW.layout.blockLayoutExclusionSelector))
-			return;
-
-		let bsm = getBlockSpacingMultiplier(block);
-		if (bsm != undefined) {
-			block.classList.add("block");
-			block.style.setProperty("--bsm", `${bsm}`);
+			isBlock = false;
 		} else {
+			let bsm = getBlockSpacingMultiplier(block);
+			if (bsm == undefined) {
+				isBlock = false;
+			} else {
+				//	Apply block spacing.
+				block.classList.add("block");
+				block.style.setProperty("--bsm", `${bsm}`);
+			}
+		}
+
+		//	Remove block spacing metadata from what shouldn’t have it.
+		if (isBlock == false) {
 			block.classList.remove("block");
 			block.style.removeProperty("--bsm");
 		}
