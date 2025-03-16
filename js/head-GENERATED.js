@@ -3121,6 +3121,10 @@ function addLayoutProcessor(name, processor, options) {
 	Fires didComplete event for each time a layout processor fires.
  */
 function applyLayoutProcessorToBlockContainer(processorSpec, blockContainer, container) {
+	if (   GW.layout.initialPageLayoutComplete
+		&& processorSpec.name == "applyBlockLayoutClassesInContainer")
+		console.log(elementSummaryString(blockContainer) + "\t" + processorSpec.name + "\t" + GWTimer(processorSpec.processor, blockContainer));
+	else
 	processorSpec.processor(blockContainer);
 
 	GW.notificationCenter.fireEvent("Layout.layoutProcessorDidComplete", {
@@ -3196,6 +3200,9 @@ function startDynamicLayoutInContainer(container) {
 		});
 		requestAnimationFrame(() => {
 			GW.layout.currentPassBegin = performance.now();
+			if (GW.layout.initialPageLayoutComplete)
+				console.log("CURRENT PASS BEGINS:  " + GW.layout.currentPassBegin);
+// 			console.log(mutationsList);
 
 			//	Do layout in all waiting block containers.
 			while (GW.layout.blockContainersNeedingLayout.length > 0) {

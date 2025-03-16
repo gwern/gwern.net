@@ -67,13 +67,13 @@ Extracts = {
 				/*	Remove text node containing U+2060 WORD JOINER between the
 					two hooks.
 				 */
-				if (indicatorHook.previousSibling.textContent == "\u{2060}")
+				if (indicatorHook.previousSibling?.textContent == "\u{2060}")
 					indicatorHook.previousSibling.remove();	
 			} else {
 				/*	Remove U+2060 WORD JOINER from first text content of link.
 				 */
-				let linkFirstTextNode = indicatorHook.nextSibling.firstTextNode;
-				if (linkFirstTextNode.textContent.startsWith("\u{2060}"))
+				let linkFirstTextNode = indicatorHook.nextSibling?.firstTextNode;
+				if (linkFirstTextNode?.textContent.startsWith("\u{2060}"))
 					linkFirstTextNode.textContent = linkFirstTextNode.textContent.slice(1);
 			}
 
