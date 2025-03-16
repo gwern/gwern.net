@@ -16811,6 +16811,9 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifyBlogPosts = (eventInfo) 
 
 	eventInfo.container.querySelector(".annotation.blog-post > .data-field.title")?.remove();
 }, "rewrite", (info) => (   info.document == document
+						 && info.contentType == "annotation"
+						 && info.includeLink.hostname == location.hostname
+						 && info.includeLink.pathname == location.pathname
 						 && document.body.classList.contains("blog-page")       == true
 						 && document.body.classList.contains("page-blog-index") == false));
 
