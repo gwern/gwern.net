@@ -3174,21 +3174,19 @@ function startDynamicLayoutInContainer(container) {
 				if (mutationRecord.target.closest(GW.layout.blockLayoutExclusionSelector) != null)
 					blockContainerEntry.doBlockLayout = false;
 
-				//	Add contained block containers.
-				let entries = [ blockContainerEntry ];
-				blockContainerEntry.blockContainer.querySelectorAll(blockContainersSelector).forEach(containedBlockContainer => {
-					entries.push({
-						blockContainer: containedBlockContainer,
-						doBlockLayout: blockContainerEntry.doBlockLayout
-					});
-				});
-				entries.forEach(entry => {
-					//	Avoid adding a block container twice.
-					if (affectedBlockContainers.findIndex(x => x.blockContainer == entry.blockContainer) == -1)
-						affectedBlockContainers.push(entry);
-				});
+				//	Avoid adding a block container twice.
+				if (affectedBlockContainers.findIndex(x => x.blockContainer == blockContainerEntry.blockContainer) == -1)
+					affectedBlockContainers.push(blockContainerEntry);
 			}			
 		}
+
+		/*	Exclude block containers that are contained within other block
+			containers in the list, to prevent redundant processing.
+		 */
+		affectedBlockContainers = affectedBlockContainers.filter(c => affectedBlockContainers.findIndex(x => {
+			//	This means “x contains c”.
+			return (c.blockContainer.compareDocumentPosition(x.blockContainer) & Node.DOCUMENT_POSITION_CONTAINS);
+		}) == -1);
 
 		/*	Add containers to list of containers needing layout processing, if
 			they are not there already.
@@ -3735,11 +3733,6 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 		if (block.closest(GW.layout.blockLayoutExclusionSelector) != null)
 			return true;
 
-		if (   (containingDocument instanceof DocumentFragment) == false
-			&& block.parentElement
-			&& block.parentElement.closest(blockContainersSelector) != blockContainer)
-			return true;
-
 		return false;
 	};
 
@@ -4016,17 +4009,10 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 addLayoutProcessor("applyBlockSpacingInContainer", (blockContainer) => {
     GWLog("applyBlockSpacingInContainer", "layout.js", 2);
 
-	let containingDocument = blockContainer.getRootNode();
-
 	//	Exclusion predicate.
 	let blockContainersSelector = GW.layout.blockContainers.join(", ");
 	let exclude = (block) => {
 		if (block.closest(GW.layout.blockLayoutExclusionSelector) != null)
-			return true;
-
-		if (   (containingDocument instanceof DocumentFragment) == false
-			&& block.parentElement
-			&& block.parentElement.closest(blockContainersSelector) != blockContainer)
 			return true;
 
 		return false;
@@ -4035,13 +4021,9 @@ addLayoutProcessor("applyBlockSpacingInContainer", (blockContainer) => {
 	let blockElementsSelector = GW.layout.blockElements.join(", ");
 	let potentialBlockElementsSelector = [ blockElementsSelector, "block" ].join(", ");
 	blockContainer.querySelectorAll(potentialBlockElementsSelector).forEach(block => {
-		if (   block.parentElement
-			&& block.parentElement.closest(blockContainersSelector) != blockContainer)
-			return;
-
 		let isBlock = true;
 		if (   block.matches(blockElementsSelector) == false
-			|| block.closest(GW.layout.blockLayoutExclusionSelector) != null) {
+			|| exclude(block)) {
 			isBlock = false;
 		} else {
 			let bsm = getBlockSpacingMultiplier(block);
