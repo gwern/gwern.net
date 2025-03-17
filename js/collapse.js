@@ -373,6 +373,8 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 			if (collapseAbstract?.closest(".collapse") == collapseWrapper) {
 				//	Mark those collapse blocks that have abstracts.
 				collapseWrapper.classList.add("has-abstract");
+				if (collapseAbstract.classList.contains("abstract-collapse-only"))
+					collapseWrapper.classList.add("has-abstract-collapse-only");
 
 				//	Wrap bare text nodes and inline elements in <p> elements.
 				if (collapseWrapper.classList.contains("collapse-block"))

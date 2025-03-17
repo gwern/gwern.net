@@ -2831,7 +2831,8 @@ GW.layout = {
 		"noscript",
 		"button",
 		"a:empty",
-		".heading.collapse"
+		".heading.collapse",
+		".abstract-collapse-only"
 	],
 
 	//	Elements which always participate in block layout, even when empty.
@@ -3734,7 +3735,8 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 		if (block.closest(GW.layout.blockLayoutExclusionSelector) != null)
 			return true;
 
-		if (   block.parentElement
+		if (   (containingDocument instanceof DocumentFragment) == false
+			&& block.parentElement
 			&& block.parentElement.closest(blockContainersSelector) != blockContainer)
 			return true;
 
@@ -4014,13 +4016,16 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 addLayoutProcessor("applyBlockSpacingInContainer", (blockContainer) => {
     GWLog("applyBlockSpacingInContainer", "layout.js", 2);
 
+	let containingDocument = blockContainer.getRootNode();
+
 	//	Exclusion predicate.
 	let blockContainersSelector = GW.layout.blockContainers.join(", ");
 	let exclude = (block) => {
 		if (block.closest(GW.layout.blockLayoutExclusionSelector) != null)
 			return true;
 
-		if (   block.parentElement
+		if (   (containingDocument instanceof DocumentFragment) == false
+			&& block.parentElement
 			&& block.parentElement.closest(blockContainersSelector) != blockContainer)
 			return true;
 
