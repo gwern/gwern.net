@@ -1284,12 +1284,6 @@ figure .image-wrapper::before {
     max-width: calc(100% - 2px);
 }
 
-/*  Figure in the page abstract.
- */
-.page-abstract .page-thumbnail-figure.float-not {
-    max-width: unset;
-}
-
 /*  Figures in blockquotes.
  */
 blockquote figure.outline-not img,
