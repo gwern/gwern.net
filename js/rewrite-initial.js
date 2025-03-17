@@ -4,11 +4,17 @@
 /*	“Non-block layout” a.k.a. “rewrite” processors. Like rewrites, but faster.
  */
 
-/********************************************************************/
+/******************************************************************************/
 /*	Add a “non-block” layout processor, a.k.a. a “rewrite processor”.
+
+	(See `addLayoutProcessor`, in layout.js, for explanation of option fields.)
  */
-function addRewriteProcessor(processorName, processor) {
-	addLayoutProcessor(processorName, processor, { blockLayout: false });
+function addRewriteProcessor(processorName, processor, options = null) {
+	options = Object.assign({
+		blockLayout: false
+	}, options);
+
+	addLayoutProcessor(processorName, processor, options);
 }
 
 /*****************************************************************************/

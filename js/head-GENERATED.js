@@ -3098,6 +3098,12 @@ GW.layout.currentPassBegin = 1;
 		If set to true (the default), then this will be treated as a block
 		layout processor (and block layout exclusions will be applied to it).
 		Otherwise, block layout exclusions will be ignored.
+
+	condition (function)
+		If provided, will be tested against an info object (which is the same
+		as that passed to the ‘Layout.layoutProcessorDidComplete’ event) for
+		each block container to which the layout processor might be applied;
+		if false returned, the layout processor is skipped for that block.
  */
 function addLayoutProcessor(name, processor, options) {
 	options = Object.assign({
@@ -3122,6 +3128,16 @@ function addLayoutProcessor(name, processor, options) {
 	Fires didComplete event for each time a layout processor fires.
  */
 function applyLayoutProcessorToBlockContainer(processorSpec, blockContainer, container) {
+	let containingDocument = container.getRootNode();
+
+	if (processorSpec.options.condition?.({
+			document: containingDocument,
+			container: container,
+			processorName: processorSpec.name,
+			blockContainer: blockContainer
+		}) == false)
+		return;
+
 	processorSpec.processor(blockContainer);
 
 	GW.notificationCenter.fireEvent("Layout.layoutProcessorDidComplete", {
@@ -4755,11 +4771,17 @@ Color = {
 /*	“Non-block layout” a.k.a. “rewrite” processors. Like rewrites, but faster.
  */
 
-/********************************************************************/
+/******************************************************************************/
 /*	Add a “non-block” layout processor, a.k.a. a “rewrite processor”.
+
+	(See `addLayoutProcessor`, in layout.js, for explanation of option fields.)
  */
-function addRewriteProcessor(processorName, processor) {
-	addLayoutProcessor(processorName, processor, { blockLayout: false });
+function addRewriteProcessor(processorName, processor, options = null) {
+	options = Object.assign({
+		blockLayout: false
+	}, options);
+
+	addLayoutProcessor(processorName, processor, options);
 }
 
 /*****************************************************************************/
