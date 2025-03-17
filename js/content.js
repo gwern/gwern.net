@@ -1928,43 +1928,20 @@ Content = {
                 //  Get the page title.
                 let pageTitleHTML = contentDocument.querySelector("header h1").innerHTML;
 
-                //  Get the page thumbnail URL and metadata.
-                let pageThumbnailHTML, pageThumbnailAttributes;
-                let pageThumbnailMetaTag = contentDocument.querySelector("meta[property='og:image']");
-                if (pageThumbnailMetaTag) {
-                    let pageThumbnailURL = URLFromString(pageThumbnailMetaTag.getAttribute("content"));
-
-                    //  Alt text, if provided.
-                    let pageThumbnailAltMetaTag = contentDocument.querySelector("meta[property='og:image:alt']");
-                    let pageThumbnailAltText = (pageThumbnailAltMetaTag
-                                                ? pageThumbnailAltMetaTag.getAttribute("content")
-                                                : `Thumbnail image for “${pageTitleHTML}”`
-                                                ).replace(/"/g, "&quot;");
-
-                    //  Image dimensions.
-                    let pageThumbnailWidth = contentDocument.querySelector("meta[property='og:image:width']").getAttribute("content");
-                    let pageThumbnailHeight = contentDocument.querySelector("meta[property='og:image:height']").getAttribute("content");
-
-                    //  Construct and save the <img> tag.
-                    if (pageThumbnailURL.pathname.startsWith(Content.contentTypes.localPage.defaultPageThumbnailPathnamePrefix) == false) {
-                        pageThumbnailHTML = `<img
-                            src="${pageThumbnailURL.href}"
-                            title="${pageThumbnailAltText}"
-                            width="${pageThumbnailWidth}"
-                            height="${pageThumbnailHeight}"
-                            style="width: ${pageThumbnailWidth}px; height: auto;"
-                                >`;
-                        pageThumbnailAttributes = {
-                        	src: pageThumbnailURL.href,
-                        	title: pageThumbnailAltText,
-                        	width: pageThumbnailWidth,
-                        	height: pageThumbnailHeight,
-                        	style: "width: ${pageThumbnailWidth}px; height: auto;"
-                        };
-                    }
+                //  Get the page thumbnail attributes and construct HTML.
+                let pageThumbnailHTML;
+                let pageThumbnailAttributes = pageThumbnailAttributesFromDocument(contentDocument);
+                if (pageThumbnailAttributes) {
+					let pageThumbnailHTML = `<img
+											  src="${pageThumbnailAttributes.src}"
+											  title="${pageThumbnailAttributes.title}"
+											  width="${pageThumbnailAttributes.width}"
+											  height="${pageThumbnailAttributes.height}"
+											  style="${pageThumbnailAttributes.style}"
+											  >`;
 
                     //  Request the image, to cache it.
-                    doAjax({ location: pageThumbnailURL.href });
+                    doAjax({ location: URLFromString(pageThumbnailAttributes.src) });
                 }
 
                 if (response) {
