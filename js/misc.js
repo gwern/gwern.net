@@ -1115,6 +1115,12 @@ function firstTextNodeOfGraf(graf) {
 /*********************/
 
 GW.TOC = {
+	mainTOC: null,
+
+	getMainTOC: () => {
+		return (GW.TOC.mainTOC ?? document.querySelector("#TOC"));	
+	},
+
     containersToUpdate: [ ]
 };
 
@@ -1143,8 +1149,8 @@ function updatePageTOCIfNeeded(container = document) {
 function updatePageTOC(container = document) {
     GWLog("updatePageTOC", "misc.js", 2);
 
-    let TOC = document.querySelector("#TOC");
-    if (!TOC)
+    let TOC = GW.TOC.getMainTOC();
+    if (TOC == null)
         return;
 
     //  Don’t nest TOC entries any deeper than this.

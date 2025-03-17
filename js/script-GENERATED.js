@@ -1115,6 +1115,12 @@ function firstTextNodeOfGraf(graf) {
 /*********************/
 
 GW.TOC = {
+	mainTOC: null,
+
+	getMainTOC: () => {
+		return (GW.TOC.mainTOC ?? document.querySelector("#TOC"));	
+	},
+
     containersToUpdate: [ ]
 };
 
@@ -1143,8 +1149,8 @@ function updatePageTOCIfNeeded(container = document) {
 function updatePageTOC(container = document) {
     GWLog("updatePageTOC", "misc.js", 2);
 
-    let TOC = document.querySelector("#TOC");
-    if (!TOC)
+    let TOC = GW.TOC.getMainTOC();
+    if (TOC == null)
         return;
 
     //  Don’t nest TOC entries any deeper than this.
@@ -17004,7 +17010,7 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifyLinkBibliographyContextL
 /*  Sets TOC collapse state and updates the collapse toggle button.
  */
 function setTOCCollapseState(collapsed = false) {
-    let TOC = document.querySelector("#TOC");
+    let TOC = GW.TOC.getMainTOC();
     if (TOC == null)
         return;
 
@@ -17023,7 +17029,7 @@ function setTOCCollapseState(collapsed = false) {
 addContentLoadHandler(GW.contentLoadHandlers.injectTOCCollapseToggleButton = (eventInfo) => {
     GWLog("injectTOCCollapseToggleButton", "rewrite.js", 1);
 
-    let TOC = document.querySelector("#TOC");
+    let TOC = GW.TOC.getMainTOC();
     if (TOC == null)
         return;
 
@@ -17095,9 +17101,8 @@ addContentLoadHandler(GW.contentLoadHandlers.disableTOCLinkDecoration = (eventIn
 addContentLoadHandler(GW.contentLoadHandlers.rewriteDirectoryIndexTOC = (eventInfo) => {
     GWLog("rewriteDirectoryIndexTOC", "rewrite.js", 1);
 
-    let TOC = document.querySelector("#TOC");
+    let TOC = GW.TOC.getMainTOC();
     let seeAlsoSection = document.querySelector("#see-also");
-
     if (   TOC == null
         || seeAlsoSection == null)
         return;
@@ -17147,7 +17152,7 @@ addContentLoadHandler(GW.contentLoadHandlers.addRecentlyModifiedDecorationsToPag
 	if (location.pathname.startsWithAnyOf(excludedPaths))
 		return;
 
-	let TOC = document.querySelector("#TOC");
+	let TOC = GW.TOC.getMainTOC();
 	if (TOC == null)
 		return;
 
@@ -18080,7 +18085,9 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifyTOCAdjacentBlockLayout =
     GWLog("rectifyTOCAdjacentBlockLayout", "rewrite.js", 1);
 
 	let markdownBody = document.querySelector("#markdownBody");
-	let TOC = document.querySelector("#TOC");
+	let TOC = GW.TOC.getMainTOC();
+	if (TOC == null)
+		return;
 
 	GW.layout.TOCAdjacentBlockLayoutNeedsRectification = false;
 
@@ -18089,6 +18096,9 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifyTOCAdjacentBlockLayout =
 			return;
 
 		GW.layout.TOCAdjacentBlockLayoutNeedsRectification = false;
+
+		if (TOC.offsetParent == null)
+			return;
 
 		let TOCRect = TOC.getBoundingClientRect();
 
@@ -19432,7 +19442,7 @@ function toggleCollapseBlockState(collapseBlock, expanding, options) {
 			//	Compensate for TOC.
 			if (   collapseBlock.tagName != "SECTION"
 				&& contentColumn.id == "markdownBody") {
-				let TOC = document.querySelector("#TOC");
+				let TOC = GW.TOC.getMainTOC();
 				if (TOC) {
 					let TOCRect = TOC.getBoundingClientRect();
 					if (TOCRect.bottom > contentRect.top) {

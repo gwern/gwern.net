@@ -688,7 +688,7 @@ function toggleCollapseBlockState(collapseBlock, expanding, options) {
 			//	Compensate for TOC.
 			if (   collapseBlock.tagName != "SECTION"
 				&& contentColumn.id == "markdownBody") {
-				let TOC = document.querySelector("#TOC");
+				let TOC = GW.TOC.getMainTOC();
 				if (TOC) {
 					let TOCRect = TOC.getBoundingClientRect();
 					if (TOCRect.bottom > contentRect.top) {
