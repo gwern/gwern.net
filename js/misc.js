@@ -961,7 +961,7 @@ function aggregateMarginNotesIfNeededInDocument(doc) {
     if (GW.marginNotes.aggregationNeededInDocuments.includes(doc) == false)
         GW.marginNotes.aggregationNeededInDocuments.push(doc);
 
-    requestAnimationFrame(() => {
+    requestIdleCallback(() => {
         if (GW.marginNotes.aggregationNeededInDocuments.includes(doc) == false)
             return;
 
@@ -1128,7 +1128,7 @@ function updatePageTOCIfNeeded(container = document) {
         GW.TOC.containersToUpdate.push(container);
     }
 
-    requestAnimationFrame(() => {
+    requestIdleCallback(() => {
         while (GW.TOC.containersToUpdate.length > 0)
             updatePageTOC(GW.TOC.containersToUpdate.shift());
     });
