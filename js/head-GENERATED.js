@@ -5095,6 +5095,11 @@ addRewriteProcessor("designateHorizontalRuleStyles", (blockContainer) => {
 	});
 });
 
+
+/*************************/
+/* INLINE MODE SELECTORS */
+/*************************/
+
 /********************************************/
 /*	Wrap parenthesized inline mode selectors.
  */
@@ -5119,48 +5124,9 @@ addRewriteProcessor("wrapParenthesizedInlineModeSelectors", (blockContainer) => 
 });
 
 
-/***************************/
-/* ADDITIONAL EARLY LAYOUT */
-/***************************/
-
-/*************************************************/
-/*	Placeholder page for ID-based content loading.
- */
-doWhenMainExists(() => {
-	if (location.pathname.startsWith("/ref/")) {
-		document.querySelectorAll("title, header h1").forEach(element => {
-			element.replaceChildren();
-		});
-	}
-});
-
-/**********************************/
-/*	Designate /blog/ pages as such.
- */
-doWhenBodyExists(() => {
-	if (location.pathname.startsWith("/blog/"))
-		document.body.classList.add("blog-page");
-});
-
-/**************************************************************************/
-/*  Update visibility of a TOC. (Hide if no entries; if main page TOC, also 
-	hide if one entry.)
- */
-function updateTOCVisibility(TOC) {
-	if (TOC == null)
-		return;
-
-    let numEntries = TOC.querySelectorAll("li").length;
-    if (   (   TOC.id == "TOC"
-            && numEntries <= 1)
-        || numEntries == 0) {
-        TOC.classList.toggle("hidden", true);
-    } else {
-        TOC.classList.toggle("hidden", false);
-    }
-}
-
-doWhenElementExists(updateTOCVisibility, "#TOC");
+/************************/
+/* PAGE THUMBNAIL IMAGE */
+/************************/
 
 /******************************************************************************/
 /*	Given a full document (HTML page), return an object with the attributes for
@@ -5256,6 +5222,51 @@ if (location.pathname.endsWithAnyOf([ "/", "/index" ]) == false) {
 		injectThumbnailIntoPageAbstract(pageAbstract, pageThumbnailAttributes, { atEnd: true });
 	}, "#markdownBody > .abstract:first-child + *");
 }
+
+
+/***************************/
+/* ADDITIONAL EARLY LAYOUT */
+/***************************/
+
+/*************************************************/
+/*	Placeholder page for ID-based content loading.
+ */
+doWhenMainExists(() => {
+	if (location.pathname.startsWith("/ref/")) {
+		document.querySelectorAll("title, header h1").forEach(element => {
+			element.replaceChildren();
+		});
+	}
+});
+
+/**********************************/
+/*	Designate /blog/ pages as such.
+ */
+doWhenBodyExists(() => {
+	if (location.pathname.startsWith("/blog/"))
+		document.body.classList.add("blog-page");
+});
+
+/**************************************************************************/
+/*  Update visibility of a TOC. (Hide if no entries; if main page TOC, also 
+	hide if one entry.)
+ */
+function updateTOCVisibility(TOC) {
+	if (TOC == null)
+		return;
+
+    let numEntries = TOC.querySelectorAll("li").length;
+    if (   (   TOC.id == "TOC"
+            && numEntries <= 1)
+        || numEntries == 0) {
+        TOC.classList.toggle("hidden", true);
+    } else {
+        TOC.classList.toggle("hidden", false);
+    }
+}
+
+doWhenElementExists(updateTOCVisibility, "#TOC");
+
 /*********************/
 /* SPECIAL OCCASIONS */
 /*********************/
