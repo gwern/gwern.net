@@ -2831,7 +2831,8 @@ GW.layout = {
 		"noscript",
 		"button",
 		"a:empty",
-		".heading.collapse"
+		".heading.collapse",
+		".abstract-collapse-only"
 	],
 
 	//	Elements which always participate in block layout, even when empty.

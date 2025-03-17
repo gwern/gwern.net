@@ -1856,17 +1856,30 @@ section.collapse > .heading {
 /*  Shift blockquoted abstract so that edge of blockquote is flush with left
     stripe of collapse block (disclosure button click region).
  */
-.collapse-block > .abstract-collapse.abstract {
+section.collapse-block > .abstract-collapse.abstract,
+section.collapse-block > .abstract-collapse-only.abstract {
     margin-left: calc(-1 * (var(--collapse-left-offset) - var(--collapse-toggle-left-width)));
+}
+div.collapse-block > .abstract-collapse.abstract,
+div.collapse-block > .abstract-collapse-only.abstract {
+    margin-left: var(--collapse-toggle-left-width);
 }
 
 /*  Hide abstract blockquote border when collapsed.
  */
-.collapse-block.expanded-not > .abstract-collapse.abstract > blockquote {
+.collapse-block.expanded-not > .abstract-collapse.abstract > blockquote,
+.collapse-block.expanded-not > .abstract-collapse-only.abstract > blockquote {
     border-color: var(--background-color);
 }
-.collapse-block.expanded-not > .disclosure-button:hover + .abstract-collapse.abstract > blockquote {
+.collapse-block.expanded-not > .disclosure-button:hover + .abstract-collapse.abstract > blockquote,
+.collapse-block.expanded-not > .disclosure-button:hover + .abstract-collapse-only.abstract > blockquote {
     --background-color: var(--GW-collapse-abstract-blockquote-hover-color);
+}
+
+/*	Similar to bare-content collapses, when expanded.
+ */
+.collapse.has-abstract-collapse-only.expanded > .collapse-content-wrapper {
+    padding: 0.5em 0;
 }
 
 /*  Non-blockquoted collapse summary.
