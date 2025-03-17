@@ -25,7 +25,7 @@ import qualified Data.Text as T (pack, unpack)
 import LinkID (metadataItem2ID)
 import LinkMetadataTypes (Metadata, MetadataList, MetadataItem, Path)
 import Unique (isUniqueList)
-import Utils (sed, writeUpdatedFile, printRed)
+import Utils (sed, writeUpdatedFile, printRed, replace)
 import Config.Misc as C (cd)
 
 prefix, authorU, authorID :: String
@@ -48,9 +48,15 @@ writeOutBlogEntries md =
      let badTitles =  filter (\(_,(t,_,_,_,_,_,_)) -> length t > 73 ) writings
      unless (null badTitles) $ printRed $ "Blog.writeOutBlogEntries: warning, entry title awkwardly long, please prune down: " ++ show badTitles
 
-     let paths = isUniqueList $ map (\(u,mi) -> prefix ++ "/" ++ sed ("^"++authorID++"-") ""
-                                                                  (T.unpack $ metadataItem2ID md u mi) ++ ".md") writings
-     let targets = zip paths writings
+     let slugs = map (\x@(u,mi) -> let ident = T.unpack $ metadataItem2ID md u mi in
+                                     if null ident || length ident < 4 then error ("Blog.writeOutBlogEntries: useful ID was not set on a /blog/ entry! You must give it an unique ID which can be the short slug. Input was: " ++ show x ++ "; inferred ID was: " ++ show ident)
+                                     else ident) writings
+
+     let paths = isUniqueList $ map (\ident -> prefix ++ "/" ++
+                                                      sed ("^"++authorID++"-") "" ident ++
+                                                      ".md")
+                 slugs
+     let targets = zip paths writings :: [(FilePath, (Path, MetadataItem))]
      C.cd -- ensure the relative directory prefix is valid
      mapM_ writeOutBlogEntry targets
 
@@ -62,7 +68,7 @@ filterForAuthoredAnnotations md =
                                   length abst > lengthMin)
   md
 
-writeOutBlogEntry :: (String, (Path, MetadataItem)) -> IO ()
+writeOutBlogEntry :: (FilePath, (Path, MetadataItem)) -> IO ()
 writeOutBlogEntry (filepath, m) = writeUpdatedFile prefix filepath $ T.pack $ annotation2Markdown m
 
 -- cf. `generateDirectory.generateYAMLHeader`
@@ -76,9 +82,9 @@ annotation2Markdown (url, (title, author, dateCreated, dateModified, kvs, _, _))
       cssExt      = get "css-extension" "dropcaps-de-zs"
   in unlines
        [ "---"
-       , "title: '"             ++ title ++ "'"
+       , "title: '"              ++ replace "'" "’" title ++ "'"
        , "author: "              ++ author
-       , "description: "         ++ description
+       , "description: "         ++ replace "'" "’" description
        , "created: "             ++ dateCreated
        , "modified: "            ++ dateModified
        , "status: "              ++ status
