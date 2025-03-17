@@ -388,3 +388,93 @@ function updateTOCVisibility(TOC) {
 }
 
 doWhenElementExists(updateTOCVisibility, "#TOC");
+
+/******************************************************************************/
+/*	Given a full document (HTML page), return an object with the attributes for
+	an <img> element of the page thumbnail image.
+ */
+function pageThumbnailAttributesFromDocument(doc) {
+	//  Get the page thumbnail URL and metadata.
+	let pageThumbnailAttributes;
+	let pageThumbnailMetaTag = doc.querySelector("meta[property='og:image']");
+	if (pageThumbnailMetaTag) {
+		let pageThumbnailURL = URLFromString(pageThumbnailMetaTag.getAttribute("content"));
+
+		//  Alt text, if provided.
+		let pageThumbnailAltMetaTag = doc.querySelector("meta[property='og:image:alt']");
+		let pageThumbnailAltText = (pageThumbnailAltMetaTag
+									? pageThumbnailAltMetaTag.getAttribute("content")
+									: `Thumbnail image for “${(doc.querySelector("meta[property='og:title']").getAttribute("content"))}”`
+									).replace(/"/g, "&quot;");
+
+		//  Image dimensions.
+		let pageThumbnailWidth = doc.querySelector("meta[property='og:image:width']").getAttribute("content");
+		let pageThumbnailHeight = doc.querySelector("meta[property='og:image:height']").getAttribute("content");
+
+		return {
+			src: pageThumbnailURL.href,
+			title: pageThumbnailAltText,
+			width: pageThumbnailWidth,
+			height: pageThumbnailHeight,
+			style: "width: ${pageThumbnailWidth}px; height: auto;"
+		};
+	} else {
+		return null;
+	}
+}
+
+/*****************************************************************************/
+/*	Inject the page thumbnail image into the page abstract (or the abstract of
+	a full-page pop-frame). (Returns the thumbnail image element.)
+
+	Available option fields:
+
+	atEnd (boolean)
+		If true (the default), thumbnail figure placed at end, after all other
+		content in the abstract. If false, placed at start, before all else.
+
+	floatClass (string)
+		Float-related class to set on the figure. Default is ‘float-not’. Other
+		options are ‘float-left’ or ‘float-right’.
+ */
+function injectThumbnailIntoPageAbstract(pageAbstract, pageThumbnailAttributes, options) {
+	options = Object.assign({
+		atEnd: true,
+		floatClass: "float-not"
+	}, options);
+
+	//	Check if the page thumbnail has already been injected.
+	if (pageAbstract.querySelector(".page-thumbnail-figure") != null)
+		return;
+
+	//	Construct.
+	let pageThumbnail = newElement("IMG", pageThumbnailAttributes);
+	let pageThumbnailWrapper = newElement("SPAN", {
+		class: "image-wrapper img"
+	});
+	let pageThumbnailFigure = newElement("FIGURE", {
+		class: "page-thumbnail-figure " + options.floatClass
+	});
+	pageThumbnailFigure.appendChild(pageThumbnailWrapper).appendChild(pageThumbnail);
+
+	//	Inject.
+	pageAbstract.insertBefore(pageThumbnailFigure, (options.atEnd ? null : pageAbstract.firstElementChild));
+
+	return pageThumbnail;
+}
+
+/************************************************************************/
+/*	Inject the page thumbnail into the page abstract, when such is found.
+ */
+if (location.pathname.endsWithAnyOf([ "/", "/index" ]) == false) {
+	doWhenElementExists((firstAfterAbstract) => {
+		//	Get page abstract.
+		let pageAbstract = firstAfterAbstract.previousElementSibling.firstElementChild;
+
+		//	Designate page abstract.
+		pageAbstract.classList.add("page-abstract");
+
+		//	Inject page thumbnail into page abstract.
+		injectThumbnailIntoPageAbstract(pageAbstract, pageThumbnailAttributesFromDocument(document), { atEnd: true });
+	}, "#markdownBody > .abstract:first-child + *");
+}

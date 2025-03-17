@@ -8423,43 +8423,20 @@ Content = {
                 //  Get the page title.
                 let pageTitleHTML = contentDocument.querySelector("header h1").innerHTML;
 
-                //  Get the page thumbnail URL and metadata.
-                let pageThumbnailHTML, pageThumbnailAttributes;
-                let pageThumbnailMetaTag = contentDocument.querySelector("meta[property='og:image']");
-                if (pageThumbnailMetaTag) {
-                    let pageThumbnailURL = URLFromString(pageThumbnailMetaTag.getAttribute("content"));
-
-                    //  Alt text, if provided.
-                    let pageThumbnailAltMetaTag = contentDocument.querySelector("meta[property='og:image:alt']");
-                    let pageThumbnailAltText = (pageThumbnailAltMetaTag
-                                                ? pageThumbnailAltMetaTag.getAttribute("content")
-                                                : `Thumbnail image for “${pageTitleHTML}”`
-                                                ).replace(/"/g, "&quot;");
-
-                    //  Image dimensions.
-                    let pageThumbnailWidth = contentDocument.querySelector("meta[property='og:image:width']").getAttribute("content");
-                    let pageThumbnailHeight = contentDocument.querySelector("meta[property='og:image:height']").getAttribute("content");
-
-                    //  Construct and save the <img> tag.
-                    if (pageThumbnailURL.pathname.startsWith(Content.contentTypes.localPage.defaultPageThumbnailPathnamePrefix) == false) {
-                        pageThumbnailHTML = `<img
-                            src="${pageThumbnailURL.href}"
-                            title="${pageThumbnailAltText}"
-                            width="${pageThumbnailWidth}"
-                            height="${pageThumbnailHeight}"
-                            style="width: ${pageThumbnailWidth}px; height: auto;"
-                                >`;
-                        pageThumbnailAttributes = {
-                        	src: pageThumbnailURL.href,
-                        	title: pageThumbnailAltText,
-                        	width: pageThumbnailWidth,
-                        	height: pageThumbnailHeight,
-                        	style: "width: ${pageThumbnailWidth}px; height: auto;"
-                        };
-                    }
+                //  Get the page thumbnail attributes and construct HTML.
+                let pageThumbnailHTML;
+                let pageThumbnailAttributes = pageThumbnailAttributesFromDocument(contentDocument);
+                if (pageThumbnailAttributes) {
+					let pageThumbnailHTML = `<img
+											  src="${pageThumbnailAttributes.src}"
+											  title="${pageThumbnailAttributes.title}"
+											  width="${pageThumbnailAttributes.width}"
+											  height="${pageThumbnailAttributes.height}"
+											  style="${pageThumbnailAttributes.style}"
+											  >`;
 
                     //  Request the image, to cache it.
-                    doAjax({ location: pageThumbnailURL.href });
+                    doAjax({ location: URLFromString(pageThumbnailAttributes.src) });
                 }
 
                 if (response) {
@@ -15761,12 +15738,11 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapImages = (eventInfo) => {
     });
 }, "rewrite");
 
-/*****************************************************************************/
-/*	Inject the page thumbnail image into the page abstract (or the abstract of
-	a full-page pop-frame.
+/******************************************************************************/
+/*	Inject the page thumbnail image into the abstract of a full-page pop-frame.
  */
-addContentInjectHandler(GW.contentInjectHandlers.injectThumbnailIntoPageAbstract = (eventInfo) => {
-    GWLog("injectThumbnailIntoPageAbstract", "rewrite.js", 1);
+addContentInjectHandler(GW.contentInjectHandlers.injectThumbnailIntoPopFramePageAbstract = (eventInfo) => {
+    GWLog("injectThumbnailIntoPopFramePageAbstract", "rewrite.js", 1);
 
 	let pageAbstract = eventInfo.container.querySelector(".abstract blockquote");
 	if (   pageAbstract == null
@@ -15776,43 +15752,25 @@ addContentInjectHandler(GW.contentInjectHandlers.injectThumbnailIntoPageAbstract
 	//	Designate page abstract.
 	pageAbstract.classList.add("page-abstract");
 
-	//	Check if the page thumbnail has already been injected.
-	if (pageAbstract.querySelector(".page-thumbnail-figure") != null)
+	//	Get page thumbnail attributes.
+	let referenceData = Content.referenceDataForLink(eventInfo.loadLocation);
+	if (referenceData.pageThumbnailAttributes == null)
 		return;
 
-	//	Insert page thumbnail into page abstract.
-	let referenceData = Content.referenceDataForLink(eventInfo.loadLocation);
-	if (referenceData.pageThumbnailAttributes != null) {
-		//	Construct.
-		let pageThumbnail = newElement("IMG", referenceData.pageThumbnailAttributes);
-		let pageThumbnailWrapper = newElement("SPAN", {
-			class: "image-wrapper img"
-		});
-		let pageThumbnailFigure = newElement("FIGURE", {
-			class: "page-thumbnail-figure " + (eventInfo.context == "popFrame" ? "float-right" : "float-not")
-		});
-		pageThumbnailFigure.appendChild(pageThumbnailWrapper).appendChild(pageThumbnail);
+	//	Inject page thumbnail into page abstract.
+	let pageThumbnail = injectThumbnailIntoPageAbstract(pageAbstract, referenceData.pageThumbnailAttributes, {
+		atEnd: false,
+		floatClass: "float-right"
+	});
 
-		//	Inject.
-		pageAbstract.insertBefore(pageThumbnailFigure, 
-			(eventInfo.context == "popFrame"
-			 ? pageAbstract.firstElementChild
-			 : null));
+	//	Thumbnailify.
+	Images.thumbnailifyImage(pageThumbnail);
 
-		//	Thumbnailify, in pop-frames only.
-		if (eventInfo.context == "popFrame")
-			Images.thumbnailifyImage(pageThumbnail);
-
-		//	Invert, or not.
-		applyImageInversionJudgmentNowOrLater(pageThumbnail);
-	}
-
-	if (eventInfo.container == document.main)
-		Content.invalidateCachedContent(eventInfo.loadLocation);
-}, "rewrite", (info) => (   info.container == document.main
-						 || (   info.context == "popFrame"
-						 	 && Extracts.popFrameProvider == Popups
-						 	 && Extracts.popFrameProvider.containingPopFrame(info.container).classList.contains("full-page"))));
+	//	Invert, or not.
+	applyImageInversionJudgmentNowOrLater(pageThumbnail);
+}, "rewrite", (info) => (   info.context == "popFrame"
+						 && Extracts.popFrameProvider == Popups
+						 && Extracts.popFrameProvider.containingPopFrame(info.container).classList.contains("full-page")));
 
 /******************************************************************************/
 /*  Set, in CSS, the media (image/video) dimensions that are specified in HTML.
