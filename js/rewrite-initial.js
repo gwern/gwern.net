@@ -1,3 +1,63 @@
+/**********************/
+/* REWRITE PROCESSORS */
+/**********************/
+/*	“Non-block layout” a.k.a. “rewrite” processors. Like rewrites, but faster.
+ */
+
+/********************************************************************/
+/*	Add a “non-block” layout processor, a.k.a. a “rewrite processor”.
+ */
+function addRewriteProcessor(processorName, processor) {
+	addLayoutProcessor(processorName, processor, { blockLayout: false });
+}
+
+/*****************************************************************************/
+/*	Run rewrite processor in already-loaded main page content, and add rewrite
+	processor to process any subsequently loaded content.
+ */
+function processMainContentAndAddRewriteProcessor(processorName, processor) {
+	processor(document.main);
+	addRewriteProcessor(processorName, processor);
+}
+
+
+/****************/
+/* INLINE ICONS */
+/****************/
+
+/**********************************************/
+/*	Enable inline icons in the given container.
+ */
+addRewriteProcessor("processInlineIconsInContainer", (blockContainer) => {
+    GWLog("processInlineIconsInContainer", "rewrite-initial.js", 2);
+
+	blockContainer.querySelectorAll("span[class*='icon-']").forEach(inlineIcon => {
+		if (inlineIcon.classList.contains("icon-not"))
+			return;
+
+		//	Some icons are special.
+		let specialIconsSelector = [
+			".icon-single-white-star-on-black-circle"
+		].join(", ");
+		if (inlineIcon.matches(specialIconsSelector))
+			inlineIcon.classList.add("icon-special");
+
+		/*	“Special” icons will have their `--icon-url` CSS variable set
+			elsewhere (in other runtime code, or in CSS).
+		 */
+		if (inlineIcon.classList.contains("icon-special") == false) {
+			let iconName = Array.from(inlineIcon.classList).find(className => className.startsWith("icon-"))?.slice("icon-".length);
+			if (iconName == null)
+				return;
+
+			inlineIcon.style.setProperty("--icon-url", `url('/static/img/icon/icons.svg#${iconName}')`);
+		}
+
+		inlineIcon.classList.add("inline-icon", "dark-mode-invert");
+	});
+});
+
+
 /***********************/
 /* PROGRESS INDICATORS */
 /***********************/
@@ -84,60 +144,20 @@ function invalidateProgressPercentageIconForElement(progressIndicatorElement) {
 	progressIndicatorElement.classList.remove("progress-percentage-rendered");
 }
 
-
-/**********************/
-/* REWRITE PROCESSORS */
-/**********************/
-/*	“Non-block layout” a.k.a. “rewrite” processors. Like rewrites, but faster.
+/**********************************************************/
+/*	Inject progress indicator icons into any element with a
+	data-progress-percentage attribute.
  */
+addRewriteProcessor("injectProgressIcons", (blockContainer) => {
+    GWLog("injectProgressIcons", "rewrite-initial.js", 1);
 
-/********************************************************************/
-/*	Add a “non-block” layout processor, a.k.a. a “rewrite processor”.
- */
-function addRewriteProcessor(processorName, processor) {
-	addLayoutProcessor(processorName, processor, { blockLayout: false });
-}
+	blockContainer.querySelectorAll("[data-progress-percentage]").forEach(renderProgressPercentageIconIfNeeded);
+}, "rewrite");
 
-/*****************************************************************************/
-/*	Run rewrite processor in already-loaded main page content, and add rewrite
-	processor to process any subsequently loaded content.
- */
-function processMainContentAndAddRewriteProcessor(processorName, processor) {
-	processor(document.main);
-	addRewriteProcessor(processorName, processor);
-}
 
-/**********************************************/
-/*	Enable inline icons in the given container.
- */
-addRewriteProcessor("processInlineIconsInContainer", (blockContainer) => {
-    GWLog("processInlineIconsInContainer", "rewrite-initial.js", 2);
-
-	blockContainer.querySelectorAll("span[class*='icon-']").forEach(inlineIcon => {
-		if (inlineIcon.classList.contains("icon-not"))
-			return;
-
-		//	Some icons are special.
-		let specialIconsSelector = [
-			".icon-single-white-star-on-black-circle"
-		].join(", ");
-		if (inlineIcon.matches(specialIconsSelector))
-			inlineIcon.classList.add("icon-special");
-
-		/*	“Special” icons will have their `--icon-url` CSS variable set
-			elsewhere (in other runtime code, or in CSS).
-		 */
-		if (inlineIcon.classList.contains("icon-special") == false) {
-			let iconName = Array.from(inlineIcon.classList).find(className => className.startsWith("icon-"))?.slice("icon-".length);
-			if (iconName == null)
-				return;
-
-			inlineIcon.style.setProperty("--icon-url", `url('/static/img/icon/icons.svg#${iconName}')`);
-		}
-
-		inlineIcon.classList.add("inline-icon", "dark-mode-invert");
-	});
-});
+/***************************/
+/* RECENTLY-MODIFIED ICONS */
+/***************************/
 
 /**********************************************************************/
 /*	Adds recently-modified icon (white star on black circle) to a link.
@@ -242,6 +262,11 @@ addRewriteProcessor("enableRecentlyModifiedLinkListIcons", (blockContainer) => {
     });
 });
 
+
+/*********/
+/* LISTS */
+/*********/
+
 /*************************************************************/
 /*	Add certain style classes to certain lists and list items.
  */
@@ -253,6 +278,11 @@ addRewriteProcessor("designateListStyles", (blockContainer) => {
 			listItem.classList.add("dark-mode-invert");
 	});
 });
+
+
+/********************/
+/* HORIZONTAL RULES */
+/********************/
 
 /*************************************************/
 /*	Add certain style classes to horizontal rules.
@@ -314,16 +344,6 @@ addRewriteProcessor("wrapParenthesizedInlineModeSelectors", (blockContainer) => 
 		wrapParenthesizedNodes("inline-mode-selector", modeSelector);
 	});
 });
-
-/**********************************************************/
-/*	Inject progress indicator icons into any element with a
-	data-progress-percentage attribute.
- */
-addRewriteProcessor("injectProgressIcons", (blockContainer) => {
-    GWLog("injectProgressIcons", "rewrite-initial.js", 1);
-
-	blockContainer.querySelectorAll("[data-progress-percentage]").forEach(renderProgressPercentageIconIfNeeded);
-}, "rewrite");
 
 
 /***************************/
