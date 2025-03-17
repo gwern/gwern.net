@@ -2720,4 +2720,4 @@ authorWpLinkDB =
     , "Hiroshi Nagai", "David Corfield", "Stan Kelly-Bootle", "N. David Mermin", "Simon Tatham"
     , "Roel André Ophoff", "Paul M. B. Vitányi", "Oliver Herford", "Erik Satie", "E. T. Jaynes"
     , "Kenneth E. Boulding", "Ronan Farrow", "Karl T. Compton", "Björn Kurtén", "Robert R. McCrae"
-    , "Milton Rokeach", "Robert Heinlein", "Lauren Faust", "Walter Savage Landor", "Robert Laurence Binyon"]
+    , "Milton Rokeach", "Robert Heinlein", "Lauren Faust", "Walter Savage Landor", "Robert Laurence Binyon", "David A. Freedman"]

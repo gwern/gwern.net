@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-03-13 11:13:15 gwern"
+# When:  Time-stamp: "2025-03-16 19:40:07 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -869,7 +869,7 @@ else
 
     λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | \
              xargs --max-args=500 grep --fixed-strings --with-filename --color=always \
-                   -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' -e '<a href="!W"' -e '’S ' -e '<span id="#' -e ' abd ' | \
+                   -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' -e '<a href="!W"' -e '’S ' -e '<span id="#' -e ' abd ' -e '<p><span class="abstract-collapse-only">' | \
                    gfv -e '/design-graveyard' --; }
     wrap λ "Miscellaneous fixed string errors in compiled HTML."
 

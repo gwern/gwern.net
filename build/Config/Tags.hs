@@ -168,7 +168,7 @@ tagsShort2LongRewrites =
    , ("chemist", "chemistry"), ("chemisty", "chemistry"), ("chemical", "chemistry")
    , ("preference-falsification", "sociology/false-preference"), ("4.5", "4-5"), ("45", "4-5"),("54", "4-5"),("5.4", "4-5"), ("5-4", "4-5"), ("gpt-4-5", "ai/nn/transformer/gpt/5/4-5"), ("gpt-45", "ai/nn/transformer/gpt/5/4-5"), ("gpt-4.5", "ai/nn/transformer/gpt/5/4-5"), ("gpt45", "ai/nn/transformer/gpt/5/4-5")
    , ("vr", "virtual-reality"), ("v-r", "virtual-reality"), ("virtualreality", "virtual-reality"), ("oculus", "virtual-reality"), ("vrhmd", "virtual-reality")
-   , ("retratutide", "retatrutide"), ("retatrutide", "retatrutide")
+   , ("retratutide", "retatrutide"), ("retatrutide", "retatrutide"), ("sclaing", "scaling")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 

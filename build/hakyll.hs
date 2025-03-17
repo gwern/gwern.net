@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2025-03-11 10:29:42 gwern"
+When: Time-stamp: "2025-03-16 09:14:07 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -71,6 +71,7 @@ main =
        am           <- preprocess readArchiveMetadataAndCheck
        preprocess $ printGreen ("Popup annotations parsing…" :: String)
        meta <- preprocess readLinkMetadataSlow
+       preprocess $ writeOutBlogEntries meta
 
        if not (null annotationBuildAllForce) then
          preprocess $ do printGreen ("Rewriting all annotations…" :: String)
@@ -85,8 +86,6 @@ main =
                  -- for '/ref/' cache updating & expiring:
                  preprocess $ writeOutID2URLdb meta
                  timestamp <- preprocess $ getMostRecentlyModifiedDir "metadata/annotation/id/"
-
-                 preprocess $ writeOutBlogEntries meta
 
                  preprocess $ printGreen ("Begin site compilation…" :: String)
                  let targets = if null args' then fromGlob "**.md" .&&. complement "doc/www/**.md" -- exclude any temporary Markdown files in /doc/www/misc/ or mirrored somehow, but compile ones anywhere else

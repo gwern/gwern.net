@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-03-06 22:45:59 gwern"
+;;; When:  Time-stamp: "2025-03-16 21:18:44 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1778,6 +1778,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp "^\\([0-9]\\)) " "\\1. " nil begin end) ; convert single-parenthesis ordered lists to normal ordered list
        (query-replace-regexp "^ +<" " <" nil begin end)
        (query-replace-regexp "^ +</" " </" nil begin end) ; fix problems with leading whitespace causing HTML snippets to be treated as 4-space-indented literals
+       (query-replace-regexp "](\\([a-z0-9]+\\))" "](/\\1)" nil begin end) ; fix hand-written Markdown links missing their leading absolute slash, like '[One Man's Modus Ponens](modus)'
+       (query-replace-regexp "href=\"\\([a-z0-9]+\\)\"" "href=\"/\\1\"" nil begin end) ; fix hand-written Markdown links missing their leading absolute slash, like '<a href="modus">One Man's Modus Ponens</a>'
 
        (query-replace " <sup>" "<sup>" nil begin end)
        (query-replace "*8" "**" nil begin end)
