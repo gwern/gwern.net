@@ -467,6 +467,11 @@ function injectThumbnailIntoPageAbstract(pageAbstract, pageThumbnailAttributes, 
 /*	Inject the page thumbnail into the page abstract, when such is found.
  */
 if (location.pathname.endsWithAnyOf([ "/", "/index" ]) == false) {
+	let pageThumbnailAttributes;
+	doWhenBodyExists(() => {
+		pageThumbnailAttributes = pageThumbnailAttributesFromDocument(document);
+		doAjax({ location: URLFromString(pageThumbnailAttributes.src) });
+	});
 	doWhenElementExists((firstAfterAbstract) => {
 		//	Get page abstract.
 		let pageAbstract = firstAfterAbstract.previousElementSibling.firstElementChild;
@@ -475,6 +480,6 @@ if (location.pathname.endsWithAnyOf([ "/", "/index" ]) == false) {
 		pageAbstract.classList.add("page-abstract");
 
 		//	Inject page thumbnail into page abstract.
-		injectThumbnailIntoPageAbstract(pageAbstract, pageThumbnailAttributesFromDocument(document), { atEnd: true });
+		injectThumbnailIntoPageAbstract(pageAbstract, pageThumbnailAttributes, { atEnd: true });
 	}, "#markdownBody > .abstract:first-child + *");
 }

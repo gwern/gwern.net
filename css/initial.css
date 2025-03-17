@@ -1635,6 +1635,16 @@ figure.width-full {
     clear: both;
 }
 
+/****************/
+/*	Figures misc.
+ */
+
+/*  Figure in the page abstract.
+ */
+.page-abstract .page-thumbnail-figure.float-not {
+    max-width: unset;
+}
+
 
 /****************/
 /* MARGIN NOTES */
