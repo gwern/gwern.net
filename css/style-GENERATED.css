@@ -2216,6 +2216,7 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
 
     margin-left: calc(-1 * var(--collapse-left-offset));
     padding-left: var(--collapse-left-offset);
+    clear: both;
 }
 
 .collapse.section-backlinks-container > .collapse-content-wrapper {
