@@ -3,7 +3,7 @@
 /*************/
 
 :root {
-    --GW-serif-font-stack: "Source Serif Pro", "Apple Garamond", "Baskerville", "Libre Baskerville", "Droid Serif", "Times New Roman", "Times", serif, "Noto Emoji", "Quivira";
+    --GW-serif-font-stack: "Source Serif 4", "Apple Garamond", "Baskerville", "Libre Baskerville", "Droid Serif", "Times New Roman", "Times", serif, "Noto Emoji", "Quivira";
     --GW-sans-serif-font-stack: "Source Sans Pro", "Lucida Sans Unicode", "Helvetica", "Trebuchet MS", sans-serif, "Noto Emoji", "Quivira";
     --GW-monospaced-font-stack: "IBM Plex Mono", "Liberation Mono", "Consolas", "Courier", monospace, "Noto Emoji", "Quivira";
 
@@ -285,7 +285,7 @@ header h1 {
     }
 }
 
-/*  Source Serif Pro has no italic small caps, sadly.
+/*  Source Serif 4 has no italic small caps, sadly.
  */
 header h1 em {
     font-variant-caps: normal;
@@ -1887,7 +1887,7 @@ a code {
 .markdownBody em {
     margin-right: 0.1em;
 
-    /*  Source Serif Pro has no italic small caps.
+    /*  Source Serif 4 has no italic small caps.
      */
     font-variant-caps: normal;
 }

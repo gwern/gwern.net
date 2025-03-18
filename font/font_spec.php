@@ -3,7 +3,7 @@
 
 	Font overview:
 
-	- Source Serif Pro
+	- Source Serif 4
 		workhorse font for body text
 	- Source Sans Pro
 		for ToC and UI elements; primarily intended for Mac/iOS users
@@ -27,7 +27,7 @@
 	NOTE on ‘font-display: swap’:
 	We display text as soon as possible (e.g., for body text, system font such 
 	as Baskerville; see font stacks defined in /static/css/initial.css)
-	and re-render with webfont (e.g. Source Serif Pro) whenever it downloads:
+	and re-render with webfont (e.g. Source Serif 4) whenever it downloads:
 	https://developers.google.com/web/updates/2016/02/font-display
 	https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display
 	https://caniuse.com/#search=font-display
@@ -35,14 +35,14 @@
 ?>
 
 !inline
-Source Serif Pro
+Source Serif 4
 italic	-
 `400	*
 `600	*
 `700	*
 
 !inline
-Source Serif Pro
+Source Serif 4
 italic	+
 `400	*
 
@@ -57,12 +57,12 @@ Source Sans Pro
 italic	+
 `400	*
 
-Source Serif Pro
-/static/font/ssfp/SourceSerifPro-BASIC-
-ttf
+Source Serif 4
+/static/font/ssf4/SourceSerif4-Text-BASIC-
+otf
 font-display	swap
 italic			/$/		Italic
-unicode-range	U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212
+unicode-range	U+0020-007E, U+00A0-00BF, U+00C6, U+00D0, U+00D7, U+00D8, U+00DE, U+00DF, U+00E6, U+00F0, U+00F7, U+00F8, U+00FE, U+0152, U+0153, U+017F, U+018F, U+0192, U+0259, U+02C6-02DD, U+0300-030C, U+0391-03A9, U+03B1-03C9, U+2002-2049, U+2190-2199, U+2212, U+2215, U+221E, U+2248, U+2260, U+2264-2265, U+25A0-25C9, U+2752
 `200	ExtraLight
 `300	Light
 `400	Regular
