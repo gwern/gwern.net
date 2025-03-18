@@ -355,11 +355,10 @@ a[data-link-icon='↓'] {
 /*= Internal (within-site) links =*/
 /*=------------------------------=*/
 
-a[data-link-icon='𝔊'] {
-    --link-icon-size: 0.90em;
-    --link-icon-offset-x: 0.12em;
+a[data-link-icon='gwern'] {
+	--link-icon-size: 0.60em;
     --link-icon-offset-y: 0.20em;
-    --link-icon-opacity: 0.75;
+    --link-icon-opacity: 0.6;
 }
 
 /*=------------------------------------------=*/

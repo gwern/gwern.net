@@ -2708,6 +2708,9 @@ doWhenPageLayoutComplete(GW.pageLayoutCompleteHashHandlingSetup = (info) => {
     window.addEventListener("hashchange", GW.handleBrowserHashChangeEvent = () => {
         GWLog("GW.handleBrowserHashChangeEvent", "misc.js", 1);
 
+		//	Update scroll state.
+		updateScrollState();
+
         //  Clean location hash.
         cleanLocationHash();
 
@@ -17491,10 +17494,13 @@ addContentInjectHandler(GW.contentInjectHandlers.designateLocalNavigationLinkIco
 		if (link.closest(exclusionSelector))
 			return;
 
-        link.dataset.linkIconType = "text";
-        link.dataset.linkIcon = link.hash > ""
-        						? "\u{00B6}"   // ‘¶’ PILCROW SIGN
-        						: "\u{1D50A}"; // ‘𝔊’ MATHEMATICAL FRAKTUR CAPITAL G [gwern.net logo]
+        if (link.hash > "") {
+	        link.dataset.linkIconType = "text";
+	        link.dataset.linkIcon = "\u{00B6}" // ‘¶’ PILCROW SIGN
+        } else {
+        	link.dataset.linkIconType = "svg";
+        	link.dataset.linkIcon = "gwern";   // [gwern.net logo]
+        }
 
         /*  Directional navigation links on self-links: for each self-link like
             “see [later](#later-identifier)”, find the linked identifier,
@@ -17529,14 +17535,17 @@ addContentInjectHandler(GW.contentInjectHandlers.designateLocalNavigationLinkIco
 		if (link.closest(exclusionSelector))
 			return;
 
+		let linkHasDirectionalLinkIcon = [ "\u{2191}", "\u{2193}" ].includes(link.dataset.linkIcon);
         if (   link.dataset.linkIcon
-        	&& [ "\u{2191}", "\u{2193}" ].includes(link.dataset.linkIcon) == false)
+        	&& linkHasDirectionalLinkIcon == false) {
             return;
-
-        link.dataset.linkIconType = "text";
-        link.dataset.linkIcon = [ "\u{2191}", "\u{2193}" ].includes(link.dataset.linkIcon)
-                                ? "\u{00B6}"   // ‘¶’
-                                : "\u{1D50A}"; // ‘𝔊’
+		} else if (linkHasDirectionalLinkIcon == true) {
+	        link.dataset.linkIconType = "text";
+	        link.dataset.linkIcon = "\u{00B6}" // ‘¶’ PILCROW SIGN
+        } else {
+        	link.dataset.linkIconType = "svg";
+        	link.dataset.linkIcon = "gwern";   // [gwern.net logo]
+        }
     });
 }, "rewrite");
 
