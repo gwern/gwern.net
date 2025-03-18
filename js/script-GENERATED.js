@@ -2708,6 +2708,9 @@ doWhenPageLayoutComplete(GW.pageLayoutCompleteHashHandlingSetup = (info) => {
     window.addEventListener("hashchange", GW.handleBrowserHashChangeEvent = () => {
         GWLog("GW.handleBrowserHashChangeEvent", "misc.js", 1);
 
+		//	Update scroll state.
+		updateScrollState();
+
         //  Clean location hash.
         cleanLocationHash();
 
