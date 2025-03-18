@@ -17677,7 +17677,7 @@ function enableLinkIcon(link) {
     }
 
     //  Add hook.
-    link.appendChild(newElement("SPAN", { class: "link-icon-hook dark-mode-invert" }, { innerHTML: "\u{2060}" }));
+    link.appendChild(newElement("SPAN", { class: "link-icon-hook dark-mode-invert" })).append("\u{2060}");
 
     //  Set class.
     link.classList.add("has-icon");
