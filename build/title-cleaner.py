@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-03-13 18:43:21 gwern"
+# When:  Time-stamp: "2025-03-17 21:26:32 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -508,7 +508,7 @@ Katri Räikkönen
 ""
 - "Freudenthal - Link error"
 ""
-- https://jenn.site/2024/11/you-are-pablo-neruda-it-is-dawn-at-isla-negra-in-1968-matilde-is-asleep-in-your-bed-write-what-comes/ The Neruda Factory—Jenneral HQ"
+- "https://jenn.site/2024/11/you-are-pablo-neruda-it-is-dawn-at-isla-negra-in-1968-matilde-is-asleep-in-your-bed-write-what-comes/ The Neruda Factory—Jenneral HQ"
 "The Neruda Factory"
 - "Eric Tang �"
 "Eric Tang"
@@ -584,7 +584,7 @@ Katri Räikkönen
 ""
 - "https://www.mathworks.com/help/images/comparison-of-auto-white-balance-algorithms.html Access Denied"
 ""
-- https://www.novonordisk-us.com/media/news-archive/news-details.html?id=915288 News details
+- "https://www.novonordisk-us.com/media/news-archive/news-details.html?id=915288 News details"
 ""
 - "https://deviantabstraction.com/2024/05/02/analyzing-poems-with-llm/ Analyzing poems with LLMs - Deviant/Abstraction"
 "Analyzing poems with LLMs"
@@ -598,8 +598,10 @@ Katri Räikkönen
 "Scaling at 2× nodes (or doubling time control)."
 - "https://reddit.com/r/EuropeanCulture/comments/ozpsxv/inside_intourist_robert_a_heinlein_1960/ Heart of the internet"
 ""
-- https://worksinprogress.co/issue/steam-networks/ Steam networks—Works in Progress"
+- "https://worksinprogress.co/issue/steam-networks/ Steam networks—Works in Progress"
 "Steam networks"
+- "http://sl4.org/archive/0707/16399.html SL4: A very surreal day"
+"A very surreal day"
 
 Task:
 

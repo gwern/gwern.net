@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-03-16 19:40:07 gwern"
+# When:  Time-stamp: "2025-03-17 16:04:00 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -149,7 +149,7 @@ else
           s '</p></p>' '</p>'; s '’ ”' '’ ”'; s ' ”' ' “';
           s '[("doi","")]' ''; s '>/a>' '</a>'; s 'href="W!"' 'href="!W"'; s 'class="Logotype-Tex"' 'class="logotype-tex"'; s 'Class="Logotype-Tex"' 'class="logotype-tex"'; s '<span Class="' '<span class="';
           s '_n_th' '<em>n</em>th'; s 'thumbnailText: ' 'thumbnail-text: '; s ' — ' '—'; s '_n_=' '_n_ = ';
-          s '< a href' '<a href'; s 'modifed: 20' 'modified: 20'; s 'linklive-not' 'link-live-not'; s ' n-dimensional' ' <em>n</em>-dimensional'; s 'pdf#pg=' 'pdf#page='; s 'PDF#pg=' 'PDF#page='; s '<hr />' '<hr>'
+          s '< a href' '<a href'; s 'modifed: 20' 'modified: 20'; s 'linklive-not' 'link-live-not'; s ' n-dimensional' ' <em>n</em>-dimensional'; s 'pdf#pg=' 'pdf#page='; s 'PDF#pg=' 'PDF#page='; s '<hr />' '<hr>'; s 'confidence: highly-likely' 'confidence: highly likely';
           ## TODO: duplicate HTML classes from Pandoc reported as issue #8705 & fixed; fix should be in >pandoc 3.1.1 (2023-03-05), so can remove these two rewrites once I upgrade past that:
           s 'class="odd odd' 'class="odd'; s 'class="even even' 'class="even';
           s '  ' ' '; s '​ ' ' ';
@@ -869,7 +869,7 @@ else
 
     λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | \
              xargs --max-args=500 grep --fixed-strings --with-filename --color=always \
-                   -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' -e '<a href="!W"' -e '’S ' -e '<span id="#' -e ' abd ' -e '<p><span class="abstract-collapse-only">' | \
+                   -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' -e '<a href="!W"' -e '’S ' -e '<span id="#' -e ' abd ' -e '<p><span class="abstract-collapse-only">' -e '{=HTML}' | \
                    gfv -e '/design-graveyard' --; }
     wrap λ "Miscellaneous fixed string errors in compiled HTML."
 
@@ -1149,7 +1149,7 @@ else
     rsync --perms --exclude=".*" --chmod='a+r' --recursive --checksum --quiet --info=skip0 ./_site/ "$REMOTE"
     ## Randomize sync type—usually, fast, but occasionally do a regular slow hash-based rsync which deletes old files:
     bold "Syncing everything else…"
-    SPEED=""; if [ "$SLOW" ] && everyNDays 7; then SPEED="--delete --checksum"; else SPEED="--size-only"; fi
+    SPEED=""; if [ "$SLOW" ] && everyNDays 14; then SPEED="--delete --checksum"; else SPEED="--size-only"; fi
     ## note we use `--copy-links` here, which pulls in all the symlinked static documents:
     rsync --perms --exclude=".*" --chmod='a+r' --recursive $SPEED --copy-links --verbose --itemize-changes --stats ./_site/ "$REMOTE" || true
     wait
@@ -1436,6 +1436,11 @@ else
              awk 'length($0) > 240 {print "WARNING: Long path (" length($0) " chars):", $0}'; }
     wrap λ "Dangerously long full filepaths; shorten them."
 
+    λ(){ echo "$PAGES" | tr ' ' '\n'  | sed '/^$/d' \
+             | xargs --max-args=1 basename --suffix='.md' \
+             | awk '{ n=length($0); if (n<2 || n>=45) print }'; }
+    wrap λ "Dangerously long/short Markdown filenames; fix." # maximum set by 'Tale of the Just Man', minimum set by monthly newsletters
+
     λ(){ gf --before-context=1 -e 'Right Nothing' -e 'Just ""' ./metadata/archive.hs; }
     wrap λ "Links failed to archive (broken)."
     λ(){ gf -e '//"' ./metadata/archive.hs | gfv -e 'https://esolangs.org/wiki////' | cut --delimiter='"' --fields=2; }
@@ -1448,7 +1453,7 @@ else
     wrap λ "Markdown files should have exactly one period in them."
 
     λ(){ find . -type f -name "*.html.html.html"; }
-    wrap λ "Found a triple-.html HTML file; weird! Syntax-highlighting gone astray?"
+    wrap λ "Found a triple-'.html' HTML file; weird! Syntax-highlighting gone astray?"
 
     λ(){ find . -type f -mtime +2 -name "*#*" -or -type f -name "temp[0-9]*"; }
     wrap λ "Stale temporary files?"

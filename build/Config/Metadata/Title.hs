@@ -159,4 +159,4 @@ stringDelete = [" - The Public Domain Review"
             , "Machinamenta: ", "Radiator Blog: ", "  Journal of Heredity", " - media.ccc.de"
             , " - UEFConnect", " | Technology", " - Flashback Forum", " - Chiraag Gohel"
             , " - Ken Bertagnolli", " - Aresluna", " - Unexpected Values", "IQ's Corner: "
-            , " - Deviant/Abstraction", " : Free Download, Borrow, and Streaming : Internet Archive", " - TalkChess.com", " - Works in Progress"]
+            , " - Deviant/Abstraction", " : Free Download, Borrow, and Streaming : Internet Archive", " - TalkChess.com", " - Works in Progress", "SL4: "]
