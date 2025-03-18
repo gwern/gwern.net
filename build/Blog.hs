@@ -16,12 +16,14 @@
 
 module Blog (writeOutBlogEntries) where
 
+import Data.Char (isAlphaNum)
 import Control.Monad (unless)
 import Data.List (isPrefixOf)
 import Data.Maybe (fromMaybe)
 import qualified Data.Map.Strict as M (toList, filterWithKey)
 import qualified Data.Text as T (pack, unpack)
 
+import Metadata.Date (isYear)
 import LinkID (metadataItem2ID)
 import LinkMetadataTypes (Metadata, MetadataList, MetadataItem, Path)
 import Unique (isUniqueList)
@@ -48,17 +50,25 @@ writeOutBlogEntries md =
      let badTitles =  filter (\(_,(t,_,_,_,_,_,_)) -> length t > 73 ) writings
      unless (null badTitles) $ printRed $ "Blog.writeOutBlogEntries: warning, entry title awkwardly long, please prune down: " ++ show badTitles
 
-     let slugs = map (\x@(u,mi) -> let ident = T.unpack $ metadataItem2ID md u mi in
-                                     if null ident || length ident < 4 then error ("Blog.writeOutBlogEntries: useful ID was not set on a /blog/ entry! You must give it an unique ID which can be the short slug. Input was: " ++ show x ++ "; inferred ID was: " ++ show ident)
-                                     else ident) writings
+     let idents = map (\(u,mi) -> T.unpack $ metadataItem2ID md u mi) writings
+     let identsInvalid = filter (not . checkIdent) idents
+     unless (null identsInvalid) $ error $ "Blog.writeOutBlogEntries: invalid IDs which can’t be turned into good /blog/$SLUG. Offending entries: " ++ show identsInvalid
 
      let paths = isUniqueList $ map (\ident -> prefix ++ "/" ++
                                                       sed ("^"++authorID++"-") "" ident ++
                                                       ".md")
-                 slugs
+                 idents
      let targets = zip paths writings :: [(FilePath, (Path, MetadataItem))]
      C.cd -- ensure the relative directory prefix is valid
      mapM_ writeOutBlogEntry targets
+
+checkIdent :: String -> Bool
+checkIdent "" = False
+checkIdent ident
+  | length ident < 7 || length ident > 37 = False
+  | not (all (\c -> isAlphaNum c || c=='-') ident) = False
+  | authorID `isPrefixOf` ident && (let year = takeWhile (/='-') (drop (length authorID + 1) ident) in year/="" && isYear year) = True
+  | otherwise = False
 
 filterForAuthoredAnnotations :: Metadata -> MetadataList
 filterForAuthoredAnnotations md =

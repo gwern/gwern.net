@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2025-03-16 09:14:07 gwern"
+When: Time-stamp: "2025-03-17 22:25:07 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -65,13 +65,13 @@ main =
     let annotationBuildAllForce = filter (=="--annotation-rebuild") args'
     let annotationOneShot       = filter (=="--annotation-missing-one-shot") args'
     -- NOTE: reset the `getArgs` to pass through just the first argument (ie. "build", converting it back to `hakyll build`), as `hakyll` internally calls `getArgs` and will fatally error out if we don't delete our own arguments:
+    cd
+    printGreen ("Local archives parsing…" :: String)
+    am           <- readArchiveMetadataAndCheck
+    printGreen ("Popup annotations parsing…" :: String)
+    meta <- readLinkMetadataSlow
+    writeOutBlogEntries meta
     withArgs [head args] $ hakyll $ do
-       preprocess cd
-       preprocess $ printGreen ("Local archives parsing…" :: String)
-       am           <- preprocess readArchiveMetadataAndCheck
-       preprocess $ printGreen ("Popup annotations parsing…" :: String)
-       meta <- preprocess readLinkMetadataSlow
-       preprocess $ writeOutBlogEntries meta
 
        if not (null annotationBuildAllForce) then
          preprocess $ do printGreen ("Rewriting all annotations…" :: String)

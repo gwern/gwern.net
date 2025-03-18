@@ -24,15 +24,19 @@ dateTruncateBad d = if "-01-01" `isSuffixOf` d || (length d == 7 && "-01" `isSuf
 isDate :: String -> Bool
 isDate "" = True -- this makes checks/lints easier
 isDate d = case length (split "-" d) of
-    1 -> isValidDate "%Y" d
-    2 -> isValidDate "%Y-%m" d
-    3 -> isValidDate "%Y-%m-%d" d
+    1 -> isYear d
+    2 -> (length d == 7)  && isValidDate "%Y-%m"    d
+    3 -> (length d == 10) && isValidDate "%Y-%m-%d" d
     _ -> False
- where
-  isValidDate :: String -> String -> Bool
-  isValidDate format str = case parseTimeM True defaultTimeLocale format str :: Maybe Day of
-      Just _ -> True
-      Nothing -> False
+
+isYear :: String -> Bool
+isYear "" = True
+isYear d = (length d == 4) && isValidDate "%Y" d
+
+isValidDate :: String -> String -> Bool
+isValidDate format str = case parseTimeM True defaultTimeLocale format str :: Maybe Day of
+    Just _ -> True
+    Nothing -> False
 
 -- If no accurate date is available, attempt to guess date from the local file schema of 'YYYY-surname-[title, disambiguation, etc].ext' or 'YYYY-MM-DD-...'
 -- This is useful for PDFs with bad metadata, or data files with no easy way to extract metadata (like HTML files with hopelessly inconsistent dirty metadata fields like `<meta>` tags) or where it's not yet supported (image files usually have a reliable creation date).
