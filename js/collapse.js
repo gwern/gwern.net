@@ -619,7 +619,12 @@ function updateCollapseBlockIcebergIndicatorIfNeeded(collapseBlock) {
 		if (collapseBlock.classList.contains("collapse-block")) {
 			if (collapseBlock.classList.contains("no-abstract")) {
 				let collapsedContentHeight = collapseBlock.querySelector(".collapse-content-wrapper").clientHeight;
-				let contentHeight = Array.from(collapseBlock.querySelector(".collapse-content-wrapper").children).reduce((h, c) => h + c.clientHeight, 0);
+				let contentHeight;
+				if (collapseBlock.classList.contains("sourceCode")) {
+					contentHeight = collapseBlock.querySelector("code").clientHeight;
+				} else {
+					contentHeight = Array.from(collapseBlock.querySelector(".collapse-content-wrapper").children).reduce((h, c) => h + c.clientHeight, 0);
+				}
 				progressPercentage = Math.round(100 * Math.min(1, collapsedContentHeight / contentHeight));
 			} else {
 				let abstractHeight = collapseBlock.querySelector(".abstract-collapse, .abstract-collapse-only").clientHeight;

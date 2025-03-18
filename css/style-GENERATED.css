@@ -3136,6 +3136,11 @@ pre {
     cursor: text;
     max-height: calc(100vh - 8rem);
 }
+@media all and (hover: hover) {
+	pre {
+		overscroll-behavior: none;
+	}
+}
 pre code {
     display: block;
     margin: 0;
