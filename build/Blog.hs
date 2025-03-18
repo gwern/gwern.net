@@ -28,7 +28,7 @@ import LinkID (metadataItem2ID)
 import LinkMetadataTypes (Metadata, MetadataList, MetadataItem, Path)
 import Unique (isUniqueList)
 import Utils (sed, writeUpdatedFile, printRed, replace)
-import Config.Misc as C (cd)
+import Config.Misc as C (cd, currentYear)
 
 prefix, authorU, authorID :: String
 prefix   = "blog"
@@ -67,7 +67,11 @@ checkIdent "" = False
 checkIdent ident
   | length ident < 7 || length ident > 37 = False
   | not (all (\c -> isAlphaNum c || c=='-') ident) = False
-  | authorID `isPrefixOf` ident && (let year = takeWhile (/='-') (drop (length authorID + 1) ident) in year/="" && isYear year) = True
+  | authorID `isPrefixOf` ident &&
+    (let year = takeWhile (/='-') (drop (length authorID + 1) ident)
+     in year/="" &&
+        isYear year &&
+        year >= "2009" && year < show (C.currentYear+1)) = True
   | otherwise = False
 
 filterForAuthoredAnnotations :: Metadata -> MetadataList
