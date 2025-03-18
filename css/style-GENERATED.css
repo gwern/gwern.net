@@ -8971,12 +8971,11 @@ a[data-link-icon='¶'] {
     --link-icon-font-weight: 400;
 }
 
-a[data-link-icon='arrow-up'],
-a[data-link-icon='arrow-down'] {
-    --link-icon-size: 0.65em;
+a[data-link-icon='↑'],
+a[data-link-icon='↓'] {
+    --link-icon-size: 1em;
     --link-icon-offset-x: 0.20em;
-    --link-icon-offset-y: 0.30em;
-    --link-icon-opacity: 0.75;
+    --link-icon-offset-y: 0.20em;
 }
 
 /*=------------------------------=*/
