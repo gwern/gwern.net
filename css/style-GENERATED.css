@@ -3433,41 +3433,6 @@ sup.ordinal {
     padding: 0;
 }
 
-/*  Fractions.
- */
-span.fraction {
-    position: relative;
-    top: 0.1em;
-}
-span.fraction > * {
-    position: relative;
-}
-span.num,
-span.denom {
-    font-variant-numeric: oldstyle-nums;
-    font-size: 0.9em;
-}
-span.frasl {
-    bottom: 0.1em;
-}
-span.num {
-    bottom: 0.7em;
-    left: 0.1em;
-}
-span.denom {
-    bottom: -0.1em;
-    left: -0.12em;
-}
-
-/*  Fix for text-shadow “chomping” of adjacent glyphs in fractions in links.
- */
-a span.frasl {
-    text-shadow: none;
-    z-index: 1;
-    bottom: 0.15em;
-    left: -0.03em;
-}
-
 /*  Inflation adjustments.
 
     Make sure that adjusted prices move as a block: no breaking in the middle

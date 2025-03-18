@@ -16514,19 +16514,6 @@ addContentLoadHandler(GW.contentLoadHandlers.iconifyUnicodeIconGlyphs = (eventIn
     });
 }, "rewrite");
 
-/******************************************************/
-/*	Inject full fraction markup into .fraction <span>s.
- */
-addContentLoadHandler(GW.contentLoadHandlers.rectifyFractionMarkup = (eventInfo) => {
-    GWLog("rectifyFractionMarkup", "rewrite.js", 1);
-
-	eventInfo.container.querySelectorAll("span.fraction").forEach(fraction => {
-		fraction.replaceChildren(newDocument(fraction.innerHTML.replace(/^(.+?)\u2044(.+?)$/, (match, num, denom) => {
-			return `<span class="num">${num}</span><span class="frasl">&#x2044;</span><span class="denom">${denom}</span>`;
-		})));
-	});
-}, "rewrite");
-
 /******************************************************************/
 /*  Configure Hyphenopoly.
 
