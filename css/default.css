@@ -2053,8 +2053,8 @@ code span.al { color: var(--GW-syntax-highlight-color-alert); text-decoration: u
 code span.er { color: var(--GW-syntax-highlight-color-error); } /* Error */
 code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold; font-style: italic } /* Import */
 
-/********************************************************/
-/*  EXPERIMENTAL: Highlight-on-hover for all code blocks.
+/**********************/
+/*  Highlight-on-hover.
  */
 pre code {
     padding: 0.4rem 0;
@@ -2067,10 +2067,10 @@ pre .line {
     box-sizing: border-box;
 }
 pre .line:hover {
-    background-color: var(--GW-popframes-code-popframe-line-highlight-background-color);
+    background-color: var(--GW-code-block-line-highlight-background-color);
     box-shadow:
-        0  1px 0 0 var(--GW-popframes-code-popframe-line-highlight-border-color),
-        0 -1px 0 0 var(--GW-popframes-code-popframe-line-highlight-border-color);
+        0  1px 0 0 var(--GW-code-block-line-highlight-border-color),
+        0 -1px 0 0 var(--GW-code-block-line-highlight-border-color);
 }
 
 
@@ -4067,10 +4067,10 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     box-sizing: border-box;
 }
 .popframe-body.local-code-file pre .line:hover {
-    background-color: var(--GW-popframes-code-popframe-line-highlight-background-color);
+    background-color: var(--GW-code-block-line-highlight-background-color);
     box-shadow:
-        0  1px 0 0 var(--GW-popframes-code-popframe-line-highlight-border-color),
-        0 -1px 0 0 var(--GW-popframes-code-popframe-line-highlight-border-color);
+        0  1px 0 0 var(--GW-code-block-line-highlight-border-color),
+        0 -1px 0 0 var(--GW-code-block-line-highlight-border-color);
 }
 .popframe-body.local-code-file pre .line::before {
     content: counter(code-line);
