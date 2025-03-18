@@ -2957,11 +2957,11 @@ addContentInjectHandler(GW.contentInjectHandlers.designateLocalNavigationLinkIco
         if (target == null)
         	return;
 
-        link.dataset.linkIconType = "svg";
         link.dataset.linkIcon =
             (link.compareDocumentPosition(target) & Node.DOCUMENT_POSITION_FOLLOWING
-             ? "arrow-down"
-             : "arrow-up");
+             ? "\u{2193}" // ‘↓’ DOWNWARDS ARROW
+             : "\u{2191}" // ‘↑’ UPWARDS ARROW
+             );
     });
 
     //  Local links (to other pages on the site).
@@ -2970,11 +2970,11 @@ addContentInjectHandler(GW.contentInjectHandlers.designateLocalNavigationLinkIco
 			return;
 
         if (   link.dataset.linkIcon
-        	&& [ "arrow-down", "arrow-up" ].includes(link.dataset.linkIcon) == false)
+        	&& [ "\u{2191}", "\u{2193}" ].includes(link.dataset.linkIcon) == false)
             return;
 
         link.dataset.linkIconType = "text";
-        link.dataset.linkIcon = [ "arrow-down", "arrow-up" ].includes(link.dataset.linkIcon)
+        link.dataset.linkIcon = [ "\u{2191}", "\u{2193}" ].includes(link.dataset.linkIcon)
                                 ? "\u{00B6}"   // ‘¶’
                                 : "\u{1D50A}"; // ‘𝔊’
     });
