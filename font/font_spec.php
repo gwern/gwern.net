@@ -5,7 +5,7 @@
 
 	- Source Serif 4
 		workhorse font for body text
-	- Source Sans Pro
+	- Source Sans 3
 		for ToC and UI elements; primarily intended for Mac/iOS users
 	- IBM Plex Mono
 		for code blocks
@@ -47,13 +47,13 @@ italic	+
 `400	*
 
 !inline
-Source Sans Pro
+Source Sans 3
 italic	-
 `400	*
 `700	*
 
 !inline
-Source Sans Pro
+Source Sans 3
 italic	+
 `400	*
 
@@ -70,15 +70,16 @@ unicode-range	U+0020-007E, U+00A0-00BF, U+00C6, U+00D0, U+00D7, U+00D8, U+00DE, 
 `700	Bold
 `900	Black
 
-Source Sans Pro
-/static/font/ssp/SourceSansPro-BASIC-
-ttf
+Source Sans 3
+/static/font/ss3/SourceSans3-BASIC-
+otf
 font-display	swap
 italic			/$/		Italic
-unicode-range	U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212
+unicode-range	U+0020-00BF, U+00C6, U+00D7, U+00D8, U+00DE, U+00DF, U+00E6, U+00F0, U+00F7, U+00F8, U+00FE, U+0152, U+0153, U+017F, U+018F, U+0192, U+0259, U+02C6-02CC, U+02D8-02DD, U+0300-030C, U+2002-2049, U+2190-2199, U+2212, U+2215, U+221E, U+2248, U+2260, U+2264-2265, U+2318, U+2325, U+2326, U+232B, U+25A0-25E6, U+2610, U+263C, U+263F-2642, U+2660, U+2663, U+2665, U+2666, U+2752, U+275B-2760, U+2E3A, U+2E3B
 `200	ExtraLight
 `300	Light
 `400	Regular
+`500	Medium
 `600	Semibold
 `700	Bold
 `900	Black
