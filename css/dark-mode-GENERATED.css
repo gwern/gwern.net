@@ -146,6 +146,11 @@
     --GW-pre-element-scrollbar-track-color: #1d1d1d;
     --GW-pre-element-scrollbar-thumb-color: #5c5c5c;
     --GW-pre-element-scrollbar-thumb-hover-color: #8b8b8b;
+    --GW-code-block-line-highlight-background-color: #171600;
+    --GW-code-block-line-highlight-border-color: #494949;
+    --GW-code-block-line-number-color: #7c7c7c;
+    --GW-code-block-line-number-divider-color: #5c5c5c;
+
 
     /*  Syntax highlight theme.
      */
@@ -217,11 +222,6 @@
 	/*	Pop-frames (popups or popins).
 	 */
     --GW-popframes-object-popframe-background-color: #000;
-
-    --GW-popframes-code-popframe-line-highlight-background-color: #171600;
-    --GW-popframes-code-popframe-line-highlight-border-color: #494949;
-    --GW-popframes-code-popframe-line-number-color: #7c7c7c;
-    --GW-popframes-code-popframe-line-number-divider-color: #5c5c5c;
 
     --GW-extracts-options-dialog-backdrop-background-color: rgba(0, 0, 0, 0.95);
     --GW-extracts-options-dialog-background-color: var(--GW-body-background-color);
