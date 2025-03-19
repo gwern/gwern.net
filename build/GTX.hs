@@ -2,7 +2,7 @@
 
 Author: Gwern Branwen
 Date: 2024-02-28
-When:  Time-stamp: "2025-03-09 21:33:11 gwern"
+When:  Time-stamp: "2025-03-18 13:32:46 gwern"
 License: CC-0
 
 A 'GTX' (short for 'Gwern text' until I come up with a better name) text file is a UTF-8 text file
@@ -53,7 +53,7 @@ cs/computable
 ---
 https://arxiv.org/abs/1003.0358#schmidhuber
 Deep Big Simple Neural Nets Excel on Handwritten Digit Recognition
-Dan Claudiu Ciresan, Ueli Meier, Luca Maria Gambardella, Juergen Schmidhuber
+Dan Claudiu Ciresan, Ueli Meier, Luca Maria Gambardella, Jürgen Schmidhuber
 1 March 2010
 10.1162/NECO_a_00052
 ai/nn/fully-connected ai/scaling/hardware
@@ -126,9 +126,7 @@ readGTXSlow path = do C.cd
 fixDate :: (Path, MetadataItem) -> IO (Path, MetadataItem)
 fixDate x@(_,(_,_,"",_,_,_,_))             = return x
 fixDate x@(p,(t,a,d,dd,doi,tags,abstract)) = if isDate d then return x else
-              do putStrLn $ "Guessing… " ++ (d ++ ", " ++ p ++ ", \"" ++ t ++ "\" by " ++ a)
-                 d' <- guessDateFromString (d ++ ", " ++ p ++ ", \"" ++ t ++ "\" by " ++ a)
-                 putStrLn $ "Guessed: \"" ++ d' ++ "\""
+              do d' <- guessDateFromString (d ++ ", " ++ p ++ ", \"" ++ t ++ "\" by " ++ a)
                  if d' == "" then return x else
                    if isDate d' then return (p,(t,a,d',dd,doi,tags,abstract))
                    else error $ "GTX.readGTXSlow.fixDate: attempted to parse a malformed date but the result was also malformed; original 'date': " ++ d ++ "; parsed 'date': " ++ d' ++ "; original metadata item: " ++ show x
