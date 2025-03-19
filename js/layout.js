@@ -44,12 +44,38 @@ GW.layout = {
 		".interview .utterance"
 	],
 
+	//	Complex block elements can contain other blocks.
+	complexBlockElementSelector: [
+		"section",
+		".collapse-block",
+		"blockquote",
+		".epigraph",
+		".columns",
+		".footnote",
+		"figure",
+		".admonition",
+		".interview .exchange",
+		".interview .utterance"
+	].join(", "),
+
+	//	These block types, if they precede a <p>, do not make it not-first.
+	firstGrafAllowablePreviousBlockSelector: [
+		":not(p)",
+		".text-center",
+		".section-metadata",
+		".margin-notes-block",
+		".page-description-annotation",
+		".data-field",
+		".admonition-title > p"
+	].join(", "),
+
 	//	Wrappers are transparent at the top and bottom.
 	wrapperElements: [
 		"div",
 		"span",
 		".list",
 		"li",
+		"figcaption",
 		".parsed-raw-block"
 	],
 
@@ -76,10 +102,10 @@ GW.layout = {
 		"hr"
 	],
 
-	//	Do not apply block layout classes to or within these elements.
+	//	Do not apply block layout classes within these elements.
 	blockLayoutExclusionSelector: [
 		"#page-metadata",
-		".TOC > *",
+		".TOC",
 		".popframe"
 	].join(", "),
 
@@ -982,7 +1008,7 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 	//	Exclusion predicate.
 	let blockContainersSelector = GW.layout.blockContainers.join(", ");
 	let exclude = (block) => {
-		if (block.closest(GW.layout.blockLayoutExclusionSelector) != null)
+		if (block.parentElement?.closest(GW.layout.blockLayoutExclusionSelector) != null)
 			return true;
 
 		return false;
@@ -1100,7 +1126,7 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 	});
 
 	//	Apply special block sequence classes.
-	blockContainer.querySelectorAll(GW.layout.blockElements.join(", ")).forEach(block => {
+	let applyBlockSequenceClassesToBlock = (block) => {
 		if (exclude(block))
 			return;
 
@@ -1141,15 +1167,6 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 				(not in lists) (the .first-graf class).
 			 */
 			let firstGraf = false;
-			let previousBlockSelector = [
-				":not(p)",
-				".text-center",
-				".section-metadata",
-				".margin-notes-block",
-				".page-description-annotation",
-				".data-field",
-				".admonition-title > p"
-			].join(", ");
 			let strictPreviousBlock = previousBlockOf(block, {
 				alsoBlockElements: [ ".list" ],
 				notWrapperElements: [ "li", ".list" ],
@@ -1157,7 +1174,7 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 				cacheKey: "alsoBlocks_lists_notWrappers_listsAndListItems_notHalfWrappers_sections"
 			});
 			if (   strictPreviousBlock == null
-				|| strictPreviousBlock.matches(previousBlockSelector) == true)
+				|| strictPreviousBlock.matches(GW.layout.firstGrafAllowablePreviousBlockSelector) == true)
 				firstGraf = true;
 			//	Centered text must be vertically spaced in all cases.
 			if (block.matches(".text-center"))
@@ -1252,7 +1269,11 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 			if (isOnlyChild(footnoteBackLink))
 				block.classList.add("footnote-back-block");
 		}
-	});
+
+		if (block.matches(GW.layout.complexBlockElementSelector))
+			childBlocksOf(block).forEach(applyBlockSequenceClassesToBlock);
+	};
+	childBlocksOf(blockContainer).forEach(applyBlockSequenceClassesToBlock);
 });
 
 /**********************************************/
@@ -1262,38 +1283,39 @@ addLayoutProcessor("applyBlockSpacingInContainer", (blockContainer) => {
     GWLog("applyBlockSpacingInContainer", "layout.js", 2);
 
 	//	Exclusion predicate.
-	let blockContainersSelector = GW.layout.blockContainers.join(", ");
 	let exclude = (block) => {
-		if (block.closest(GW.layout.blockLayoutExclusionSelector) != null)
+		if (block.parentElement?.closest(GW.layout.blockLayoutExclusionSelector) != null)
 			return true;
 
 		return false;
 	};
 
-	let blockElementsSelector = GW.layout.blockElements.join(", ");
-	let potentialBlockElementsSelector = [ blockElementsSelector, "block" ].join(", ");
-	blockContainer.querySelectorAll(potentialBlockElementsSelector).forEach(block => {
-		let isBlock = true;
-		if (   block.matches(blockElementsSelector) == false
-			|| exclude(block)) {
-			isBlock = false;
-		} else {
-			let bsm = getBlockSpacingMultiplier(block);
-			if (bsm == undefined) {
-				isBlock = false;
-			} else {
-				//	Apply block spacing.
-				block.classList.add("block");
-				block.style.setProperty("--bsm", `${bsm}`);
-			}
-		}
-
-		//	Remove block spacing metadata from what shouldn’t have it.
-		if (isBlock == false) {
-			block.classList.remove("block");
-			block.style.removeProperty("--bsm");
+	//	Eliminate false positives (due to transjection, e.g.).
+	blockContainer.querySelectorAll(".block").forEach(allegedBlock => {
+		if (   isBlock(allegedBlock) == false
+			|| exclude(allegedBlock) == true) {
+			allegedBlock.classList.remove("block");
+			allegedBlock.style.removeProperty("--bsm");
 		}
 	});
+
+	//	Set block spacing multipliers.
+	let applyBSMToBlock = (block) => {
+		let bsm = getBlockSpacingMultiplier(block);
+		if (bsm == undefined) {
+			//	Remove block spacing metadata from what shouldn’t have it.
+			block.classList.remove("block");
+			block.style.removeProperty("--bsm");
+		} else {
+			//	Apply block spacing.
+			block.classList.add("block");
+			block.style.setProperty("--bsm", `${bsm}`);
+		}
+
+		if (block.matches(GW.layout.complexBlockElementSelector))
+			childBlocksOf(block).forEach(applyBSMToBlock);
+	};
+	childBlocksOf(blockContainer).forEach(applyBSMToBlock);
 
 	//	Triptychs require special treatment.
 	blockContainer.querySelectorAll(".triptych").forEach(triptych => {
