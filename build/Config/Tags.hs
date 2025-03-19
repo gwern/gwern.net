@@ -168,7 +168,7 @@ tagsShort2LongRewrites =
    , ("chemist", "chemistry"), ("chemisty", "chemistry"), ("chemical", "chemistry")
    , ("preference-falsification", "sociology/false-preference"), ("4.5", "4-5"), ("45", "4-5"),("54", "4-5"),("5.4", "4-5"), ("5-4", "4-5"), ("gpt-4-5", "ai/nn/transformer/gpt/5/4-5"), ("gpt-45", "ai/nn/transformer/gpt/5/4-5"), ("gpt-4.5", "ai/nn/transformer/gpt/5/4-5"), ("gpt45", "ai/nn/transformer/gpt/5/4-5")
    , ("vr", "virtual-reality"), ("v-r", "virtual-reality"), ("virtualreality", "virtual-reality"), ("oculus", "virtual-reality"), ("vrhmd", "virtual-reality")
-   , ("retratutide", "retatrutide"), ("retatrutide", "retatrutide"), ("sclaing", "scaling")
+   , ("retratutide", "retatrutide"), ("retatrutide", "retatrutide"), ("sclaing", "scaling"), ("frankherbert", "frank-herbert")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
@@ -241,6 +241,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("philosophy/ontology", "ontology")
   , ("philosophy/mind", "mind")
   , ("philosophy/logic", "logic")
+  , ("personal/twitter", "Twitter analytics")
   , ("personal/mulberry-tree", "my mulberry tree")
   , ("personal/2013-cicadas", "2013 cicadas")
   , ("personal/2011-gwern-yourmorals.org", "Gwern’s YourMorals surveys")

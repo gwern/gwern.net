@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-03-16 21:18:44 gwern"
+;;; When:  Time-stamp: "2025-03-18 09:45:19 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1627,7 +1627,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp "([Tt]ables?\\.? \\(S?[0-9]+[a-hA-H]*\\),"  "(**Table \\1**," nil begin end) ; (Table. 3b,
        (query-replace-regexp "[Tt]ables?\\.? \\(S?[0-9]+[a-hA-H]*\\) and \\([0-9]+[a-hA-H]*\\)"  "**Table \\1** & **\\2**" nil begin end) ; 'Tables 9 and 10'
 
-       (query-replace-regexp "Experiment \\([0-9]+[a-hA-H]*\\)" "**Experiment \\1**"  nil begin end) ; 'Experiment 1', 'Experiment 2a' etc
+       (query-replace-regexp "[Ee]xperiment \\([0-9]+[a-hA-H]*\\)" "**Experiment \\1**"  nil begin end) ; 'Experiment 1', 'Experiment 2a', 'experiment 3' etc
        (query-replace "Experiments 1 and 2" "**Experiments 1** & **2**" nil begin end)
        (query-replace-regexp "[Ss]tudy \\([0-9]+[a-hA-H]*\\)" "**Study \\1**"  nil begin end)
        (query-replace-regexp "[Ss]tudies \\([0-9]+[a-hA-H]*\\)[-–]+\\([0-9]+[a-hA-H]*\\)" "**Studies \\1--\\2**"  nil begin end)

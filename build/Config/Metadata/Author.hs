@@ -714,7 +714,7 @@ canonicalsWithInitials =
   , "Adam Edward Locke", "Samuel T. Cohen", "Thomas J. Bouchard", "Robert Mitchell Lindner"
   , "Sarah E. Bergen", "Roel André Ophoff", "Peter A. Holmans", "Patricia B. Munroe"
   , "Michael A. Woodley", "Mark J. Caulfield", "E. T. Jaynes", "Iris M. Heid", "Hill F. Ip"
-  , "Heather M. Stringham", "Christopher A. Haiman", "Catharina A. Hartman", "Bernhard T. Baune", "Karl T. Compton", "Tom B. Brown", "Saskia P. Hagenaars", "Robert R. McCrae", "Nathan A. Gillespie", "Marian L. Hamshere", "Richard W. Wrangham", "John R. Attia"]
+  , "Heather M. Stringham", "Christopher A. Haiman", "Catharina A. Hartman", "Bernhard T. Baune", "Karl T. Compton", "Tom B. Brown", "Saskia P. Hagenaars", "Robert R. McCrae", "Nathan A. Gillespie", "Marian L. Hamshere", "Richard W. Wrangham", "John R. Attia", "Joel Z. Leibo", "Jaspal S. Kooner"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1471,6 +1471,10 @@ authorLinkDB = M.fromList $
     , ("Klaus Berger", "https://research.com/u/klaus-berger")
     , ("Juha Sinisalo", "https://researchportal.helsinki.fi/en/persons/juha-sinisalo")
     , ("John R. Attia", "https://www.newcastle.edu.au/profile/john-attia")
+    , ("Andrew Gordon Wilson", "https://cims.nyu.edu/~andrewgw/")
+    , ("Joel Z. Leibo", "https://www.jzleibo.com/")
+    , ("Jaspal S. Kooner", "https://scholar.google.com/scholar?q=Jaspal%20S.%20Kooner")
+    , ("Ivana Kolcic", "https://scholar.google.com/citations?user=K3xvHdAAAAAJ&hl=en&oi=ao")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

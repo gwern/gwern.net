@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-03-17 21:26:32 gwern"
+# When:  Time-stamp: "2025-03-18 10:04:23 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -602,6 +602,8 @@ Katri Räikkönen
 "Steam networks"
 - "http://sl4.org/archive/0707/16399.html SL4: A very surreal day"
 "A very surreal day"
+- "https://www.unimedizin-mainz.de/imbei/en/biometrie-genomische-statistik-und-bioinformatik/mitarbeiter/prof-dr-rer-nat-konstantin-strauch.html IMBEI"
+""
 
 Task:
 
