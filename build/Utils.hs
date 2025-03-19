@@ -187,7 +187,7 @@ flattenLinksInInlines = map flattenLinks
 -- | Convert a list of inlines into a string.
 inlinesToText :: [Inline] -> T.Text
 inlinesToText = -- HACK: dealing with RawInline pairs like [RawInline "<sup>", Text "th", RawInline "</sup>"] is a PITA to do properly (have to process to HTML and then back into AST), so we'll just handle special cases for now...
-  deleteManyT ["<sup>", "</sup>", "<sub>","</sub>", "<em>", "</em>", "%3Cem%3", "%3C/em%3E"] .
+  deleteManyT ["<sup>", "</sup>", "<sub>","</sub>", "<em>", "</em>", "%3Cem%3", "%3C/em%3E", "<strong>", "</strong>", "%3Cstrong%3", "%3C/strong%3E"] .
                 T.concat . map go
   where go x = case x of
                -- reached the literal T.Text:

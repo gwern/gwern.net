@@ -12,6 +12,8 @@ testCases = [
     Link ("", ["link-live"], []) [Str "Pondicherry"] ("https://en.wikipedia.org/wiki/Pondicherry", ""))
   , (Link nullAttr [Emph [Str "Monty Python's Life of Brian"]] ("!Wikipedia",""),
       Link ("", ["link-live"], []) [Emph [Str "Monty Python's Life of Brian"]] ("https://en.wikipedia.org/wiki/Monty_Python%27s_Life_of_Brian", ""))
+  , (Link nullAttr [Strong [Str "Monty Python's Life of Brian"]] ("!Wikipedia",""),
+      Link ("", ["link-live"], []) [Strong [Str "Monty Python's Life of Brian"]] ("https://en.wikipedia.org/wiki/Monty_Python%27s_Life_of_Brian", ""))
   , (Link nullAttr [Str "SHA-1#Attacks"] ("!Wikipedia",""),
       Link ("", ["link-live"], []) [Str "SHA-1#Attacks"] ("https://en.wikipedia.org/wiki/SHA-1#Attacks", ""))
   , (Link nullAttr [Str "Bayesian search theory"] ("!Wikipedia","USS Scorpion (SSN-589)#Search: 1968"),
@@ -20,15 +22,20 @@ testCases = [
      Link ("", ["link-live"], []) [Str "C++ templates"] ("https://en.wikipedia.org/wiki/Template_(C%2B%2B)", ""))
   , (Link nullAttr [Str "Aaahh!!! Real Monsters"] ("!Wikipedia",""),
     Link ("", ["link-live"], []) [Str "Aaahh!!! Real Monsters"] ("https://en.wikipedia.org/wiki/Aaahh!!!_Real_Monsters", ""))
-    , (Link nullAttr [Str "Senryū"] ("!Wikipedia",""),
+    -- test whether we remove crud from the URL, although we continue to pass it through in the displayed link text:
+  , (Link nullAttr [Str "%3Cstrong%3Aaahh!!! Real Monsters%3C/strong%3E"] ("!Wikipedia",""),
+     Link ("", ["link-live"], []) [Str "%3Cstrong%3Aaahh!!! Real Monsters%3C/strong%3E"] ("https://en.wikipedia.org/wiki/Aaahh!!!_Real_Monsters", ""))
+  , (Link nullAttr [Str "%3Cem%3Aaahh!!! Real Monsters%3C/em%3E"] ("!Wikipedia",""),
+     Link ("", ["link-live"], []) [Str "%3Cem%3Aaahh!!! Real Monsters%3C/em%3E"] ("https://en.wikipedia.org/wiki/Aaahh!!!_Real_Monsters", ""))
+  , (Link nullAttr [Str "Senryū"] ("!Wikipedia",""),
     Link ("", ["link-live"], []) [Str "Senryū"] ("https://en.wikipedia.org/wiki/Senry%C5%AB", ""))
-    , (Link nullAttr [Str "D&D"] ("!Wikipedia","Dungeons & Dragons"),
+  , (Link nullAttr [Str "D&D"] ("!Wikipedia","Dungeons & Dragons"),
     Link ("", ["link-live"], []) [Str "D&D"] ("https://en.wikipedia.org/wiki/Dungeons_%26_Dragons", ""))
-    , (Link nullAttr [Str "Arm & Hammer"] ("!Wikipedia",""),
+  , (Link nullAttr [Str "Arm & Hammer"] ("!Wikipedia",""),
     Link ("", ["link-live"], []) [Str "Arm & Hammer"] ("https://en.wikipedia.org/wiki/Arm_%26_Hammer", ""))
-    , (Link nullAttr [Str "Achaea"] ("!Wikipedia","Achaea, Dreams of Divine Lands"),
+  , (Link nullAttr [Str "Achaea"] ("!Wikipedia","Achaea, Dreams of Divine Lands"),
     Link ("", ["link-live"], []) [Str "Achaea"] ("https://en.wikipedia.org/wiki/Achaea,_Dreams_of_Divine_Lands", ""))
-    , (Link nullAttr [Str "Armageddon"] ("!Wikipedia","Armageddon (MUD)"),
+  , (Link nullAttr [Str "Armageddon"] ("!Wikipedia","Armageddon (MUD)"),
     Link ("", ["link-live"], []) [Str "Armageddon"] ("https://en.wikipedia.org/wiki/Armageddon_(MUD)", ""))
   , (Link nullAttr [Str "Special:Pondicherry"] ("!Wikipedia",""),
     Link ("", ["content-transform-not", "link-live-not"], []) [Str "Special:Pondicherry"] ("https://en.wikipedia.org/wiki/Special:Pondicherry", ""))
@@ -2068,8 +2075,8 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
           , ("Gnotobiology", "Gnotobiosis")
           , ("Go_to_market", "Go-to-market_strategy")
           , ("Goats", "Goat")
-          , ("Godel%27s_incompleteness_theorems", "G%C3%B6del%27s_incompleteness_theorems")
-          , ("Godel's_incompleteness_theorems", "G%C3%B6del%27s_incompleteness_theorems")
+          , ("Gödel%27s_incompleteness_theorems", "G%C3%B6del%27s_incompleteness_theorems")
+          , ("Gödel's_incompleteness_theorems", "G%C3%B6del%27s_incompleteness_theorems")
           , ("Godot_%28game_engine%29", "Godot_(game_engine)")
           , ("Goethe's_Faust", "Goethe%27s_Faust")
           , ("Goiter", "Goitre")
