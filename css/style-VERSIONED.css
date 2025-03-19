@@ -6138,6 +6138,15 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     height: var(--GW-popups-popup-max-height);
 }
 
+/*┌──────────────────────┐*/
+/*│ Foreign site popups. │*/
+/*└──────────────────────┘*/
+
+.popup.foreign-site {
+    width: var(--GW-popups-popup-max-width);
+    height: var(--GW-popups-popup-max-height);
+}
+
 /*┌──────────────────────────┐*/
 /*│ Local transclude popups. │*/
 /*└──────────────────────────┘*/
@@ -6734,6 +6743,10 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*┌────────────────────────┐*/
 /*│ Local document popins. │*/
 /*└────────────────────────┘*/
+
+/*┌──────────────────────┐*/
+/*│ Foreign site popins. │*/
+/*└──────────────────────┘*/
 
 /*┌──────────────────────────┐*/
 /*│ Local transclude popins. │*/
