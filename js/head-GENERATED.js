@@ -2839,6 +2839,7 @@ GW.layout = {
 		"span",
 		".list",
 		"li",
+		"figcaption",
 		".parsed-raw-block"
 	],
 
