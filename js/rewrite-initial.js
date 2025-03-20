@@ -419,6 +419,10 @@ function injectThumbnailIntoPageAbstract(pageAbstract, pageThumbnailAttributes, 
 	if (pageAbstract.querySelector(".page-thumbnail-figure") != null)
 		return;
 
+	//	Except logo.
+	if (URLFromString(pageThumbnailAttributes.src).pathname.startsWith("/static/img/logo/"))
+		return;
+
 	//	Construct.
 	let pageThumbnail = newElement("IMG", pageThumbnailAttributes);
 	let pageThumbnailWrapper = newElement("SPAN", {
