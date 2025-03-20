@@ -34,7 +34,7 @@ import System.Directory (doesDirectoryExist, doesFileExist)
 import Text.Pandoc (Inline(Link), nullAttr)
 import qualified Data.Text as T (pack)
 
-import Config.Misc as C (root)
+import qualified Config.Misc as C (root)
 import LinkMetadata (annotateLink, readLinkMetadata)
 import Metadata.Format (linkCanonicalize)
 import GTX (readGTXFast, writeGTX)

@@ -3,7 +3,7 @@ module Cycle where
 
 import Data.Graph (flattenSCC, stronglyConnComp)
 
-import Config.Misc as C (cycleTestCases)
+import qualified Config.Misc as C (cycleTestCases)
 import Utils (fixedPoint)
 
 -- simple test for infinite loops in infix string rewrites: we take the list of before → after rewrites, and we try to rewrite the 'before'

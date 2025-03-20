@@ -16,7 +16,7 @@ import Metadata.Format (cleanAbstractsHTML, trimTitle, filterMeta, processDOI, p
 import Metadata.Author (cleanAuthors)
 import Paragraph (processParagraphizer)
 import Utils (printGreen, printRed, replace, trim)
-import Config.Misc as C (cd)
+import qualified Config.Misc as C (cd)
 
 pdf :: Metadata -> Path -> IO (Either Failure (Path, MetadataItem))
 pdf _ "" = error "Fatal error: `Annotation.PDF.pdf` called on empty string argument; this should never happen."

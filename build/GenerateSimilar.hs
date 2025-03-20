@@ -41,8 +41,8 @@ import Query (extractURLsAndAnchorTooltips, extractLinks)
 import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, replace, safeHtmlWriterOptions, anyPrefixT, printRed, trim, sed, kvDOI, deleteMany)
 import Metadata.Author (authorsTruncateString)
 
-import Config.Misc (todayDay, cd)
-import Config.GenerateSimilar as C (bestNEmbeddings, iterationLimit, embeddingsPath, maximumLength, maxDistance, blackList, minimumSuggestions, randSeed, maxTitlesForTagGuessing)
+import qualified Config.Misc as CM (todayDay, cd)
+import qualified Config.GenerateSimilar as C (bestNEmbeddings, iterationLimit, embeddingsPath, maximumLength, maxDistance, blackList, minimumSuggestions, randSeed, maxTitlesForTagGuessing)
 
 -- Make it easy to generate a HTML list of recommendations for an arbitrary piece of text. This is useful for eg. getting the list of recommendations while writing an annotation, to whitelist links or incorporate into the annotation directly (freeing up slots in the 'similar' tab for additional links). Used in `preprocess-markdown.hs`.
 singleShotRecommendations :: String -> IO T.Text
@@ -74,7 +74,7 @@ last4 :: (a, b, c, d) -> d
 last4  (_,_,_,d) = d
 
 readEmbeddings :: IO Embeddings
-readEmbeddings = Config.Misc.cd >> readEmbeddingsPath C.embeddingsPath
+readEmbeddings = CM.cd >> readEmbeddingsPath C.embeddingsPath
 readEmbeddingsPath :: FilePath -> IO Embeddings
 readEmbeddingsPath p = do exists <- doesFileExist p
                           if not exists then return [] else
@@ -88,7 +88,7 @@ writeEmbeddings :: Embeddings -> IO ()
 writeEmbeddings es = do tempf <- emptySystemTempFile "hakyll-embeddings"
                         DB.encodeFile tempf es
                         es' <- readEmbeddingsPath tempf
-                        if length es' < 0 then error "Embeddings corrupted! Not writing out." else renameFile tempf embeddingsPath
+                        if length es' < 0 then error "Embeddings corrupted! Not writing out." else renameFile tempf C.embeddingsPath
 
 -- remove all embeddings without a corresponding Metadata entry; this generally means that it is a 'stale' embedding, corresponding to an outdated
 -- URL, and so is a false positive or bloating the embeddings database.
@@ -189,7 +189,7 @@ embed edb mdb bdb i@(p,_) =
 
             let doc = formatDoc i `T.append` T.pack backlinksMetadata
             (modelType,embedding) <- oaAPIEmbed p doc
-            today <- todayDay
+            today <- CM.todayDay
             return (p,today,T.unpack doc,modelType,embedding)
  where new = takeBaseName p
        olds = filter (\(pold,_,_,_,_) -> if head pold == '/' then new == takeBaseName pold
@@ -450,7 +450,7 @@ type ListSortedMagicList = [(S.Set FilePath,   -- key: a set of URLs to query fo
                               [FilePath])] -- value: the sorted-by-embedding version
 type ListSortedMagic = M.Map (S.Set FilePath) [FilePath]
 readListSortedMagic :: IO ListSortedMagic
-readListSortedMagic = do Config.Misc.cd
+readListSortedMagic = do CM.cd
                          let p = "metadata/listsortedmagic.hs"
                          exists <- doesFileExist p
                          if not exists then return M.empty else
@@ -460,7 +460,7 @@ readListSortedMagic = do Config.Misc.cd
          -- validateListSortedMagic l = let errors = filter (\(f,g) -> let f' = S.toList f in null f' || null g  || any null f' || any null g || sort f' /= sort g) $ nubOrd l
          --                                 in if errors /= []  then error ("validateListSortedMagic: read file failed sanity check: " ++ show errors) else l
 writeListSortedMagic :: ListSortedMagic -> IO ()
-writeListSortedMagic x = Config.Misc.cd >> (writeUpdatedFile "listsortedmagic" "metadata/listsortedmagic.hs" $ T.pack $ ppShow $ nubOrd $ M.toList x)
+writeListSortedMagic x = CM.cd >> (writeUpdatedFile "listsortedmagic" "metadata/listsortedmagic.hs" $ T.pack $ ppShow $ nubOrd $ M.toList x)
 
 -- instead of a `mapM`, we `foldM`: we need the list of 'all tags generated thus far' to pass into the blacklist option, so we don't wind up
 -- with a bunch of duplicate auto-labels.

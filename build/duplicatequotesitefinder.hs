@@ -5,7 +5,7 @@ import Data.List (sortOn)
 import Text.Read (readMaybe)
 import Text.EditDistance (levenshteinDistance, defaultEditCosts)
 
-import Config.XOfTheDay as C (quoteDBPath, siteDBPath)
+import qualified Config.XOfTheDay as C (quoteDBPath, siteDBPath)
 
 -- type Quote = (String, String, Bool)
 type Site = (String, String, Bool)

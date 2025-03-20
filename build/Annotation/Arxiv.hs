@@ -18,7 +18,7 @@ import Metadata.Format (checkURL, cleanAbstractsHTML, processDOI, trimTitle, pro
 import Metadata.Author (cleanAuthors)
 import Utils (printRed, printGreen, replace, safeHtmlWriterOptions, replaceMany, sedMany, inlineMath2Text, delete, deleteMany)
 import Paragraph (processParagraphizer)
-import Config.Misc as C -- (cd)
+import qualified Config.Misc as C -- (cd)
 
 arxiv :: Metadata -> Path -> IO (Either Failure (Path, MetadataItem))
 arxiv md url = do -- Arxiv direct PDF links are deprecated but sometimes sneak through or are deliberate section/page links

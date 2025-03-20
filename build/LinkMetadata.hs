@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-03-11 11:55:43 gwern"
+When:  Time-stamp: "2025-03-20 09:35:07 gwern"
 License: CC-0
 -}
 
@@ -36,7 +36,7 @@ import qualified Control.Monad.Parallel as Par (mapM_, mapM) -- monad-parallel
 
 import System.IO.Unsafe (unsafePerformIO)
 
-import Config.LinkID (affiliationAnchors)
+import qualified Config.LinkID (affiliationAnchors)
 import qualified Config.Misc as C (fileExtensionToEnglish, minFileSizeWarning, minimumAnnotationLength, currentMonthAgo, todayDayString, currentYear, gtxKeyValueKeyNames)
 import Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjusterHTML, isInflationURL)
 import Interwiki (convertInterwikiLinks)
@@ -57,7 +57,7 @@ import Annotation.Gwernnet (gwern)
 import LinkIcon (linkIcon)
 import GTX (appendLinkMetadata, readGTXFast, readGTXSlow, rewriteLinkMetadata, writeGTX)
 import Metadata.Author (authorCollapse)
-import Config.Metadata.Author (authorLinkDB, authorWhitelist)
+import qualified Config.Metadata.Author as CA (authorLinkDB, authorWhitelist)
 
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
 -- we exclude several directories (doc/, static/) entirely; a Gwern.net page is then any
@@ -287,9 +287,9 @@ readLinkMetadataAndCheck = do
              -- unless (length (nubOrd titles) == length titles) $ printRed  "Duplicate titles in GTXs!: " >> printGreen (show (sort (titles \\ nubOrd titles)))
 
              let authors = map (\(_,(_,aut,_,_,_,_,_)) -> aut) finalL
-             mapM_ (\a -> unless (null a) $ when ((isDate a || isNumber (head a) || isPunctuation (head a)) && not (M.member (T.pack a) authorLinkDB || a `elem` authorWhitelist))
+             mapM_ (\a -> unless (null a) $ when ((isDate a || isNumber (head a) || isPunctuation (head a)) && not (M.member (T.pack a) CA.authorLinkDB || a `elem` CA.authorWhitelist))
                                                   (printRed "Mixed up author & date?: " >> printGreen a) ) authors
-             let authorsBadChars = nubOrd $ filter (\a -> a `notElem` authorWhitelist &&
+             let authorsBadChars = nubOrd $ filter (\a -> a `notElem` CA.authorWhitelist &&
                                                  (anyInfix a [";", "&", "?", "!", " >", "< ", " <"] || (last a /= '.' && isPunctuation (last a)))) $ filter (not . null) authors
              unless (null authorsBadChars) (printRed "Mangled author list?" >> printGreen (ppShow authorsBadChars))
 

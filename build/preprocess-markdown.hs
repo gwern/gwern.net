@@ -12,7 +12,7 @@ import LinkAuto (linkAuto)
 import Interwiki (convertInterwikiLinks, isWPArticle)
 import qualified GenerateSimilar as GS (singleShotRecommendations)
 import Utils (replace, safeHtmlWriterOptions, sed)
-import Config.Misc as C (cd)
+import qualified Config.Misc as C (cd)
 import Query (extractURLs)
 
 main :: IO ()

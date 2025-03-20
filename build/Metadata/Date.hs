@@ -13,8 +13,8 @@ import Text.Regex.TDFA (Regex, makeRegex, match)
 import Data.Time (parseTimeM, defaultTimeLocale, Day)
 
 import Utils (sed, split, trim, printRed, delete, formatIntWithCommas, calculateDateSpan, formatDaysInLargestUnit)
-import Config.Misc as CD (cd)
-import Config.Typography as C (dateRangeDurationTestCases, minRange, minDuration, maxDateSecond, minDateFirst)
+import qualified Config.Misc as CD (cd)
+import qualified Config.Typography as C (dateRangeDurationTestCases, minRange, minDuration, maxDateSecond, minDateFirst)
 
 dateTruncateBad :: String -> String
  -- we assume that dates are guaranteed to be 'YYYY[-MM[-DD]]' format because of the validation in readLinkMetadataAndCheck enforcing this

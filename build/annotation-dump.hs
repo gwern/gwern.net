@@ -9,7 +9,7 @@ import Data.Map as M (lookup, union, toList, fromList)
 import qualified Data.Text as T (unpack)
 import Data.Text.IO as TIO (getContents)
 
-import Config.Misc as C (root)
+import qualified Config.Misc as C (root)
 import LinkID (authorsToCite, generateURL)
 import LinkMetadata (sortItemPathDate)
 import GTX (readGTXSlow)

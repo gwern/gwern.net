@@ -9,7 +9,7 @@
 --    for immediate sub-children, it can't count elements *globally*, and since Pandoc nests horizontal
 --    rulers and other block elements within each section, it is not possible to do the usual trick
 --    like with blockquotes/lists).
-module Typography (linebreakingTransform, typographyTransform, typesetHtmlFieldPermanent, titlecase', titlecaseInline, identUniquefy, mergeSpaces, titleCaseTestCases, titleCaseTest, typesetHtmlField, titleWrap, completionProgressHTML, completionProgressInline) where
+module Typography (linebreakingTransform, typographyTransform, typesetHtmlFieldPermanent, titlecase', titlecaseInline, identUniquefy, mergeSpaces, C.titleCaseTestCases, titleCaseTest, typesetHtmlField, titleWrap, completionProgressHTML, completionProgressInline) where
 
 import Control.Monad.State.Lazy (evalState, get, modify, put, State)
 import Data.Char (isPunctuation, isSpace, toUpper)
@@ -30,8 +30,8 @@ import LinkIcon (linkIcon)
 import LinkLive (linkLive)
 import Utils (sed, replaceMany, parseRawAllClean, safeHtmlWriterOptions, toHTML)
 
-import Config.Misc (currentYear)
-import Config.Typography as C (titleCaseTestCases, cycleCount, surnameFalsePositivesWhiteList)
+import qualified Config.Misc as CM (currentYear)
+import qualified Config.Typography as C (titleCaseTestCases, cycleCount, surnameFalsePositivesWhiteList)
 
 -- if typesetting an 'ephemeral' string which will be used now but not forever, use this. Otherwise, if reformatting a permanent string for long-term use & storage, use 'typesetHtmlFieldPermanent'. The latter will avoid doing things like hardwiring the current year.
 typesetHtmlField :: String -> String
@@ -51,12 +51,12 @@ typesetHtmlFieldPermanent permanent t = let fieldPandocMaybe = runPure $ readHtm
 
 
 typographyTransform :: Pandoc -> Pandoc
-typographyTransform = let year = currentYear in parseRawAllClean . walk (dateRangeDuration year) . -- ensure 'citefyInline' gets to run first
+typographyTransform = let year = CM.currentYear in parseRawAllClean . walk (dateRangeDuration year) . -- ensure 'citefyInline' gets to run first
                                                 typographyTransformPermanent
 
 -- subset of transforms which are safe to store permanently eg. in the metadata database, and which won't change (this excludes primarily the date-range duration adjuster, which by definition will change every year; this doesn't need to exclude the inflation adjuster, because it is not included in the set of typography transforms, although perhaps it should be?)
 typographyTransformPermanent :: Pandoc -> Pandoc
-typographyTransformPermanent = let year = currentYear in
+typographyTransformPermanent = let year = CM.currentYear in
                         parseRawAllClean . -- clean up all spans/divs introduced by the finished rewrites
                         walk imageCaptionLinebreak .
                         walk (linkLive . linkIcon) .

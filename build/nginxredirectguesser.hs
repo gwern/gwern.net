@@ -12,7 +12,7 @@ import System.FilePath ((</>), takeFileName)
 
 import Text.EditDistance (levenshteinDistance, defaultEditCosts) -- <https://hackage.haskell.org/package/edit-distance>
 
-import Config.Misc as C (root)
+import qualified Config.Misc as C (root)
 import Utils (replaceChecked, replaceMany)
 
 listFilesRecursivelyWithBasename :: FilePath -> IO [(FilePath, FilePath)]

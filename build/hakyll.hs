@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2025-03-17 22:25:07 gwern"
+When: Time-stamp: "2025-03-20 09:45:29 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -51,7 +51,7 @@ import Tags (tagsToLinksDiv)
 import Typography (linebreakingTransform, typographyTransform, titlecaseInline, completionProgressHTML)
 import Utils (printGreen, replace, deleteMany, replaceChecked, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines, delete, toHTML, getMostRecentlyModifiedDir)
 import Test (testAll)
-import Config.Misc (cd, currentYear)
+import qualified Config.Misc as C (cd, currentYear)
 import Metadata.Date (dateRangeDuration)
 import LinkID (writeOutID2URLdb)
 import Blog (writeOutBlogEntries)
@@ -64,13 +64,19 @@ main =
     let args' = filter (/="build") args
     let annotationBuildAllForce = filter (=="--annotation-rebuild") args'
     let annotationOneShot       = filter (=="--annotation-missing-one-shot") args'
-    -- NOTE: reset the `getArgs` to pass through just the first argument (ie. "build", converting it back to `hakyll build`), as `hakyll` internally calls `getArgs` and will fatally error out if we don't delete our own arguments:
-    cd
+
+    C.cd
+
     printGreen ("Local archives parsing…" :: String)
     am           <- readArchiveMetadataAndCheck
+
     printGreen ("Popup annotations parsing…" :: String)
     meta <- readLinkMetadataSlow
+
+    printGreen ("Writing blog entries…" :: String)
     writeOutBlogEntries meta
+
+    -- NOTE: reset the `getArgs` to pass through just the first argument (ie. "build", converting it back to `hakyll build`), as `hakyll` internally calls `getArgs` and will fatally error out if we don't delete our own arguments:
     withArgs [head args] $ hakyll $ do
 
        if not (null annotationBuildAllForce) then
@@ -300,7 +306,7 @@ dateRangeHTMLField d = field d $ \item -> do
  metadataMaybe2 <- getMetadataField (itemIdentifier item) "modified"
  case (metadataMaybe1, metadataMaybe2) of
    (Just created, Just modified) -> let dateString = Str $ T.pack $ if created == modified then created else created ++ "–" ++ modified
-                                        range = dateRangeDuration currentYear dateString
+                                        range = dateRangeDuration C.currentYear dateString
                                     in return (toHTML range)
    (_,_) -> noResult "missing created and/or modified field, so could not adjust the date range subscript."
 

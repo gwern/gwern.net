@@ -31,7 +31,7 @@ import System.Directory (doesFileExist)
 
 import LinkMetadataTypes (isPagePath)
 import Utils (writeUpdatedFile)
-import Config.Misc as C (sectionizeWhiteList, sectionizeMinN, cd)
+import qualified Config.Misc as C (sectionizeWhiteList, sectionizeMinN, cd)
 
 -- base URL, then fragment+links. eg. "/improvement" has links from "/note/note" etc, but those links may target anchors like "#microsoft", and those are conceptually distinct from the page as a whole - they are sub-pages. So to preserve that, we nest.
 -- eg. ("/Improvements",

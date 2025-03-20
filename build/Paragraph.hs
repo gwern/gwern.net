@@ -16,8 +16,8 @@ import GTX (readGTXFast)
 import Metadata.Format (cleanAbstractsHTML)
 import LinkMetadataTypes (Metadata)
 import Utils (replace, printGreen, trim, toMarkdown, printRed, safeHtmlWriterOptions, anyInfix, isLocal, delete)
-import Config.Paragraph as C
-import Config.Misc as CD (cd)
+import qualified Config.Paragraph as C
+import qualified Config.Misc as CD (cd)
 
 import Query (extractURLs)
 

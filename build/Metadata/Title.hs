@@ -8,8 +8,8 @@ import System.Exit (ExitCode(ExitFailure))
 
 import Metadata.Format (filterMeta, pageNumberParse, trimTitle, cleanAbstractsHTML)
 import Utils (delete, replace, sed, anyInfix, trim, printRed, isURL, replaceMany, deleteMixedMany)
-import Config.Misc as CM (cd)
-import Config.Metadata.Title as C (separators, badStrings, badStringPatterns, stringReplace, stringDelete)
+import qualified Config.Misc as CM (cd)
+import qualified Config.Metadata.Title as C (separators, badStrings, badStringPatterns, stringReplace, stringDelete)
 
 -- Attempt to parse tooltips back into citation metadata:
 tooltipToMetadata :: String -> String -> (String,String,String)

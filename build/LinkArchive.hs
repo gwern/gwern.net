@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2025-02-16 17:15:38 gwern"
+When:  Time-stamp: "2025-03-20 09:33:16 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -127,7 +127,7 @@ import Control.Concurrent.Async (mapConcurrently)
 
 import LinkMetadataTypes (ArchiveMetadataItem, ArchiveMetadataList, ArchiveMetadata, Path)
 
-import Config.Misc as CM (cd, todayDay)
+import qualified Config.Misc as CM (cd, todayDay)
 import Utils (writeUpdatedFile, putStrStdErr, green, printRed', printGreen)
 import qualified Config.LinkArchive as C (whiteList, transformURLsForArchiving, transformURLsForLiveLinking, transformURLsForMobile, archiveDelay, isCheapArchive, localizeLinkTestDB, localizeLinktestCases)
 
@@ -272,7 +272,7 @@ checksumIsValid url (Right (Just file)) = let derivedChecksum = Data.ByteString.
 rewriteLink :: ArchiveMetadata -> String -> IO String
 rewriteLink adb url = fromMaybe url <$> if C.whiteList url then return Nothing else
  case M.lookup url adb of
-      Nothing                -> do today <- todayDay
+      Nothing                -> do today <- CM.todayDay
                                    Nothing <$ insertLinkIntoDB (Left today) url
       Just (Left  _)         -> return Nothing
       Just (Right (Just "")) -> printRed' "Error! Tried to return a link to a non-existent archive! " url >> return Nothing

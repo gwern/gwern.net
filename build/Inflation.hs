@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjuster
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2025-01-09 12:33:15 gwern"
+-- When:  Time-stamp: "2025-03-20 09:32:17 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -84,11 +84,11 @@ import Text.Read (readMaybe)
 import qualified Data.Map.Strict as M (findMax, findMin, fromList, lookup, lookupGE, lookupLE, mapWithKey, Map)
 import qualified Data.Text as T (head, length, pack, unpack, tail, Text)
 
-import Config.Misc (currentYear)
+import qualified Config.Misc as CM (currentYear)
 import Metadata.Format (printDouble)
 import Metadata.Date (isDate)
 import Utils (inlinesToText, replace, replaceChecked, sed, toHTML, delete, isInflationURL, isInflationLink)
-import Config.Inflation as C
+import qualified Config.Inflation as C (inflationRatesUSD, bitcoinUSDExchangeRateHistory, minPercentage, inflationDollarLinkTestCases)
 
 -- ad hoc dollar-only string-munging version of `nominalToRealInflationAdjuster`, which attempts to parse out an amount and adjust it to a specified date.
 -- Intended for use with titles of annotations where dates are available.
@@ -115,8 +115,8 @@ nominalToRealInflationAdjuster x@(Span (a, b, [(k, v)]) inlines) = if  k /= "inf
                                                                      else nominalToRealInflationAdjuster (Link (a,b,[]) inlines (v,""))
 nominalToRealInflationAdjuster x@(Link _ _ ("", _)) = error $ "Inflation adjustment (Inflation.hs: nominalToRealInflationAdjuster) failed on malformed link: " ++ show x
 nominalToRealInflationAdjuster x@(Link _ _ (ts, _))
-  | t == '$'     = dollarAdjuster currentYear x
-  | t == '\8383' = bitcoinAdjuster currentYear x --- official Bitcoin Unicode: '₿'/'\8383'; obsoletes THAI BAHT SIGN
+  | t == '$'     = dollarAdjuster CM.currentYear x
+  | t == '\8383' = bitcoinAdjuster CM.currentYear x --- official Bitcoin Unicode: '₿'/'\8383'; obsoletes THAI BAHT SIGN
   where t = T.head ts
 nominalToRealInflationAdjuster x = x
 
@@ -233,5 +233,5 @@ bitcoinQuery cy date = case M.lookup date db of
 
 -- the exchange rates are, of course, historical: a 2013 USD/Bitcoin exchange rate is for a *2013* dollar, not a current dollar. So we update to a current dollar.
 bitcoinUSDExchangeRate :: Int -> M.Map String Double
-bitcoinUSDExchangeRate cy = M.mapWithKey (\dt amt -> inflationAdjustUSD amt (read (take 4 dt)::Int) cy) (M.fromList bitcoinUSDExchangeRateHistory)
+bitcoinUSDExchangeRate cy = M.mapWithKey (\dt amt -> inflationAdjustUSD amt (read (take 4 dt)::Int) cy) (M.fromList C.bitcoinUSDExchangeRateHistory)
 

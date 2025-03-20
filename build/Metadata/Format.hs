@@ -10,7 +10,7 @@ import Text.Regex.TDFA ((=~))
 
 import Cycle (testInfixRewriteLoops)
 import Utils (anyInfix, fixedPoint, replace, replaceMany, sed, sedMany, trim, delete)
-import Config.Metadata.Format as C
+import qualified Config.Metadata.Format as C
 
 -- | Check if brackets & quotes in a string are balanced.
 --

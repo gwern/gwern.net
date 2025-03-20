@@ -14,8 +14,8 @@ import qualified Data.Text as T (append, pack, unpack, Text)
 import Cycle (isCycleLess)
 import LinkMetadataTypes (Metadata)
 import Utils (anyInfix, replace, replaceChecked, sed, sedMany, trim, split, replaceMany, frequency, pairs, fixedPoint, delete)
-import Config.Tags as C
-import Config.Misc (cd)
+import qualified Config.Tags as C
+import qualified Config.Misc (cd)
 
 -- inline `dir-traverse` package to remove dependency since it's so small, & hasn't changed since release:
 -- original code: `import System.Directory.Recursive (getDirFiltered, getSubdirsRecursive) -- dir-traverse`
@@ -153,7 +153,7 @@ guessTagFromShort _ "" = ""
 guessTagFromShort l s = fixedPoint (f l) (replace "=" "-" s)
  where f m t = let allTags = nubOrd $ sort m in
                  if t `elem` allTags then t else -- exact match, no guessing required
-                 case lookup t tagsShort2Long of
+                 case lookup t C.tagsShort2Long of
                    Just tl -> tl -- is an existing short/petname
                    Nothing -> let shortFallbacks =
                                     (map (\a->(a,"")) $ filter (\tag -> ("/"++ t) `isSuffixOf` tag) allTags) ++
@@ -177,5 +177,5 @@ testTags = do
               tags <- listTagsAll
               let results = shortTagTest tags
               unless (null results) $ error ("Tags.testTags: shortTagTest test suite errored out with some rewrites going awry; results `[(input, current output, intended output)]`: " ++ show results)
-              let results' = isCycleLess tagsShort2LongRewrites
+              let results' = isCycleLess C.tagsShort2LongRewrites
               unless (null results) $ error ("Tags.tesTags: isCycleless test suite errored out with cycles detected in `tagsShort2Long`." ++ show results')

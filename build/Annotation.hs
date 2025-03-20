@@ -16,7 +16,7 @@ import Metadata.Author (extractTwitterUsername, isAuthor)
 import Metadata.Title (tooltipToMetadata, wikipediaURLToTitle, htmlDownloadAndParseTitleClean)
 import Typography (typesetHtmlFieldPermanent)
 import Utils (replace, anyPrefix, printGreen, printRed, trim, delete)
-import Config.Misc as C (todayDayString, cd, todayDayStringUnsafe)
+import qualified Config.Misc as C (todayDayString, cd, todayDayStringUnsafe)
 import qualified Data.Text as T (unpack)
 
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
@@ -34,7 +34,7 @@ linkDispatcher md (Link _ _ (l, tooltip)) =
  do let l' = linkCanonicalize $ T.unpack l
     mi <- linkDispatcherURL md l'
 
-    today <- todayDayString
+    today <- C.todayDayString
     let defaultCreatedToToday d = if null d then today else d
 
     case mi of
