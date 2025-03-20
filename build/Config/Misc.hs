@@ -1,18 +1,23 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Config.Misc where
 
+import Data.Char (toLower)
 import Data.Time.Calendar (toModifiedJulianDay, toGregorian, addDays)
 import Data.Time.Clock (getCurrentTime)
 import Data.Time (utcToLocalTime, localDay, localTimeOfDay, getCurrentTimeZone, todHour)
 import Data.Time.Format (formatTime, defaultTimeLocale)
 import qualified Data.Text as T (head, takeWhile, Text)
-import System.Directory (setCurrentDirectory)
+import System.Directory (setCurrentDirectory, getHomeDirectory)
 import System.IO.Unsafe (unsafePerformIO)
 
 import Utils (anyInfixT, anyPrefixT)
 
+author, authorL :: String
+author = "Gwern"
+authorL = map toLower author
+
 root :: FilePath
-root = "/home/gwern/wiki/"
+root = unsafePerformIO getHomeDirectory ++ "/wiki/"
 
 cd :: IO ()
 cd = setCurrentDirectory root
