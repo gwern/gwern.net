@@ -3,7 +3,7 @@
 # Do fixed-string rewrites across the Gwern.net source corpus, inclusive of both code & generated snippets & GTX & Markdown.
 # Needs to handle a number of special cases like affiliation anchors.
 
-if [[ $# -eq 4 && "$3" == "redirected" && "$4" == "to" ]]; then
+if [[ $# -eq 4 && "$2" == "redirected" && "$3" == "to" ]]; then
     # special-case https://validator.w3.org output of the form
     # "http://haskell.org/haskellwiki/Xmonad/Config_archive/Gwern's_xmonad.hs redirected to https://wiki.haskell.org/Xmonad/Config_archive/Gwern's_xmonad.hs"
     gwsed "$1" "$4"

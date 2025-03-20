@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-03-18 21:11:39 gwern"
+# When:  Time-stamp: "2025-03-19 10:32:36 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -149,7 +149,7 @@ else
           s '</p></p>' '</p>'; s '’ ”' '’ ”'; s ' ”' ' “';
           s '[("doi","")]' ''; s '>/a>' '</a>'; s 'href="W!"' 'href="!W"'; s 'class="Logotype-Tex"' 'class="logotype-tex"'; s 'Class="Logotype-Tex"' 'class="logotype-tex"'; s '<span Class="' '<span class="';
           s '_n_th' '<em>n</em>th'; s 'thumbnailText: ' 'thumbnail-text: '; s ' — ' '—'; s '_n_=' '_n_ = ';
-          s '< a href' '<a href'; s 'modifed: 20' 'modified: 20'; s 'linklive-not' 'link-live-not'; s ' n-dimensional' ' <em>n</em>-dimensional'; s 'pdf#pg=' 'pdf#page='; s 'PDF#pg=' 'PDF#page='; s '<hr />' '<hr>'; s 'confidence: highly-likely' 'confidence: highly likely';
+          s '< a href' '<a href'; s 'modifed: 20' 'modified: 20'; s 'linklive-not' 'link-live-not'; s ' n-dimensional' ' <em>n</em>-dimensional'; s 'pdf#pg=' 'pdf#page='; s 'PDF#pg=' 'PDF#page='; s '<hr />' '<hr>'; s 'confidence: highly-likely' 'confidence: highly likely'; s 'drop-caps-de-zs' 'dropcaps-de-zs';
           ## TODO: duplicate HTML classes from Pandoc reported as issue #8705 & fixed; fix should be in >pandoc 3.1.1 (2023-03-05), so can remove these two rewrites once I upgrade past that:
           s 'class="odd odd' 'class="odd'; s 'class="even even' 'class="even';
           s '  ' ' '; s '​ ' ' ';
@@ -665,7 +665,7 @@ else
             "c3" "c4" "c5" "c6" "c7" "c8"
             "c9" "c10" "cf" "co" "dv" "fu"
             "kw" "op" "s1" "st" "reader-mode" "reader-mode-style-not" "scrape-abstract-not"
-            "abstract" "abstract-collapse" "admonition" "admonition-title" "book-review-meta"
+            "abstract" "abstract-collapse" "abstract-collapse-only" "admonition" "admonition-title" "book-review-meta"
             "book-review-review" "tip" "xml" "warning" "al" "an"
             "bn" "cn" "cv" "do" "dt" "er"
             "error" "ex" "fl" "im" "in" "ot"
@@ -692,7 +692,7 @@ else
             "dropcap-goudy" "dropcap-kanzlei" "dropcap-ninit" "dropcap-not" "dropcaps-cheshire"
             "dropcaps-de-zs" "dropcaps-dropcat" "dropcaps-gene-wolfe" "dropcaps-goudy" "dropcaps-kanzlei"
             "dropcaps-yinit" "dropcap-yinit"
-            "display-entry" "display-random-1" "display-random-2" "display-random-3" "display-random-4" "display-random-5" "display-random-6" "display-random-7" "display-random-8" "display-random-9" "display-random-10"
+            "display-entry" "disable-the-not-chosen" "display-random-1" "display-random-2" "display-random-3" "display-random-4" "display-random-5" "display-random-6" "display-random-7" "display-random-8" "display-random-9" "display-random-10"
             "level1" "level2" "level3" "level4" "level5" "level6" "level7"
             "footnotes-end-of-document" "note" "bibtex" "Bibtex" "c" "C" "ch" "cpp" "Cpp" "cs" "CS"
             "css" "CSS" "d" "D" "diff" "Diff" "Haskell" "html" "HTML" "Javascript" "JavaScript"
@@ -1056,7 +1056,7 @@ else
     λ(){ gec -e 'up>T[Hh]<' -e 'up>R[Dd]<' -e 'up>N[Dd]<' -e 'up>S[Tt]<' -- ./metadata/*.gtx; }
     wrap λ "Superscript abbreviations are weirdly capitalized?" &
 
-    λ(){ gf -e ' <sup>' -e ' <sub>' -e ' </sup>' -e ' </sub>' -- ./metadata/*.gtx | gfv -e ' <sup>242m</sup>Am' -e ' <sup>60</sup>Co' -e ' <sup>2</sup> This is because of the principle' -e ' <sup>3</sup> There are some who' -e ' <sup>4</sup> Such as setting' -e ' <sup>5</sup> Such as buying gifts' -e '  <sup>31</sup>P-Magnetic' -e ' <sup>242m</sup>Am' -e ' <sup>31</sup>P' -e ' <sup>60</sup>Co' -e ' <sup>31</sup>P-MRS' -e ' <sup>4</sup>He' ; }
+    λ(){ gf -e ' <sup>' -e ' <sub>' -e ' </sup>' -e ' </sub>' -- ./metadata/*.gtx | gfv -e ' <sup>242m</sup>Am' -e ' <sup>60</sup>Co' -e ' <sup>2</sup> This is because of the principle' -e ' <sup>3</sup> There are some who' -e ' <sup>4</sup> Such as setting' -e ' <sup>5</sup> Such as buying gifts' -e '  <sup>31</sup>P-Magnetic' -e ' <sup>242m</sup>Am' -e ' <sup>31</sup>P' -e ' <sup>60</sup>Co' -e ' <sup>31</sup>P-MRS' -e ' <sup>4</sup>He' -e '<sup>7</sup>Be' -e '<sup>3</sup>H' -e '<sup>10</sup>C<sup>✱</sup>' -e '<sup>9</sup>B' ; }
     wrap λ "Superscripts/subscripts have spaces in front?" &
 
     λ(){ gec -e '<p><img ' -e '<img src="http' -e '<img src="[^h/].*"' ./metadata/*.gtx; }

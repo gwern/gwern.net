@@ -160,7 +160,7 @@ siteBlackList = [
           "ruder.io", "s3.amazonaws.com", "s3.documentcloud.org", "s3-us-west-2.amazonaws.com", "samoburja.com",
           "samuraijack.fandom.com", "scale.com", "scarybeastsecurity.blogspot.com", "schizophreniabulletin.oxfordjournals.org", "scholar.google.com",
           "scholar.harvard.edu", "scholarspace.manoa.hawaii.edu", "scholars-stage.org", "schoolgirlmilkycrisis.com", "scienceblogs.com",
-          "scottbarrykaufman.com", "scottlilienfeld.com", "searchengineland.com", "secretlaboratory.org", "secure.flickr.com",
+          "scottbarrykaufman.com", "scottlilienfeld.com", "searchengineland.com", "secretlaboratory.org", "flickr.com",
           "selfie2anime.com", "semiengineering.com", "senrigan.io", "sensebridge.net", "senseis.xmp.net",
           "serre-lab.clps.brown.edu", "sethroberts.net", "sevensecularsermons.org", "sf-encyclopedia.com", "sgp.fas.org",
           "shkspr.mobi", "sigbovik.org", "signalvnoise.com", "silkroad5v7dywlc.onion", "silkroadvb5piz3r.onion",

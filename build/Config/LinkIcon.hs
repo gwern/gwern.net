@@ -1280,7 +1280,7 @@ linkIconTestUnitsText =
          , ("https://www.thefreelibrary.com/E+unibus+pluram%3A+television+and+U.S.+fiction.-a013952319", "", "", "#064c82")
          , ("https://www.unitedpharmacies-uk.md/Modavigil-Modafinil-100mg-30-Tablets-p-759.html", "", "", "#27c1da")
          , ("https://www.petforums.co.uk/threads/do-any-of-your-cats.225353/#post-1061870480", "", "", "#295b52")
-         , ("https://wellcomecollection.org/articles/XV_E7BEAACIAo9Vz", "", "", "#ffce3c")
+         , ("https://wellcomecollection.org/stories/XV_E7BEAACIAo9Vz", "", "", "#ffce3c")
          , ("https://www.acpjournals.org/doi/10.7326/0003-4819-152-11-201006010-00232?articleid=745807", "", "", "#007377")
          , ("https://digital.library.unt.edu/explore/partners/TAMS/browse/?q=%22Julian+Stanley%22+OR+%22SMPY%22&sort=date_a&t=fulltext", "UNT", "text,tri", "#00863c")
          , ("https://forums.animesuki.com/showpost.php?p=3996631&postcount=387", "̅□", "text", "#008080")

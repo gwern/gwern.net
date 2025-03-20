@@ -686,6 +686,13 @@ canonicals = M.fromList
   , ("skylion", "Aaron Gokaslan")
   , ("Skylion", "Aaron Gokaslan")
   , ("SkyLi0n", "Aaron Gokaslan")
+  , ("herbert", "Frank Herbert")
+  , ("frankherbert", "Frank Herbert")
+  , ("spinrad", "Norman Spinrad")
+  , ("normanspinrad", "Norman Spinrad")
+  , ("mcnelly", "Willis E. McNelly")
+  , ("willismcnelly", "Willis E. McNelly")
+  , ("willisemcnelly", "Willis E. McNelly")
   ]
 
 -- tests: unique
@@ -714,7 +721,7 @@ canonicalsWithInitials =
   , "Adam Edward Locke", "Samuel T. Cohen", "Thomas J. Bouchard", "Robert Mitchell Lindner"
   , "Sarah E. Bergen", "Roel André Ophoff", "Peter A. Holmans", "Patricia B. Munroe"
   , "Michael A. Woodley", "Mark J. Caulfield", "E. T. Jaynes", "Iris M. Heid", "Hill F. Ip"
-  , "Heather M. Stringham", "Christopher A. Haiman", "Catharina A. Hartman", "Bernhard T. Baune", "Karl T. Compton", "Tom B. Brown", "Saskia P. Hagenaars", "Robert R. McCrae", "Nathan A. Gillespie", "Marian L. Hamshere", "Richard W. Wrangham", "John R. Attia", "Joel Z. Leibo", "Jaspal S. Kooner"]
+  , "Heather M. Stringham", "Christopher A. Haiman", "Catharina A. Hartman", "Bernhard T. Baune", "Karl T. Compton", "Tom B. Brown", "Saskia P. Hagenaars", "Robert R. McCrae", "Nathan A. Gillespie", "Marian L. Hamshere", "Richard W. Wrangham", "John R. Attia", "Joel Z. Leibo", "Jaspal S. Kooner", "Larry V. Hedges", "Hugh Christian Watkins", "Stephen Cole Kleene"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1474,7 +1481,10 @@ authorLinkDB = M.fromList $
     , ("Andrew Gordon Wilson", "https://cims.nyu.edu/~andrewgw/")
     , ("Joel Z. Leibo", "https://www.jzleibo.com/")
     , ("Jaspal S. Kooner", "https://scholar.google.com/scholar?q=Jaspal%20S.%20Kooner")
-    , ("Ivana Kolcic", "https://scholar.google.com/citations?user=K3xvHdAAAAAJ&hl=en&oi=ao")
+    , ("Ivana Kolcic", "https://scholar.google.com/citations?user=K3xvHdAAAAAJ")
+    , ("Hado van Hasselt", "https://scholar.google.com/citations?user=W80oBMkAAAAJ")
+    , ("Graham Neubig", "https://www.phontron.com/")
+    , ("Geoffrey Irving", "https://naml.us/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2724,4 +2734,4 @@ authorWpLinkDB =
     , "Hiroshi Nagai", "David Corfield", "Stan Kelly-Bootle", "N. David Mermin", "Simon Tatham"
     , "Roel André Ophoff", "Paul M. B. Vitányi", "Oliver Herford", "Erik Satie", "E. T. Jaynes"
     , "Kenneth E. Boulding", "Ronan Farrow", "Karl T. Compton", "Björn Kurtén", "Robert R. McCrae"
-    , "Milton Rokeach", "Robert Heinlein", "Lauren Faust", "Walter Savage Landor", "Robert Laurence Binyon", "David A. Freedman"]
+    , "Milton Rokeach", "Robert Heinlein", "Lauren Faust", "Walter Savage Landor", "Robert Laurence Binyon", "David A. Freedman", "Larry V. Hedges", "Hugh Christian Watkins", "Frank Herbert", "Norman Spinrad", "Willis E. McNelly", "Stephen Cole Kleene", "Warren S. McCulloch", "Walter Pitts"]
