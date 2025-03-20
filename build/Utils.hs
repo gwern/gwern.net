@@ -496,7 +496,7 @@ host :: T.Text -> T.Text
 host p = if T.head p `elem` ['#', '!'] || isInflationURL p then "" else
   case parseURIReference (T.unpack $ escapeUnicode p) of
     Nothing -> let anchor = T.dropWhile (/='#') p in
-                 if '#' `T.elem` anchor then "" else -- we skip this 'bad' URL because it may just be us using the PmWiki range syntax for transcludes, like `/lorem-link#internal-page-links#` or `/note/killing-rabbits##`; but if there is no hash in what appears to be the anchor, then we may have a real issue and should complain about it:
+                 if '#' `T.elem` anchor then "" else -- we skip this 'bad' URL because it may just be us using the PmWiki range syntax for transcludes, like `/lorem-link#internal-page-links#` or `/doc/fiction/poetry/1963-valek-killingrabbits##`; but if there is no hash in what appears to be the anchor, then we may have a real issue and should complain about it:
                    DT.trace ("Utils.host: Invalid URL; input was: " ++ show p) ""
     Just uri' ->
         let scheme = uriScheme uri'
