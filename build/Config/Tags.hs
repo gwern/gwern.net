@@ -168,7 +168,7 @@ tagsShort2LongRewrites =
    , ("chemist", "chemistry"), ("chemisty", "chemistry"), ("chemical", "chemistry")
    , ("preference-falsification", "sociology/false-preference"), ("4.5", "4-5"), ("45", "4-5"),("54", "4-5"),("5.4", "4-5"), ("5-4", "4-5"), ("gpt-4-5", "ai/nn/transformer/gpt/5/4-5"), ("gpt-45", "ai/nn/transformer/gpt/5/4-5"), ("gpt-4.5", "ai/nn/transformer/gpt/5/4-5"), ("gpt45", "ai/nn/transformer/gpt/5/4-5")
    , ("vr", "virtual-reality"), ("v-r", "virtual-reality"), ("virtualreality", "virtual-reality"), ("oculus", "virtual-reality"), ("vrhmd", "virtual-reality")
-   , ("retratutide", "retatrutide"), ("retatrutide", "retatrutide"), ("sclaing", "scaling"), ("frankherbert", "frank-herbert")
+   , ("retratutide", "retatrutide"), ("retatrutide", "retatrutide"), ("sclaing", "scaling"), ("frankherbert", "frank-herbert"), ("wp", "wikipedia"), ("quaker", "quakers"), ("qaker", "quakers"),("small", "sociology/small-groups"), ("smallgroups", "sociology/small-groups"), ("smallgroup", "sociology/small-groups")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
@@ -440,6 +440,8 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("philosophy/ethics/ethicists", "ethicists")
   , ("statistics/variance-component", "variance components")
   , ("statistics/survival-analysis", "survival analysis")
+  , ("sociology/small-groups/quakers", "Quakers")
+  , ("sociology/small-groups", "small groups")
   , ("sociology/intrasexual-aggression", "intrasexual aggression")
   , ("sociology/technology", "sociology of technology")
   , ("sociology/false-preference", "preference falsification")

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-03-20 09:50:02 gwern"
+# When:  Time-stamp: "2025-03-20 10:31:33 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -150,7 +150,7 @@ else
           s '</p></p>' '</p>'; s '’ ”' '’ ”'; s ' ”' ' “';
           s '[("doi","")]' ''; s '>/a>' '</a>'; s 'href="W!"' 'href="!W"'; s 'class="Logotype-Tex"' 'class="logotype-tex"'; s 'Class="Logotype-Tex"' 'class="logotype-tex"'; s '<span Class="' '<span class="';
           s '_n_th' '<em>n</em>th'; s 'thumbnailText: ' 'thumbnail-text: '; s ' — ' '—'; s '_n_=' '_n_ = ';
-          s '< a href' '<a href'; s 'modifed: 20' 'modified: 20'; s 'linklive-not' 'link-live-not'; s ' n-dimensional' ' <em>n</em>-dimensional'; s 'pdf#pg=' 'pdf#page='; s 'PDF#pg=' 'PDF#page='; s '<hr />' '<hr>'; s 'confidence: highly-likely' 'confidence: highly likely'; s 'drop-caps-de-zs' 'dropcaps-de-zs';
+          s '< a href' '<a href'; s 'modifed: 20' 'modified: 20'; s 'linklive-not' 'link-live-not'; s ' n-dimensional' ' <em>n</em>-dimensional'; s 'pdf#pg=' 'pdf#page='; s 'PDF#pg=' 'PDF#page='; s '<hr />' '<hr>'; s 'confidence: highly-likely' 'confidence: highly likely'; s 'drop-caps-de-zs' 'dropcaps-de-zs'; s '฿' '₿';
           ## TODO: duplicate HTML classes from Pandoc reported as issue #8705 & fixed; fix should be in >pandoc 3.1.1 (2023-03-05), so can remove these two rewrites once I upgrade past that:
           s 'class="odd odd' 'class="odd'; s 'class="even even' 'class="even';
           s '  ' ' '; s '​ ' ' ';
@@ -732,7 +732,7 @@ else
     notOne      () { gfv -e ':1'; }
     moreThanOne () { gev -e ':1$' -e ':0$'; }
     λ(){ count '^title: '       $PAGES | notOne
-         count '^description: ' $PAGES | notOne | gfv -e '/note/' -e '/newsletter/'
+         count '^description: ' $PAGES | notOne | gfv -e '/note/' -e '/newsletter/' -e 'abstract.md'
          count '^confidence: '  $PAGES | notOne
          count '^created: '     $PAGES | notOne
          count '^status: '      $PAGES | notOne
@@ -848,9 +848,9 @@ else
     λ(){ check_dirs() {
              for dir in "$@"; do
                  if [ -d "$dir" ]; then
-                     if find "$dir" -mindepth 1 -maxdepth 1 -type f ! -name "index.md" | read; then
-                         echo "Directory $dir contains files other than 'index.md':"
-                         find "$dir" -mindepth 1 -maxdepth 1 -type f ! -name "index.md"
+                     if find "$dir" -mindepth 1 -maxdepth 1 -type f ! -name "index.md" ! -name "abstract.md" | read; then
+                         echo "Directory $dir contains files other than 'index.md' or 'abstract.md':"
+                         find "$dir" -mindepth 1 -maxdepth 1 -type f ! -name "index.md" ! -name "abstract.md"
                      fi
                  else
                      echo "$dir is not a valid directory!"
@@ -858,7 +858,7 @@ else
              done
          }
          check_dirs "./doc/www/" "./doc/newest/" "./doc/newsletter/"; }
-    wrap λ "Stray files in ./doc/ subdirectories that should not contain any files besides the 'index.md' tag-directory file."
+    wrap λ "Stray files in ./doc/ subdirectories that should not contain any files besides the 'index.md' or 'abstract.md' tag-directory files."
 
     λ(){ find ./_site/ -type f -not -name "*.*" -exec grep --quiet --binary-files=without-match . {} \; -print0 | parallel --null --max-args=500 "gf --color=always --with-filename -- '————–'"; }
     wrap λ "Broken tables in HTML."
@@ -1418,7 +1418,7 @@ else
     λ(){ fdupes --quiet --sameline --size --nohidden $(find ./* -type d | gev -e 'static' -e '.git' -e 'gwern/wiki/$' -e 'metadata/annotation/backlink' -e 'metadata/annotation/similar' -e 'metadata/annotation/link-bibliography' -e 'doc/www/') | gfv -e 'bytes each' -e 'trimfill.png' -e 'logarithmicspiralsunflower-schematic' | gev -e 'doc/www/.*/.*\.woff2'; }
     wrap λ "Duplicate file check"
 
-    λ(){ find ./ -type f | gfv -e 'git/' -e 'newsletter/' -e 'doc/rotten.com/' -e 'doc/www/' -e 'metadata/annotation/' -e 'doc/personal/2011-gwern-yourmorals.org/' -e 'index.md' -e 'index.html' -e 'favicon.ico' -e 'generator_config.txt' -e '.gitignore' -e 'static/build/Config/' -e 'static/font/dropcap/' -e 'static/img/ornament/' -e '2024-11-22-gwern-midjourneyv6-logarithmicspiralsunflower-schematic' | xargs --max-procs=0 --max-args=1 basename  | sort | uniq --count | gev -e '^ +1 ' | sort --numeric-sort; }
+    λ(){ find ./ -type f | gfv -e 'git/' -e 'newsletter/' -e 'doc/rotten.com/' -e 'doc/www/' -e 'metadata/annotation/' -e 'doc/personal/2011-gwern-yourmorals.org/' -e 'index.md' -e 'abstract.md' -e 'index.html' -e 'favicon.ico' -e 'generator_config.txt' -e '.gitignore' -e 'static/build/Config/' -e 'static/font/dropcap/' -e 'static/img/ornament/' -e '2024-11-22-gwern-midjourneyv6-logarithmicspiralsunflower-schematic' | xargs --max-procs=0 --max-args=1 basename  | sort | uniq --count | gev -e '^ +1 ' | sort --numeric-sort; }
     wrap λ "File base names are preferably globally-unique, to avoid issues with duplicate search results and clashing link IDs."
 
     λ() { find . -perm u=r -path '.git' -prune; }

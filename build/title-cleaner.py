@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-03-19 22:40:56 gwern"
+# When:  Time-stamp: "2025-03-20 18:09:32 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -605,6 +605,10 @@ Katri Räikkönen
 - "https://www.unimedizin-mainz.de/imbei/en/biometrie-genomische-statistik-und-bioinformatik/mitarbeiter/prof-dr-rer-nat-konstantin-strauch.html IMBEI"
 ""
 - "https://naml.us/ naml.us"
+""
+- https://thecritic.co.uk/the-unmaking-of-the-athenaeum/ The unmaking of the Athenaeum | Richard Davenport-Hines"
+"The unmaking of the Athenaeum"
+- "https://scholars-stage.blogspot.com/2020/06/against-patrick-deneen-ii.html Redirecting The Scholar’s Stage"
 ""
 
 Task:
