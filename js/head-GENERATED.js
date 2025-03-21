@@ -2869,7 +2869,7 @@ GW.layout = {
 	//	Do not apply block layout classes within these elements.
 	blockLayoutExclusionSelector: [
 		"#page-metadata",
-		".TOC",
+		".TOC > *",
 		".popframe"
 	].join(", "),
 
@@ -2915,32 +2915,38 @@ GW.layout = {
 	siblingCombinatorRegExp: /^(.+) \+ (.+)$/,
 
 	blockSpacing: [
-		[ "body.page-index section",					 9, false ],
-		[ "body.page-index section li p + p",			 0, false ],
+		[ "body.page-index section",	 9, false ],
+		[ "body.page-index section li p + p",
+										 0, false ],
 
 		[ "body.page-404 .display-entry .float + .epigraph",
-														 0, false ],
-		[ "body.page-404 section#other-options",		16, false ],
-		[ "body.page-404 #new-popular-notable section",	13, false ],
+										 0, false ],
+		[ "body.page-404 section#other-options", 
+										16, false ],
+		[ "body.page-404 #new-popular-notable section",
+										13, false ],
 		[ "body.page-404 #new-popular-notable section li p + p",
-														 0, false ],
+										 0, false ],
 
-		[ "section#see-also.first-block", 				 4, false ],
+		[ "section#see-also.first-block",
+										 4, false ],
 
-		[ "#link-bibliography-section",                 15, false ],
+		[ "#link-bibliography-section", 15, false ],
 
 		[ "body.page-blog-index p.data-field.title:not(.first-block)",	
-														10, false ],
+										10, false ],
 		[ "body.blog-page p.data-field + .data-field.annotation-abstract p", 
-														 7, false ],
+										 7, false ],
 		[ "body.blog-page .annotation.blog-post > .annotation-abstract > .aux-links-append + .aux-links-append",
-														 4, false ],
+										 4, false ],
 		[ "body.blog-page .annotation.blog-post > .annotation-abstract > .aux-links-append + .file-include-collapse",
-														 4, false ],
+										 4, false ],
 
 		[ ".float.first-block",			 2, false ],
 		[ ".first-block",				 0, false ],
 
+		[ ".heading + p.data-field.title",
+										 2, false ],
 		[ ".heading + section",			 5, false ],
 		[ ".heading + *",				 4, false ],
 
@@ -2951,6 +2957,8 @@ GW.layout = {
 		[ "p.data-field.title + p.data-field",
 										 1, false ],
 		[ "p.data-field.title + .data-field",
+										 3, false ],
+		[ "p.data-field.title + .file-include-collapse",
 										 3, false ],
 
 		[ ".annotation .data-field.file-includes .collapse + annotation .collapse",
@@ -3065,17 +3073,52 @@ function preprocessSelector(selector) {
 		let selectorParts = parts.slice(1, 3).map(part => preprocessSelector(part));
 		return {
 			isGWSelector: true,
+			parts: selectorParts,
 			matches: (block) => {
-				let previousBlock = previousBlockOf(block, {
+				if (blockMatchesSelector(block, selectorParts[1]) == false)
+					return false;
+
+				/*	We want .foo + .bar to match in all of the following cases:
+				
+						<div class="foo">foo</div>
+						<div class="bar">bar</div>
+
+					and:
+
+						<div class="foo float-right">foo</div>
+						<div class="bar">bar</div>
+
+					and:
+
+						<div class="foo">foo</div>
+						<div class="baz float-right">baz</div>
+						<div class="bar">bar</div>
+
+					Therefore we want floats to both count as blocks, and also
+					to NOT count as blocks, at the same time. To be specific,
+					if a float itself matches the preceding-block selector, then
+					we count it as a match; but if it doesn’t, then we do not
+					declare the match to have failed, but keep looking for other
+					potentially matching blocks which might come before it.
+				 */
+
+				let previousBlock = block;
+				do {
+					previousBlock = previousBlockOf(previousBlock, {
 										alsoBlockElements: [ "section:not(.collapse) > .heading" ],
 										notSkipElements: [ ".float" ],
 										cacheKey: "alsoBlocks_nonCollapseSectionHeadings_notSkip_floats"
 									});
-				if (previousBlock == null)
-					return null;
 
-				return (   blockMatchesSelector(previousBlock, selectorParts[0])
-						&& blockMatchesSelector(block, selectorParts[1]));
+					if (previousBlock == null)
+						return false;
+
+					if (blockMatchesSelector(previousBlock, selectorParts[0]))
+						return true;
+
+					if (blockMatchesSelector(previousBlock, ".float") == false)
+						return false;
+				} while (true);
 			}
 		};
 	} else {
@@ -3200,7 +3243,7 @@ function startDynamicLayoutInContainer(container) {
 			};
 
 			//	Enforce layout isolation zones.
-			let isolationZone = mutationRecord.target.closest(GW.layout.layoutIsolationSelector);
+			let isolationZone = mutationRecord.target.parentElement?.closest(GW.layout.layoutIsolationSelector);
 			if (isolationZone?.closest(blockContainersSelector) == nearestBlockContainer) {
 				isolationZone.querySelectorAll(blockContainersSelector).forEach(isolatedBlockContainer => {
 					//	Avoid adding a block container twice.
@@ -3966,7 +4009,7 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 			let introGraf = false;
 			if (   block.matches(".text-center, .margin-notes-block, .data-field") != true
 				&& block.matches(".in-list") != true
-				&& block.closest("#footer, figcaption, table") == null
+				&& block.parentElement?.closest("#footer, figcaption, table") == null
 				&& block.firstElementChild?.matches("span.smallcaps") != true) {
 				let isFirstWithin = (block, containerSelector, options) => {
 					return (   blockContainerOf(block, options)?.matches(containerSelector) == true

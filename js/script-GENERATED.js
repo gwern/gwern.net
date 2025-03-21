@@ -16800,8 +16800,26 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifyFileAppendClasses = (eve
             fileIncludeCollapse.swapClasses([ "aux-links-transclude-file", "file-include-collapse" ], 1);
             fileIncludeCollapse.swapClasses([ "bare-content", "bare-content-not" ], 1);
         });
+		//	Apply annotation classes to previous block, if need be.
+		let previousBlock = previousBlockOf(fileIncludesBlock);
+		if (previousBlock?.matches("p"))
+			previousBlock.classList.add("data-field", "title");
     });
 }, "rewrite");
+
+/****************************************************************************/
+/*	On directory index pages, un-annotated annotation include links should be 
+	treated as annotation title-links for layout purposes.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.rectifyInlineAnnotationTitleClasses = (eventInfo) => {
+    GWLog("rectifyInlineAnnotationTitleClasses", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll(".include-annotation:not(.link-annotated)").forEach(link => {
+		link.closest("p")?.classList.add("data-field", "title");
+	});
+}, "rewrite", (info) => (   info.container == document.main
+						 && location.pathname.startsWith("/doc") == true
+						 && location.pathname.endsWithAnyOf([ "/", "/index" ]) == true));
 
 /******************************************************************************/
 /*  Properly handle file includes in annotations when their include-link fires.
