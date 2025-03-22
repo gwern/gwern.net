@@ -7366,6 +7366,7 @@ Content = {
 				".unicode.haudio",
 		// 		"span[typeof='mw:File']",
 				"link",
+				"meta",
 				"span[typeof='mw:FallbackId']"
 			],
 
