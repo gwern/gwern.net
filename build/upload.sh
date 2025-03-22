@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2025-03-12 11:34:45 gwern"
+# When:  Time-stamp: "2025-03-21 18:00:11 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -139,13 +139,13 @@ _upload() {
           fi
       fi
       TARGET=$(basename "$FILENAME")
-      if [[ "$TARGET" =~ .*\.jpg || "$TARGET" =~ .*\.png ]]; then exiftool -overwrite_original -All="" "$TARGET"; fi # strip potentially dangerous metadata from scrap images
+      if [[ "$TARGET" =~ .*\.jpg || "$TARGET" =~ .*\.png ]]; then exiftool -overwrite_original -All="" "$FILENAME"; fi # strip potentially dangerous metadata from scrap images
       # format Markdown/text files for more readability
       TEMPFILE=$(mktemp /tmp/text.XXXXX)
       # 'prettier' is not installed and I don't like Pandoc's default formatting choices for text or Markdown, so we'll just do a simple 'fold' to avoid unreadably-long newlines:
       if [[ "$TARGET" =~ .*\.md || "$TARGET" =~ .*\.txt ]]; then fold --spaces --width=80 "$TARGET" >> "$TEMPFILE" && mv "$TEMPFILE" "$TARGET"; fi
 
-      mv "$TARGET" ~/wiki/doc/www/misc/
+      mv "$FILENAME" ~/wiki/doc/www/misc/
       cd ~/wiki/ || exit
       TARGET2="./doc/www/misc/$TARGET"
       rsync --chmod='a+r' -q "$TARGET2" gwern@176.9.41.242:"/home/gwern/gwern.net/doc/www/misc/" || \

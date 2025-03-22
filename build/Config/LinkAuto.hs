@@ -859,7 +859,7 @@ custom = [
         , ("[Op]perations research", "https://en.wikipedia.org/wiki/Operations_research")
         , ("[Op]pportunity cost", "https://en.wikipedia.org/wiki/Opportunity_cost")
         , ("[Pp]aracosm", "https://en.wikipedia.org/wiki/Paracosm")
-        , ("[Pp]arasocial", "/note/parasocial")
+        , ("[Pp]arasocial", "/doc/sociology/technology/parasocial/index")
         , ("[Pp]areidolia", "https://en.wikipedia.org/wiki/Pareidolia")
         , ("[Pp]article filtering", "https://en.wikipedia.org/wiki/Particle_filter")
         , ("[Pp]entobarbital", "https://en.wikipedia.org/wiki/Pentobarbital")

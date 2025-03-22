@@ -693,6 +693,7 @@ canonicals = M.fromList
   , ("mcnelly", "Willis E. McNelly")
   , ("willismcnelly", "Willis E. McNelly")
   , ("willisemcnelly", "Willis E. McNelly")
+  , ("Greg Park", "Gregory Park")
   ]
 
 -- tests: unique
@@ -1485,6 +1486,8 @@ authorLinkDB = M.fromList $
     , ("Hado van Hasselt", "https://scholar.google.com/citations?user=W80oBMkAAAAJ")
     , ("Graham Neubig", "https://www.phontron.com/")
     , ("Geoffrey Irving", "https://naml.us/")
+    , ("Gregory Park", "https://gregpark.io/")
+    , ("William Aspray", "https://ethw.org/Oral-History:William_Aspray")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2734,4 +2737,4 @@ authorWpLinkDB =
     , "Hiroshi Nagai", "David Corfield", "Stan Kelly-Bootle", "N. David Mermin", "Simon Tatham"
     , "Roel André Ophoff", "Paul M. B. Vitányi", "Oliver Herford", "Erik Satie", "E. T. Jaynes"
     , "Kenneth E. Boulding", "Ronan Farrow", "Karl T. Compton", "Björn Kurtén", "Robert R. McCrae"
-    , "Milton Rokeach", "Robert Heinlein", "Lauren Faust", "Walter Savage Landor", "Robert Laurence Binyon", "David A. Freedman", "Larry V. Hedges", "Hugh Christian Watkins", "Frank Herbert", "Norman Spinrad", "Willis E. McNelly", "Stephen Cole Kleene", "Warren S. McCulloch", "Walter Pitts", "Paul Werbos"]
+    , "Milton Rokeach", "Robert Heinlein", "Lauren Faust", "Walter Savage Landor", "Robert Laurence Binyon", "David A. Freedman", "Larry V. Hedges", "Hugh Christian Watkins", "Frank Herbert", "Norman Spinrad", "Willis E. McNelly", "Stephen Cole Kleene", "Warren S. McCulloch", "Walter Pitts", "Paul Werbos", "Ralph P. Boas Junior", "Albert W. Tucker"]

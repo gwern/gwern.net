@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-03-20 18:09:32 gwern"
+# When:  Time-stamp: "2025-03-21 18:36:57 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -610,6 +610,8 @@ Katri Räikkönen
 "The unmaking of the Athenaeum"
 - "https://scholars-stage.blogspot.com/2020/06/against-patrick-deneen-ii.html Redirecting The Scholar’s Stage"
 ""
+- "https://ethw.org/Oral-History:William_Aspray Oral-History:William Aspray - Engineering and Technology History Wiki"
+"Oral-History:William Aspray"
 
 Task:
 

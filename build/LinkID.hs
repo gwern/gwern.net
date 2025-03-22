@@ -98,7 +98,7 @@ generateID md url author date
   url' = delete "https://gwern.net" url
   generateID' :: T.Text
   generateID'
-    -- is it a /blog/ self-post? If so, we can infer the ID immediately from the slug, avoiding needing to add a manual ID to its annotation, reducing friction; eg '/blog/2025-large-files' → 'gwern-2025-large-files'
+    -- is it a /blog/ self-post? If so, we can infer the ID immediately from the slug, avoiding needing to add a manual ID to its annotation, reducing friction; eg. '/blog/2025-large-files' → 'gwern-2025-large-files'
     | "/blog/2" `isPrefixOf` url' = T.pack (CM.authorL ++ "-" ++ delete "/blog/" url')
   -- indexes or tag-directories shouldn't be cited as they would be often linked many times on a page due to transcludes:
   -- | ("https://gwern.net" `isPrefixOf` url || "/" `isPrefixOf` url) && ("/index" `isSuffixOf` url) = ""
@@ -118,7 +118,7 @@ generateID md url author date
 authorsToCite :: String -> String -> String -> String
 authorsToCite url author date =
   let year = if date=="" then show CM.currentYear else take 4 date -- YYYY-MM-DD
-      authors = map (takeWhile (/= '#')) $ split ", " $ sedMany [(" \\([A-Za-z ]+\\)", ""), (" \\[[A-Za-z ]+\\]", "")] author -- affiliations like "Schizophrenia Working Group of the Psychiatric Genomics Consortium (PGC), Stephan Foo" or "Foo Bar (Atlas Obscura)" or /doc/math/humor/1976-barrington.pdf's "John Barrington [Ian Stewart]" (the former is a pseudonym) would break the later string-munging & eventually the HTML
+      authors = map (takeWhile (/= '#')) $ split ", " $ sedMany [(" \\([A-Za-z ]+\\)", ""), (" \\[[A-Za-z ]+\\]", "")] author -- affiliations like "Schizophrenia Working Group of the Psychiatric Genomics Consortium (PGC), Stephan Foo" or "Foo Bar (Atlas Obscura)" or /doc/math/humor/lion-hunting/1976-barrington.pdf's "John Barrington [Ian Stewart]" (the former is a pseudonym) would break the later string-munging & eventually the HTML
       authorCount = length authors
       firstAuthorSurname = if authorCount==0 then "" else filter (\c -> isAlphaNum c || isPunctuation c) $ reverse $ takeWhile (/=' ') $ reverse $ deleteMany [" Senior", " Junior"] $ simplifiedHtmlToString $ head authors -- 'John Smith Junior 2020' is a weird cite if it turns into 'Junior 2020'! easiest fix is to just delete it, so as to get the expected 'Smith 2020'.
   in

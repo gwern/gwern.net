@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-03-20 10:31:33 gwern"
+# When:  Time-stamp: "2025-03-21 21:28:31 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -1057,7 +1057,7 @@ else
     λ(){ gec -e 'up>T[Hh]<' -e 'up>R[Dd]<' -e 'up>N[Dd]<' -e 'up>S[Tt]<' -- ./metadata/*.gtx; }
     wrap λ "Superscript abbreviations are weirdly capitalized?" &
 
-    λ(){ gf -e ' <sup>' -e ' <sub>' -e ' </sup>' -e ' </sub>' -- ./metadata/*.gtx | gfv -e ' <sup>242m</sup>Am' -e ' <sup>60</sup>Co' -e ' <sup>2</sup> This is because of the principle' -e ' <sup>3</sup> There are some who' -e ' <sup>4</sup> Such as setting' -e ' <sup>5</sup> Such as buying gifts' -e '  <sup>31</sup>P-Magnetic' -e ' <sup>242m</sup>Am' -e ' <sup>31</sup>P' -e ' <sup>60</sup>Co' -e ' <sup>31</sup>P-MRS' -e ' <sup>4</sup>He' -e '<sup>7</sup>Be' -e '<sup>3</sup>H' -e '<sup>10</sup>C<sup>✱</sup>' -e '<sup>9</sup>B' ; }
+    λ(){ gf -e ' <sup>' -e ' <sub>' -e ' </sup>' -e ' </sub>' -- ./metadata/*.gtx | gfv -e ' <sup>242m</sup>Am' -e ' <sup>60</sup>Co' -e ' <sup>2</sup> This is because of the principle' -e ' <sup>3</sup> There are some who' -e ' <sup>4</sup> Such as setting' -e ' <sup>5</sup> Such as buying gifts' -e '  <sup>31</sup>P-Magnetic' -e ' <sup>242m</sup>Am' -e ' <sup>31</sup>P' -e ' <sup>60</sup>Co' -e ' <sup>31</sup>P-MRS' -e ' <sup>4</sup>He' -e '<sup>7</sup>Be' -e '<sup>3</sup>H' -e '<sup>10</sup>C<sup>✱</sup>' -e '<sup>9</sup>B' -e '<sup>4</sup><a href="!W" title="Helium">He</a>' -e '<sup>7</sup><a href="!W" title="Lithium">Li</a>' ; }
     wrap λ "Superscripts/subscripts have spaces in front?" &
 
     λ(){ gec -e '<p><img ' -e '<img src="http' -e '<img src="[^h/].*"' ./metadata/*.gtx; }
@@ -1178,7 +1178,7 @@ else
    # test a random page modified in the past month for W3 validation & dead-link/anchor errors (HTML tidy misses some, it seems, and the W3 validator is difficult to install locally):
    CHECKED_URLS_FILE="./metadata/urls-linkchecker-checked.txt"
    # Filter URLs: Exclude URLs present in the checked list:
-   FILTERED_PAGES=$(echo "$PAGES" | gfv -e '/fulltext' -e '/lorem' | sed -e 's/\.md$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' \
+   FILTERED_PAGES=$(echo "$PAGES" | gfv -e '/fulltext' -e '/lorem' -e '/secret/' -e '/confidential/' -e '/private/' | sed -e 's/\.md$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' \
                         | while read -r URL; do
                         if ! grep --fixed-strings --line-regexp --quiet "$URL" "$CHECKED_URLS_FILE"; then
                             echo "$URL"
@@ -1315,7 +1315,7 @@ else
           cm "text/html; charset=utf-8" 'https://gwern.net/doc/cs/security/2012-terencetao-anonymity.html'
           cm "text/html; charset=utf-8" 'https://gwern.net/doc/darknet-market/silk-road/1/2013-06-07-premiumdutch-profile.html'
           cm "text/html; charset=utf-8" 'https://gwern.net/'
-          cm "text/html; charset=utf-8" 'https://gwern.net/note/attention'
+          cm "text/html; charset=utf-8" 'https://gwern.net/doc/ai/nn/transformer/attention/abstract'
           cm "text/html; charset=utf-8" 'https://gwern.net/note/faster'
           cm "text/html; charset=utf-8" 'https://gwern.net/nootropic/magnesium'
           cm "text/html; charset=utf-8" 'https://gwern.net/zeo/co2'
