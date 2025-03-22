@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Interwiki (convertInterwikiLinks, convertInterwikiLinksInline, wpPopupClasses, interwikiTestSuite, interwikiCycleTestSuite, isWPDisambig, isWPArticle, escapeWikiArticleTitle, toWikipediaEnURL, toWikipediaEnURLSearch) where
+module Interwiki (convertInterwikiLinks, convertInterwikiLinksInline, wpPopupClasses, isWPLive, isWPAPI, interwikiTestSuite, interwikiCycleTestSuite, isWPDisambig, isWPArticle, escapeWikiArticleTitle, toWikipediaEnURL, toWikipediaEnURLSearch) where
 
 import Data.List (isInfixOf, intersect)
 import Data.Containers.ListUtils (nubOrd)
@@ -177,8 +177,14 @@ wpPopupClasses u = case parseURIReference (T.unpack u) of
                                                             then ["content-transform-not"] else []) ++
                                                            (if u' `elem` linkliveNamespacesNo then ["link-live-not"] else ["link-live"])
 
+isWPLive :: T.Text -> Bool
+isWPLive url = "link-live" `elem` wpPopupClasses url
+
+isWPAPI :: T.Text -> Bool
+isWPAPI url = not ("content-transform-not" `elem` wpPopupClasses url)
+
 -- WP namespaces which are known to not return a useful annotation from the API; Special: does not (eg. Special:Random, or, common in article popups, Special:BookSources for ISBNs) and returns nothing while Category: returns something which is useless (just the category title!), but surprisingly, most others return something useful (eg. even Talk pages like <https://en.wikipedia.org/api/rest_v1/page/mobile-sections/Talk:Small_caps> do).
--- I have not checked the full list of namespaces carefully so some of the odder namespaces may be bad.
+-- WARNING: I have not checked the full list of namespaces carefully so some of the odder namespaces are probably also bad.
 apiNamespacesNo :: [T.Text]
 apiNamespacesNo = ["Category", "File", "Special", "/w/index.php"]
 

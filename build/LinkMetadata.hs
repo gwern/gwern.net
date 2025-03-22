@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-03-20 09:35:07 gwern"
+When:  Time-stamp: "2025-03-21 10:41:33 gwern"
 License: CC-0
 -}
 
@@ -39,7 +39,7 @@ import System.IO.Unsafe (unsafePerformIO)
 import qualified Config.LinkID (affiliationAnchors)
 import qualified Config.Misc as C (fileExtensionToEnglish, minFileSizeWarning, minimumAnnotationLength, currentMonthAgo, todayDayString, currentYear, gtxKeyValueKeyNames)
 import Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjusterHTML, isInflationURL)
-import Interwiki (convertInterwikiLinks)
+import Interwiki (convertInterwikiLinks, isWPAPI)
 import Typography (titlecase', typesetHtmlField, titleWrap)
 import Image (addImgDimensions, imageLinkHeightWidthSet, outlineImageInline, isImageFilename, isVideoFilename)
 import LinkArchive (localizeLink, ArchiveMetadata, localizeLinkURL)
@@ -646,7 +646,7 @@ generateFileTransclusionBlock am alwaysLabelP x@(f, (tle,_,_,_,_,_,_)) = if null
                                   ++ (if null fileSizeMBString then "" else " ("++fileSizeMBString ++ ")")
    title        = if null tle then Code nullAttr (T.pack f') else RawInline (Format "HTML") $ T.pack tle
    titleCaption = [Strong [Str "View ", fileDescription], Str ":"]
-   dataArguments = if "wikipedia.org/wiki/" `isInfixOf` f' then [("include-template", "$annotationFileIncludeTemplate")] else [] -- use special template to exclude the duplicate title; doesn't apply to Twitter transcludes yet, but if necessary, they can get a custom one too
+   dataArguments = if "wikipedia.org/wiki/" `isInfixOf` f' && isWPAPI (T.pack f') then [("include-template", "$annotationFileIncludeTemplate")] else [] -- use special template to exclude the duplicate title when we render WP articles via the API (which is irrelevant when it's just an iframe live-link); doesn't apply to Twitter transcludes yet, but if necessary, they can get a custom one too
    generateFileTransclusionBlock'
     | f' == "" = error $ "LinkMetadata.generateFileTransclusionBlock.generateFileTransclusionBlock': localized filepath (`f'`) was empty string; this should never happen! `(FilePath,MetadataItem)` input was: " ++ show x
     | isPagePath (T.pack f') = [] -- for essays, we skip the transclude block: transcluding an entire essay is a bad idea!
@@ -715,6 +715,8 @@ fileTranscludesTest md am =
     , (simpleTestT "https://x.com/AxSauer/status/1524325956030275586", [Div ("",["aux-links-transclude-file"],[]) [Para [Link ("",["id-not","include-content"],[]) [Code ("",[],[]) "/doc/www/localhost/a45010d731b0e6b20e5594567edcbb6978be49ab.html"] ("https://x.com/AxSauer/status/1524325956030275586","")]]])
     , (simpleTestF "https://en.wikipedia.org/wiki/Amber_Heard",
        [Div ("",["aux-links-transclude-file"],[]) [Para [Link ("",["id-not","include-content"],[("include-template","$annotationFileIncludeTemplate")]) [RawInline (Format "HTML") "Amber Heard"] ("https://en.wikipedia.org/wiki/Amber_Heard","")]]])
+    , (simpleTestF "https://en.wikipedia.org/wiki/Category:American_Quakers",
+       [Div ("",["aux-links-transclude-file"],[]) [Para [Link ("",["id-not","include-content"],[]) [RawInline (Format "HTML") "Category:American Quakers"] ("https://en.wikipedia.org/wiki/Category:American_Quakers","")]]])
     , (simpleTestT "https://nyx-ai.github.io/stylegan2-flax-tpu/", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "HTML (19MB)"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[]) [Code ("",[],[]) "/doc/www/nyx-ai.github.io/a95f4c42e4300722b1adcf0f494ac943437fcc56.html"] ("/doc/www/nyx-ai.github.io/a95f4c42e4300722b1adcf0f494ac943437fcc56.html","")]]]])
     , (simpleTestT "https://www.youtube.com/watch?v=D2zjc--sDaY", [Div ("",["aux-links-transclude-file"],[]) [Para [Strong [Str "View ",Str "YouTube video"],Str ": ",Link ("",["link-annotated-not","include-content","width-full"],[]) [Code ("",[],[]) "https://www.youtube.com/watch?v=D2zjc--sDaY"] ("https://www.youtube.com/watch?v=D2zjc--sDaY","")]]])
     , (simpleTestT "https://www.reddit.com/r/MediaSynthesis/comments/tiil1b/xx_waifu_01_xx_loop_by_squaremusher/", [])
