@@ -2896,7 +2896,7 @@ Then other issues are dealt with by a bunch of small CSS tweaks.
 table thead {
     position: sticky;
     top: -1px;
-    z-index: 1;
+    z-index: 2;
     background-color: var(--background-color);
     box-shadow: 0 -1px 0 0 var(--GW-table-row-horizontal-border-color) inset;
 }
