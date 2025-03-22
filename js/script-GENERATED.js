@@ -15773,6 +15773,9 @@ addContentInjectHandler(GW.contentInjectHandlers.injectThumbnailIntoPopFramePage
 		floatClass: "float-right"
 	});
 
+	if (pageThumbnail == null)
+		return;
+
 	//	Thumbnailify.
 	Images.thumbnailifyImage(pageThumbnail);
 

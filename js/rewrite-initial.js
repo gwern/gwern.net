@@ -417,11 +417,11 @@ function injectThumbnailIntoPageAbstract(pageAbstract, pageThumbnailAttributes, 
 
 	//	Check if the page thumbnail has already been injected.
 	if (pageAbstract.querySelector(".page-thumbnail-figure") != null)
-		return;
+		return null;
 
 	//	Except logo.
 	if (URLFromString(pageThumbnailAttributes.src).pathname.startsWith("/static/img/logo/"))
-		return;
+		return null;
 
 	//	Construct.
 	let pageThumbnail = newElement("IMG", pageThumbnailAttributes);
