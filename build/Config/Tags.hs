@@ -172,6 +172,7 @@ tagsShort2LongRewrites =
    , ("parasociality", "parasocial"), ("parasocialness", "parasocial")
    , ("hunting-lion", "math/humor/lion-hunting"), ("hunting-lions", "math/humor/lion-hunting"), ("lions", "math/humor/lion-hunting"), ("huntinglions", "math/humor/lion-hunting"), ("huntinglion", "math/humor/lion-hunting"), ("lizard-man", "lizardman"), ("lizard-men", "lizardman"), ("lizardmen", "lizardman"), ("lizardmen-constant", "lizardman"), ("lizardman-constant", "lizardman"), ("constant", "lizardman")
    , ("pipelines", "statistics/order/selection/pipeline"), ("leaky-pipelines", "statistics/order/selection/pipeline"), ("leaky-pipeline", "statistics/order/selection/pipeline"), ("leakypipeline", "statistics/order/selection/pipeline"), ("leakypipelines", "statistics/order/selection/pipeline")
+   , ("regression-to-the-mean", "regression-to-mean"), ("regressiontothemean", "regression-to-mean"), ("regression-mean", "mean-regression"), ("reversion-to-the-mean", "regression-to-mean"), ("reversion-to-mean", "regression-to-mean"), ("mean-reversion", "regression-to-mean"), ("reversion", "regression-to-mean"), ("mean", "regression-to-mean")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 

@@ -47,7 +47,7 @@ findDivContent html = renderTags <$> extractDivContents 0 (parseTags html)
       | tag == TagClose "div" && level == 1 = []  -- Found the closing tag of target div.
       | tag == TagClose "div" = tag : takeContent (level - 1) tags  -- Found a closing tag of a nested div.
       | otherwise = tag : takeContent level tags  -- Continue with the next tag.
-    takeContent x y = error $ "Gwernnet.hs: findDivContent: takeContent: pattern-amtch failed, which should be impossible: " ++ show x ++ " : " ++ show y
+    takeContent x y = error $ "Gwernnet.hs: findDivContent: takeContent: pattern-match failed, which should be impossible: " ++ show x ++ " : " ++ show y
 
 gwern :: Metadata -> Path -> IO (Either Failure (Path, MetadataItem))
 gwern _ "/doc/index" = gwerntoplevelDocAbstract -- special-case ToC generation of all subdirectories for a one-stop shop
@@ -65,7 +65,7 @@ gwern md p
                      , "wav", "webm", "xcf", "xls", "xlsx", "xml", "xz", "zip", "sqlite"
                      , "par2", "pkl", "h5", "t7", "weights"
                      ] = return (Left Permanent)
-        | anyPrefix p ["metadata", "/metadata"] ||
+        | anyPrefix p ["metadata", "/metadata", "/blog/2", "blog/2"] ||
           anySuffix p ["#external-links", "#see-also", "#see-also", "#see-alsos", "#see-also-1"
                       , "#see-also-2", "#footnotes", "#links", "#misc", "#miscellaneous", "#appendix"
                       , "#appendices", "#conclusion", "#conclusion-1", "#conclusion-2", "#media"

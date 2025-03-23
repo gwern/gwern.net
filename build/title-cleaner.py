@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-03-21 18:36:57 gwern"
+# When:  Time-stamp: "2025-03-22 18:44:56 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -612,6 +612,10 @@ Katri Räikkönen
 ""
 - "https://ethw.org/Oral-History:William_Aspray Oral-History:William Aspray - Engineering and Technology History Wiki"
 "Oral-History:William Aspray"
+- "https://www.greaterwrong.com/tag/ai-takeoff AI Takeoff tag—LessWrong"
+"AI Takeoff tag"
+- "https://ethanzuckerman.com/2011/04/06/those-white-plastic-chairs-the-monobloc-and-the-context-free-object/ Those White Plastic Chairs—The Monobloc and the Context-Free Object - Ethan Zuckerman"
+"Those White Plastic Chairs—The Monobloc and the Context-Free Object"
 
 Task:
 

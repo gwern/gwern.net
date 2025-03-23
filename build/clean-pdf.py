@@ -4,7 +4,7 @@
 # clean-pdf.py: fix formatting & spelling errors in malformatted text (especially PDFs)
 # Author: Gwern Branwen
 # Date: 2020-07-03
-# When:  Time-stamp: "2025-03-09 14:52:12 gwern"
+# When:  Time-stamp: "2025-03-22 17:59:48 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XYZ" xclip -o | python clean-pdf.py
@@ -164,6 +164,11 @@ Katie A. Meyer, Paige Williams, Sonia Hernandez-Diaz, Sven Cnattingius
 Mats Lambe, Christina Hultman, Anna Torrång, James MacCabe, Sven Cnattingius
 - <text>Vance, Todd PhD*; Maes, Hermine H. PhD†‡; Kendler, Kenneth S. MD†‡</text>
 Todd Vance, Hermine H. Maes, Kenneth S. Kendler
+- <text>REGRESSION FALACIES IN THE MATCHED GROUPS EXPERIMENT</text>
+Regression Fallacies in the Matched Groups Experiment
+- <text>R E G R E S S I O N F A L L A C I E S IN T H E MATCHED
+GROUPS E X P E R I M E N T</text>
+Regression Fallacies in the Matched Groups Experiment
 
 [End of examples. Reminder: your job is to clean PDF copy-pastes of cruft and garbage.]
 

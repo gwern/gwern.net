@@ -694,6 +694,9 @@ canonicals = M.fromList
   , ("willismcnelly", "Willis E. McNelly")
   , ("willisemcnelly", "Willis E. McNelly")
   , ("Greg Park", "Gregory Park")
+  , ("Bertram Muller-Myhsok", "Bertram Müller-Myhsok")
+  , ("Bertram Mueller-Myhsok", "Bertram Müller-Myhsok")
+  , ("Lyman Spitzer Junior", "Lyman Spitzer")
   ]
 
 -- tests: unique
@@ -722,7 +725,7 @@ canonicalsWithInitials =
   , "Adam Edward Locke", "Samuel T. Cohen", "Thomas J. Bouchard", "Robert Mitchell Lindner"
   , "Sarah E. Bergen", "Roel André Ophoff", "Peter A. Holmans", "Patricia B. Munroe"
   , "Michael A. Woodley", "Mark J. Caulfield", "E. T. Jaynes", "Iris M. Heid", "Hill F. Ip"
-  , "Heather M. Stringham", "Christopher A. Haiman", "Catharina A. Hartman", "Bernhard T. Baune", "Karl T. Compton", "Tom B. Brown", "Saskia P. Hagenaars", "Robert R. McCrae", "Nathan A. Gillespie", "Marian L. Hamshere", "Richard W. Wrangham", "John R. Attia", "Joel Z. Leibo", "Jaspal S. Kooner", "Larry V. Hedges", "Hugh Christian Watkins", "Stephen Cole Kleene"]
+  , "Heather M. Stringham", "Christopher A. Haiman", "Catharina A. Hartman", "Bernhard T. Baune", "Karl T. Compton", "Tom B. Brown", "Saskia P. Hagenaars", "Robert R. McCrae", "Nathan A. Gillespie", "Marian L. Hamshere", "Richard W. Wrangham", "John R. Attia", "Joel Z. Leibo", "Jaspal S. Kooner", "Larry V. Hedges", "Hugh Christian Watkins", "Stephen Cole Kleene", "David C. Glahn", "Bernhard Otto Boehm", "John W. Tukey"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1488,6 +1491,10 @@ authorLinkDB = M.fromList $
     , ("Geoffrey Irving", "https://naml.us/")
     , ("Gregory Park", "https://gregpark.io/")
     , ("William Aspray", "https://ethw.org/Oral-History:William_Aspray")
+    , ("Frank Bellivier", "https://scholar.google.com/scholar?q=Frank%20Bellivier")
+    , ("David C. Glahn" ,"https://research.childrenshospital.org/researchers/david-glahn")
+    , ("Bertram Müller-Myhsok", "https://scholar.google.com/citations?user=tSFUTXwAAAAJ&hl=en&oi=ao")
+    , ("Bernhard Otto Boehm", "https://www.ntu.edu.sg/medicine/news-events/magazines-and-newsletters/the-lkcmedicine-february-2019/profile-meet-prof-bernhard-boehm-more-ammunition-to-fight-diabetes")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2737,4 +2744,7 @@ authorWpLinkDB =
     , "Hiroshi Nagai", "David Corfield", "Stan Kelly-Bootle", "N. David Mermin", "Simon Tatham"
     , "Roel André Ophoff", "Paul M. B. Vitányi", "Oliver Herford", "Erik Satie", "E. T. Jaynes"
     , "Kenneth E. Boulding", "Ronan Farrow", "Karl T. Compton", "Björn Kurtén", "Robert R. McCrae"
-    , "Milton Rokeach", "Robert Heinlein", "Lauren Faust", "Walter Savage Landor", "Robert Laurence Binyon", "David A. Freedman", "Larry V. Hedges", "Hugh Christian Watkins", "Frank Herbert", "Norman Spinrad", "Willis E. McNelly", "Stephen Cole Kleene", "Warren S. McCulloch", "Walter Pitts", "Paul Werbos", "Ralph P. Boas Junior", "Albert W. Tucker"]
+    , "Milton Rokeach", "Robert Heinlein", "Lauren Faust", "Walter Savage Landor", "Robert Laurence Binyon"
+    , "David A. Freedman", "Larry V. Hedges", "Hugh Christian Watkins", "Frank Herbert"
+    , "Norman Spinrad", "Willis E. McNelly", "Stephen Cole Kleene", "Warren S. McCulloch"
+    , "Walter Pitts", "Paul Werbos", "Ralph P. Boas Junior", "Albert W. Tucker", "Paul Debevec", "Lyman Spitzer"]
