@@ -1792,11 +1792,13 @@ table td > code {
 
 /*  Scroll bar styles (for Firefox).
     */
-.table-scroll-wrapper {
-    scrollbar-color: var(--GW-table-scrollbar-thumb-color) var(--background-color);
-}
-.table-scroll-wrapper:hover {
-    scrollbar-color: var(--GW-table-scrollbar-thumb-hover-color) var(--background-color);
+@supports (-moz-appearance: none) {
+	.table-scroll-wrapper {
+		scrollbar-color: var(--GW-table-scrollbar-thumb-color) var(--background-color);
+	}
+	.table-scroll-wrapper:hover {
+		scrollbar-color: var(--GW-table-scrollbar-thumb-hover-color) var(--background-color);
+	}
 }
 
 /*  Add little icons to tables handled by tablesorter.js
@@ -2006,11 +2008,13 @@ pre::-webkit-scrollbar-thumb:hover {
 
 /*  Horizontal scroll bar styles (for Firefox).
  */
-pre {
-    scrollbar-color: var(--GW-pre-element-scrollbar-thumb-color) var(--GW-pre-element-scrollbar-track-color);
-}
-pre:hover {
-    scrollbar-color: var(--GW-pre-element-scrollbar-thumb-hover-color) var(--GW-pre-element-scrollbar-track-color);
+@supports (-moz-appearance: none) {
+	pre {
+		scrollbar-color: var(--GW-pre-element-scrollbar-thumb-color) var(--GW-pre-element-scrollbar-track-color);
+	}
+	pre:hover {
+		scrollbar-color: var(--GW-pre-element-scrollbar-thumb-hover-color) var(--GW-pre-element-scrollbar-track-color);
+	}
 }
 
 /*=------------------------------------------------------------------------------------------=*/
@@ -2136,11 +2140,13 @@ pre .line:hover {
 
 /*  Horizontal scroll bar styles (for Firefox).
     */
-.math.block {
-    scrollbar-color: var(--GW-math-block-scrollbar-thumb-color) var(--background-color);
-}
-.math.block:hover {
-    scrollbar-color: var(--GW-math-block-scrollbar-thumb-hover-color) var(--background-color);
+@supports (-moz-appearance: none) {
+	.math.block {
+		scrollbar-color: var(--GW-math-block-scrollbar-thumb-color) var(--background-color);
+	}
+	.math.block:hover {
+		scrollbar-color: var(--GW-math-block-scrollbar-thumb-hover-color) var(--background-color);
+	}
 }
 
 /*  Block buttons.
@@ -2974,11 +2980,13 @@ a.footnote-back {
 
 /*  Scroll bar styles (for Firefox).
     */
-#markdownBody .sidenote.cut-off .sidenote-outer-wrapper {
-    scrollbar-color: var(--GW-sidenote-scrollbar-thumb-color) var(--background-color);
-}
-#markdownBody .sidenote.cut-off .sidenote-outer-wrapper:hover {
-    scrollbar-color: var(--GW-sidenote-scrollbar-thumb-hover-color) var(--background-color);
+@supports (-moz-appearance: none) {
+	#markdownBody .sidenote.cut-off .sidenote-outer-wrapper {
+		scrollbar-color: var(--GW-sidenote-scrollbar-thumb-color) var(--background-color);
+	}
+	#markdownBody .sidenote.cut-off .sidenote-outer-wrapper:hover {
+		scrollbar-color: var(--GW-sidenote-scrollbar-thumb-hover-color) var(--background-color);
+	}
 }
 
 /*  Inner wrapper (does not scroll; stretches to height of content).
@@ -4563,11 +4571,13 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 /*  Scroll bar styles (for Firefox).
     */
-.popup .popframe-scroll-view {
-    scrollbar-color: var(--GW-popups-popup-scrollbar-thumb-color) var(--background-color);
-}
-.popup .popframe-scroll-view:hover {
-    scrollbar-color: var(--GW-popups-popup-scrollbar-thumb-hover-color) var(--background-color);
+@supports (-moz-appearance: none) {
+	.popup .popframe-scroll-view {
+		scrollbar-color: var(--GW-popups-popup-scrollbar-thumb-color) var(--background-color);
+	}
+	.popup .popframe-scroll-view:hover {
+		scrollbar-color: var(--GW-popups-popup-scrollbar-thumb-hover-color) var(--background-color);
+	}
 }
 
 /*┌─────────────────────┐*/
@@ -5372,11 +5382,13 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 /*  Scroll bar styles (for Firefox).
     */
-.popin .popframe-scroll-view {
-    scrollbar-color: var(--GW-popins-popin-scrollbar-thumb-color) var(--background-color);
-}
-.popin .popframe-scroll-view:hover {
-    scrollbar-color: var(--GW-popins-popin-scrollbar-thumb-hover-color) var(--background-color);
+@supports (-moz-appearance: none) {
+	.popin .popframe-scroll-view {
+		scrollbar-color: var(--GW-popins-popin-scrollbar-thumb-color) var(--background-color);
+	}
+	.popin .popframe-scroll-view:hover {
+		scrollbar-color: var(--GW-popins-popin-scrollbar-thumb-hover-color) var(--background-color);
+	}
 }
 
 /*┌─────────────────────┐*/
