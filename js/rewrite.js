@@ -2242,7 +2242,7 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifyFileAppendClasses = (eve
         });
 		//	Apply annotation classes to previous block, if need be.
 		let previousBlock = previousBlockOf(fileIncludesBlock);
-		if (previousBlock?.matches("p"))
+		if (previousBlock?.matches("p.first-graf"))
 			previousBlock.classList.add("data-field", "title");
     });
 }, "rewrite");
