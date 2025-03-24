@@ -4,7 +4,7 @@
 # latex2unicode.py: Convert a simple inline TeX/LaTeX (aimed at ArXiv abstracts) into Unicode+HTML+CSS, using the OA API.
 # Author: Gwern Branwen
 # Date: 2023-06-28
-# When:  Time-stamp: "2025-03-22 17:45:00 gwern"
+# When:  Time-stamp: "2025-03-23 10:38:50 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python latex2unicode.py
@@ -232,26 +232,28 @@ lim<span class="subsup"><sub><em>x</em> → ∞</sub></span> <em>f</em>(<em>x</e
 ((202,680,742⧸582,771) × 0.1 × 100)
 - '740/618'
 740⁄618
-- $\\frac{1910}{209} = 9.14$
+- '$\\frac{1910}{209} = 9.14$'
 1,910⧸209 = 9.14
 - '(504827⁄1800) × 1.0 × 100'
 (504,827⧸1,800) × 1.0 × 100
-- $n/({\\pi\\over 8}$ lg $n)\\sp{1/2}$
+- '$n/({\\pi\\over 8}$ lg $n)\\sp{1/2}$'
 _n_⧸(𝜋⧸8 log _n_)<sup>1⁄2</sup>
-- O(\\log n \\operatorname{polyloglog} n)
+- 'O(\\log n \\operatorname{polyloglog} n)'
 𝒪(⟨log⁡<em>n</em>⟩ polyloglog <em>n</em>)
-- r1,... rm
+- 'r1,... rm'
 <em>r</em><sub>1</sub>, ..., <em>r</em><sub><em>m</em></sub>
-- \\(LCSPACE[s,c,e] = CSPACE[\\Theta(s + e \\log c), \\Theta(c)]\\)
+- '\\(LCSPACE[s,c,e] = CSPACE[\\Theta(s + e \\log c), \\Theta(c)]\\)'
 <em>LCSPACE</em>[<em>S</em>, <em>c</em>, <em>e</em>] = <em>CSPACE</em>[Θ(<em>s</em> + <em>e</em> log <em>c</em>), Θ(<em>c</em>)]
-- M_{PBH} &gt; 1.4 \\times 10^{17} {\\rm g}
+- 'M_{PBH} &gt; 1.4 \\times 10^{17} {\\rm g}'
 <em>M</em><sub><em>PBH</em></sub> &gt; 1.4 × 10<sup>17</sup> g
 - \\(&lt;n\\)
 &lt;<em>n</em>
-- $DyT($x$) = \\tanh(α$x$)$
+- '$DyT($x$) = \\tanh(α$x$)$'
 DyT(<em>x</em>) = tanh(α<em>x</em>)
-- \hat r
+- '\\hat r'
 <em>r̂</em>
+- '$x = \\frac{o \\cdot e - (1 - e)}{o}$'
+<em>x</em> = <em>o</em> · <em>e</em> − (1 − <em>e</em>) ⧸ <em>o</em>
 
 Task:
 

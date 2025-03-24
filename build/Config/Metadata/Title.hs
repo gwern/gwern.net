@@ -159,4 +159,4 @@ stringDelete = [" - The Public Domain Review"
             , "Machinamenta: ", "Radiator Blog: ", "  Journal of Heredity", " - media.ccc.de"
             , " - UEFConnect", " | Technology", " - Flashback Forum", " - Chiraag Gohel"
             , " - Ken Bertagnolli", " - Aresluna", " - Unexpected Values", "IQ's Corner: "
-            , " - Deviant/Abstraction", " : Free Download, Borrow, and Streaming : Internet Archive", " - TalkChess.com", " - Works in Progress", "SL4: ", " - Engineering and Technology History Wiki", " - Dominic Cummings's Blog", " - Ethan Zuckerman"]
+            , " - Deviant/Abstraction", " : Free Download, Borrow, and Streaming : Internet Archive", " - TalkChess.com", " - Works in Progress", "SL4: ", " - Engineering and Technology History Wiki", " - Dominic Cummings's Blog", " - Ethan Zuckerman", "The Ants Of God Are Queer Fish: "]

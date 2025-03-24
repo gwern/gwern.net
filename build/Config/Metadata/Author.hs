@@ -725,7 +725,7 @@ canonicalsWithInitials =
   , "Adam Edward Locke", "Samuel T. Cohen", "Thomas J. Bouchard", "Robert Mitchell Lindner"
   , "Sarah E. Bergen", "Roel André Ophoff", "Peter A. Holmans", "Patricia B. Munroe"
   , "Michael A. Woodley", "Mark J. Caulfield", "E. T. Jaynes", "Iris M. Heid", "Hill F. Ip"
-  , "Heather M. Stringham", "Christopher A. Haiman", "Catharina A. Hartman", "Bernhard T. Baune", "Karl T. Compton", "Tom B. Brown", "Saskia P. Hagenaars", "Robert R. McCrae", "Nathan A. Gillespie", "Marian L. Hamshere", "Richard W. Wrangham", "John R. Attia", "Joel Z. Leibo", "Jaspal S. Kooner", "Larry V. Hedges", "Hugh Christian Watkins", "Stephen Cole Kleene", "David C. Glahn", "Bernhard Otto Boehm", "John W. Tukey"]
+  , "Heather M. Stringham", "Christopher A. Haiman", "Catharina A. Hartman", "Bernhard T. Baune", "Karl T. Compton", "Tom B. Brown", "Saskia P. Hagenaars", "Robert R. McCrae", "Nathan A. Gillespie", "Marian L. Hamshere", "Richard W. Wrangham", "John R. Attia", "Joel Z. Leibo", "Jaspal S. Kooner", "Larry V. Hedges", "Hugh Christian Watkins", "Stephen Cole Kleene", "David C. Glahn", "Bernhard Otto Boehm", "John W. Tukey", "Behrooz Z. Alizadeh"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1493,8 +1493,13 @@ authorLinkDB = M.fromList $
     , ("William Aspray", "https://ethw.org/Oral-History:William_Aspray")
     , ("Frank Bellivier", "https://scholar.google.com/scholar?q=Frank%20Bellivier")
     , ("David C. Glahn" ,"https://research.childrenshospital.org/researchers/david-glahn")
-    , ("Bertram Müller-Myhsok", "https://scholar.google.com/citations?user=tSFUTXwAAAAJ&hl=en&oi=ao")
+    , ("Bertram Müller-Myhsok", "https://scholar.google.com/citations?user=tSFUTXwAAAAJ")
     , ("Bernhard Otto Boehm", "https://www.ntu.edu.sg/medicine/news-events/magazines-and-newsletters/the-lkcmedicine-february-2019/profile-meet-prof-bernhard-boehm-more-ammunition-to-fight-diabetes")
+    , ("Behrooz Z. Alizadeh", "https://www.rug.nl/umcg/research/departments/epidemiology/staff/behrooz-alizadeh")
+    , ("Barbara McKnight", "https://www.biostat.washington.edu/people/barbara-mcknight")
+    , ("Augustus Odena", "https://www.augustusodena.com/")
+    , ("Ashish Sabharwal", "https://www.cs.cornell.edu/~sabhar/")
+    , ("Olin Shivers", "https://www.ccs.neu.edu/home/shivers/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2747,4 +2752,4 @@ authorWpLinkDB =
     , "Milton Rokeach", "Robert Heinlein", "Lauren Faust", "Walter Savage Landor", "Robert Laurence Binyon"
     , "David A. Freedman", "Larry V. Hedges", "Hugh Christian Watkins", "Frank Herbert"
     , "Norman Spinrad", "Willis E. McNelly", "Stephen Cole Kleene", "Warren S. McCulloch"
-    , "Walter Pitts", "Paul Werbos", "Ralph P. Boas Junior", "Albert W. Tucker", "Paul Debevec", "Lyman Spitzer"]
+    , "Walter Pitts", "Paul Werbos", "Ralph P. Boas Junior", "Albert W. Tucker", "Paul Debevec", "Lyman Spitzer", "Ethan Zuckerman", "Scott Adams"]

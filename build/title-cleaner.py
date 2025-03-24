@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-03-22 18:44:56 gwern"
+# When:  Time-stamp: "2025-03-23 17:46:16 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -616,6 +616,8 @@ Katri Räikkönen
 "AI Takeoff tag"
 - "https://ethanzuckerman.com/2011/04/06/those-white-plastic-chairs-the-monobloc-and-the-context-free-object/ Those White Plastic Chairs—The Monobloc and the Context-Free Object - Ethan Zuckerman"
 "Those White Plastic Chairs—The Monobloc and the Context-Free Object"
+- "https://antsofgodarequeerfish.blogspot.com/2012/04/illustration-for-euremas-dam.html The Ants Of God Are Queer Fish: Illustration for Eurema’s Dam!"
+"Illustration for Eurema’s Dam!"
 
 Task:
 

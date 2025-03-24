@@ -355,6 +355,7 @@ htmlRewriteFixed =
          , ("<p>[<strong>Keywords</strong>: ]</p>", "")
          , ("<strong>Null</strong>: ", "")
          , ("&amp;gt;", "&gt;")
+         , ("  = ", " = ")
          , ("&lt;=", "≤")
          , ("&gt;=", "≥")
          , (" >= ", " ≥ ")

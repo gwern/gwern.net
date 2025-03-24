@@ -3080,7 +3080,7 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
           , ("Mastodons", "Mastodon")
           , ("Mat%C3%A9", "Mate_(drink)")
           , ("Match_3", "Tile-matching_video_game")
-          , ("Matching_gift", "Matching_funds#Charitable_donations")
+          , ("Matching_gift", "Matching_funds")
           , ("Material_adverse_effect", "Material_adverse_change")
           , ("Mathematica", "Wolfram_Mathematica")
           , ("Mathematical_Intelligencer", "The_Mathematical_Intelligencer")
@@ -5983,4 +5983,7 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("Java", "Java_(programming_language)")
         , ("Lean", "Lean_(proof_assistant)")
         , ("Will_Wilkinson", "https://web.archive.org/web/20250207111732/https://en.wikipedia.org/wiki/Will_Wilkinson")
+        , ("Hash", "Hash_function")
+        , ("BBS", "Bulletin_board_system")
+        , ("Feliway", "Cat_pheromone")
         ]

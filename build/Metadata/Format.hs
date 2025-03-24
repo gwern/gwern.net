@@ -120,7 +120,7 @@ linkCanonicalize l | "https://gwern.net/" `isPrefixOf` l = replace "https://gwer
                    -- → "https://arxiv.org/abs/2406.20053#org=foo"
                    | "https://arxiv.org/" `isPrefixOf` l = replace "https://arxiv.org/html/" "https://arxiv.org/abs/" $ replace "https://arxiv.org/abs//" "https://arxiv.org/abs/" $ sedMany [("https://arxiv.org/pdf/([0-9.]+)([&#]org=[a-z]+)?$", "https://arxiv.org/abs/\\1\\2")] l
                    -- | head l == '#' = l
-                   | otherwise = delete "\8203" l
+                   | otherwise = delete "\8203" $ replace "https://www.greaterwrong.com/" "https://www.lesswrong.com/" l
 
 filterMeta :: String -> String
 filterMeta ea = if anyInfix ea C.filterMetaBadSubstrings || elem ea C.filterMetaBadWholes then "" else ea
