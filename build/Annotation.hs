@@ -10,9 +10,9 @@ import Annotation.PDF (pdf)
 import Annotation.OpenReview (openreview)
 import Annotation.Arxiv (arxiv)
 import LinkMetadataTypes (Failure(..), MetadataItem, Path, Metadata)
-import Metadata.Format (linkCanonicalize, cleanAbstractsHTML)
+import Metadata.Format as MF (linkCanonicalize, cleanAbstractsHTML)
 import Metadata.Date (guessDateFromString, isDate)
-import Metadata.Author (extractTwitterUsername, isAuthor)
+import Metadata.Author (extractTwitterUsername, isAuthor, authorsUnknownPrint)
 import Metadata.Title (tooltipToMetadata, wikipediaURLToTitle, htmlDownloadAndParseTitleClean)
 import Typography (typesetHtmlFieldPermanent)
 import Utils (replace, anyPrefix, printGreen, printRed, trim, delete)
@@ -31,7 +31,7 @@ import System.FilePath (takeBaseName)
 -- 'new link' handler: if we have never seen a URL before (because it's not in the metadata database), we attempt to parse it or call out to external sources to get metadata on it, and hopefully a complete annotation.
 linkDispatcher :: Metadata -> Inline -> IO (Either Failure (Path, MetadataItem))
 linkDispatcher md (Link _ _ (l, tooltip)) =
- do let l' = linkCanonicalize $ T.unpack l
+ do let l' = MF.linkCanonicalize $ T.unpack l
     mi <- linkDispatcherURL md l'
 
     today <- C.todayDayString
@@ -43,20 +43,22 @@ linkDispatcher md (Link _ _ (l, tooltip)) =
         do date <- if dateRaw /= "" then return dateRaw else guessDateFromString (title ++ " : " ++ l'')
            title' <- reformatTitle title
            print $ "guessAuthorDateFromPath : " ++ show (l'',(title',author,date,defaultCreatedToToday dc,kvs,tags,abstract))
+           authorsUnknownPrint author
            return $ Right $ guessAuthorDateFromPath (l'',(title',author,date,defaultCreatedToToday dc,kvs,tags,abstract))
       Left Permanent -> do let (title,author,date') = tooltipToMetadata l' (T.unpack tooltip)
                            title' <- reformatTitle title
                            print ("Left Permanent"::String)
                            let guess = guessAuthorDateFromPath (l',(title',author,date',defaultCreatedToToday "",[],[],""))
+                           authorsUnknownPrint author
                            return (Right guess)
       Left Temporary -> return mi
 linkDispatcher _ x = error ("Annotation.linkDispatcher passed a non-Link Inline element: " ++ show x)
 
--- NOTE: we cannot simply put this in `typesetHtmlField`/`cleanAbstractsHTML` because while a space-separated hyphen in a *title* is almost always an em-dash, in an *abstract*, it often is meant to be an en-dash or a minus sign instead. So if we want to clean those up across all titles, we have to confine it to title fields only.
+-- NOTE: we cannot simply put this in `typesetHtmlField`/`MF.cleanAbstractsHTML` because while a space-separated hyphen in a *title* is almost always an em-dash, in an *abstract*, it often is meant to be an en-dash or a minus sign instead. So if we want to clean those up across all titles, we have to confine it to title fields only.
 reformatTitle :: String -> IO String
 reformatTitle t = do
   t' <- processItalicizer t
-  return $ typesetHtmlFieldPermanent True . cleanAbstractsHTML . replace " – " "—" . replace " - " "—" $ t'
+  return $ typesetHtmlFieldPermanent True . MF.cleanAbstractsHTML . replace " – " "—" . replace " - " "—" $ t'
 
 linkDispatcherURL :: Metadata -> Path -> IO (Either Failure (Path, MetadataItem))
 linkDispatcherURL md l
@@ -71,8 +73,8 @@ linkDispatcherURL md l
   | "https://x.com/" `isPrefixOf` l = twitter l
   | null l = return (Left Permanent)
   -- locally-hosted PDF?
-  | ".pdf" `isInfixOf` l = let l' = linkCanonicalize l in if head l' == '/' then pdf md l' else return (Left Permanent)
-  | otherwise = let l' = linkCanonicalize l in if head l' == '/' then gwern md l
+  | ".pdf" `isInfixOf` l = let l' = MF.linkCanonicalize l in if head l' == '/' then pdf md l' else return (Left Permanent)
+  | otherwise = let l' = MF.linkCanonicalize l in if head l' == '/' then gwern md l
   -- And everything else is unhandled:
      else do title <- htmlDownloadAndParseTitleClean l
              if title /= "" then return (Right (l, (title, "", "", "", [], [], "")))

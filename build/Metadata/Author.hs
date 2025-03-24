@@ -3,7 +3,7 @@
 {- Metadata.Author.hs: module for managing 'author' metadata & hyperlinking author names in annotations
 Author: Gwern Branwen
 Date: 2024-04-14
-When:  Time-stamp: "2025-03-13 21:07:17 gwern"
+When:  Time-stamp: "2025-03-23 21:11:27 gwern"
 License: CC-0
 
 Authors are useful to hyperlink in annotations, but pose some problems: author names are often ambiguous in both colliding and having many non-canonical versions, are sometimes extremely high frequency & infeasible to link one by one, and there can be a large number of authors (sometimes hundreds or even thousands in some scientific fields).
@@ -38,6 +38,7 @@ module Metadata.Author where
 import Control.Monad (void)
 import Data.Char (isLetter, toUpper)
 import Data.List (intersperse, intercalate)
+import Data.List.Split (splitOn)
 import Data.Containers.ListUtils (nubOrd)
 import qualified Data.Map.Strict as M (lookup, map, fromList, toList, unionWithKey, Map)
 import qualified Data.Text as T (find, pack, splitOn, takeWhile, Text, append, unpack)
@@ -48,7 +49,7 @@ import Network.HTTP (urlEncode)
 import Data.FileStore.Utils (runShellCommand)
 import Interwiki (toWikipediaEnURLSearch)
 import LinkMetadataTypes (Metadata)
-import Utils (split, frequency, trim, replaceMany, sedMany)
+import Utils (split, frequency, trim, replaceMany, sedMany, printRed, printGreen)
 import qualified LinkBacklink as BL
 import Query (extractURLs)
 import Cycle (testInfixRewriteLoops)
@@ -194,6 +195,16 @@ isAuthor "" = False
 isAuthor a = case M.lookup a authorDB of
                Nothing -> isJust $ M.lookup (T.pack a) CA.authorLinkDB
                Just _ -> True
+
+-- convenience function for working with metadata to quickly see which authors are currently unknown; some of the authors might obviously have a Wikipedia or other easy URL to define.
+authorsUnknown :: [String] -> [String]
+authorsUnknown [] = error "Author.authorsUnknown: called with an empty list, but this should only ever be called on some specific author or authors, and so that should be impossible!"
+authorsUnknown [""] = []
+authorsUnknown auts = filter (not . isAuthor) auts
+
+authorsUnknownPrint :: String -> IO ()
+authorsUnknownPrint auts = let missing = authorsUnknown $ splitOn ", " auts in
+                             if null missing then return () else printRed "Authors unknown: " >> mapM_ printGreen missing
 
 -- final database of alias→author rewrites: combine the handwritten with the generated.
 -- WARNING: the two databases are required to be unique and non-overlapping; we could override generated with manual, but that kind of conflict indicates a semantic issue and must be dealt with by the user.

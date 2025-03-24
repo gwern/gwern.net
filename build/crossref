@@ -39,49 +39,60 @@ if [ "${*##*.}" = "pdf" ]; then
         TITLE=$(exiftool -q -q -printFormat \$Title -Title "$TARGET" | \
                     sed -e 's/()//' -e 's/­//g' -e 's/[–—]/-/g' -e "s/\(.\+\)'\(.\+\)'\(.\+\)/\1‘\2’\3/g" -e "s/'/\&\#39\;/g"  -e 's/\([0-9]+\)-\([0-9]+\)/\1–\2/g' -e 's/\(.*\) - \(.*\)/\1—\2/g' -e 's/\([a-z]\)_ /\1: /g' -e 's/^ *//g' -e 's/ *$//g' -e 's/\.$//' -e 's/\&#39\;/’/g' -e 's/â\&#x80\;\&#x99\;/’/g' -e 's/.*PII\: .*//g' -e 's/☆//' -e 's/^_$//' -e 's/\([A-Z]\)\&\([A-Z]\)/\1\&amp;\2/g' | \
                     tr -d '\n')
-    echo ""
-    echo "---"
-    echo "$URL"
-    echo "$TITLE";
+        echo ""
+        echo "---"
+        echo "$URL"
+        echo "$TITLE";
 
-    ## Check if 'Author' is prefix of 'Creator', in which case 'Creator is probably the 'real' list of authors
-    ## (eg in `/doc/psychiatry/alzheimers/2021-huang.pdf`, Author = 'Youtong Huang' but Creator = 'Youtong Huang, Kaisa E. Happonen, Patrick G. Burrola, Carolyn O’Connor, Nasun Hah, Ling Huang, Axel Nimmerjahn, Greg Lemke')
-    clean_maker() {
-        exiftool -q -q -printFormat \$"$1" -"$1" "$TARGET" | \
-            sed -e 's/;/,/g' -e 's/ \([A-Z]\.\)\([A-Z]\.\) / \1 \2 /g' -e 's/, and /, /g' -e 's/ and /, /g' -e 's/ , /, /g' -e 's/^ *//g' \
-                -e 's/ +$//g' -e 's/ & /, /g' -e 's/,,/,/g' -e 's/\n//g' -e 's/ & /, /g' | \
-            tr --squeeze-repeats '[:space:]' | tr -d '\n'
-    }
-    AUTHOR="$(clean_maker  Author)"
-    CREATOR="$(clean_maker Creator)"
-    if [[ "$CREATOR" =~ $AUTHOR.* ]]; then echo "$CREATOR"; else echo "$AUTHOR"; fi
+        ## Check if 'Author' is prefix of 'Creator', in which case 'Creator is probably the 'real' list of authors
+        ## (eg in `/doc/psychiatry/alzheimers/2021-huang.pdf`, Author = 'Youtong Huang' but Creator = 'Youtong Huang, Kaisa E. Happonen, Patrick G. Burrola, Carolyn O’Connor, Nasun Hah, Ling Huang, Axel Nimmerjahn, Greg Lemke')
+        clean_maker() {
+            exiftool -q -q -printFormat \$"$1" -"$1" "$TARGET" | \
+                sed -e 's/;/,/g' -e 's/ \([A-Z]\.\)\([A-Z]\.\) / \1 \2 /g' -e 's/, and /, /g' -e 's/ and /, /g' -e 's/ , /, /g' -e 's/^ *//g' \
+                    -e 's/ +$//g' -e 's/ & /, /g' -e 's/,,/,/g' -e 's/\n//g' -e 's/ & /, /g' | \
+                tr --squeeze-repeats '[:space:]' | tr -d '\n'
+        }
+        AUTHOR_TMP="$(clean_maker  Author)"
+        CREATOR_TMP="$(clean_maker Creator)"
+        AUTHOR=""
+        if [[ "$CREATOR_TMP" =~ $AUTHOR_TMP.* ]]; then AUTHOR="$CREATOR_TMP"; else AUTHOR="$AUTHOR_TMP"; fi
+        echo "$AUTHOR"
 
-    # print out original published & date annotation created:
-    DATE="$(exiftool -q -q -dateFormat '%F' -printFormat \$Date "$TARGET" | \
-                     sed -e "s/^\([1-2][0-9][0-9][0-9]\)$/'\1'/" -e "s/-01$//")"
-    echo "$DATE"
-    date '+%F' # date-created—which is today/now
+        # print out original published & date annotation created:
+        DATE="$(exiftool -q -q -dateFormat '%F' -printFormat \$Date "$TARGET" | \
+                         sed -e "s/^\([1-2][0-9][0-9][0-9]\)$/'\1'/" -e "s/-01$//")"
+        echo "$DATE"
+        date '+%F' # date-created—which is today/now
 
-    DOI=$(exiftool -q -q -printFormat \$DOI -DOI "$TARGET" | tr -d '\n' | tr '–—­' '-' | \
-              sed -e 's/^doi://' -e 's/https\:\/\/doi\.org\///' -e 's/https\:\/\/dx\.doi\.org\///')
-    if [[ -z "$DOI" ]]; then echo; else echo "[(\"doi\",\"$DOI\")]"; fi
+        DOI=$(exiftool -q -q -printFormat \$DOI -DOI "$TARGET" | tr -d '\n' | tr '–—­' '-' | \
+                  sed -e 's/^doi://' -e 's/https\:\/\/doi\.org\///' -e 's/https\:\/\/dx\.doi\.org\///')
+        if [[ -z "$DOI" ]]; then echo; else echo "[(\"doi\",\"$DOI\")]"; fi
 
-    echo # empty string for tags (files will inherit a tag, but we still need the empty string explicitly, and may want to add some anyway)
+        echo # empty string for tags (files will inherit a tag, but we still need the empty string explicitly, and may want to add some anyway)
 
-    timeout 8s curl --silent --location 'https://api.crossref.org/works/'"$DOI" | jq .message.abstract 2> /dev/null | grep -E -v '^null$' || true
-    echo ""
+        timeout 8s curl --silent --location 'https://api.crossref.org/works/'"$DOI" | jq .message.abstract 2> /dev/null | grep -E -v '^null$' || true
+        echo ""
 
-        ( if [ -z "$(pgrep annotation-dump)" ]; then
-              if [[ -n "$TITLE" ]]; then gwa | grep -F -e "$URL" -e "$TITLE" || true;
-          else gwa "$URL" || true;
-          fi;
-        fi; ) &
+            ( if [ -z "$(pgrep annotation-dump)" ]; then
+                  if [[ -n "$TITLE" ]]; then gwa | grep -F -e "$URL" -e "$TITLE" || true;
+                  else gwa "$URL" || true;
+                  fi;
+              fi; ) &
 
-    echo "---"
-    exiftool -q -q -Subject  "$TARGET" | tr '\n' ' '; echo ""
-    exiftool -q -q -Keywords "$TARGET" | tr '\n' ' '; echo ""
-    exiftool -q -q -Encryption -printFormat 'Encrypted: $Encryption' "$TARGET"
-    wait
+        echo "---"
+        exiftool -q -q -Subject  "$TARGET" | tr '\n' ' '; echo ""
+        exiftool -q -q -Keywords "$TARGET" | tr '\n' ' '; echo ""
+        exiftool -q -q -Encryption -printFormat 'Encrypted: $Encryption' "$TARGET"
+        wait
+
+        # check for authors not in existing author metadata database in case we want to quickly add them:
+        ( cd ~/wiki/
+            AUTHORS_UNKNOWN=""
+            AUTHORS_UNKNOWN=$(echo "$AUTHOR" | ghci -istatic/build/ ./static/build/Metadata/Author.hs \
+                                                    -e 'interact (concat . Metadata.Author.authorsUnknown . Data.List.Split.splitOn ", ")' | \
+                                  gfv -e ' secs,' -e 'it :: ()' -e '[]')
+            if [[ -n "$AUTHORS_UNKNOWN" ]]; then bold "Unknown authors: "; echo "$AUTHORS_UNKNOWN"; fi
+        )
     else
         echo "File doesn't exist? $TARGET"
     fi
