@@ -423,6 +423,8 @@ canonicals = M.fromList
   , ("Jian'an Luan", "Jian’an Luan")
   , ("David Hinds", "David A. Hinds")
   , ("Zvi Moshowitz", "Zvi Mowshowitz")
+  , ("Zvi", "Zvi Mowshowitz")
+  , ("TheZvi", "Zvi Mowshowitz")
   , ("Astralite Heart", "AstraliteHeart")
   , ("Carrier Michael A.", "Michael A. Carrier")
   , ("Pearce Elizabeth N.", "Elizabeth N. Pearce")
@@ -452,6 +454,9 @@ canonicals = M.fromList
   , ("David Buss", "David M. Buss")
   , ("Arthur Jensen", "Arthur R. Jensen")
   , ("Jurgen Schmidhuber", "J\252rgen Schmidhuber")
+  , ("Juergen Schmidhuber", "J\252rgen Schmidhuber")
+  , ("Jurgen Schmidhuber", "J\252rgen Schmidhuber")
+  , ("J. Schmidhuber", "J\252rgen Schmidhuber")
   , ("dlberes", "Damon Beres")
   , ("Michelle Meyer", "Michelle N. Meyer")
   , ("stefaesthesia", "Stefanie")
@@ -697,6 +702,11 @@ canonicals = M.fromList
   , ("Bertram Muller-Myhsok", "Bertram Müller-Myhsok")
   , ("Bertram Mueller-Myhsok", "Bertram Müller-Myhsok")
   , ("Lyman Spitzer Junior", "Lyman Spitzer")
+  , ("Alena Yaluri", "Alena Stančáková")
+  , ("Alena Stančáková Yaluri", "Alena Stančáková")
+  , ("Alena Yaluri Stančáková", "Alena Stančáková")
+  , ("Alena Stancakova", "Alena Stančáková")
+  , ("bryan_johnson", "Bryan Johnson")
   ]
 
 -- tests: unique
@@ -725,7 +735,7 @@ canonicalsWithInitials =
   , "Adam Edward Locke", "Samuel T. Cohen", "Thomas J. Bouchard", "Robert Mitchell Lindner"
   , "Sarah E. Bergen", "Roel André Ophoff", "Peter A. Holmans", "Patricia B. Munroe"
   , "Michael A. Woodley", "Mark J. Caulfield", "E. T. Jaynes", "Iris M. Heid", "Hill F. Ip"
-  , "Heather M. Stringham", "Christopher A. Haiman", "Catharina A. Hartman", "Bernhard T. Baune", "Karl T. Compton", "Tom B. Brown", "Saskia P. Hagenaars", "Robert R. McCrae", "Nathan A. Gillespie", "Marian L. Hamshere", "Richard W. Wrangham", "John R. Attia", "Joel Z. Leibo", "Jaspal S. Kooner", "Larry V. Hedges", "Hugh Christian Watkins", "Stephen Cole Kleene", "David C. Glahn", "Bernhard Otto Boehm", "John W. Tukey", "Behrooz Z. Alizadeh"]
+  , "Heather M. Stringham", "Christopher A. Haiman", "Catharina A. Hartman", "Bernhard T. Baune", "Karl T. Compton", "Tom B. Brown", "Saskia P. Hagenaars", "Robert R. McCrae", "Nathan A. Gillespie", "Marian L. Hamshere", "Richard W. Wrangham", "John R. Attia", "Joel Z. Leibo", "Jaspal S. Kooner", "Larry V. Hedges", "Hugh Christian Watkins", "Stephen Cole Kleene", "David C. Glahn", "Bernhard Otto Boehm", "John W. Tukey", "Behrooz Z. Alizadeh", "Aki S. Havulinna"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1500,6 +1510,13 @@ authorLinkDB = M.fromList $
     , ("Augustus Odena", "https://www.augustusodena.com/")
     , ("Ashish Sabharwal", "https://www.cs.cornell.edu/~sabhar/")
     , ("Olin Shivers", "https://www.ccs.neu.edu/home/shivers/")
+    , ("Stephen A. Ross", "https://en.wikipedia.org/wiki/Stephen_Ross_(economist)")
+    , ("Alena Stančáková", "https://www.upjs.sk/en/LF/employee/alena.yaluri/")
+    , ("Aki S. Havulinna", "https://scholar.google.com/citations?user=7_6uXDQAAAAJ&hl=en&oi=ao")
+    , ("Aitor Lewkowycz", "https://scholar.google.com/citations?user=Yum1ah0AAAAJ&hl=en&oi=ao")
+    , ("Adam Lerer", "https://adamlerer.github.io/")
+    , ("Alejandro Cuevas", "https://alejandrocuevas.me/")
+    , ("Jeff Duntemann", "http://www.duntemann.com/whoiam.htm")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2099,7 +2116,7 @@ authorWpLinkDB =
     ,"Jozef Gecz", "Jo\227o Pedro de Magalh\227es", "Ju Hu", "Ju Li", "Juan Botella"
     ,"Juan Carlos Izpisua Belmonte", "Juan Frias", "Juan Mac\237as", "Juan Pino", "Judah Folkman"
     ,"Judith Campisi", "Judith Dunn", "Judith N. Shklar", "Judy Hoffman", "Jue Wang"
-    ,"Juergen Schmidhuber", "Jugal Kalita", "Jules White", "Julia Hippisley-Cox", "Julia Marshall"
+    , "Jugal Kalita", "Jules White", "Julia Hippisley-Cox", "Julia Marshall"
     ,"Julian Assange", "Julian Borger", "Julian C. Stanley", "Julian Parkhill", "Julian Peto"
     ,"Julian Roth", "Julian Savulescu", "Julian Stanley", "Julian Togelius", "Juliana Schroeder"
     ,"Julie Beaulieu", "Julie Cunningham", "Julie E. Buring", "Julie Hecht", "Julie Jordan"
@@ -2558,7 +2575,7 @@ authorWpLinkDB =
     ,"Stefan Wachter", "Stefan Wurster", "Stefan Zary", "Stefania Serafin", "Stefanie Stantcheva"
     ,"Stefano DellaVigna", "Stefano Ugolini", "Steffen Schmidt", "Stella Chen", "Stephan Collishaw"
     ,"Stephan Lewandowsky", "Stephan Ripke", "Stephan Zipfel", "Stephanie Forrest", "Stephanie J. London"
-    ,"Stephanie Lin", "Stephanie Lopez", "Stephen A. Ross", "Stephen Ansolabehere", "Stephen C. Stearns"
+    ,"Stephanie Lin", "Stephanie Lopez", "Stephen Ansolabehere", "Stephen C. Stearns"
     ,"Stephen Ceci", "Stephen Chanock", "Stephen E. Epstein", "Stephen E. Fienberg", "Stephen E. Harris"
     ,"Stephen Franks", "Stephen G. Waxman", "Stephen Hsu", "Stephen J. Ceci", "Stephen J. Elledge"
     ,"Stephen J. O\8217Brien", "Stephen J. Roberts", "Stephen J. Simpson", "Stephen J. Wright", "Stephen L. Carter"
@@ -2752,4 +2769,6 @@ authorWpLinkDB =
     , "Milton Rokeach", "Robert Heinlein", "Lauren Faust", "Walter Savage Landor", "Robert Laurence Binyon"
     , "David A. Freedman", "Larry V. Hedges", "Hugh Christian Watkins", "Frank Herbert"
     , "Norman Spinrad", "Willis E. McNelly", "Stephen Cole Kleene", "Warren S. McCulloch"
-    , "Walter Pitts", "Paul Werbos", "Ralph P. Boas Junior", "Albert W. Tucker", "Paul Debevec", "Lyman Spitzer", "Ethan Zuckerman", "Scott Adams"]
+    , "Walter Pitts", "Paul Werbos", "Ralph P. Boas Junior", "Albert W. Tucker", "Paul Debevec"
+    , "Lyman Spitzer", "Ethan Zuckerman", "Scott Adams", "Justin Wolfers", "Richard Palais", "Ken White"
+    , "Reginald Bretnor", "Poul Anderson", "Hal Clement", "Alan E. Nourse", "Theodore Sturgeon", "Jerry Pournelle", "Katherine MacLean", "James E. Gunn", "Larry Niven", "Jack Williamson", "John Brunner", "Harlan Ellison", "Frederik Pohl"]

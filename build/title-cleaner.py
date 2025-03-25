@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-03-23 17:46:16 gwern"
+# When:  Time-stamp: "2025-03-24 20:10:22 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -618,6 +618,14 @@ Katri Räikkönen
 "Those White Plastic Chairs—The Monobloc and the Context-Free Object"
 - "https://antsofgodarequeerfish.blogspot.com/2012/04/illustration-for-euremas-dam.html The Ants Of God Are Queer Fish: Illustration for Eurema’s Dam!"
 "Illustration for Eurema’s Dam!"
+- "https://www.ralafferty.org/works/collections/nine-hundred-grandmothers/ R. A. Lafferty, <em>Nine Hundred Grandmothers</em>—Science Fiction, Fantasy, Philosophy &amp; History"
+"R. A. Lafferty, <em>Nine Hundred Grandmothers</em>"
+- "https://www.rug.nl/umcg/research/departments/epidemiology/staff/behrooz-alizadeh Research units"
+""
+- "https://thesilverelves.blogspot.com/2019/02/who-were-elf-queens-daughters.html The Silver Elves: Who Were the Elf Queen’s Daughters?"
+"Who Were the Elf Queen’s Daughters?"
+- https://www.bloomberg.com/news/articles/2025-03-18/openai-s-first-stargate-site-to-hold-up-to-400-000-nvidia-chips Bloomberg—Are you a robot?"
+""
 
 Task:
 

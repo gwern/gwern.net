@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2025-03-09 12:14:39 gwern"
+# When:  Time-stamp: "2025-03-24 16:10:46 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -624,6 +624,10 @@ Transformer language models (LMs) exhibit behaviors -- from storytelling to code
 We study state tracking in LMs trained or fine-tuned to compose permutations (i.e., to compute the order of a set of objects after a sequence of swaps). Despite the simple algebraic structure of this problem, many other tasks (e.g., simulation of finite automata and evaluation of boolean expressions) can be reduced to permutation composition, making it a natural model for state tracking in general.
 We show that LMs consistently learn one of two state tracking mechanisms for this task. The first closely resembles the "associative scan" construction used in recent theoretical work by Liu et al. (2023) and Merrill et al. (2024). The second uses an easy-to-compute feature (permutation parity) to partially prune the space of outputs, then refines this with an associative scan. The two mechanisms exhibit markedly different robustness properties, and we show how to steer LMs toward one or the other with intermediate training tasks that encourage or suppress the heuristics.
 Our results demonstrate that transformer LMs, whether pretrained or fine-tuned, can learn to implement efficient and interpretable state tracking mechanisms, and the emergence of these mechanisms can be predicted and controlled.
+- <abstract>This article uses material which has recently been made available from Russian archives to analyse the causes of repressed inflation in the Soviet consumer market. It finds that retail price subsidies, which increased as a proportion of state budget expenditure from 4 per cent in 1965 to 20 per cent in the late 1980s, intensified consumer market disequilibrium. The provision of these subsidies had negative effects on the market by maintaining the purchasing power of households for consumer goods and by increasing the budget deficit. The unauthorized purchase of consumer goods by enterprises tended to increase during these years also.</abstract>
+This article uses material which has recently been made available from Russian archives to analyse the causes of repressed inflation in the Soviet consumer market.
+It finds that retail price subsidies, which increased as a proportion of state budget expenditure from 4 per cent in 1965 to 20 per cent in the late 1980s, intensified consumer market disequilibrium.
+The provision of these subsidies had negative effects on the market by maintaining the purchasing power of households for consumer goods and by increasing the budget deficit. The unauthorized purchase of consumer goods by enterprises tended to increase during these years also.
 
 [End of examples. Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 

@@ -3,7 +3,7 @@
 {- Metadata.Author.hs: module for managing 'author' metadata & hyperlinking author names in annotations
 Author: Gwern Branwen
 Date: 2024-04-14
-When:  Time-stamp: "2025-03-23 21:11:27 gwern"
+When:  Time-stamp: "2025-03-24 16:45:28 gwern"
 License: CC-0
 
 Authors are useful to hyperlink in annotations, but pose some problems: author names are often ambiguous in both colliding and having many non-canonical versions, are sometimes extremely high frequency & infeasible to link one by one, and there can be a large number of authors (sometimes hundreds or even thousands in some scientific fields).
@@ -35,7 +35,7 @@ This could further come with some browser automation like searching Wikipedia + 
 
 module Metadata.Author where
 
-import Control.Monad (void)
+import Control.Monad (void, unless)
 import Data.Char (isLetter, toUpper)
 import Data.List (intersperse, intercalate)
 import Data.List.Split (splitOn)
@@ -204,7 +204,7 @@ authorsUnknown auts = filter (not . isAuthor) auts
 
 authorsUnknownPrint :: String -> IO ()
 authorsUnknownPrint auts = let missing = authorsUnknown $ splitOn ", " auts in
-                             if null missing then return () else printRed "Authors unknown: " >> mapM_ printGreen missing
+                             unless (null missing) (printRed "Authors unknown: " >> printGreen (intercalate ", " missing))
 
 -- final database of alias→author rewrites: combine the handwritten with the generated.
 -- WARNING: the two databases are required to be unique and non-overlapping; we could override generated with manual, but that kind of conflict indicates a semantic issue and must be dealt with by the user.

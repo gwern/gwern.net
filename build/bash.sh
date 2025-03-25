@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-03-13 10:17:01 gwern"
+# When:  Time-stamp: "2025-03-24 09:31:51 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -781,7 +781,7 @@ lorem_update () {
 }
 
 run_gold_test () {
-    get_lorem_pages | while read -r page; do
+    for page in $(get_lorem_pages); do
         compare_page "${page}"
     done
 }

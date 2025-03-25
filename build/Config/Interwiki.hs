@@ -5986,4 +5986,6 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("Hash", "Hash_function")
         , ("BBS", "Bulletin_board_system")
         , ("Feliway", "Cat_pheromone")
+        , ("Stephen_A._Ross", "Stephen_Ross_(economist)")
+        , ("PAC", "Probably_approximately_correct_learning")
         ]
