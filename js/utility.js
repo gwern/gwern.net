@@ -1434,3 +1434,47 @@ function onEventAfterDelayDo(target, triggerEventName, delay, func, options) {
 if (window.requestIdleCallback == null) {
 	window.requestIdleCallback = (fn) => { setTimeout(fn, 0) };
 }
+
+/***********************************/
+/*	Polyfill for Set.intersection().
+ */
+Set.prototype.intersection = function (other) {
+	let result = new Set();
+	let big   = this.size > other.size ? this : other;
+	let small = this.size > other.size ? other : this;
+	for (let x of small)
+		if (big.has(x))
+			result.add(x);
+	return result;
+};
+
+/****************************/
+/*	Polyfill for Set.union().
+ */
+Set.prototype.union = function (other) {
+	let result = new Set(this);
+	for (let x of other)
+		result.add(x);
+	return result;
+};
+
+/*******************************************/
+/*	Return array of words found in a string.
+ */
+function tokenize(str) {
+	return str
+		.toLowerCase()
+		.replace(/[^\w\s’]/g, "")  // punctuation removal
+		.split(/\s+/)
+		.filter(x => x);         // remove empty tokens
+}
+
+/***************************************************************************/
+/*	Compute Jaccard similarity (intersection over union) of unique tokens of
+	two strings.
+ */
+function jaccardSimilarity(a, b) {
+	let tokensA = new Set(tokenize(a));
+	let tokensB = new Set(tokenize(b));
+	return tokensA.intersection(tokensB).size / tokensA.union(tokensB).size;
+}

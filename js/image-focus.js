@@ -607,7 +607,8 @@ ImageFocus = {
 				 && textContentOf(element) != GW.defaultImageAuxText
 				 && array.findIndex(otherElement => (
 				 		otherElement != null
-					 && textContentOf(otherElement) == textContentOf(element))
+// 					 && textContentOf(otherElement) == textContentOf(element))
+					 && jaccardSimilarity(textContentOf(element), textContentOf(otherElement)) > 0.80)
 					) == index)
 			).map(element =>
 				`<p>${(element.innerHTML.trim())}</p>`
