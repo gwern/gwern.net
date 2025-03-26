@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-03-24 12:14:24 gwern"
+# When:  Time-stamp: "2025-03-25 14:53:09 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -473,6 +473,13 @@ else
                  -e 'mountimprobable.com/assets/app.js' -e 'jquery.min.js' -e 'index.md' \
                  -e 'metadata/backlinks.hs' -e 'metadata/embeddings.bin' -e 'metadata/archive.hs' -e 'doc/www/' -e 'sitemap.xml' | parallel --jobs "$N" syntaxHighlight
 
+    # essays only:
+    ## eg. './2012-election.md \n...\n ./doc/cs/cryptography/1955-nash.md \n...\n ./newsletter/2022/09.md \n...\n ./review/mcnamara.md \n...\n ./wikipedia-and-knol.md \n...\n ./zeo/zma.md'
+    PAGES="$(find . -type f -name "*.md" | gfv -e '_site/' -e 'index' -e '#' | sort --unique)"
+    # essays+tags+annotations+similars+backlinks:
+    # eg. "_site/2012-election _site/2014-spirulina _site/3-grenades ... _site/doc/ai/text-style-transfer/index ... _site/doc/anime/2010-sarrazin ... _site/fiction/erl-king ... _site/lorem-admonition ... _site/newsletter/2013/12 ... _site/note/attention ... _site/review/umineko ... _site/zeo/zma"
+    PAGES_ALL="$(find ./ -type f -name "*.md" | gfv -e '_site' -e '#' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'; find _site/metadata/annotation/ -type f -name '*.html' | gfv '/metadata/annotation/id/')"
+
     ## Pandoc/Skylighting by default adds empty self-links to line-numbered code blocks to make them clickable (as opposed to just setting a span ID, which it also does). These links *would* be hidden except that self links get marked up with up/down arrows, so arrows decorate the code-blocks. We have no use for them and Pandoc/skylighting has no option or way to disable them, so we strip them.
     bold "Stripping self-links from syntax-highlighted HTML…"
     cleanCodeblockSelflinks () {
@@ -521,13 +528,6 @@ else
     (find ./ -path ./_site -prune -type f -o -name "*.md" | gfv -e 'doc/www/' -e '#' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/';
      find _site/metadata/annotation/ -name '*.html') | xargs --max-procs=0 --max-args=1000 grep --fixed-strings --files-with-matches -e '<span class="math inline"' -e '<span class="math display"' | \
         parallel --jobs "$N" --max-args=1 staticCompileMathJax
-
-    # essays only:
-    ## eg. './2012-election.md \n...\n ./doc/cs/cryptography/1955-nash.md \n...\n ./newsletter/2022/09.md \n...\n ./review/mcnamara.md \n...\n ./wikipedia-and-knol.md \n...\n ./zeo/zma.md'
-    PAGES="$(find . -type f -name "*.md" | gfv -e '_site/' -e 'index' -e '#' | sort --unique)"
-    # essays+tags+annotations+similars+backlinks:
-    # eg. "_site/2012-election _site/2014-spirulina _site/3-grenades ... _site/doc/ai/text-style-transfer/index ... _site/doc/anime/2010-sarrazin ... _site/fiction/erl-king ... _site/lorem-admonition ... _site/newsletter/2013/12 ... _site/note/attention ... _site/review/umineko ... _site/zeo/zma"
-    PAGES_ALL="$(find ./ -type f -name "*.md" | gfv -e '_site' -e '#' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'; find _site/metadata/annotation/ -type f -name '*.html' | gfv '/metadata/annotation/id/')"
 
     # we mark up fractions in non-TeX using the Unicode '⁄' FRACTION SLASH, which is specified to turn arbitrary integer pairs into oblique fractions in a more generalized way than the hardwired vulgar fractions Unicode supports for a handful of pairs like '½'. (See <https://www.unicode.org/versions/Unicode6.0.0/ch06.pdf#page=15> & <http://www.unicode.org/notes/tn28/UTN28-PlainTextMath-v3.pdf#page=5>.)
     # Unfortunately, support in applications is very patchy, and it seems to not work in most (all?) web browsers like Firefox or Chrome.

@@ -220,4 +220,4 @@ arxivAbstractFixedRewrites = [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%"), ("\n  
 gtxKeyValueKeyNames :: [String]
 gtxKeyValueKeyNames = ["id", "doi", "title", "description", "created", "modified"
                       , "status", "importance", "confidence", "css-extension", "invert", "backlink"
-                      , "placeholder", "index"]
+                      , "placeholder", "index", "thumbnail", "thumbnail-text"]

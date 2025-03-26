@@ -65,7 +65,7 @@ badStrings = ["", " ", "Quanta Magazine", "OSF", "CAIDA Resource Catalog", "Blog
      , "Justin Pombrio", "ōtoro.net", "Research Scientist", "Vanderbilt University School of Medicine"
      , "Olup Stories", "Human Verification", "Oceans Yet to Burn", "Wiremodal"
      , "OUH - OUH group members", "Sergey’s Blog", "Sensor Fusion: High Speed Robots"
-     , "SAS Proceedings and more - 404", "Inception Labs", "Access Denied", "News details", "UK", "Heart of the internet", "IMBEI", "naml.us", "Redirecting The Scholar's Stage", "Research units", "Reddit—The heart of the internet", "Reddit - The heart of the internet", "Bloomberg - Are you a robot?"]
+     , "SAS Proceedings and more - 404", "Inception Labs", "Access Denied", "News details", "UK", "Heart of the internet", "IMBEI", "naml.us", "Redirecting The Scholar's Stage", "Research units", "Reddit—The heart of the internet", "Reddit - The heart of the internet", "Bloomberg - Are you a robot?", "Aizk’s Site", "Aizk's Site"]
 
 -- A list of bad substrings to remove. Note this is used with `Utils.deleteMixedMany` to specialize down to either prefix or suffix deletion based on the trailing vs leading space (respectively). This should greatly reduce the risk of unintended deletions.
 -- testing: unique list
@@ -159,4 +159,4 @@ stringDelete = [" - The Public Domain Review"
             , "Machinamenta: ", "Radiator Blog: ", "  Journal of Heredity", " - media.ccc.de"
             , " - UEFConnect", " | Technology", " - Flashback Forum", " - Chiraag Gohel"
             , " - Ken Bertagnolli", " - Aresluna", " - Unexpected Values", "IQ's Corner: "
-            , " - Deviant/Abstraction", " : Free Download, Borrow, and Streaming : Internet Archive", " - TalkChess.com", " - Works in Progress", "SL4: ", " - Engineering and Technology History Wiki", " - Dominic Cummings's Blog", " - Ethan Zuckerman", "The Ants Of God Are Queer Fish: ", " - Science Fiction, Fantasy, Philosophy & History", "The Silver Elves: ", "Bloomberg - ", " - Are you a robot?"]
+            , " - Deviant/Abstraction", " : Free Download, Borrow, and Streaming : Internet Archive", " - TalkChess.com", " - Works in Progress", "SL4: ", " - Engineering and Technology History Wiki", " - Dominic Cummings's Blog", " - Ethan Zuckerman", "The Ants Of God Are Queer Fish: ", " - Science Fiction, Fantasy, Philosophy & History", "The Silver Elves: ", "Bloomberg - ", " - Are you a robot?", " - Matt Lakeman"]

@@ -707,6 +707,7 @@ canonicals = M.fromList
   , ("Alena Yaluri Stančáková", "Alena Stančáková")
   , ("Alena Stancakova", "Alena Stančáková")
   , ("bryan_johnson", "Bryan Johnson")
+  , ("Asa Johansson", "Åsa Johansson")
   ]
 
 -- tests: unique
@@ -735,7 +736,11 @@ canonicalsWithInitials =
   , "Adam Edward Locke", "Samuel T. Cohen", "Thomas J. Bouchard", "Robert Mitchell Lindner"
   , "Sarah E. Bergen", "Roel André Ophoff", "Peter A. Holmans", "Patricia B. Munroe"
   , "Michael A. Woodley", "Mark J. Caulfield", "E. T. Jaynes", "Iris M. Heid", "Hill F. Ip"
-  , "Heather M. Stringham", "Christopher A. Haiman", "Catharina A. Hartman", "Bernhard T. Baune", "Karl T. Compton", "Tom B. Brown", "Saskia P. Hagenaars", "Robert R. McCrae", "Nathan A. Gillespie", "Marian L. Hamshere", "Richard W. Wrangham", "John R. Attia", "Joel Z. Leibo", "Jaspal S. Kooner", "Larry V. Hedges", "Hugh Christian Watkins", "Stephen Cole Kleene", "David C. Glahn", "Bernhard Otto Boehm", "John W. Tukey", "Behrooz Z. Alizadeh", "Aki S. Havulinna"]
+  , "Heather M. Stringham", "Christopher A. Haiman", "Catharina A. Hartman", "Bernhard T. Baune"
+  , "Karl T. Compton", "Tom B. Brown", "Saskia P. Hagenaars", "Robert R. McCrae", "Nathan A. Gillespie"
+  , "Marian L. Hamshere", "Richard W. Wrangham", "John R. Attia", "Joel Z. Leibo", "Jaspal S. Kooner"
+  , "Larry V. Hedges", "Hugh Christian Watkins", "Stephen Cole Kleene", "David C. Glahn"
+  , "Bernhard Otto Boehm", "John W. Tukey", "Behrooz Z. Alizadeh", "Aki S. Havulinna"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1512,11 +1517,15 @@ authorLinkDB = M.fromList $
     , ("Olin Shivers", "https://www.ccs.neu.edu/home/shivers/")
     , ("Stephen A. Ross", "https://en.wikipedia.org/wiki/Stephen_Ross_(economist)")
     , ("Alena Stančáková", "https://www.upjs.sk/en/LF/employee/alena.yaluri/")
-    , ("Aki S. Havulinna", "https://scholar.google.com/citations?user=7_6uXDQAAAAJ&hl=en&oi=ao")
-    , ("Aitor Lewkowycz", "https://scholar.google.com/citations?user=Yum1ah0AAAAJ&hl=en&oi=ao")
+    , ("Aki S. Havulinna", "https://scholar.google.com/citations?user=7_6uXDQAAAAJ")
+    , ("Aitor Lewkowycz", "https://scholar.google.com/citations?user=Yum1ah0AAAAJ")
     , ("Adam Lerer", "https://adamlerer.github.io/")
     , ("Alejandro Cuevas", "https://alejandrocuevas.me/")
     , ("Jeff Duntemann", "http://www.duntemann.com/whoiam.htm")
+    , ("Zaid Alyafeai","https://zaidalyafeai.github.io/")
+    , ("Yonghui Wu", "https://scholar.google.com/citations?user=bMWMlk4AAAAJ&hl=en&oi=ao")
+    , ("Yoav Goldberg", "https://scholar.google.com/citations?user=0rskDKgAAAAJ&hl=en&oi=ao")
+    , ("Åsa Johansson", "https://www.uu.se/en/contact-and-organisation/staff?query=N1-979")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2771,4 +2780,6 @@ authorWpLinkDB =
     , "Norman Spinrad", "Willis E. McNelly", "Stephen Cole Kleene", "Warren S. McCulloch"
     , "Walter Pitts", "Paul Werbos", "Ralph P. Boas Junior", "Albert W. Tucker", "Paul Debevec"
     , "Lyman Spitzer", "Ethan Zuckerman", "Scott Adams", "Justin Wolfers", "Richard Palais", "Ken White"
-    , "Reginald Bretnor", "Poul Anderson", "Hal Clement", "Alan E. Nourse", "Theodore Sturgeon", "Jerry Pournelle", "Katherine MacLean", "James E. Gunn", "Larry Niven", "Jack Williamson", "John Brunner", "Harlan Ellison", "Frederik Pohl"]
+    , "Reginald Bretnor", "Poul Anderson", "Hal Clement", "Alan E. Nourse", "Theodore Sturgeon"
+    , "Jerry Pournelle", "Katherine MacLean", "James E. Gunn", "Larry Niven", "Jack Williamson"
+    , "John Brunner", "Harlan Ellison", "Frederik Pohl"]

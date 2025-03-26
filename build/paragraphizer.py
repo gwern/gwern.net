@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2025-03-24 16:10:46 gwern"
+# When:  Time-stamp: "2025-03-25 12:17:54 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -628,6 +628,10 @@ Our results demonstrate that transformer LMs, whether pretrained or fine-tuned, 
 This article uses material which has recently been made available from Russian archives to analyse the causes of repressed inflation in the Soviet consumer market.
 It finds that retail price subsidies, which increased as a proportion of state budget expenditure from 4 per cent in 1965 to 20 per cent in the late 1980s, intensified consumer market disequilibrium.
 The provision of these subsidies had negative effects on the market by maintaining the purchasing power of households for consumer goods and by increasing the budget deficit. The unauthorized purchase of consumer goods by enterprises tended to increase during these years also.
+- <abstract>This paper analyzes the role and representation of food in the Japanese manga and anime series Golden Kamuy (Gōruden Kamui, 2014-present) by Satoru Noda. While ostensibly an action-packed narrative about the hunt for indigenous Ainu gold, Golden Kamuy has earned a reputation among fans as a gurume , or gourmet, manga and anime. Cooking scenes of both Ainu and Wajin food feature prominently throughout the series. This paper analyzes the rhetorical role of food in the fictional narrative and its connection to official and unofficial ideologies about ethnic harmony between Ainu and Wajin communities in Japan.</abstract>
+This paper analyzes the role and representation of food in the Japanese manga and anime series Golden Kamuy (Gōruden Kamui, 2014-present) by Satoru Noda.
+While ostensibly an action-packed narrative about the hunt for indigenous Ainu gold, Golden Kamuy has earned a reputation among fans as a gurume , or gourmet, manga and anime. Cooking scenes of both Ainu and Wajin food feature prominently throughout the series.
+This paper analyzes the rhetorical role of food in the fictional narrative and its connection to official and unofficial ideologies about ethnic harmony between Ainu and Wajin communities in Japan.
 
 [End of examples. Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 

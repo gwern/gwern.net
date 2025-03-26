@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-03-24 20:10:22 gwern"
+# When:  Time-stamp: "2025-03-25 10:27:27 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -625,6 +625,10 @@ Katri Räikkönen
 - "https://thesilverelves.blogspot.com/2019/02/who-were-elf-queens-daughters.html The Silver Elves: Who Were the Elf Queen’s Daughters?"
 "Who Were the Elf Queen’s Daughters?"
 - https://www.bloomberg.com/news/articles/2025-03-18/openai-s-first-stargate-site-to-hold-up-to-400-000-nvidia-chips Bloomberg—Are you a robot?"
+""
+- "https://mattlakeman.org/2025/03/24/conquest-of-the-incas/ <em>Conquest of the Incas</em>—Matt Lakeman"
+"<em>Conquest of the Incas</em>"
+- "https://www.aizk.sh/posts/reflecting-on-wikitok Aizk’s Site"
 ""
 
 Task:
