@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-03-25 10:27:27 gwern"
+# When:  Time-stamp: "2025-03-26 10:19:45 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -629,6 +629,9 @@ Katri Räikkönen
 - "https://mattlakeman.org/2025/03/24/conquest-of-the-incas/ <em>Conquest of the Incas</em>—Matt Lakeman"
 "<em>Conquest of the Incas</em>"
 - "https://www.aizk.sh/posts/reflecting-on-wikitok Aizk’s Site"
+""
+- "https://www.upjs.sk/en/LF/employee/alena.yaluri/
+Personal profile - UPJS Kosice"
 ""
 
 Task:

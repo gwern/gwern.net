@@ -174,6 +174,7 @@ tagsShort2LongRewrites =
    , ("pipelines", "statistics/order/selection/pipeline"), ("leaky-pipelines", "statistics/order/selection/pipeline"), ("leaky-pipeline", "statistics/order/selection/pipeline"), ("leakypipeline", "statistics/order/selection/pipeline"), ("leakypipelines", "statistics/order/selection/pipeline")
    , ("regression-to-the-mean", "regression-to-mean"), ("regressiontothemean", "regression-to-mean"), ("regression-mean", "mean-regression"), ("reversion-to-the-mean", "regression-to-mean"), ("reversion-to-mean", "regression-to-mean"), ("mean-reversion", "regression-to-mean"), ("reversion", "regression-to-mean"), ("mean", "regression-to-mean")
    , ("lafferty", "r-a-lafferty"), ("ralafferty", "r-a-lafferty"), ("r-lafferty", "r-a-lafferty")
+   , ("40", "4o"), ("04", "4o"), ("4-o", "4o"), ("o-4", "4o"), ("o4", "4o")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
@@ -596,6 +597,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("ai/nn/transformer/gpt/jukebox",            "Jukebox")
   , ("ai/nn/transformer/gpt/poetry",             "GPT poetry")
   , ("ai/nn/transformer/gpt/fiction",            "GPT fiction")
+  , ("ai/nn/transformer/gpt/dall-e/4o",          "GPT-4o media")
   , ("ai/nn/transformer/gpt/dall-e/3",           "DALL·E 3")
   , ("ai/nn/transformer/gpt/dall-e/2",           "DALL·E 2")
   , ("ai/nn/transformer/gpt/dall-e/1",           "DALL·E 1")

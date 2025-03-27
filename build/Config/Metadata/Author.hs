@@ -740,7 +740,7 @@ canonicalsWithInitials =
   , "Karl T. Compton", "Tom B. Brown", "Saskia P. Hagenaars", "Robert R. McCrae", "Nathan A. Gillespie"
   , "Marian L. Hamshere", "Richard W. Wrangham", "John R. Attia", "Joel Z. Leibo", "Jaspal S. Kooner"
   , "Larry V. Hedges", "Hugh Christian Watkins", "Stephen Cole Kleene", "David C. Glahn"
-  , "Bernhard Otto Boehm", "John W. Tukey", "Behrooz Z. Alizadeh", "Aki S. Havulinna"]
+  , "Bernhard Otto Boehm", "John W. Tukey", "Behrooz Z. Alizadeh", "Aki S. Havulinna", "Richard Sharpe Shaver"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1523,9 +1523,10 @@ authorLinkDB = M.fromList $
     , ("Alejandro Cuevas", "https://alejandrocuevas.me/")
     , ("Jeff Duntemann", "http://www.duntemann.com/whoiam.htm")
     , ("Zaid Alyafeai","https://zaidalyafeai.github.io/")
-    , ("Yonghui Wu", "https://scholar.google.com/citations?user=bMWMlk4AAAAJ&hl=en&oi=ao")
-    , ("Yoav Goldberg", "https://scholar.google.com/citations?user=0rskDKgAAAAJ&hl=en&oi=ao")
+    , ("Yonghui Wu", "https://scholar.google.com/citations?user=bMWMlk4AAAAJ")
+    , ("Yoav Goldberg", "https://scholar.google.com/citations?user=0rskDKgAAAAJ")
     , ("Åsa Johansson", "https://www.uu.se/en/contact-and-organisation/staff?query=N1-979")
+    , ("John Quan", "https://scholar.google.com/citations?user=rcojd6kAAAAJ")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2090,7 +2091,7 @@ authorWpLinkDB =
     ,"John Maynard Keynes", "John Maynard Smith", "John McLean", "John McPhee", "John Money"
     ,"John Mueller", "John Novembre", "John Nuckolls", "John Obert Voll", "John O\8217Mahony"
     , "John P. Campbell", "John P. Donnelly", "John P. Perdew", "John Paul Scott"
-    ,"John Paul Wright", "John Phan", "John Preskill", "John Q. Trojanowski", "John Quan"
+    ,"John Paul Wright", "John Phan", "John Preskill", "John Q. Trojanowski"
     ,"John R. Alford", "John R. Conway", "John R. Hibbing", "John R. Hughes", "John R. Kramer"
     ,"John R. Lott", "John R. Platt", "John R. Pringle", "John R. Thompson", "John R. White"
     ,"John Rader Platt", "John Resig", "John Rettie", "John Roberts", "John Rust"
@@ -2782,4 +2783,4 @@ authorWpLinkDB =
     , "Lyman Spitzer", "Ethan Zuckerman", "Scott Adams", "Justin Wolfers", "Richard Palais", "Ken White"
     , "Reginald Bretnor", "Poul Anderson", "Hal Clement", "Alan E. Nourse", "Theodore Sturgeon"
     , "Jerry Pournelle", "Katherine MacLean", "James E. Gunn", "Larry Niven", "Jack Williamson"
-    , "John Brunner", "Harlan Ellison", "Frederik Pohl"]
+    , "John Brunner", "Harlan Ellison", "Frederik Pohl", "A. E. Stallings", "Richard Sharpe Shaver"]

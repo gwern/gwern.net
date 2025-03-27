@@ -4,7 +4,7 @@
 -- link-titler.hs: add titles to bare links in a Markdown file using a database of link metadata
 -- Author: Gwern Branwen
 -- Date: 2022-04-01
--- When:  Time-stamp: "2024-10-28 09:52:58 gwern"
+-- When:  Time-stamp: "2025-03-26 10:18:09 gwern"
 -- License: CC-0
 --
 -- Read a Markdown page, parse links out, look up their titles, generate a standard Gwern.net-style citation ('"Title", Author1 et al Year[a-z]'),
@@ -77,7 +77,7 @@ addTitlesToFile md filepath = do
                                let authorCite = authorsToCite (T.unpack u) aut dt in
                                  (u, T.pack $
                                      if textSimplifier t' == textSimplifier (T.pack authorCite) then t
-                                     else "‘" ++ (replace "’’" "’" t) ++ "’, " ++ authorCite)
+                                     else "‘" ++ (replace "\"" "'" $ replace "’’" "’" t) ++ "’, " ++ authorCite)
                       ) untitled :: [(T.Text, T.Text)]
 
  let updatedFile = foldr (\(url,titleNew) text -> T.replace (url `T.append` ")") -- TODO: `replaceCheckedT`
@@ -109,7 +109,7 @@ addTitlesToHTML md (path,(title,author,date,dc,kvs,tags,abstract))
                                                     let authorCite = authorsToCite (T.unpack u) aut dt in
                                                       (u, T.pack $
                                                         if textSimplifier t' == textSimplifier (T.pack authorCite) then ""
-                                                        else "‘" ++ t ++ "’, " ++ authorCite)
+                                                        else "‘" ++ (replace "\"" "'" t) ++ "’, " ++ authorCite)
                          ) untitled :: [(T.Text, T.Text)]
 
         updatedAbstract = foldr (\(url,titleNew) text -> T.replace (url `T.append` "\"") -- TODO: `replaceCheckedT`

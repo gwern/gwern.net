@@ -802,7 +802,7 @@ whiteList = [ ( "/crop#hands"
   , ( "https://en.wikipedia.org/wiki/Narcissism"
     , [ "Narcissism" , "Narcissistic" ]
     )
-  , ( "https://en.wikipedia.org/wiki/NeWS" , [ "NeWS" ] )
+  -- , ( "https://en.wikipedia.org/wiki/NeWS" , [ "NeWS" ] )
   , ( "https://en.wikipedia.org/wiki/Neon_Genesis_Evangelion_%28TV%29"
     , [ "Evangelion" , "Neon Genesis Evangelion" ]
     )
