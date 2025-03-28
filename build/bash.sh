@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-03-24 09:31:51 gwern"
+# When:  Time-stamp: "2025-03-27 09:56:21 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -762,7 +762,7 @@ compare_page () {
 
     curl --silent "${SITE_URL}/${page}" | sed 's/\.\(css\|js\|svg\)?v=[0-9]\{10\}/.\1/g' >> "${temp_file}"
 
-    if ! diff --ignore-space-change --brief "${temp_file}" "${snapshot_file}" >/dev/null; then
+    if ! diff --ignore-space-change --brief "${temp_file}" "${snapshot_file}" &>/dev/null; then
         red "Changes detected in \"${page}\":"
         # Git: "If exactly two paths are given and at least one points outside the current repository, git diff will compare the two files / directories."; this works better for diffing HTML than any invocations of `diff` I found.
         git diff --color-words "${snapshot_file}" "${temp_file}"

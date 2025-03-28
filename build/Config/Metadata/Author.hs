@@ -708,6 +708,8 @@ canonicals = M.fromList
   , ("Alena Stancakova", "Alena Stančáková")
   , ("bryan_johnson", "Bryan Johnson")
   , ("Asa Johansson", "Åsa Johansson")
+  , ("mark_riedl", "Mark Riedl")
+  , ("Czeslaw Milosz", "Czesław Miłosz")
   ]
 
 -- tests: unique
@@ -740,7 +742,7 @@ canonicalsWithInitials =
   , "Karl T. Compton", "Tom B. Brown", "Saskia P. Hagenaars", "Robert R. McCrae", "Nathan A. Gillespie"
   , "Marian L. Hamshere", "Richard W. Wrangham", "John R. Attia", "Joel Z. Leibo", "Jaspal S. Kooner"
   , "Larry V. Hedges", "Hugh Christian Watkins", "Stephen Cole Kleene", "David C. Glahn"
-  , "Bernhard Otto Boehm", "John W. Tukey", "Behrooz Z. Alizadeh", "Aki S. Havulinna", "Richard Sharpe Shaver"]
+  , "Bernhard Otto Boehm", "John W. Tukey", "Behrooz Z. Alizadeh", "Aki S. Havulinna", "Richard Sharpe Shaver", "Wouter J. Peyrot", "Wendy L. McArdle", "Peter T. Leeson"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1527,6 +1529,12 @@ authorLinkDB = M.fromList $
     , ("Yoav Goldberg", "https://scholar.google.com/citations?user=0rskDKgAAAAJ")
     , ("Åsa Johansson", "https://www.uu.se/en/contact-and-organisation/staff?query=N1-979")
     , ("John Quan", "https://scholar.google.com/citations?user=rcojd6kAAAAJ")
+    , ("Mark Riedl", "https://eilab.gatech.edu/mark-riedl.html")
+    , ("Yarin Gal", "https://www.cs.ox.ac.uk/people/yarin.gal/website/")
+    , ("Wouter J. Peyrot", "https://cncr.nl/people/wouter_peyrot/")
+    , ("Wendy L. McArdle", "https://scholargps.com/scholars/35381776723079/wendy-l-mcardle")
+    , ("Wei Li", "https://scholar.google.com/citations?user=7IUCbE4AAAAJ")
+    , ("Peter T. Leeson", "https://en.wikipedia.org/wiki/Peter_Leeson")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

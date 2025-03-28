@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-03-24 12:10:42 gwern"
+;;; When:  Time-stamp: "2025-03-27 11:01:04 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1749,7 +1749,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp "\\([[a-zA-Z]]\\) " "\\1 " nil begin end)
        (query-replace-regexp " \\([[a-zA-Z]]\\)" " \\1" nil begin end)
        (query-replace-regexp "\\([[:digit:]]\\) degrees?" "\\1°" nil begin end)
-       (query-replace " d-" " <span class=\"smallcaps\">d</span>-" nil begin end) ; D/L stereoisomers like "r-modafinil" or "l-theanine" or "d-amphetamine" → "<span class='smallcaps'>d</span>-amphetamine" are typeset in smallcaps according to IUPAC, so to ensure the right case (ie. lowercase, because ".smallcaps" class on a capital letter does nothing), we match all 4 possibilities
+       (query-replace " d-" " <span class=\"smallcaps\">d-</span>" nil begin end) ; D/L stereoisomers like "r-modafinil" or "l-theanine" or "d-amphetamine" → "<span class='smallcaps'>d</span>-amphetamine" are typeset in smallcaps according to IUPAC, so to ensure the right case (ie. lowercase, because ".smallcaps" class on a capital letter does nothing), we match all 4 possibilities. NOTE: we put the hyphen in the smallcaps because that reduces CSS glitches when the link-underlining shadow trick 'chomps' the 'd/l/r'
        (query-replace-regexp " [Dd]-" " <span class=\"smallcaps\">d</span>-" nil begin end)
        (query-replace-regexp " [Ll]-" " <span class=\"smallcaps\">l</span>-" nil begin end)
        (query-replace-regexp " [Rr]-" " <span class=\"smallcaps\">r</span>-" nil begin end)

@@ -448,7 +448,6 @@ custom = [
         , ("LD ?Hub", "https://ldsc.broadinstitute.org/about/")
         , ("LaTeX", "https://en.wikipedia.org/wiki/LaTeX")
         , ("Laplace approximations?", "https://en.wikipedia.org/wiki/Laplace%27s_method")
-        , ("Larry Niven", "https://en.wikipedia.org/wiki/Larry_Niven")
         , ("Lawrence Bragg", "https://en.wikipedia.org/wiki/Lawrence_Bragg")
         , ("Le Roy Ladurie", "https://en.wikipedia.org/wiki/Emmanuel_Le_Roy_Ladurie")
         , ("Leonard Horner", "https://en.wikipedia.org/wiki/Leonard_Horner")

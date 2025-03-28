@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-03-26 10:19:45 gwern"
+# When:  Time-stamp: "2025-03-27 18:02:50 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -633,6 +633,8 @@ Katri Räikkönen
 - "https://www.upjs.sk/en/LF/employee/alena.yaluri/
 Personal profile - UPJS Kosice"
 ""
+- "https://www.secondperson.dating/p/navigation-by-moonlight#%C2%A7the-lunar-arts Navigation by Moonlight—by Jacob Falkovich"
+"Navigation by Moonlight"
 
 Task:
 
