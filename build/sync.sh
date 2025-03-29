@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-03-28 20:05:03 gwern"
+# When:  Time-stamp: "2025-03-28 20:05:30 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -1691,6 +1691,65 @@ else
 
     λ() { find ./static/build/ -type f -name "*.hs" -exec grep --fixed-strings 'nub ' {} \; ; }
     wrap λ "Haskell blacklist functions: 'nub' (use 'Data.Containers.ListUtils.nubOrd' for safety instead)."
+
+    # Checks one random file per extension for incorrect text/html MIME type.
+    λ() { everyNDays 7 && (
+              BASE_URL="https://gwern.net"
+              DEFAULT_MIME_TYPE="text/html"
+              # Define paths to exclude (relative to the starting directory)
+              EXCLUDE_PATHS=( -path './.git' -o -path './metadata' )
+
+              # Step 1: Get unique, lowercase extensions, respecting exclusions
+              find . \
+                   "${EXCLUDE_PATHS[@]}" -prune \
+                   -o \
+                   \( -type f -name '*.*' ! -name '.*' -print \) \
+                  | sed 's/.*\.//' \
+                  | tr '[:upper:]' '[:lower:]' \
+                  | sort -u \
+                  | while IFS= read -r ext; do
+                  # Skip empty lines and html/htm extensions
+                  if [[ -z "$ext" ]] || [[ "$ext" == "html" ]]; then
+                      continue
+                  fi
+
+                  # Step 2: Find *all* files with this extension (case-insensitive),
+                  # respecting exclusions, shuffle, and pick one random example.
+                  example_rel_with_dot_slash=$(find . \
+                                                    "${EXCLUDE_PATHS[@]}" -prune \
+                                                    -o \
+                                                    \( -type f -iname "*.${ext}" -print \) \
+                                                   | shuf -n 1)
+
+                  if [[ -z "$example_rel_with_dot_slash" ]]; then
+                      # No examples found for this extension outside excluded paths
+                      # Report to stderr, not stdout
+                      echo "Info: No non-excluded example found for .$ext" >&2
+                      continue
+                  fi
+
+                  # Step 3: Prepare path and URL
+                  example_rel=$(echo "$example_rel_with_dot_slash" | sed 's#^\./##')
+                  file_url="${BASE_URL}/${example_rel}"
+
+                  # Step 4: Get Content-Type via curl
+                  mime_type=$(curl --fail -s -L --max-time 10 -o /dev/null -w '%{content_type}' "$file_url")
+                  curl_status=$?
+
+                  if [[ "$curl_status" -ne 0 ]]; then
+                      # Report curl errors to stderr
+                      echo "Error: curl failed (status $curl_status) for .$ext sample: $file_url"
+                      continue # Skip this extension on error
+                  fi
+
+                  # Step 5: Check if base MIME type is the default text/html
+                  if [[ "${mime_type%%;*}" == "$DEFAULT_MIME_TYPE" ]]; then
+                      # Output only problematic files: Filename Extension MimeType
+                      echo "$example_rel .$ext $mime_type"
+                  fi
+              done;
+          ); }
+    wrap λ "MIME type checking: filetype which has a wrong (default) HTML MIME type? Update gwern.net.conf if so, or whitelist it here."
 
     # if the first of the month, download all pages and check that they have the right MIME type and are not suspiciously small or redirects.
     if [ "$(date +"%d")" == "1" ]; then
