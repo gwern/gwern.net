@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Config.LinkIcon (prioritizeLinkIconMin, prioritizeLinkIconBlackList, overrideLinkIcons, linkIconTestUnitsText, linkIconRules, linkIconTypes) where
 
-import qualified Data.Text as T (drop, isInfixOf, isPrefixOf, Text)
+import qualified Data.Text as T (drop, isInfixOf, isPrefixOf, null, unpack, Text)
 
 import Utils (extension, isLocal, hasExtension, isHostOrArchive)
 
@@ -558,24 +558,25 @@ linkIconRulesSVG u
 -- Filetypes: (we need to parse & extract the extension because many would be too short and match too many URLs if mere infix matching was used)
 linkIconRulesFiletypes "" = error "Config.LinkIcon.linkIconRulesFiletypes: passed empty string as the URL; this should never happen!"
 linkIconRulesFiletypes u
- | iE u ["tar", "zip", "xz", "img", "bin", "pkl", "onnx", "pt", "h5", "weights"] = ("archive", "svg", "")
+ | iE u ["tar", "zip", "xz", "img", "bin", "pkl", "onnx", "pt", "h5", "weights", "t7"] = ("archive", "svg", "")
  | iE u ["maff"] = ("archive", "svg", "#e66000") -- Mozilla Archive File Format; color: Firefox orange
  | iE u ["opml", "txt", "xml", "json", "jsonl", "md"] || u'' u "pastebin.com" = ("txt", "svg", "")
  | iE u ["conf", "sh", "patch", "diff"] = ("code", "svg", "")
  | iE u ["r", "R"] = ("code", "svg", redR)
+ | iE u ["py"] = ("code", "svg", "#2f6592") -- color: green, based on official Python language logo (which has yellow too but that's much less associated with pythons)
  | iE u ["js"] = ("code", "svg", "#f6da19") -- color: yellow; the unofficial 2011 logo canonized by Ecmascript
  | iE u ["css"] = ("code", "svg", "#2465f1") -- color: blue <https://en.wikipedia.org/wiki/File:CSS3_logo_and_wordmark.svg>
  | iE u ["hs"] = ("code", "svg", purpleHaskell)
- | iE u ["doc", "docx"] = ("word-doc", "svg", "#277dd4") -- Microsoft Office Word doc; color: green (<https://en.m.wikipedia.org/wiki/File:Microsoft_Office_Word_(2019%E2%80%93present).svg>)
+ | iE u ["doc", "docx", "odt"] = ("word-doc", "svg", "#277dd4") -- Microsoft Office Word doc; color: green (<https://en.m.wikipedia.org/wiki/File:Microsoft_Office_Word_(2019%E2%80%93present).svg>)
  | iE u ["xls", "xlsx"] = ("spreadsheet", "svg", "#1ba566") -- Microsoft Excel spreadsheet file format; color: green (picked middle green from <https://commons.wikimedia.org/wiki/File:Microsoft_Office_Excel_(2019%E2%80%93present).svg>)
  | iE u ["ods"] = ("spreadsheet", "svg", "#0586ce") -- Apache OpenOffice ODS spreadsheet file format; color: green-blue (<https://en.m.wikipedia.org/wiki/File:Apache_OpenOffice_logo_and_wordmark_(2014).svg>)
  | iE u ["csv"] = ("csv", "svg", "")
- | u'' u "imgur.com" || u'' u "i.imgur.com"                       = ("image", "svg", "#1bb76e") -- color: green
+ | u'' u "imgur.com" || u'' u "i.imgur.com"                = ("image", "svg", "#1bb76e") -- color: green
  | iE u ["gif", "bmp", "ico", "jpg", "jpeg", "png", "xcf"] = ("image", "svg", "")
  | iE u ["svg"] = ("image", "svg", "#ffb338") -- color: yellow (<https://en.wikipedia.org/wiki/File:SVG_Logo.svg>)
  | iE u ["psd"] = ("image", "svg", "#01c3f6") -- Adobe Photoshop logo; color: green
  | iE u ["mp3", "flac", "ogg"] = ("audio", "svg", "") -- MP3 logo has no color, surprisingly
- | iE u ["mp4"] = ("file-video", "svg", "")
+ | iE u ["mp4", "avi"] = ("file-video", "svg", "")
  | iE u ["webm"] = ("file-video", "svg", "#acd147") -- WebM; color: green (picked most average-looking green from <https://en.wikipedia.org/wiki/File:WebM_logo.svg>)
  | iE u ["mkv"] = ("file-video", "svg", "#0067ad") -- Matroska video format; color: green-blue (<https://en.m.wikipedia.org/wiki/File:Matroska_Logo.svg>)
  | iE u ["swf"] = ("file-video", "svg", "#490202") -- color: red-purple (<https://en.wikipedia.org/wiki/File:Flash_Player_34_SWF_icon.png>)
@@ -585,7 +586,15 @@ linkIconRulesFiletypes u
  | "/static/" `T.isPrefixOf` u && hasExtension ".html" u  = ("code", "svg", "")
  | isLocal u && hasExtension ".php" u                     = ("code", "svg", "#787cb4") -- color: light purple <https://commons.wikimedia.org/wiki/File:PHP-logo.svg>
  | aU' u [".pdf", ".PDF", "/pdf", "type=pdf", "pdfs.semanticscholar.org", "citeseerx.ist.psu.edu", "pdfs.semanticscholar.org", "www.semanticscholar.org"] = ("pdf", "svg", redAdobe) -- color: red (Adobe); NOTE: we do not attempt to check for PDFs very thoroughly because we assume that there are no treacherous URLs or that they are covered by LinkArchive mirroring PDFs locally by default to a '/doc/www/.../$HASH.pdf' URL which will match this reliably.
- | otherwise = ("", "", "")
+ | otherwise =
+     -- we want to ensure that *all* local files have a link-icon of some sort. If we have fallen through to here, and the input URL is a local file with an extension, then it must have been omitted from the rule-set somehow, and that should be fixed.
+     let extWithDot = Utils.extension u
+         ext = T.drop 1 extWithDot -- Get extension without leading dot
+     in if Utils.isLocal u && not (T.null ext) && ext /= "html" -- TODO: when we have a 'gwern-archive' link-icon, we should make locally-archived HTML pages like '/doc/*.html' match that?
+        -- If it's a LOCAL file AND it HAS an extension (and wasn't matched by any specific rule above)...
+        then error $ "Config.LinkIcon.linkIconRulesFiletypes: Unhandled file extension: '" ++ T.unpack ext ++ "' found in URL: " ++ T.unpack u
+        -- Otherwise (it's remote, or local without extension, or local but handled by a rule above)...
+        else ("", "", "")
 
 -- lowest priority: color-only hover links
 linkIconRulesColors "" = error "Config.LinkIcon.linkIconRulesColors: passed empty string as the URL; this should never happen!"
@@ -798,6 +807,7 @@ linkIconTestUnitsText =
          , ("https://cacm.acm.org/research/the-science-of-brute-force/", "acm", "text,tri,sans", "#3795c4")
          , ("/doc/iq/2014-tenijenhuis-supplement.doc",  "word-doc","svg", "#277dd4")
          , ("/doc/genetics/heritable/2015-mosing-supplement.docx",  "word-doc","svg", "#277dd4")
+         , ("/doc/psychology/neuroscience/2006-cdc-tbibluebook.odt",  "word-doc","svg", "#277dd4")
          , ("https://www.psychologytoday.com/us/blog/life-bilingual/201906/the-bilingual-advantage-three-years-later", "PT", "text,sans", "#477be4")
          , ("/static/img/icon/deepmind.svg",  "deepmind","svg", blueDM)
          , ("https://arxiv.org/abs/1612.08810#deepmind",  "deepmind","svg", blueDM)
@@ -1071,6 +1081,7 @@ linkIconTestUnitsText =
          , ("https://wiki.archiveteam.org/index.php?title=Google_Reader",  "internet-archive","svg", "")
          , ("https://blog.archive.org/2011/08/17/scanning-a-braille-playboy/",  "internet-archive","svg", "")
          , ("https://hivemind-repo.s3-us-west-2.amazonaws.com/twdne3/twdne3.onnx",  "archive","svg", "")
+         , ("/doc/ai/nn/rnn/2015-08-05-gwern-charrnn-cssgeneration-lm_css_epoch24.00_0.7660.t7",  "archive","svg", "")
          , ("/doc/touhou/2013-06-08-acircle-tohoarrange.mdb.xz",  "archive","svg", "")
          , ("/doc/ai/nn/rnn/2015-06-03-karpathy-charrnn-visualization.tar.xz",  "archive","svg", "")
          , ("/doc/ai/anime/danbooru/2018-07-05-gwern-densenet101-sfwdanbooru-85percent.h5",  "archive","svg", "")
@@ -1097,6 +1108,7 @@ linkIconTestUnitsText =
          , ("https://libgen.li/", "raven", "svg", "")
          , ("https://www.hoover.org/research/optimistic-thought-experiment", "hoover-institution", "svg", "")
          , ("/doc/sociology/technology/2017-reddit-dhieno-theplace-timelapseevolution.mp4",  "file-video","svg", "")
+         , ("/doc/reinforcement-learning/2004-cook-twoneuronbicycle.avi",  "file-video","svg", "")
          , ("/doc/ai/music/2020-03-06-fifteenai-fluttershy-sithcode.mp3",  "audio","svg", "")
          , ("https://www.newyorker.com/books/page-turner/the-mystery-of-s-the-man-with-an-impossible-memory",  "the-new-yorker","svg", "")
          , ("https://www.alcor.org/library/alcor-membership-statistics/", "alcor", "svg", "")
@@ -1362,6 +1374,7 @@ linkIconTestUnitsText =
          , ("http://linuxmafia.com/~rick/xmas.html", "LNUX", "text,mono,quad", "#7a7a99")
          , ("https://caniuse.com/?search=hyphenate", "CanI", "text,sans,quad", "#c75000")
          , ("https://oll.libertyfund.org/titles/hazlett-essays-of-montaigne-vol-9", "OLL", "text,sans,tri", "#0095fb")
+         , ("/static/build/clean-pdf.py", "code", "svg", "#2f6592")
   ]
 -- TODO: more complex link-icon testing: suppression of redundant link-icons
 -- linkIcon $ Link nullAttr [Str "WSJ"] ("https://www.wsj.com/articles/world-chess-championship-magnus-carlsen-ian-nepomniachtchi-seconds-11638167905", "", "") →
