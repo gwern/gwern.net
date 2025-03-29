@@ -1535,6 +1535,8 @@ authorLinkDB = M.fromList $
     , ("Wendy L. McArdle", "https://scholargps.com/scholars/35381776723079/wendy-l-mcardle")
     , ("Wei Li", "https://scholar.google.com/citations?user=7IUCbE4AAAAJ")
     , ("Peter T. Leeson", "https://en.wikipedia.org/wiki/Peter_Leeson")
+    , ("eigenrobot", "https://x.com/eigenrobot")
+    , ("Sarah Meiklejohn", "https://smeiklej.com/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2791,4 +2793,4 @@ authorWpLinkDB =
     , "Lyman Spitzer", "Ethan Zuckerman", "Scott Adams", "Justin Wolfers", "Richard Palais", "Ken White"
     , "Reginald Bretnor", "Poul Anderson", "Hal Clement", "Alan E. Nourse", "Theodore Sturgeon"
     , "Jerry Pournelle", "Katherine MacLean", "James E. Gunn", "Larry Niven", "Jack Williamson"
-    , "John Brunner", "Harlan Ellison", "Frederik Pohl", "A. E. Stallings", "Richard Sharpe Shaver"]
+    , "John Brunner", "Harlan Ellison", "Frederik Pohl", "A. E. Stallings", "Richard Sharpe Shaver", "Karl Sims"]

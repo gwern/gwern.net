@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-03-28 20:05:30 gwern"
+# When:  Time-stamp: "2025-03-28 20:51:54 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -1668,7 +1668,7 @@ else
 
     bold "Running site functionality checks…"
     ## Look for domains that may benefit from link icons or link live status now:
-    λ() { ghci -istatic/build/ ./static/build/LinkIcon.hs  -e 'linkIconPrioritize' | gfv -e ' secs,' -e 'it :: [(Int, T.Text)]' -e '[]'; }
+    λ() { everyNDays 7 && ghci -istatic/build/ ./static/build/LinkIcon.hs  -e 'linkIconPrioritize' | gfv -e ' secs,' -e 'it :: [(Int, T.Text)]' -e '[]'; }
     wrap λ "Need link icons?" &
     λ() { gf '>{.archive-not .link-annotated-not .link-live}' ./lorem-link.md; }
     wrap λ "Sites needing link live whitelist/blacklisting?"
