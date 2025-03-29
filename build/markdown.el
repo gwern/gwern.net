@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-03-27 11:01:04 gwern"
+;;; When:  Time-stamp: "2025-03-28 18:25:08 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -111,7 +111,7 @@
 (defun arrow-both  () (interactive (insert-char ?↔ 1)))
 (defun arrow-up    () (interactive (insert-char ?↑ 1)))
 (defun arrow-down  () (interactive (insert-char ?↓ 1)))
-(defun interpunct  () (interactive (insert-char ?· 1)))
+(defun interpunct  () (interactive (insert-char ?• 1)))
 
 (defun replace-all (original replacement)
   "Do regexp search-and-replace in the current buffer of ORIGINAL to REPLACEMENT.
@@ -441,12 +441,12 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("∼" . "~")
                      ("Previous article in issue\nNext article in issue\nKeywords\n" . "[**Keywords**: ")
                      ("Previous article in issue\nKeywords\n" . "[**Keywords**: ")
-                     ("•\n\n    " . " · ")
-                     ("\n• " . " · ")
-                     ("     ● " . " · ")
+                     ("•\n\n    " . " • ")
+                     ("\n• " . " • ")
+                     ("     ● " . " • ")
                      ("eta≠analys" . "eta-analys") ; odd typo in some PDFs: "meta≠analyses"
-                     ("\n•\n" . " · ")
-                     ("    •\n    " . " · ")
+                     ("\n•\n" . " • ")
+                     ("    •\n    " . " • ")
                      ("<p> " . "<p>")
                      (" </p>" . "</p>")
                      ("View ORCID Profile" . "")
@@ -501,7 +501,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      (" utilizing" . " using")
                      (" utilisation" . " usage")
                      (" utilization" . " usage")
-                     ("\n• " . " · ")
+                     ("\n• " . " • ")
                      (" colour" . " color")
                      ("](/docs/" . "](/doc/")
                      ("href=\"/docs/" . "href=\"/doc/")
@@ -594,7 +594,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (let ((queries '( ; do non-regexp fixed-string query-replace queries:
                         (" ’" . " ‘")
                         ("]/" . "](/")
-                        (" · " . ", ")
+                        (" • " . ", ")
                         (",”" . "”,")
                         ("'''''" . "**_")
                         ("'''" . "**")

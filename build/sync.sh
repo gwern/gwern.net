@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-03-25 14:53:09 gwern"
+# When:  Time-stamp: "2025-03-28 20:05:03 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -20,7 +20,7 @@ cd ~/wiki/
 . ./static/build/bash.sh # import a bunch of Bash utilities for output formatting, checks, file IO etc: red/bold, wrap, gf/gfc/gfv/ge/gec/gev, png2JPGQualityCheck, gwmv...
 
 DEPENDENCIES=(
-  bc curl dos2unix du elinks emacs exiftool fdupes feh ffmpeg file find firefox
+  bc curl shuf dos2unix du elinks emacs exiftool fdupes feh ffmpeg file find firefox
   ghc ghci runghc hlint gifsicle git identify inotifywait jpegtran jq libreoffice
   linkchecker locate mogrify ocrmypdf pandoc parallel pdftk pdftotext php ping
   optipng rm rsync sed tidy urlencode x-www-browser xargs xmllint xprintidle
@@ -537,11 +537,19 @@ else
     # sed regexp details: conservatively skip lines with any .fraction already; limit it to 4-digit short integers to avoid accidental breakage; and anchor on word boundaries to avoid under-markup & splitting longer numbers.
     fraction () { sed -i --regexp-extended '/class=["'\'']fraction["'\'']/! s/\b([0-9]{1,4})⁄([0-9]{1,4})\b/<span class=fraction>\1⁄\2<\/span>/g' -- "$@"; }
     export -f fraction
-    echo "$PAGES_ALL" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 fraction # || true
+    echo "$PAGES_ALL" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 fraction
+
+    # For inline lists which cannot be handled usefully by horizontal rulers nor by '.columns' lists nor collapsed away (such as bullet-pointed summaries at the beginning of paper abstracts), we use dot separators.
+    # Specifically, we use BULLET instead of MIDDLE DOT because MIDDLE DOT is overloaded by its use in dot-product multiplication, multiplied-units, proper nouns like 'WALL·E'/'DALL·E'...
+    # This is then marked up with a <span> class, similar to FRACTION SLASH, for JS/CSS styling as appropriate.
+    bold "Adding '.separator-inline' span to BULLET (•) uses for better inline-list styling…"
+    separator () { sed -i 's/ • / <span class=separator-inline>•<\/span> /g' -- "$@"; }
+    export -f separator
+    echo "$PAGES_ALL" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 separator
 
     # 1. turn "As per Foo et al 2020, we can see." → "<p>As per Foo et al 2020, we can see.</p>" (&nbsp;); likewise for 'Foo 2020' or 'Foo & Bar 2020'
-    # 2. add non-breaking character to punctuation after links to avoid issues with links like '[Foo](/bar);' where ';' gets broken onto the next line (this doesn't happen in regular text, but only after links, so I guess browsers have that builtin but only for regular text handling?), (U+2060 WORD JOINER (HTML &#8288; · &NoBreak; · WJ))
-    # 3. add hair space ( U+200A   HAIR SPACE (HTML &#8202; · &hairsp;)) in slash-separated links or quotes, to avoid overlap of '/' with curly-quote
+    # 2. add non-breaking character to punctuation after links to avoid issues with links like '[Foo](/bar);' where ';' gets broken onto the next line (this doesn't happen in regular text, but only after links, so I guess browsers have that builtin but only for regular text handling?), (U+2060 WORD JOINER (HTML &#8288; • &NoBreak; • WJ))
+    # 3. add hair space ( U+200A   HAIR SPACE (HTML &#8202; • &hairsp;)) in slash-separated links or quotes, to avoid overlap of '/' with curly-quote
                                # -e 's/\([a-zA-Z‘’-]\)[   ]et[   ]al[   ]\([1-2][0-9][0-9a-z]\+\)/\1 <span class="etal"><span class="etalMarker">et al<\/span> <span class="etalYear">\2<\/span><\/span>/g' \
                            # -e 's/\([A-Z][a-zA-Z]\+\)[   ]\&[   ]\([A-Z][a-zA-Z]\+\)[   ]\([1-2][0-9][0-9a-z]\+\)/\1 \& \2 <span class="etalYear">\3<\/span>/g' \
     # bold "Adding non-breaking spaces…"
@@ -700,7 +708,7 @@ else
             "json" "JSON" "markdown" "Markdown" "Python" "r" "R" "RNN" "scheme" "Scheme" "vs" "wa" "XML"
             "completion-status" "collapsible" "me" "new-essays" "new-links" "site" "accesskey"
             "dark-mode-selector-inline" "extracts-mode-selector-inline" "help-mode-selector-inline" "search-mode-selector-inline" "toolbar-mode-selector-inline"
-            "link-bibliography-context" "extract-not" "fraction" "dark-mode-invert"
+            "link-bibliography-context" "extract-not" "fraction" "separator-inline" "dark-mode-invert"
             "prefetch" "prefetch-not"
         )
         html_classes_regexpattern=$(IFS='|'; echo "${html_classes_whitelist[*]}")

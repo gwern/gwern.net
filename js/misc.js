@@ -895,7 +895,7 @@ Notes = {
 	/*	Structure:
 
 		.notesForCitations has keys which are pathnames and values which are
-		objects, each of which has keys that are IDs and values that are arrays 
+		objects, each of which has keys that are IDs and values that are arrays
 		of elements.
 	 */
 	notesForCitations: { },
@@ -918,11 +918,11 @@ Notes = {
 			[ document,
 			  citation.getRootNode(),
 			  ...(Extracts.popFrameProvider.allSpawnedPopFrames().map(popFrame => popFrame.document))
-			].unique().flatMap(doc => 
+			].unique().flatMap(doc =>
 				Array.from(doc.querySelectorAll("li.footnote, div.sidenote"))
 			).filter(note => {
-				/*  We must check to ensure that the note in question is from the 
-					same page as the citation (to distinguish between main document 
+				/*  We must check to ensure that the note in question is from the
+					same page as the citation (to distinguish between main document
 					and any full-page embeds that may be spawned).
 				 */
 				if (note.footnoteBackLink == null)
@@ -1045,7 +1045,7 @@ function aggregateMarginNotesInDocument(doc) {
             Such editorializing of course must be marked by brackets to avoid
             misleading the reader; but then, when aggregated at the beginning
             of the annotation like all margin notes, it looks bad:
-            ‘[Foo] · [Bar] · [Baz] · [Quux]’.
+            ‘[Foo] • [Bar] • [Baz] • [Quux]’.
                 So, although it risks misleading readers who do not read down
             to the actual margin-note usage & see that it’s an editorial
             insertion, we remove the brackets when aggregated.
@@ -1118,7 +1118,7 @@ GW.TOC = {
 	mainTOC: null,
 
 	getMainTOC: () => {
-		return (GW.TOC.mainTOC ?? document.querySelector("#TOC"));	
+		return (GW.TOC.mainTOC ?? document.querySelector("#TOC"));
 	},
 
     containersToUpdate: [ ]

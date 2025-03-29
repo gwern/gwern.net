@@ -4,7 +4,7 @@
 #
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2024-02-01 20:39:24 gwern"
+# When:  Time-stamp: "2025-03-28 18:24:39 gwern"
 # License: CC-0
 
 set -e
@@ -39,7 +39,7 @@ else
     WORDS=$(pdftotext "$PDF" - | wc --words)
     TOOSMALL=$((WORDS / PAGES < 50))
     if [[ $TOOSMALL == 1 ]]; then
-        echo "Forcing OCR: $1 : $WORDS · $PAGES · $((WORDS / PAGES)) · $TOOSMALL"
+        echo "Forcing OCR: $1 : $WORDS • $PAGES • $((WORDS / PAGES)) • $TOOSMALL"
         echo "----"
         pdftotext "$TMP" - | head
         echo "----"

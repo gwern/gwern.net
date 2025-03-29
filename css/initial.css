@@ -363,7 +363,7 @@ header h1 em {
     or slashes.
  */
 #page-metadata .page-metadata-fields > span::after {
-    content: "\00B7"; /* interpunct MIDDLE DOT (U+00B7) '·' */
+    content: "\00B7"; /* interpunct MIDDLE DOT (U+00B7) '·'; TODO: replace with BULLET .separator-inline? */
     margin: 0 0.75em;
 }
 /*  No separator at line end.
