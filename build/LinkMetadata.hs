@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-03-21 10:41:33 gwern"
+When:  Time-stamp: "2025-03-29 20:21:46 gwern"
 License: CC-0
 -}
 
@@ -194,31 +194,21 @@ readLinkMetadataAndCheck = do
              -- - tags are optional, but all tags should exist on-disk as a directory of the form "doc/$TAG/"
              -- - annotations must exist and be unique inside full.gtx (overlap in auto.gtx can be caused by the hacky appending); their HTML should pass some simple syntactic validity checks
              -- - the key-value list can be empty, but any entries must have non-empty string keys & values
+             -- CHECK FULL-ONLY
              let urlsC = map fst full
              let normalizedUrlsC = map (delete "https://" . delete "http://") urlsC
              when (length (nubOrd (sort normalizedUrlsC)) /=  length normalizedUrlsC) $ error $ "full.gtx: Duplicate URLs! " ++ unlines (normalizedUrlsC \\ nubOrd normalizedUrlsC)
 
              let tagsAllC = nubOrd $ concatMap (\(_,(_,_,_,_,_,ts,_)) -> ts) full
 
-             let badDoisDash = filter (\(_,(_,_,_,_,kvs,_,_)) -> let doi = kvDOI kvs in anyInfix doi ["–", "—", " ", ",", "{", "}", "!", "@", "#", "$", "\"", "'", "arxiv", ".org", "http"]) full in
-                 unless (null badDoisDash) $ error $ "full.gtx: Bad DOIs (invalid punctuation in DOI): " ++ show badDoisDash
-             -- about the only requirement for DOIs, aside from being made of graphical Unicode characters (which includes spaces <https://www.compart.com/en/unicode/category/Zs>!), is that they contain one '/':
-             -- <https://www.doi.org/doi_handbook/2_Numbering.html#2.2.3> "The DOI syntax shall be made up of a DOI prefix and a DOI suffix separated by a forward slash. There is no defined limit on the length of the DOI name, or of the DOI prefix or DOI suffix. The DOI name is case-insensitive and can incorporate any printable characters from the legal graphic characters of Unicode." <https://www.doi.org/doi_handbook/2_Numbering.html#2.2.1>
-             -- Thus far, I have not run into any real DOIs which omit numbers, so we'll include that as a check for accidental tags inserted into the DOI field.
-             let badDois = filter (\(_,(_,_,_,_,kvs,_,_)) -> let doi = kvDOI kvs in if (doi == "") then False else doi `elem` tagsAllC || head doi `elem` ['a'..'z'] || '/' `notElem` doi || null ("0123456789" `intersect` doi) || "https" `isPrefixOf` doi) full in
-               unless (null badDois) $ error $ "full.gtx: Invalid DOI (missing mandatory forward slash or a number): " ++ show badDois
+             let annotations = map (\(_,(_,_,_,_,_,_,s)) -> s) full
+             when (length (nubOrd (sort annotations)) /= length annotations) $ error $
+               "full.gtx:  Duplicate annotations: " ++ unlines (annotations \\ nubOrd annotations)
 
              let emptyCheck = filter (\(u,(t,a,_,_,_,_,s)) ->  "" `elem` [u,t,a,s]) full
              unless (null emptyCheck) $ error $ "full.gtx: Link Annotation Error: empty mandatory fields! [URL/title/author/abstract] This should never happen: " ++ show emptyCheck
 
-             -- NOTE: titles can validly begin/end with a forward-slash if they are, say, a subreddit.
-             let badTitles = filter (\(_,(t,_,_,_,_,_,_)) -> t /= "" && (last t `elem` ("<\\;,_~=+-({:"::String) || head t `elem` (">\\;,_~=+-)}:"::String))) full
-             unless (null badTitles) $ error $ "full.gtx: Link Annotation Error: mangled title? Begins/ends in a strange character that should probably never happen a well-formed title: " ++ show badTitles
-
-             let annotations = map (\(_,(_,_,_,_,_,_,s)) -> s) full in
-               when (length (nubOrd (sort annotations)) /= length annotations) $ error $
-               "full.gtx:  Duplicate annotations: " ++ unlines (annotations \\ nubOrd annotations)
-
+             -- CHECK HALF-ONLY
              -- intermediate link annotations: not finished, like 'full.gtx' entries, but also not fully auto-generated.
              -- This is currently intended for storing entries for links which I give tags (probably as part of creating a new tag & rounding up all hits), but which are not fully-annotated; I don't want to delete the tag metadata, because it can't be rebuilt, but such half annotations can't be put into 'full.gtx' without destroying all of the checks' validity.
              half <- readGTXSlow "metadata/half.gtx"
@@ -233,8 +223,7 @@ readLinkMetadataAndCheck = do
              let checkFile f = fmap not $ doesFileExist $ ensureExtension f
              fileChecks <- Par.mapM checkFile files
              let missingFiles = map fst $ filter snd $ zip files fileChecks
-             let printError f = let f' = ensureExtension f in
-                                printRed ("Full+half annotation error: file does not exist? " ++ f ++ " (checked file name: " ++ f' ++ ")")
+             let printError f = printRed ("Full+half annotation error: file does not exist? " ++ f ++ " (checked file name: " ++ (ensureExtension f) ++ ")")
              mapM_ printError missingFiles
 
              -- auto-generated cached definitions; can be deleted if gone stale
@@ -243,6 +232,20 @@ readLinkMetadataAndCheck = do
              -- merge the hand-written & auto-generated link annotations, and return:
              let final = M.union (M.fromList full) $ M.union (M.fromList half) (M.fromList auto) -- left-biased, so 'full' overrides 'half' overrides 'auto'
              let finalL = M.toList final
+
+             -- CHECK ALL (FULL+HALF+AUTO):
+             let badDoisDash = filter (\(_,(_,_,_,_,kvs,_,_)) -> anyInfix (kvDOI kvs) ["–", "—", " ", ",", "{", "}", "!", "@", "#", "$", "\"", "'", "arxiv", ".org", "http"]) finalL
+             unless (null badDoisDash) $ error $ "GTXes: Bad DOIs (invalid punctuation in DOI): " ++ show badDoisDash
+             -- about the only requirement for DOIs, aside from being made of graphical Unicode characters (which includes spaces <https://www.compart.com/en/unicode/category/Zs>!), is that they contain one '/':
+             -- <https://www.doi.org/doi_handbook/2_Numbering.html#2.2.3> "The DOI syntax shall be made up of a DOI prefix and a DOI suffix separated by a forward slash. There is no defined limit on the length of the DOI name, or of the DOI prefix or DOI suffix. The DOI name is case-insensitive and can incorporate any printable characters from the legal graphic characters of Unicode." <https://www.doi.org/doi_handbook/2_Numbering.html#2.2.1>
+             -- Thus far, I have not run into any real DOIs which omit numbers, so we'll include that as a check for accidental tags inserted into the DOI field.
+             -- One of the most common errors with DOIs is swapping them for another metadata field like date or tag, so we can check for those. (DOIs may be confused with authors but authors never have a '/' in them and so checking for those handles that case.)
+             let badDois = filter (\(_,(_,_,_,_,kvs,_,_)) -> let doi = kvDOI kvs in if (doi == "") then False else doi `elem` tagsAllC || head doi `elem` ['a'..'z'] || '/' `notElem` doi || null ("0123456789" `intersect` doi) || "https" `isPrefixOf` doi) finalL
+             unless (null badDois) $ error $ "GTXes: Invalid DOI (missing mandatory forward slash or a number): " ++ show badDois
+
+             -- NOTE: titles can validly begin/end with a forward-slash if they are, say, a subreddit. Titles also often end in colons for Twitter, where it is about an implied attached screenshot or image or retweet. And '+' ends a number of technology-related titles ('Google+', 'DC++', 'C++').
+             let badTitles = filter (\(_,(t,_,_,_,_,_,_)) -> t /= "" && (last t `elem` ("<\\;,_~=-({"::String) || head t `elem` (">\\;,_~=+-)}:"::String))) finalL
+             unless (null badTitles) $ error $ "GTXes: Link Annotation Error: mangled title? Begins/ends in a strange character that should probably never happen a well-formed title: " ++ show badTitles
 
              let badKVs = filter (\(_,(_,_,_,_,kvs,_,_)) -> any (\(k,v) -> k `notElem` C.gtxKeyValueKeyNames || k == "" || v == "") kvs) finalL
              unless (null badKVs) $ error $ "GTX: bad key-values in annotations, with unknown keys (not in the whitelist `Config.Misc.gtxKeyValueKeyNames`), or null keys/values: " ++ show badKVs
