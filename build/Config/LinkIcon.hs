@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Config.LinkIcon (prioritizeLinkIconMin, prioritizeLinkIconBlackList, overrideLinkIcons, linkIconTestUnitsText, linkIconRules, linkIconTypes) where
 
-import qualified Data.Text as T (drop, isInfixOf, isPrefixOf, null, unpack, Text)
+import qualified Data.Text as T (drop, isInfixOf, isPrefixOf, unpack, Text)
 
 import Utils (extension, isLocal, hasExtension, isHostOrArchive)
 
@@ -558,7 +558,7 @@ linkIconRulesSVG u
 -- Filetypes: (we need to parse & extract the extension because many would be too short and match too many URLs if mere infix matching was used)
 linkIconRulesFiletypes "" = error "Config.LinkIcon.linkIconRulesFiletypes: passed empty string as the URL; this should never happen!"
 linkIconRulesFiletypes u
- | iE u ["tar", "zip", "xz", "img", "bin", "pkl", "onnx", "pt", "h5", "weights", "t7"] = ("archive", "svg", "")
+ | iE u ["tar", "zip", "xz", "img", "bin", "pkl", "onnx", "pt", "h5", "weights", "t7", "par2", "sqlite3"] = ("archive", "svg", "")
  | iE u ["maff"] = ("archive", "svg", "#e66000") -- Mozilla Archive File Format; color: Firefox orange
  | iE u ["opml", "txt", "xml", "json", "jsonl", "md"] || u'' u "pastebin.com" = ("txt", "svg", "")
  | iE u ["conf", "sh", "patch", "diff"] = ("code", "svg", "")
@@ -586,13 +586,12 @@ linkIconRulesFiletypes u
  | "/static/" `T.isPrefixOf` u && hasExtension ".html" u  = ("code", "svg", "")
  | isLocal u && hasExtension ".php" u                     = ("code", "svg", "#787cb4") -- color: light purple <https://commons.wikimedia.org/wiki/File:PHP-logo.svg>
  | aU' u [".pdf", ".PDF", "/pdf", "type=pdf", "pdfs.semanticscholar.org", "citeseerx.ist.psu.edu", "pdfs.semanticscholar.org", "www.semanticscholar.org"] = ("pdf", "svg", redAdobe) -- color: red (Adobe); NOTE: we do not attempt to check for PDFs very thoroughly because we assume that there are no treacherous URLs or that they are covered by LinkArchive mirroring PDFs locally by default to a '/doc/www/.../$HASH.pdf' URL which will match this reliably.
+ --
+ | Utils.isLocal u && "/doc/" `T.isPrefixOf` u && Utils.extension u == ".html" = ("internet-archive", "svg", "")
  | otherwise =
-     -- we want to ensure that *all* local files have a link-icon of some sort. If we have fallen through to here, and the input URL is a local file with an extension, then it must have been omitted from the rule-set somehow, and that should be fixed.
      let extWithDot = Utils.extension u
          ext = T.drop 1 extWithDot -- Get extension without leading dot
-     in if Utils.isLocal u && not (T.null ext) && ext /= "html" -- TODO: when we have a 'gwern-archive' link-icon, we should make locally-archived HTML pages like '/doc/*.html' match that?
-        -- If it's a LOCAL file AND it HAS an extension (and wasn't matched by any specific rule above)...
-        then error $ "Config.LinkIcon.linkIconRulesFiletypes: Unhandled file extension: '" ++ T.unpack ext ++ "' found in URL: " ++ T.unpack u
+     in if Utils.isLocal u && ext /= "" then error $ "Config.LinkIcon.linkIconRulesFiletypes: Unhandled file extension: '" ++ T.unpack ext ++ "' found in URL: " ++ T.unpack u
         -- Otherwise (it's remote, or local without extension, or local but handled by a rule above)...
         else ("", "", "")
 
@@ -1080,9 +1079,12 @@ linkIconTestUnitsText =
          , ("https://web.archive.org/web/19981202185145/http://www.ex.org/2.4/11-news.html",  "internet-archive","svg", "")
          , ("https://wiki.archiveteam.org/index.php?title=Google_Reader",  "internet-archive","svg", "")
          , ("https://blog.archive.org/2011/08/17/scanning-a-braille-playboy/",  "internet-archive","svg", "")
+         , ("/doc/ai/nn/cnn/2016-goh-opennsfw.html", "internet-archive", "svg", "") -- locally-archived HTML docs
          , ("https://hivemind-repo.s3-us-west-2.amazonaws.com/twdne3/twdne3.onnx",  "archive","svg", "")
          , ("/doc/ai/nn/rnn/2015-08-05-gwern-charrnn-cssgeneration-lm_css_epoch24.00_0.7660.t7",  "archive","svg", "")
+         , ("/doc/darknet-market/dnm-archive/file/ecc.vol127+73.par2",  "archive","svg", "")
          , ("/doc/touhou/2013-06-08-acircle-tohoarrange.mdb.xz",  "archive","svg", "")
+         , ("/doc/darknet-market/dnm-archive/file/dnmarchives_meta.sqlite3",  "archive","svg", "")
          , ("/doc/ai/nn/rnn/2015-06-03-karpathy-charrnn-visualization.tar.xz",  "archive","svg", "")
          , ("/doc/ai/anime/danbooru/2018-07-05-gwern-densenet101-sfwdanbooru-85percent.h5",  "archive","svg", "")
          , ("/doc/ai/nn/gan/stylegan/2020-06-07-aydao-stylegan2-configf-ffhq-512-avg-tpurun1.pkl",  "archive","svg", "")

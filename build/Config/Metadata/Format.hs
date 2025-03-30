@@ -153,7 +153,7 @@ filterMetaBadSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode",
                           , "Admin", "C U. P. Printing", "Debenu ", "Quick P. D. F. Library 9.12", "www.debenu.com", "JPL 99", "MinnickD", "Office", "Owner"
                           , "SPDF", "Writer", "jcpham", "DLE4&lt;8", "8AB@0B&gt", "Paperless", "psjoin 0.2", "Apex", "Elsevier Science"
                           , "PsycINFO", "kristine gallo", "TeX", "PDFplus", "Elsevier", "N/A", "OmniPage", "scansoft", "Articlizer"
-                          , "ARTICLIZER", "c:/ncn", "1QS4P", "2-0crc", "Trove", "REV_ISS", "WEB_CDEV", "HelenMartin", "DALiM", "HP PDF", "PDF Formatter", "Xerox D125", "Copier-Printer", "PubTeX", "C:My Documents", ".wp", "Nova India", "/var/www"]
+                          , "ARTICLIZER", "c:/ncn", "1QS4P", "2-0crc", "Trove", "REV_ISS", "WEB_CDEV", "HelenMartin", "DALiM", "HP PDF", "PDF Formatter", "Xerox D125", "Copier-Printer", "PubTeX", "C:My Documents", ".wp", "Nova India", "/var/www", "oup_cercor", "oup_humrep"]
 
 filterMetaBadWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "downes", "American Medical Association"
                       , "om", "lhf", "comp", "Science Magazine", "Josh Lerner, Scott Stern (Editors)", "arsalan", "rssa_a0157 469..482", "Schniederjans_lo"
@@ -1880,6 +1880,8 @@ htmlRewriteFixed =
          , ("</strong></strong>", "</strong")
          , ("<bold>Summary:\8195</bold>", "")
          , ("<bold>Summary:</bold>", "")
+         , ("<sc>ad</sc>", "AD")
+         , ("<sc>bc</sc>", "BC")
          , ("â\128", "’")
          , ("ﬀ", "ff")
          , ("ﬄ", "ffl")

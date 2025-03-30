@@ -710,6 +710,10 @@ canonicals = M.fromList
   , ("Asa Johansson", "Åsa Johansson")
   , ("mark_riedl", "Mark Riedl")
   , ("Czeslaw Milosz", "Czesław Miłosz")
+  , ("C.S. Lewis", "C. S. Lewis")
+  , ("Locus Mag", "Locus")
+  , ("Locus Magazine", "Locus")
+  , ("Steven Levitt", "Steven D. Levitt")
   ]
 
 -- tests: unique
@@ -742,7 +746,7 @@ canonicalsWithInitials =
   , "Karl T. Compton", "Tom B. Brown", "Saskia P. Hagenaars", "Robert R. McCrae", "Nathan A. Gillespie"
   , "Marian L. Hamshere", "Richard W. Wrangham", "John R. Attia", "Joel Z. Leibo", "Jaspal S. Kooner"
   , "Larry V. Hedges", "Hugh Christian Watkins", "Stephen Cole Kleene", "David C. Glahn"
-  , "Bernhard Otto Boehm", "John W. Tukey", "Behrooz Z. Alizadeh", "Aki S. Havulinna", "Richard Sharpe Shaver", "Wouter J. Peyrot", "Wendy L. McArdle", "Peter T. Leeson"]
+  , "Bernhard Otto Boehm", "John W. Tukey", "Behrooz Z. Alizadeh", "Aki S. Havulinna", "Richard Sharpe Shaver", "Wouter J. Peyrot", "Wendy L. McArdle", "Peter T. Leeson", "Brian O. Bernstein"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1537,6 +1541,8 @@ authorLinkDB = M.fromList $
     , ("Peter T. Leeson", "https://en.wikipedia.org/wiki/Peter_Leeson")
     , ("eigenrobot", "https://x.com/eigenrobot")
     , ("Sarah Meiklejohn", "https://smeiklej.com/")
+    , ("Locus", "https://en.wikipedia.org/wiki/Locus_(magazine)")
+    , ("Brian O. Bernstein", "https://scholar.google.com/citations?user=tI-kMoQAAAAJ")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2793,4 +2799,4 @@ authorWpLinkDB =
     , "Lyman Spitzer", "Ethan Zuckerman", "Scott Adams", "Justin Wolfers", "Richard Palais", "Ken White"
     , "Reginald Bretnor", "Poul Anderson", "Hal Clement", "Alan E. Nourse", "Theodore Sturgeon"
     , "Jerry Pournelle", "Katherine MacLean", "James E. Gunn", "Larry Niven", "Jack Williamson"
-    , "John Brunner", "Harlan Ellison", "Frederik Pohl", "A. E. Stallings", "Richard Sharpe Shaver", "Karl Sims"]
+    , "John Brunner", "Harlan Ellison", "Frederik Pohl", "A. E. Stallings", "Richard Sharpe Shaver", "Karl Sims", "C. S. Lewis"]

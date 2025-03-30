@@ -4,7 +4,7 @@
 # clean-pdf.py: fix formatting & spelling errors in malformatted text (especially PDFs)
 # Author: Gwern Branwen
 # Date: 2020-07-03
-# When:  Time-stamp: "2025-03-22 17:59:48 gwern"
+# When:  Time-stamp: "2025-03-29 15:41:37 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XYZ" xclip -o | python clean-pdf.py
@@ -169,6 +169,8 @@ Regression Fallacies in the Matched Groups Experiment
 - <text>R E G R E S S I O N F A L L A C I E S IN T H E MATCHED
 GROUPS E X P E R I M E N T</text>
 Regression Fallacies in the Matched Groups Experiment
+- <text>Authors: Darren K. McGuire, M.D., M.H.Sc., Nikolaus Marx, M.D., Sharon L. Mulvagh, M.D., John E. Deanfield, M.D., Silvio E. Inzucchi, M.D., Rodica Pop-Busui, M.D., Ph.D., Johannes F.E. Mann, M.D., Scott S. Emerson, M.D., Ph.D., Neil R. Poulter, F.Med.Sci., Mads D.M. Engelmann, M.D., Ph.D., Maria Sejersten Ripa, M.D., M.D.Sc., G. Kees Hovingh, M.D., Ph.D., Kirstine Brown-Frandsen, M.D., Stephen C. Bain, M.D., Matthew A. Cavender, M.D., M.P.H. https://orcid.org/0000-0002-4466-4760, Mette Gislum, M.Sc., Jens-Peter David, Ph.D., and John B. Buse, M.D., Ph.D* -11Author Info & Affiliations</text>
+Darren K. McGuire, Nikolaus Marx, Sharon L. Mulvagh, John E. Deanfield, Silvio E. Inzucchi, Rodica Pop-Busui, Johannes F. E. Mann, Scott S. Emerson, Neil R. Poulter, Mads D. M. Engelmann, Maria Sejersten Ripa, G. Kees Hovingh, Kirstine Brown-Frandsen, Stephen C. Bain, Matthew A. Cavender, Mette Gislum, Jens-Peter David, John B. Buse
 
 [End of examples. Reminder: your job is to clean PDF copy-pastes of cruft and garbage.]
 

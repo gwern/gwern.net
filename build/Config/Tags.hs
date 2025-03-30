@@ -143,7 +143,7 @@ tagsShort2LongRewrites =
    , ("music-distraction", "psychology/music/distraction"), ("true-sight", "truesight")
    , ("stiglers-diet", "stigler-diet"), ("stigler-problem", "stigler-diet"), ("stiglers-problem", "stigler-diet"), ("stiglers-diet-problem", "stigler-diet"), ("stigler-diet-problem", "stigler-diet"), ("stigler", "stigler-diet"), ("sigler", "stigler")
    , ("disappearing-polymorphs", "disappearing-polymorph"), ("polymorph", "disappearing-polymorph"), ("polymorphs", "disappearing-polymorph"), ("disappear", "disappearing-polymorph")
-   , ("miscite", "miscitation"), ("openia", "openai"), ("dnm/evolution", "darknet-market/evolution"), ("bing-sydney", "sydney"), ("sidney", "sydney"), ("sunk-costs", "sunk-cost"), ("sunkcost", "sunk-cost"), ("dnm-evolution", "darknet-market/evolution"), ("dnm", "darknet-market")
+   , ("miscite", "miscitation"), ("openia", "openai"), ("dnm/evolution", "darknet-market/evolution"), ("bing-sydney", "sydney"), ("sidney", "sydney"), ("sunk-costs", "sunk-cost"), ("sunkcost", "sunk-cost"), ("dnm-evolution", "darknet-market/evolution"), ("dnm", "darknet-market"), ("darknet-markets/evolution", "darknet-market/evolution")
    , ("fermi", "science/fermi-problem"), ("fermi-estimate", "science/fermi-problem"), ("fermi-calculation", "science/fermi-problem"), ("fermi-problems", "science/fermi-problem")
    , ("clock", "longevity/epigenetics"), ("aging-clock", "longevity/epigenetics"), ("epigenetic-clock", "longevity/epigenetics"), ("clocks", "longevity/epigenetics")
    , ("desing", "design"), ("animal/psychology", "psychology/animal"), ("ramssey", "ramsey"), ("hrv", "nootropic/quantified-self/heart-rate-variability")

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-03-27 09:56:21 gwern"
+# When:  Time-stamp: "2025-03-29 15:39:57 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -276,6 +276,9 @@ pdf-append () {
             bold "Contents of temporary directory:" >&2
             ls -l "$TEMP_DIR" >&2
 
+            # I usually know before I look at the PDF's metadata that I will be appending to it, because I will have already downloaded the supplementary files etc. So I won't have yet looked to see what I have to add. We'll save a step by assuming that is the case, and running `crossref` on it:
+            crossref "$ORIGINAL"
+
             return 0
         else
             red "Error preserving metadata or moving target file" >&2
@@ -287,8 +290,6 @@ pdf-append () {
         rm -f "$TARGET"
         return 1
     fi
-    # I usually know before I look at the PDF's metadata that I will be appending to it, because I will have already downloaded the supplementary files etc. So I won't have yet looked to see what I have to add. We'll save a step by assuming that is the case, and running `crossref` on it:
-    crossref "$ORIGINAL"
 }
 
 doc2pdf () {
