@@ -459,13 +459,34 @@ GW.specialOccasions = [
         document.body.classList.add("special-april-fools");
         // TODO: no April Fools logos or dropcaps.. for now. Maybe 2025?
 
-        /*  Turn off the funny after half a minute (the blackletter joke has
-            worn old by then).
-         */
-        let jokeDurationSeconds = 30;
-        setTimeout(() => {
-            document.body.classList.remove("special-april-fools");
-        }, jokeDurationSeconds * 1000);
+		if (GW.isMobile() == true)
+			return;
+
+        let jokeOnsetSeconds = 300; // 5 minutes
+		doWhenPageLoaded(() => {
+			setTimeout(() => {
+				let birthdayCatLinkContainer = addUIElement(`<div id="birthday-cat-link-container"></div>`);
+				let birthdayCatLink = synthesizeIncludeLink("/static/template/unfortunatelytheclockisticking.html", {
+					"class": "april-fools-special-birthdaycat mini-title-bar",
+					"data-link-content-type": "local-fragment"
+				});
+				birthdayCatLinkContainer.appendChild(birthdayCatLink);
+				Extracts.addTargetsWithin(birthdayCatLinkContainer);
+				Popups.spawnPopup(birthdayCatLink);
+				requestAnimationFrame(() => {
+					let popup = birthdayCatLink.popup;
+					Popups.pinPopup(popup);
+					popup.style.visibility = "hidden";
+					requestAnimationFrame(() => {
+						popup.classList.add("offset");
+						setTimeout(() => {
+							popup.style.visibility = "";
+							popup.classList.add("moved");
+						}, 50);
+					});
+				});
+			}, jokeOnsetSeconds * 1000);
+		});
       }, () => {
         document.body.classList.remove("special-april-fools");
       } ],
