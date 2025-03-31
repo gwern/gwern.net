@@ -3,7 +3,7 @@
 {- Metadata.Author.hs: module for managing 'author' metadata & hyperlinking author names in annotations
 Author: Gwern Branwen
 Date: 2024-04-14
-When:  Time-stamp: "2025-03-24 16:45:28 gwern"
+When:  Time-stamp: "2025-03-30 21:52:40 gwern"
 License: CC-0
 
 Authors are useful to hyperlink in annotations, but pose some problems: author names are often ambiguous in both colliding and having many non-canonical versions, are sometimes extremely high frequency & infeasible to link one by one, and there can be a large number of authors (sometimes hundreds or even thousands in some scientific fields).
@@ -192,9 +192,11 @@ authorCanonicalize a = fromMaybe a $ M.lookup a authorDB
 
 isAuthor :: String -> Bool
 isAuthor "" = False
-isAuthor a = case M.lookup a authorDB of
-               Nothing -> isJust $ M.lookup (T.pack a) CA.authorLinkDB
-               Just _ -> True
+isAuthor a = let a' = cleanAuthors a in
+               if null a' then False else
+               case M.lookup a' authorDB of
+                 Nothing -> isJust $ M.lookup (T.pack a') CA.authorLinkDB
+                 Just _ -> True
 
 -- convenience function for working with metadata to quickly see which authors are currently unknown; some of the authors might obviously have a Wikipedia or other easy URL to define.
 authorsUnknown :: [String] -> [String]

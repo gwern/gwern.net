@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-03-29 15:39:57 gwern"
+# When:  Time-stamp: "2025-03-30 17:41:36 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -527,6 +527,11 @@ else
 
         rsync --mkpath --chmod='a+r' -q ~/wiki"$NEW" gwern@176.9.41.242:"/home/gwern/gwern.net$NEW" || red "gwmv: rsync failed?" > /dev/null &
         gwsed "$OLD" "$NEW"
+        # there are likely many Nginx redirects pointing from an inbound path to the old original URL as as a target.
+        # These look like a single line like '"~^/inbound$" "/old";'
+        # Update the target (tricky!):
+        stringReplace '"'"$OLD"'";' '"'"$NEW"'";'
+        ~/wiki/static/redirect/nginx.conf
         echo '"~^'"$OLD"'.*$" "'"$NEW"'";' | tee --append ~/wiki/static/redirect/nginx.conf # 3. add a redirected old to nginx
         # 4. delete outdated annotations:
         OLD_FILE=$(basename "$OLD"); rm "$HOME/wiki/metadata/annotation/*$OLD_FILE*" || true > /dev/null

@@ -174,7 +174,7 @@ tagsShort2LongRewrites =
    , ("pipelines", "statistics/order/selection/pipeline"), ("leaky-pipelines", "statistics/order/selection/pipeline"), ("leaky-pipeline", "statistics/order/selection/pipeline"), ("leakypipeline", "statistics/order/selection/pipeline"), ("leakypipelines", "statistics/order/selection/pipeline")
    , ("regression-to-the-mean", "regression-to-mean"), ("regressiontothemean", "regression-to-mean"), ("regression-mean", "mean-regression"), ("reversion-to-the-mean", "regression-to-mean"), ("reversion-to-mean", "regression-to-mean"), ("mean-reversion", "regression-to-mean"), ("reversion", "regression-to-mean"), ("mean", "regression-to-mean")
    , ("lafferty", "r-a-lafferty"), ("ralafferty", "r-a-lafferty"), ("r-lafferty", "r-a-lafferty")
-   , ("40", "4o"), ("04", "4o"), ("4-o", "4o"), ("o-4", "4o"), ("o4", "4o")
+   , ("40", "4o"), ("04", "4o"), ("4-o", "4o"), ("o-4", "4o"), ("o4", "4o"), ("hertaible", "heritable")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 

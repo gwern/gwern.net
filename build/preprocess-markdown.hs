@@ -9,7 +9,7 @@ import Text.Pandoc (def, pandocExtensions, runPure, readerExtensions, readMarkdo
 
 import LinkMetadata (cleanAbstractsHTML)
 import LinkAuto (linkAuto)
-import Interwiki (convertInterwikiLinks, isWPArticle)
+import Interwiki (convertInterwikiLinks, isWPArticle, isWPDisambig)
 import qualified GenerateSimilar as GS (singleShotRecommendations)
 import Utils (replace, safeHtmlWriterOptions, sed)
 import qualified Config.Misc as C (cd)
@@ -46,3 +46,4 @@ main = do originalMarkdown <- TIO.getContents
 checkWP :: Pandoc -> IO ()
 checkWP p = do let links = filter ("wikipedia.org"`T.isInfixOf`) $ extractURLs p
                mapM_ isWPArticle links
+               mapM_ isWPDisambig links
