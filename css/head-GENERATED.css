@@ -382,7 +382,7 @@ header h1 em {
     or slashes.
  */
 #page-metadata .page-metadata-fields > span::after {
-    content: "\00B7"; /* interpunct MIDDLE DOT (U+00B7) '·' */
+    content: "\00B7"; /* interpunct MIDDLE DOT (U+00B7) '·'; TODO: replace with BULLET .separator-inline? */
     margin: 0 0.75em;
 }
 /*  No separator at line end.
@@ -2470,14 +2470,20 @@ body.file-preview-source-code pre code {
 /*= April Fool’s =*/
 /*=--------------=*/
 
-body.special-april-fools {
-    --GW-modified-serif-font-stack: "Great Primer Uncials", var(--GW-serif-font-stack);
-
-    font-family: var(--GW-modified-serif-font-stack);
+.popup.april-fools-special-birthdaycat {
+	width: 514px !important;
+	height: 704px !important;
+	max-height: unset !important;
 }
-
-body.special-april-fools .marginnote {
-    font-family: var(--GW-modified-serif-font-stack);
+.popup.april-fools-special-birthdaycat.offset {
+	left: unset !important;
+	right: 64px !important;
+	top: -800px !important;
+}
+.popup.april-fools-special-birthdaycat.offset.moved {
+	top: 8px !important;
+	transition:
+		top 5s ease;
 }
 
 /*=-----------=*/
