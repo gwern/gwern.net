@@ -43,9 +43,9 @@ writeOutBlogEntries :: Metadata -> IO ()
 writeOutBlogEntries md =
   do let writings = filterForAuthoredAnnotations md
 
-     -- Dates are required to be full YYYY-MM-DD dates & unique for IDs; date validity in general is checked in LinkMetadata, so we only need to check for length & uniqueness here:
+     -- Dates are required to be full YYYY-MM-DD dates & unique for IDs; date validity in general is checked in LinkMetadata, so we only need to check for length here:
      let dates = map (\(_,(_,_,dc,_,_,_,_)) -> dc) writings
-     let badDates = filter (\x -> length x /= 10 || length (filter (== x) dates) > 1) dates
+     let badDates = filter (\x -> length x /= 10) dates
      let badEntries = filter (\(_,(_,_,dc,_,_,_,_)) -> dc `elem` badDates) writings
      unless (null badDates) $ error $ "Blog.writeOutBlogEntries: invalid dates of blog posts detected; bad dates were: " ++ show badDates ++ "; entries: " ++ show badEntries
      -- we'd also like titles to not take up >1 line, to maintain the classic blog-index look of 1 line = 1 post
