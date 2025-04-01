@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-03-30 17:41:36 gwern"
+# When:  Time-stamp: "2025-03-31 19:02:08 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -76,6 +76,18 @@ set -e
 
 bold () { echo -e "\033[1m$@\033[0m"; }
 red  () { echo -e "\e[41m$@\e[0m"; }
+# Green text (uses foreground color for success messages)
+green () {
+  # \e[32m sets foreground to green
+  # \e[0m resets all attributes
+  echo -e "\e[32m$@\e[0m"
+}
+# Yellow text (uses foreground color for warnings)
+yellow () {
+  # \e[33m sets foreground to yellow
+  # \e[0m resets all attributes
+  echo -e "\e[33m$@\e[0m"
+}
 ## function to wrap checks and print red-highlighted warning if non-zero output (self-documenting):
 wrap () { OUTPUT=$($1 2>&1)
           WARN="$2"
@@ -530,8 +542,7 @@ else
         # there are likely many Nginx redirects pointing from an inbound path to the old original URL as as a target.
         # These look like a single line like '"~^/inbound$" "/old";'
         # Update the target (tricky!):
-        stringReplace '"'"$OLD"'";' '"'"$NEW"'";'
-        ~/wiki/static/redirect/nginx.conf
+        stringReplace '"'"$OLD"'";' '"'"$NEW"'";' ~/wiki/static/redirect/*.conf;
         echo '"~^'"$OLD"'.*$" "'"$NEW"'";' | tee --append ~/wiki/static/redirect/nginx.conf # 3. add a redirected old to nginx
         # 4. delete outdated annotations:
         OLD_FILE=$(basename "$OLD"); rm "$HOME/wiki/metadata/annotation/*$OLD_FILE*" || true > /dev/null

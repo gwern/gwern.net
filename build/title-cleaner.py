@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-03-28 18:25:42 gwern"
+# When:  Time-stamp: "2025-03-31 11:54:10 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -637,6 +637,8 @@ Personal profile - UPJS Kosice"
 ""
 - "https://www.secondperson.dating/p/navigation-by-moonlight#%C2%A7the-lunar-arts Navigation by Moonlight—by Jacob Falkovich"
 "Navigation by Moonlight"
+- "https://dailynous.com/2023/05/25/am-i-the-unethical-one-a-philosophy-professor-his-cheating-students/ “Am I the unethical one?” A Philosophy Professor &amp; His Cheating Students - <em>Daily Nous</em>"
+"“Am I the unethical one?” A Philosophy Professor &amp; His Cheating Students"
 
 Task:
 
