@@ -1,6 +1,6 @@
 <!-- humorous birthday-cat meme combined with unfortunately-the-clock-is-ticking meme <https://knowyourmeme.com/memes/unfortunately-the-clock-is-ticking>; see also '/static/template/idealconditionsdonotexistandwillneverhappen.html'. We use HTML imagemaps to build in commentary, and the div-randomization feature to swap between multiple alternative links. -->
 <figure>
-  <img src="/doc/fiction/humor/2020-04-06-chainsawman-ifunny-unfortunatelytheclockistickingmeme-birthdaycatpluswindowsnotification.jpg" class="image-focus-not" usemap="#image-map-1" alt="Unfortunately, the clock is ticking / the hours are going by. The past increases, the / future recedes. Possibilities decreasing, regrets / mounting. / Do you understand? / [I Understand | remain ignorant]" title="Unfortunately, the clock is ticking…">
+  <img id="birthday-cat-meme-image" src="/doc/fiction/humor/2020-04-06-chainsawman-ifunny-unfortunatelytheclockistickingmeme-birthdaycatpluswindowsnotification.jpg" class="image-focus-not" usemap="#image-map-1" alt="Unfortunately, the clock is ticking / the hours are going by. The past increases, the / future recedes. Possibilities decreasing, regrets / mounting. / Do you understand? / [I Understand | remain ignorant]" title="Unfortunately, the clock is ticking…">
   <map name="image-map-1">
     <area href="/review/cat#are-cats-domesticated" alt="Cat emotional issues &amp; stress" title="Cat emotional issues &amp; stress" coords="195,334,164" shape="circle">
     <area href="/doc/psychology/cognitive-bias/illusion-of-depth/index" alt="The illusion of depth" title="The illusion of depth" coords="151,597,26,580" shape="rect">
@@ -50,11 +50,17 @@
       <div class="display-entry"><area alt="remain ignorant" title="remain ignorant" coords="225,595,358,661" shape="rect" href="https://www.youtube.com/watch?v=oavMtUWDBTM"> <!-- Trololo Song --></div>
       <div class="display-entry"><area alt="remain ignorant" title="remain ignorant" coords="225,595,358,661" shape="rect" href="https://www.youtube.com/watch?v=k85mRPqvMbE"> <!-- Crazy Frog – Axel F --></div>
       <div class="display-entry"><area alt="remain ignorant" title="remain ignorant" coords="225,595,358,661" shape="rect" href="https://www.youtube.com/watch?v=2GF3rWj0A_Y"> <!-- Dancing Baby (Oogachaka) --></div>
+      <div class="display-entry"><area alt="remain ignorant" title="remain ignorant" coords="225,595,358,661" shape="rect" href="https://en.wikipedia.org/wiki/Special:Random"></div>
     </div>
 
     <div class="display-random-1 disable-the-not-chosen">
       <div class="display-entry"><area alt="close page" title="close page" coords="345,508,39" shape="circle" href="/index"></div>
       <div class="display-entry"><area alt="close page" title="close page" coords="345,508,39" shape="circle" href="/404"></div>
+      <div class="display-entry"><area alt="close page. close browser. close mind." title="close page. close browser. close mind." coords="345,508,39" shape="circle" href="about:blank"></div> <!-- Loads empty blank browser default tab -->
+      <div class="display-entry"><area alt="The Random Number God did not bless your attempt to remain ignorant." title="The Random Number God did not bless your attempt to remain ignorant." coords="345,508,39" shape="circle" href="#"></div> <!-- Clicking just does nothing -->
+      <div class="display-entry"><area alt="[Heavy-handed metaphor for the human condition.]" title="[Heavy-handed metaphor for the human condition.]" coords="345,508,39" shape="circle" href="javascript:void(0);" onclick="return false;"></div> <!-- Disable clicking -->
+      <div class="display-entry"><area alt="[The title attribute is a lie: you thought it was a close-popup ‘x’, but it was actually a link to an image of an anime villain, Dio Brando, from <em>Jojo’s Bizarre Adventure</em>.]" title="Close popup toggle." coords="345,508,39" shape="circle" href="/doc/anime/2012-10-05-jojosbizarreadventure-episode1-diobrando-itwasmedio.jpg"></div> <!-- https://knowyourmeme.com/memes/it-was-me-dio -->
+      <div class="display-entry"><area alt="‘Your wish is my command.’ —Evil Jinni" title="‘Your wish is my command.’ —Evil Jinni" coords="345,508,39" shape="circle" href="javascript:void(0);" onclick="document.getElementById('birthday-cat-meme-image').style.display='none';"></div> <!-- Malicious compliance: deletes the image in the popup... and only the image. -->
     </div>
 
     <!-- gray beige couch area at middle-upper right which has no useful objects so we take the subject as ‘couches’ -->
