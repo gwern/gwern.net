@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-03-29 20:21:46 gwern"
+When:  Time-stamp: "2025-04-01 12:55:00 gwern"
 License: CC-0
 -}
 
@@ -710,7 +710,8 @@ fileTranscludesTest md am =
     , (simpleTestF "/doc/ai/nn/gan/stylegan/2020-03-26-shawnpresser-stylegan2-imagenet-run52-1394688-interpolation-7.mp4", [Div ("",["aux-links-transclude-file"],[]) [Para [Link ("",["link-annotated-not","include-content","width-full"],[]) [Code ("",[],[]) "/doc/ai/nn/gan/stylegan/2020-03-26-shawnpresser-stylegan2-imagenet-run52-1394688-interpolation-7.mp4"] ("/doc/ai/nn/gan/stylegan/2020-03-26-shawnpresser-stylegan2-imagenet-run52-1394688-interpolation-7.mp4","")]]])
     , (simpleTestT "/doc/anime/eva/notenki-memoirs/blue-blazes/10-3.webm", [Div ("",["aux-links-transclude-file"],[]) [Para [Strong [Str "View ",Str "WebM"],Str ": ",Link ("",["link-annotated-not","include-content","width-full"],[]) [Code ("",[],[]) "/doc/anime/eva/notenki-memoirs/blue-blazes/10-3.webm"] ("/doc/anime/eva/notenki-memoirs/blue-blazes/10-3.webm","")]]])
     , (simpleTestF "/doc/ai/music/2020-04-18-gpt2-midi-bigdataset-124.mp3", [Div ("",["aux-links-transclude-file"],[]) [Para [Link ("",["link-annotated-not","include-content","width-full"],[]) [Code ("",[],[]) "/doc/ai/music/2020-04-18-gpt2-midi-bigdataset-124.mp3"] ("/doc/ai/music/2020-04-18-gpt2-midi-bigdataset-124.mp3","")]]])
-    , (simpleTestF "/doc/ai/nn/gan/stylegan/2020-05-05-tjukanov-mapdreameraicartography.html", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "HTML (63MB)"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[]) [Code ("",[],[]) "/doc/ai/nn/gan/stylegan/2020-05-05-tjukanov-mapdreameraicartography.html"] ("/doc/ai/nn/gan/stylegan/2020-05-05-tjukanov-mapdreameraicartography.html","")]]]])
+    , (simpleTestF "/doc/ai/nn/gan/stylegan/2020-05-05-tjukanov-mapdreameraicartography.html", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "HTML (63MB)"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","internet-archive"),("link-icon-type","svg")]) [Code ("",[],[]) "/doc/ai/nn/gan/stylegan/2020-05-05-tjukanov-mapdreameraicartography.html"] ("/doc/ai/nn/gan/stylegan/2020-05-05-tjukanov-mapdreameraicartography.html","")]]]])
+    , (simpleTestT "https://nyx-ai.github.io/stylegan2-flax-tpu/", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "HTML (19MB)"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","internet-archive"),("link-icon-type","svg")]) [Code ("",[],[]) "/doc/www/nyx-ai.github.io/a95f4c42e4300722b1adcf0f494ac943437fcc56.html"] ("/doc/www/nyx-ai.github.io/a95f4c42e4300722b1adcf0f494ac943437fcc56.html","")]]]])
     , (simpleTestF "/doc/ai/anime/danbooru/2019-02-10-stylegan-holo-handselectedsamples.zip", [])
     , (simpleTestT "/doc/anime/2019-05-06-stylegan-malefaces-1ksamples.tar", [])
     , (simpleTestT "/doc/ai/anime/danbooru/2018-09-22-progan-holofaces-topdecile.tar.xz", [])
@@ -720,7 +721,6 @@ fileTranscludesTest md am =
        [Div ("",["aux-links-transclude-file"],[]) [Para [Link ("",["id-not","include-content"],[("include-template","$annotationFileIncludeTemplate")]) [RawInline (Format "HTML") "Amber Heard"] ("https://en.wikipedia.org/wiki/Amber_Heard","")]]])
     , (simpleTestF "https://en.wikipedia.org/wiki/Category:American_Quakers",
        [Div ("",["aux-links-transclude-file"],[]) [Para [Link ("",["id-not","include-content"],[]) [RawInline (Format "HTML") "Category:American Quakers"] ("https://en.wikipedia.org/wiki/Category:American_Quakers","")]]])
-    , (simpleTestT "https://nyx-ai.github.io/stylegan2-flax-tpu/", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "HTML (19MB)"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[]) [Code ("",[],[]) "/doc/www/nyx-ai.github.io/a95f4c42e4300722b1adcf0f494ac943437fcc56.html"] ("/doc/www/nyx-ai.github.io/a95f4c42e4300722b1adcf0f494ac943437fcc56.html","")]]]])
     , (simpleTestT "https://www.youtube.com/watch?v=D2zjc--sDaY", [Div ("",["aux-links-transclude-file"],[]) [Para [Strong [Str "View ",Str "YouTube video"],Str ": ",Link ("",["link-annotated-not","include-content","width-full"],[]) [Code ("",[],[]) "https://www.youtube.com/watch?v=D2zjc--sDaY"] ("https://www.youtube.com/watch?v=D2zjc--sDaY","")]]])
     , (simpleTestT "https://www.reddit.com/r/MediaSynthesis/comments/tiil1b/xx_waifu_01_xx_loop_by_squaremusher/", [])
     , (simpleTestF "https://caniuse.com/?search=text-wrap%3A%20pretty", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "External Link"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","CanI"),("link-icon-type","text,sans,quad"),("link-icon-color","#c75000")]) [RawInline (Format "HTML") "text-wrap: pretty"] ("https://caniuse.com/?search=text-wrap%3A%20pretty","")]]]])

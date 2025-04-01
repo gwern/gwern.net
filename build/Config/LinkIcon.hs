@@ -198,7 +198,7 @@ linkIconRulesSingle u
  | u'' u "messybeast.com" = ("🐾", "text", "#fafa02") -- Sarah Hartwell's cat compilations; color: yellow (from <http://messybeast.com/favicon.ico>); use Unicode PAW PRINTS for now because not sure I can clean up the logo. TODO: black-on-yellow text background
  | u'' u "www.animesuki.com" || u'' u "forums.animesuki.com" = ("̅□", "text", "#008080") -- color: teal geometric icon; didn't try to replicate as an SVG, but settled for WHITE SQUARE + COMBINING OVERLINE
  | u'' u "www.theregister.com" = ("𓅐", "text", "#ff0000") -- The Register: color, red; icon: vulture (EGYPTIAN HIEROGLYPH G014)
- | u'' u "ki.se" = ("☤", "text", "#830154") -- Karolinska Institute <https://en.wikipedia.org/wiki/Karolinska_Institute>; we skip openarchive.ki.se because it's just PDFs; icon: complex <https://en.wikipedia.org/wiki/File:Karolinska_Institutet_seal.svg>, but the caduceus seems recognizable; color: purple
+ | u'' u "ki.se" = ("caduceus", "svg", "#830154") -- Karolinska Institute <https://en.wikipedia.org/wiki/Karolinska_Institute>; we skip openarchive.ki.se because it's just PDFs; icon: complex <https://en.wikipedia.org/wiki/File:Karolinska_Institutet_seal.svg>, the Unicode CADUCEUS '☤' point turns out to be way too complex to be recognizable as a link-icon in any variant, so we chop it down to the core Rod of Asclepius image of the snake-stick <https://commons.wikimedia.org/wiki/File:Med_logo_simpleicon.svg>; color: purple
  | u'' u "www.e-codices.unifr.ch" = ("e", "text,sans", "#e7d7a5") -- e-codices - Virtual Manuscript Library of Switzerland; color: yellow; 'e' circular logo illegible so just an 'e'
  | u'' u "www.bartleby.com" = ("b", "text", "#101269") -- Bartleby: no good logo, favicon is just a blue 'b' (sort weird serif)
  | u'' u "www.smh.com.au" = ("S", "text", "#096dd2") -- The Sydney Morning Herald: should be a fancy fraktur S but the Unicode renders wrong, and none of the MATHEMATICAL * CAPITAL S Unicode points look right either, so we just use 'S'; color: dark blue
@@ -1301,7 +1301,7 @@ linkIconTestUnitsText =
          , ("https://www.theregister.com/2019/01/29/how_i_caught_silk_road_mastermind/?page=2", "𓅐", "text", "#ff0000")
          , ("https://infoproc.blogspot.com/2014/02/hints-of-genomic-dark-matter-rare.html", "Hsu", "text,tri,sans", "")
          , ("https://www.manifold1.com/episodes/robin-hanson-prediction-markets-the-future-of-civilization-and-polymathy-66/transcript#elon-musk", "Hsu", "text,tri,sans", "")
-         , ("https://ki.se/en/people/paul-lichtenstein", "☤", "text", "#830154")
+         , ("https://ki.se/en/people/paul-lichtenstein", "caduceus", "svg", "#830154")
          , ("https://www.dwarkeshpatel.com/p/progress-update", "Dwkh", "text,sans,quad", "#f3c016")
          , ("https://ascii.textfiles.com/archives/2229", "ASCI", "text,quad,mono", "#006309")
          , ("https://www.e-codices.unifr.ch/en/vad/0296/079r", "e", "text,sans", "#e7d7a5")
