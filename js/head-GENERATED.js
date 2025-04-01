@@ -5844,7 +5844,7 @@ GW.specialOccasions = [
 		if (GW.isMobile() == true)
 			return;
 
-        let jokeOnsetSeconds = 300; // 5 minutes
+        let jokeOnsetSeconds = 0.5; // 5 minutes
 		doWhenPageLoaded(() => {
 			setTimeout(() => {
 				let birthdayCatLinkContainer = addUIElement(`<div id="birthday-cat-link-container"></div>`);
