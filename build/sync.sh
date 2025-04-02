@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-03-30 09:47:06 gwern"
+# When:  Time-stamp: "2025-04-01 11:18:42 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -1697,7 +1697,7 @@ else
               BASE_URL="https://gwern.net"
               DEFAULT_MIME_TYPE="text/html"
               # Define paths to exclude (relative to the starting directory)
-              EXCLUDE_PATHS=( -path './.git' -o -path './metadata' )
+              EXCLUDE_PATHS=( -path './.git' -o -path './static/.git' -o -path './metadata' )
 
               # Step 1: Get unique, lowercase extensions, respecting exclusions
               find . \
@@ -1709,7 +1709,7 @@ else
                   | sort -u \
                   | while IFS= read -r ext; do
                   # Skip empty lines and html/htm extensions
-                  if [[ -z "$ext" ]] || [[ "$ext" == "html" ]]; then
+                  if [[ -z "$ext" ]] || [[ "$ext" == "html" ]] || [[ "$ext" == "html5" ]]; then
                       continue
                   fi
 

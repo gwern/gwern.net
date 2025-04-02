@@ -720,6 +720,10 @@ canonicals = M.fromList
   , ("Faire U", "Ulf de Faire")
   , ("defaire U", "Ulf de Faire")
   , ("elder_plinius", "Pliny the Liberator")
+  , ("nptacek", "Nicholas Ptacek")
+  , ("Karin Verweij", "Karin J. H. Verweij")
+  , ("Shane Gu", "Shixiang Shane Gu")
+  , ("shaneguML", "Shixiang Shane Gu")
   ]
 
 -- tests: unique
@@ -752,7 +756,7 @@ canonicalsWithInitials =
   , "Karl T. Compton", "Tom B. Brown", "Saskia P. Hagenaars", "Robert R. McCrae", "Nathan A. Gillespie"
   , "Marian L. Hamshere", "Richard W. Wrangham", "John R. Attia", "Joel Z. Leibo", "Jaspal S. Kooner"
   , "Larry V. Hedges", "Hugh Christian Watkins", "Stephen Cole Kleene", "David C. Glahn"
-  , "Bernhard Otto Boehm", "John W. Tukey", "Behrooz Z. Alizadeh", "Aki S. Havulinna", "Richard Sharpe Shaver", "Wouter J. Peyrot", "Wendy L. McArdle", "Peter T. Leeson", "Brian O. Bernstein", "Thorgeir E. Thorgeirsson"]
+  , "Bernhard Otto Boehm", "John W. Tukey", "Behrooz Z. Alizadeh", "Aki S. Havulinna", "Richard Sharpe Shaver", "Wouter J. Peyrot", "Wendy L. McArdle", "Peter T. Leeson", "Brian O. Bernstein", "Thorgeir E. Thorgeirsson", "Susan M. Ring", "Stephen S. Rich"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1554,8 +1558,14 @@ authorLinkDB = M.fromList $
     , ("Nicholas Rougeux", "https://www.c82.net/about/")
     , ("Ulf de Faire", "https://ki.se/en/people/ulf-defaire")
     , ("Ulf Gyllensten", "https://www.uu.se/en/contact-and-organisation/staff?query=N96-4216")
-    , ("Thorgeir E. Thorgeirsson", "https://scholar.google.com/citations?user=xpNtpxcAAAAJ&hl=en&oi=ao")
-    , ("Takeshi Terao", "https://scholar.google.com/citations?user=JnudCy0AAAAJ&hl=en&oi=ao")
+    , ("Thorgeir E. Thorgeirsson", "https://scholar.google.com/citations?user=xpNtpxcAAAAJ")
+    , ("Takeshi Terao", "https://scholar.google.com/citations?user=JnudCy0AAAAJ")
+    , ("Nicholas Ptacek", "https://nptacek.medium.com/content-archive-for-nptacek-ec39ba2d6465")
+    , ("Karin J. H. Verweij", "https://www.geneticsnetworkamsterdam.org/personal-pages/personal-pages-karin-verweij/")
+    , ("Susan M. Ring", "https://research-information.bris.ac.uk/en/persons/susan-m-ring")
+    , ("Stephen S. Rich", "https://med.virginia.edu/faculty/faculty-listing/ssr4n/")
+    , ("Shixiang Shane Gu", "https://sites.google.com/view/gugurus/home")
+    , ("Thomas D. Clareson", "https://sf-encyclopedia.com/entry/clareson_thomas_d")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

@@ -3,7 +3,7 @@
 {- Metadata.Author.hs: module for managing 'author' metadata & hyperlinking author names in annotations
 Author: Gwern Branwen
 Date: 2024-04-14
-When:  Time-stamp: "2025-03-31 10:07:53 gwern"
+When:  Time-stamp: "2025-04-01 22:12:19 gwern"
 License: CC-0
 
 Authors are useful to hyperlink in annotations, but pose some problems: author names are often ambiguous in both colliding and having many non-canonical versions, are sometimes extremely high frequency & infeasible to link one by one, and there can be a large number of authors (sometimes hundreds or even thousands in some scientific fields).
@@ -53,6 +53,7 @@ import Utils (split, frequency, trim, replaceMany, sedMany, printRed, printGreen
 import qualified LinkBacklink as BL
 import Query (extractURLs)
 import Cycle (testInfixRewriteLoops)
+import Metadata.Format (filterMeta)
 
 import qualified Config.Metadata.Author as CA
 
@@ -100,7 +101,7 @@ name2Abbreviations fullName
     i :: String -> String
     i = (:[]) . toUpper . head
 
--- handle initials consistently as period+space-separated; delete titles; delete the occasional final Oxford 'and' cluttering up author lists
+-- handle initials consistently as period+space-separated; delete titles; delete the occasional final Oxford 'and' cluttering up author lists; does *not* run 'filterMeta', because many junk 'authors' are also valid annotation authors (eg. 'Microsoft')
 cleanAuthors :: String -> String
 cleanAuthors = trim . replaceMany CA.cleanAuthorsFixedRewrites . sedMany CA.cleanAuthorsRegexps
 
@@ -202,7 +203,7 @@ isAuthor a = let a' = cleanAuthors a in
 authorsUnknown :: [String] -> [String]
 authorsUnknown [] = error "Author.authorsUnknown: called with an empty list, but this should only ever be called on some specific author or authors, and so that should be impossible!"
 authorsUnknown [""] = []
-authorsUnknown auts = map trim $ filter (not . isAuthor) auts
+authorsUnknown auts = map trim $ filter (\a -> not (isAuthor a || filterMeta (cleanAuthors a) == "")) auts
 
 authorsUnknownPrint :: String -> IO ()
 authorsUnknownPrint "" = return ()

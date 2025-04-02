@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-03-31 19:02:08 gwern"
+# When:  Time-stamp: "2025-04-01 19:28:20 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -160,6 +160,7 @@ pdf () {
 
 # delete the first page of the PDF. This is useful to remove the spam in PDFs from JSTOR and many other academic publishers. (Some of them do 2 or even 3 spam pages, but you can just run `pdf-cut` repeatedly quickly with <Up> arrow in bash, of course.)
 alias pdfcut="pdf-cut"
+alias pdfcut-last="pdf-cut-last"
 pdf-cut () { for PDF in "$@"; do
                 ORIGINAL=$(path2File "$PDF")
                 TARGET=$(mktemp /tmp/XXXXXX.pdf);

@@ -328,8 +328,8 @@ printGreen  s = putStrGreen (s ++ "\n")
 
 -- print danger or error messages to stderr in red background:
 putStrRed, printRed :: String -> IO ()
-putStrRed s = do when (length s > 1024) $ printRed "Warning: following error message was extremely long & truncated at 1024 characters!"
-                 putStrStdErr $ red $ take 1024 s
+putStrRed s = do when (length s > 2048) $ printRed "Warning: following error message was extremely long & truncated at 2048 characters!"
+                 putStrStdErr $ red $ take 2048 s
 printRed s = putStrRed (s ++ "\n")
 -- special-case: the error message, then useful values:
 printRed' :: String -> String -> IO ()

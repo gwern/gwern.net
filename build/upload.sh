@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2025-03-21 18:00:11 gwern"
+# When:  Time-stamp: "2025-04-01 19:30:47 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -224,7 +224,7 @@ _upload() {
                   # Check PNG and preview in browser only for small files
                   $IS_SMALL_FILE && {
                       [[ "$TARGET" =~ .*\.png ]] && png2JPGQualityCheck ~/wiki/"$TARGET"
-                      cloudflare-expire "$TARGET_DIR/$(basename "$FILE")" # expire any possible 404s from previous failure or similar cache staleness
+                      cloudflare-expire "$TARGET_DIR/$(basename "$FILE")" > /dev/null # expire any possible 404s from previous failure or similar cache staleness
                       ("$BROWSER" "$URL" 2> /dev/null) &
                   } || bold "File is too large to preview in browser ($(numfmt --to=iec-i --suffix=B $FILESIZE)). Access directly at $URL"
                   ) &
