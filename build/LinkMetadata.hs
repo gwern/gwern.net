@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-04-01 12:55:00 gwern"
+When:  Time-stamp: "2025-04-01 23:00:43 gwern"
 License: CC-0
 -}
 
@@ -15,7 +15,8 @@ import Control.Monad (unless, void, when, foldM_, (<=<))
 
 import Data.Char (isPunctuation, isNumber)
 import Data.Maybe (fromMaybe)
-import qualified Data.Map.Strict as M (elems, empty, filter, filterWithKey, fromList, fromListWith, keys, toList, lookup, map, union, size, member) -- traverseWithKey, union, Map
+import qualified Data.Map.Strict as M (elems, empty, filter, filterWithKey, fromList, fromListWith, keys, toList, lookup, map, union, size, member, keysSet, Map) -- traverseWithKey, union, Map
+import qualified Data.Set as Set (member, null)
 import qualified Data.Text as T (append, isInfixOf, isPrefixOf, pack, unpack, replace, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.Function (on)
@@ -126,7 +127,7 @@ walkAndUpdateLinkMetadataGTX f file = do db <- readGTXSlow file -- TODO: refacto
 
 -- This can be run every few months to update abstracts (they generally don't change much).
 updateGwernEntries :: IO ()
-updateGwernEntries = do rescrapeGTX gwernEntries "metadata/full.gtx"
+updateGwernEntries = do -- rescrapeGTX gwernEntries "metadata/full.gtx" -- why do we try to rescrape full.gtx? is there anything we really want to clobber (even assuming we are excluding /blog/?)
                         rescrapeGTX gwernEntries "metadata/half.gtx"
                         rescrapeGTX gwernEntries "metadata/auto.gtx"
                         readLinkMetadataAndCheck >> printGreen "Validated all GTX post-update; exiting…"
@@ -201,12 +202,11 @@ readLinkMetadataAndCheck = do
 
              let tagsAllC = nubOrd $ concatMap (\(_,(_,_,_,_,_,ts,_)) -> ts) full
 
-             let annotations = map (\(_,(_,_,_,_,_,_,s)) -> s) full
-             when (length (nubOrd (sort annotations)) /= length annotations) $ error $
-               "full.gtx:  Duplicate annotations: " ++ unlines (annotations \\ nubOrd annotations)
-
+             -- mandatory field check (includes checking for empty annotation string):
              let emptyCheck = filter (\(u,(t,a,_,_,_,_,s)) ->  "" `elem` [u,t,a,s]) full
              unless (null emptyCheck) $ error $ "full.gtx: Link Annotation Error: empty mandatory fields! [URL/title/author/abstract] This should never happen: " ++ show emptyCheck
+
+             duplicateAbstracts full
 
              -- CHECK HALF-ONLY
              -- intermediate link annotations: not finished, like 'full.gtx' entries, but also not fully auto-generated.
@@ -215,6 +215,7 @@ readLinkMetadataAndCheck = do
              let (fullPaths,halfPaths) = (map fst full, map fst half)
              let redundantHalfs = fullPaths `intersect` halfPaths
              unless (null redundantHalfs) (printRed "Redundant entries in half.gtx & full.gtx: " >> printGreen (show redundantHalfs))
+             duplicateAbstracts (filter (\(p,_) -> not (isLocal (T.pack p))) half) -- filter out local paths, because there are annoying reasons (for now) why annotations of essays/essay sections may be redundant. TODO: fix that.
 
              let urlsCP = map fst (full ++ half)
              let files = map (takeWhile (/='#') . tail) $ filter (\u -> head u == '/') urlsCP
@@ -229,6 +230,8 @@ readLinkMetadataAndCheck = do
              -- auto-generated cached definitions; can be deleted if gone stale
              rewriteLinkMetadata half full "metadata/auto.gtx" -- do auto-cleanup  first
              auto <- readGTXSlow "metadata/auto.gtx"
+             duplicateAbstracts (filter (\(p,_) -> not (isLocal (T.pack p))) auto)
+
              -- merge the hand-written & auto-generated link annotations, and return:
              let final = M.union (M.fromList full) $ M.union (M.fromList half) (M.fromList auto) -- left-biased, so 'full' overrides 'half' overrides 'auto'
              let finalL = M.toList final
@@ -335,6 +338,25 @@ readLinkMetadataAndCheck = do
              unless (null disambigs) (printRed "Link ID overrides: " >> print disambigs)
 
              return final
+
+duplicateAbstracts :: MetadataList -> IO ()
+duplicateAbstracts mdl = do
+             let annotations = map (\(_,(_,_,_,_,_,_,s)) -> s) mdl
+             -- Count occurrences of each non-empty annotation string
+             -- We filter out "" because duplicate empty strings are caught by the 'emptyCheck' below
+             -- and aren't the target of *this* specific check.
+             let annotationCounts = (M.fromListWith (+) $ map (\s -> (s, 1)) $ filter (not . null) annotations) :: M.Map String Int
+             -- Find which non-empty annotation strings are actually duplicated (appear > 1 times)
+             let duplicatedAnnotationStrings = M.keysSet $ M.filter (> 1) annotationCounts
+             unless (Set.null duplicatedAnnotationStrings) $ do
+                 -- Find all original entries in mdl that use one of the duplicated strings
+                 let offendingEntries = filter (\(_,(_,_,_,_,_,_,s)) -> s `Set.member` duplicatedAnnotationStrings) mdl
+                 -- Extract the paths (URLs/keys) of these entries
+                 -- Use nubOrd to list each problematic path only once, and sort them for clarity.
+                 let offendingPaths = nubOrd $ map fst offendingEntries
+                 let errorMsg = "Duplicate non-empty annotations found. The following " ++ show (length offendingPaths) ++ " paths share annotation content with at least one other path:\n" ++
+                                unlines (map ("  - " ++) offendingPaths)
+                 error errorMsg
 
 writeAnnotationFragments :: ArchiveMetadata -> Metadata  -> Bool -> IO ()
 writeAnnotationFragments am md writeOnlyMissing =
