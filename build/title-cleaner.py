@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-03-31 11:54:10 gwern"
+# When:  Time-stamp: "2025-04-02 13:19:49 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -639,6 +639,10 @@ Personal profile - UPJS Kosice"
 "Navigation by Moonlight"
 - "https://dailynous.com/2023/05/25/am-i-the-unethical-one-a-philosophy-professor-his-cheating-students/ “Am I the unethical one?” A Philosophy Professor &amp; His Cheating Students - <em>Daily Nous</em>"
 "“Am I the unethical one?” A Philosophy Professor &amp; His Cheating Students"
+- https://medium.com/@julianmckinlay/total-war-rome-ii-and-creative-assembly-my-statement-ten-years-on-d964f65b0a8f <em>Total War: ROME II</em> and Creative Assembly—My Statement 10 Years On | by Julian McKinlay"
+"<em>Total War: ROME II</em> and Creative Assembly—My Statement 10 Years On"
+- "https://waskstudio.com/products/blasphemail-postage-stamps Blasphemail Postage Stamps—Wask"
+"Blasphemail Postage Stamps"
 
 Task:
 

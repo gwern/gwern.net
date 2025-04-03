@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-04-01 11:18:42 gwern"
+# When:  Time-stamp: "2025-04-02 11:18:16 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -54,7 +54,9 @@ fi
 
 # cleanup:
 rm --recursive --force -- ./_cache/ ./_site/
+## delete Emacs temporary files which tend to break the build in unpredictable ways:
 find ./static/build/ -type f -name "flycheck_*.hs" -delete
+find ./ -type f -name "#*\.md#" -delete
 
 MIN_GB="6"
 if [ "$(df --block-size=G ~/ | awk 'NR==2 {print $4}' | sed 's/G//')" -lt "$MIN_GB" ]; then

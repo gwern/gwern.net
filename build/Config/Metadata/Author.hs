@@ -724,6 +724,8 @@ canonicals = M.fromList
   , ("Karin Verweij", "Karin J. H. Verweij")
   , ("Shane Gu", "Shixiang Shane Gu")
   , ("shaneguML", "Shixiang Shane Gu")
+  , ("michaeldirda", "Michael Dirda")
+  , ("genewolfe", "Gene Wolfe")
   ]
 
 -- tests: unique

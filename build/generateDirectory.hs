@@ -17,7 +17,7 @@ import Data.List (elemIndex, isPrefixOf, isInfixOf, isSuffixOf, sort, sortBy, (\
 import Data.Containers.ListUtils (nubOrd)
 import Data.List.Split (chunksOf)
 import qualified Data.Map as M (keys, lookup, filter, filterWithKey, fromList, toList)
-import Data.Maybe (fromJust)
+import Data.Maybe (fromJust, fromMaybe)
 import qualified Data.Text as T (append, isInfixOf, pack, unpack, Text)
 import System.Directory (listDirectory, doesFileExist)
 import System.Environment (getArgs)
@@ -80,7 +80,7 @@ generateDirectoryBlog md = do
                 listDirectory "blog/" -- eg. '2024-writing-online.md'
   let absolutePaths = map (\m -> "/blog/" ++ delete ".md" m) direntries -- eg. '/blog/2024-writing-online'
   let idents = zip (map ("gwern-"++) $ map (delete ".md") direntries) absolutePaths -- eg. '("gwern-2024-writing-online", "/blog/2024-writing-online")'
-  let paths = map (\(ident,absolute) -> (ident, absolute, fromJust $ lookup ident iddb)) idents -- eg. '("gwern-2024-writing-online","/blog/2024-writing-online","https://www.lesswrong.com/posts/PQaZiATafCh7n5Luf/gwern-s-shortform?commentId=KAtgQZZyadwMitWtb")'
+  let paths = map (\(ident,absolute) -> (ident, absolute, fromMaybe (error ("generateDirectoryBlog.blog: something went wrong. idents: " ++ show idents)) $ lookup ident iddb)) idents -- eg. '("gwern-2024-writing-online","/blog/2024-writing-online","https://www.lesswrong.com/posts/PQaZiATafCh7n5Luf/gwern-s-shortform?commentId=KAtgQZZyadwMitWtb")'
   let doublets = map (\(a,b,_) -> (a,b)) $ -- we don't need 'path' anywhere after AFAICT
                        sortByDatePublished $
                        map (\x@(_ident,absolute,path) -> case M.lookup path md of
