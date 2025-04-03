@@ -84,6 +84,14 @@ toMarkdown abst = let clean = runPure $ do
                                   Left e -> error $ ppShow e ++ ": " ++ abst
                                   Right output -> output
 
+simplifiedHTMLString :: String -> String
+simplifiedHTMLString arg = trim $ T.unpack $ simplified $ parseRawBlock nullAttr (RawBlock (Text.Pandoc.Format "html") (T.pack arg))
+
+-- HACK: this is a workaround for an edge-case: Pandoc reads complex tables as 'grid tables', which then, when written using the default writer options, will break elements arbitrarily at newlines (breaking links in particular). We set the column width *so* wide that it should never need to break, and also enable 'reference links' to shield links by sticking their definition 'outside' the table. See <https://github.com/jgm/pandoc/issues/7641>.
+-- This also gives us somewhat cleaner HTML by making Pandoc not insert '\n'.
+safeHtmlWriterOptions :: Text.Pandoc.WriterOptions
+safeHtmlWriterOptions = def{writerColumns = 9999, writerExtensions = enableExtension Ext_shortcut_reference_links pandocExtensions}
+
 -- write an Inline to a HTML string fragment; strip the `<p></p>` Pandoc wrapper
 -- > toHTML $ Span nullAttr [Str "foo"]
 -- → "<span>foo</span>"
@@ -157,14 +165,6 @@ cleanUpDivsEmpty :: [Block] -> [Block]
 cleanUpDivsEmpty [] = []
 cleanUpDivsEmpty (Div ("",[],[]) payload : rest) = payload ++ rest
 cleanUpDivsEmpty (r:rest) = r : cleanUpDivsEmpty rest -- if it is not a nullAttr, then it is important and carrying a class like "abstract" or something, and must be preserved.
-
-simplifiedHTMLString :: String -> String
-simplifiedHTMLString arg = trim $ T.unpack $ simplified $ parseRawBlock nullAttr (RawBlock (Text.Pandoc.Format "html") (T.pack arg))
-
--- HACK: this is a workaround for an edge-case: Pandoc reads complex tables as 'grid tables', which then, when written using the default writer options, will break elements arbitrarily at newlines (breaking links in particular). We set the column width *so* wide that it should never need to break, and also enable 'reference links' to shield links by sticking their definition 'outside' the table. See <https://github.com/jgm/pandoc/issues/7641>.
--- This also gives us somewhat cleaner HTML by making Pandoc not insert '\n'.
-safeHtmlWriterOptions :: Text.Pandoc.WriterOptions
-safeHtmlWriterOptions = def{writerColumns = 9999, writerExtensions = enableExtension Ext_shortcut_reference_links pandocExtensions}
 
 -- convert a LaTeX expression to Unicode/HTML/CSS by an OA API script.
 -- > Text.Pandoc.Walk.walkM inlineMath2Text [Math InlineMath "a + b = c"]
@@ -510,7 +510,8 @@ host p = if T.head p `elem` ['#', '!'] || isInflationURL p then "" else
                 Just auth ->
                     let path = T.pack $ uriPath uri'
                     in if path == ""  -- If the path is empty, it means the trailing slash is missing
-                       then error $ "Utils.host: Root domain lacks trailing slash; original input was: " ++ show p ++ "; parsed URI was: " ++ show uri'
+                       then unsafePerformIO (printRed ("Utils.host: Root domain lacks trailing slash; original input was: " ++ show p ++ "; parsed URI was: " ++ show uri') >>
+                                              return (T.pack $ uriRegName auth))
                        else T.pack $ uriRegName auth
 
 escapeUnicode :: T.Text -> T.Text

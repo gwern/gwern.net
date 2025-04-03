@@ -89,7 +89,7 @@ writeOutBlogEntry (filepath, m) = writeUpdatedFile prefix filepath $ T.pack $ an
 
 -- cf. `generateDirectory.generateYAMLHeader`
 annotation2Markdown :: (Path, MetadataItem) -> String
-annotation2Markdown (url, (title, author, dateCreated, dateModified, kvs, _, _)) =
+annotation2Markdown (url, (title, author, dateCreated, dateModified, kvs, _, abstract)) =
   let get k def = fromMaybe def (lookup k kvs)
       description = get "description"   "N/A" -- TODO: maybe do a LLM call? a one-sentence summary should be easy
       status      = get "status"        "finished"
@@ -114,7 +114,13 @@ annotation2Markdown (url, (title, author, dateCreated, dateModified, kvs, _, _))
        , ""
        , "[" ++ (if description /= "N/A" then description else "**Original page.**") ++
          "](" ++ url ++ "){.include-annotation .include-strict" ++
+         if "/blog" `isPrefixOf` url then "" else " rel='canonical'" ++
          " data-include-template='annotation-blockquote-not' .include-spinner-not .id-not}"
        , ""
        , "<div class='text-center' id='return-to-blog-index-link'>[<a href='/blog/index' class='link-page link-tag directory-indexes-upwards link-annotated-not' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to blog directory'>Return to blog index</a>]</div>" -- we set an ID to allow the transclusion calls in /blog/index to hide it
+       , ""
+       -- stash a copy of the abstract for easier grepping, bots, etc:
+       , "<!-- [Transcluded HTML of blog post:]"
+       , ""
+       , replace "<!--" "< ! - -" (replace "-->" "- - >" abstract) ++ "-->" -- It’s rare, but blog posts *could* have comments in them and if we don’t neutralize them, it pollutes the page.
        ]
