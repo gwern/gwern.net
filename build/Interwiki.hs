@@ -197,6 +197,7 @@ linkliveNamespacesNo = ["Special", "/w/index.php"]
 
 -- | Large table of constants; this is a mapping from shortcuts to a URL. The URL can be used by
 --   appending to it the article name (suitably URL-escaped, of course).
+-- If updated: add the link ID hash of the raw untranslated shortcut to the link ID blacklist; check for a link-icon for the new domain; and check live-links.
 interwikiMap :: M.Map T.Text T.Text
 interwikiMap = M.fromList $ wpInterwikiMap ++ customInterwikiMap
 wpInterwikiMap, customInterwikiMap :: [(T.Text, T.Text)]

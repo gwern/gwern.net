@@ -86,18 +86,20 @@ metadataItem2ID md u (_,author,date,_,_,_,_) = generateID md u author date
 generateID :: Metadata -> String -> String -> String -> T.Text
 generateID md url author date
   -- hardwire tricky cases where unique IDs can't easily be derived from the URL/metadata:
-  | any (\(u,_) -> u == url) C.linkIDOverrides = fromJust $ lookup url C.linkIDOverrides
+  | any (\(u,_) -> u == url) C.linkIDOverrides = blacklistIDs $ fromJust $ lookup url C.linkIDOverrides
   -- otherwise, the annotation may include an ID key-value which overrides the hash or surname-date
   | otherwise = case M.lookup url md of
                  Just (_,_,_,_,kvs,_,_) -> case lookup "id" kvs of
-                                             Nothing    -> generateID'
-                                             Just ident -> T.pack ident
-                 _ -> generateID'
+                                             Nothing    -> blacklistIDs $ generateID'
+                                             Just ident -> blacklistIDs $ T.pack ident
+                 _ -> blacklistIDs $ generateID'
  where
   url' :: String
   url' = delete "https://gwern.net" url
+  blacklistIDs i = if i `notElem` (["9jvwHKDX","CgaXg9w7","CrWYuUGd","J4QE_Ni0","NOJxosKS","Nt-HgfVu","TdyKOIAM","YffqVj7A","abojh9Co","dF10QFII","jJtPk-Ln","kM7gdAh1","krywxZcd","vpFpfPxe","zVk76M9i"]::[T.Text]) then i else error ("LinkID.generateID.blacklistIDs: forbidden ID generated! Inputs were: " ++ show [url, author, date]) -- indicate interwiki or inflation gone wrong
   generateID' :: T.Text
   generateID'
+    | head url' `elem` ['!', '$', '₿'] = error $ "LinkID.generateID.generateID': invalid pseudo-URL passed in. Inputs were: "  ++ show [url, author, date]
     -- is it a /blog/ self-post? If so, we can infer the ID immediately from the slug, avoiding needing to add a manual ID to its annotation, reducing friction; eg. '/blog/2025-large-files' → 'gwern-2025-large-files'
     | "/blog/2" `isPrefixOf` url' = T.pack (CM.authorL ++ "-" ++ delete "/blog/" url')
   -- indexes or tag-directories shouldn't be cited as they would be often linked many times on a page due to transcludes:

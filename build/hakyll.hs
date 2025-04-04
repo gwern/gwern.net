@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2025-03-20 09:45:29 gwern"
+When: Time-stamp: "2025-04-03 11:13:22 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -339,8 +339,8 @@ pandocTransform md adb indexp' p = -- linkAuto needs to run before `convertInter
                walk footnoteAnchorChecker $ convertInterwikiLinks $
                  walk linkAuto p
      unless indexp $ createAnnotations md pw
-     let pb = walk (hasAnnotation md) $ addPageLinkWalk pw  -- we walk local link twice: we need to run it before 'hasAnnotation' so essays don't get overridden, and then we need to add it later after all of the archives have been rewritten, as they will then be local links
-     pbt <- fmap typographyTransform . walkM (localizeLink adb)
+     let pb = addPageLinkWalk pw  -- we walk local link twice: we need to run it before 'hasAnnotation' so essays don't get overridden, and then we need to add it later after all of the archives have been rewritten, as they will then be local links
+     pbt <- fmap typographyTransform . walkM (localizeLink adb) $ walk (hasAnnotation md)
               $ if indexp then pb else
                 walk (map nominalToRealInflationAdjuster) pb
      let pbth = wrapInParagraphs $ addPageLinkWalk $ walk headerSelflinkAndSanitize pbt

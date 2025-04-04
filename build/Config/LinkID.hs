@@ -6,7 +6,7 @@ import qualified Data.Text as T (Text)
 -- testing: unique list
 affiliationAnchors :: [String]
 affiliationAnchors = ["ai21", "adobe", "alibaba", "allen", "amazon", "anthropic", "apple", "baai", "baidu", "bair", "bytedance"
-                     , "cerebras", "cohere", "deepmind", "eleutherai", "elementai", "facebook", "flickr", "github", "google"
+                     , "cerebras", "cohere", "deepmind", "deepseek", "eleutherai", "elementai", "facebook", "flickr", "github", "google"
                      , "google-graphcore", "googledeepmind", "graphcore", "huawei", "huggingface", "ibm", "intel", "jd", "kakao"
                      , "laion", "lighton", "microsoft", "microsoftnvidia", "miri", "naver", "nvidia", "openai", "pinterest", "pdf"
                      , "salesforce", "samsung", "sberbank", "schmidhuber", "sensetime", "snapchat", "sony", "spotify", "tencent"
@@ -16,7 +16,5 @@ affiliationAnchors = ["ai21", "adobe", "alibaba", "allen", "amazon", "anthropic"
 linkIDOverrides :: [(String, T.Text)]
 linkIDOverrides =
   [
-    ("https://en.wikipedia.org/wiki/Donkey", "wp-donkey")
-  , ("https://en.wikipedia.org/wiki/Przewalski%27s_horse", "wp-przewalskishorse")
-  , ("/gpt-2-music", "gwern-presser-2019-music")
+  ("/gpt-2-music", "gwern-presser-2019-music")
   ]

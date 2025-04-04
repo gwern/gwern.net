@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-04-01 23:00:43 gwern"
+When:  Time-stamp: "2025-04-03 11:06:45 gwern"
 License: CC-0
 -}
 
@@ -400,9 +400,9 @@ writeAnnotationFragment am md onlyMissing u i@(a,b,c,dc,kvs,ts,abst) =
                       -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs; but how to fix without circular dependencies…
                       let pandoc = Pandoc nullMeta $ generateAnnotationBlock md am (u', Just (titleHtml,authorHtml,c,dc,kvs,ts,abstractHtml)) bl sl lb
                       unless (null abst) $ void $ createAnnotations md pandoc
-                      pandoc' <- do let p = walk (linkIcon . linkLive . nominalToRealInflationAdjuster) $
+                      pandoc' <- do let p = walk (hasAnnotation md) $
+                                            walk (linkIcon . linkLive . nominalToRealInflationAdjuster) $
                                                   convertInterwikiLinks $
-                                                  walk (hasAnnotation md) $
                                                   walk addPageLinkWalk $
                                                   parseRawAllClean pandoc
                                     walkM (outlineImageInline <=< imageLinkHeightWidthSet <=< addCanPrefetch <=< localizeLink am) p
@@ -464,7 +464,8 @@ annotateLink md x@(Link (_,_,_) _ (targetT,_))
                                        appendLinkMetadata f m >> return (Right y)
 annotateLink _ x = error ("annotateLink was passed an Inline which was not a Link: " ++ show x)
 
--- walk the page, and modify each URL to specify if it has an annotation available or not:
+-- walk the page, and modify each URL to specify if it has an annotation available or not, and add its link ID:
+-- WARNING: all pseudo-URLs like interwikis ('!W') or inflation-adjustments ('$2025') must be gone at this point, and converted to proper URLs. Assigning link IDs based on a link like '!W' is useless and collides all WP links.
 hasAnnotation :: Metadata -> Block -> Block
 hasAnnotation md = walk (hasAnnotationOrIDInline md)
 
