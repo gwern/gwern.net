@@ -11,7 +11,7 @@ module Main where
 -- Very nifty. Much nicer than simply browsing a list of filenames or even the Google search of a
 -- directory (mostly showing random snippets).
 
-import Control.Monad (filterM, void, when)
+import Control.Monad (filterM, void, unless, when)
 -- import Control.Monad.Parallel as Par (mapM_)
 import Data.List (elemIndex, isPrefixOf, isInfixOf, isSuffixOf, sort, sortBy, (\\))
 import Data.Containers.ListUtils (nubOrd)
@@ -37,7 +37,7 @@ import Query (extractImages)
 import Typography (identUniquefy, titleWrap)
 import Metadata.Author (authorCollapse, extractTwitterUsername)
 import Utils (inlinesToText, replace, sed, writeUpdatedFile, printRed, toPandoc, anySuffix, delete, anyInfix)
-import qualified Config.Misc as C (cd)
+import qualified Config.Misc as C (cd, currentYearS, lastYearS)
 import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, readListName, readListSortedMagic, ListName, ListSortedMagic)
 import qualified Config.GenerateSimilar as CGS (minTagAuto)
 import Image (isImageFilename)
@@ -49,6 +49,8 @@ main = do C.cd
 
           dirs <- getArgs
           -- result: '["doc/","doc/ai/","doc/ai/anime/","doc/ai/anime/danbooru/","doc/ai/dataset/", ..., "newsletter/2022/","nootropic/","note/","review/","zeo/"]'
+          let fast = dirs == ["--fast"] -- skip all regular directories (ie. do only 'newest' & 'blog')
+
           let newestp = any (`isInfixOf` "newest") dirs
           let dirs' = filter (\d -> d/="doc/newest/" && d/="blog/") $ sort $ map (\dir -> sed "/index$" "" $ delete "/index.md" $ replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) dirs
 
@@ -69,7 +71,7 @@ main = do C.cd
           let dirChunks = chunksOf chunkSize dirs'
 
           -- because of the expense of searching the annotation database for each tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
-          Prelude.mapM_ (mapM_ (generateDirectory False am meta ldb sortDB dirs')) dirChunks
+          unless fast $ Prelude.mapM_ (mapM_ (generateDirectory False am meta ldb sortDB dirs')) dirChunks
 
 generateDirectoryBlog :: Metadata -> IO ()
 generateDirectoryBlog md = do
@@ -124,7 +126,12 @@ generateBlogLinksByYears doublets = let years = nubOrd $ map (\(_, (_,_,dc,_,_,_
     generateBlogLinksByYear :: String -> Block
     generateBlogLinksByYear year = let hits = filter (\(_, (_,_,dc,_,_,_,_)) -> year `isPrefixOf` dc) doublets
                                        -- we may at some point want to wrap these sub-lists in a `div.collapse`
-                                       in BulletList $ map generateBlogLink hits
+                                       list = BulletList $ map generateBlogLink hits
+                                       -- to allow transclusion of 'most recent blog entries', we wrap the first entry, this year, as 'div#year-current', and then since that might not contain many entries (what if it's 01 January?), we also wrap the prior year as 'div#year-last':
+                                   in if year == C.currentYearS then Div ("year-current",["columns"],[]) [list]
+                                      else if year == C.lastYearS then
+                                             Div ("year-last",["columns"],[]) [list]
+                                           else list
 
 generateBlogLink :: (FilePath, MetadataItem) -> [Block]
 generateBlogLink (f, (tle,_,dc,_,_,_,_)) =

@@ -29,6 +29,13 @@ currentYear = unsafePerformIO $ do
     tz <- getCurrentTimeZone
     let localTime = utcToLocalTime tz now
     return $ (\(year,_,_) -> fromInteger year) . toGregorian . localDay $ localTime
+currentYearS :: String
+currentYearS = show currentYear
+
+lastYear :: Int
+lastYear = currentYear - 1
+lastYearS :: String
+lastYearS = show lastYear
 
 todayDay :: IO Integer
 todayDay = do
