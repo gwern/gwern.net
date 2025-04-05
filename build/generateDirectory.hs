@@ -13,23 +13,23 @@ module Main where
 
 import Control.Monad (filterM, void, unless, when)
 -- import Control.Monad.Parallel as Par (mapM_)
-import Data.List (elemIndex, isPrefixOf, isInfixOf, isSuffixOf, sort, sortBy, (\\))
+import Data.List (elemIndex, isPrefixOf, isInfixOf, isSuffixOf, sort, (\\))
 import Data.Containers.ListUtils (nubOrd)
 import Data.List.Split (chunksOf)
 import qualified Data.Map as M (keys, lookup, filter, filterWithKey, fromList, toList)
-import Data.Maybe (fromJust, fromMaybe)
+import Data.Maybe (fromJust)
 import qualified Data.Text as T (append, isInfixOf, pack, unpack, Text)
 import System.Directory (listDirectory, doesFileExist)
 import System.Environment (getArgs)
 import System.FilePath (takeDirectory, takeFileName, splitPath)
 
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
-                    Block(BulletList, Div, Header, Para, OrderedList), ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle), Format(Format), Inline(Code, Emph, Image, Link, Space, Span, Str, RawInline, Strong), Pandoc(Pandoc))
+                    Block(BulletList, Div, Header, Para, OrderedList), ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle), Format(Format), Inline(Code, Emph, Image, Link, Space, Span, Str, RawInline), Pandoc(Pandoc))
 import Text.Pandoc.Walk (walk)
 
 import LinkArchive (readArchiveMetadata, ArchiveMetadata)
-import LinkID (generateID, authorsToCite, id2URLdb)
-import LinkMetadata as LM (readLinkMetadataSlow, generateAnnotationTransclusionBlock, hasAnnotation, annotateLink, lookupFallback, sortItemPathDateCreated, sortItemDateModified)
+import LinkID (generateID, authorsToCite)
+import LinkMetadata as LM (readLinkMetadataSlow, generateAnnotationTransclusionBlock, hasAnnotation, annotateLink, lookupFallback, sortItemPathDateCreated, sortItemDateModified, sortByDateModified, sortByDatePublished)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Tags (listTagDirectories, listTagDirectoriesAll, abbreviateTag)
 import LinkBacklink (getLinkBibLinkCheck)
@@ -37,11 +37,10 @@ import Query (extractImages)
 import Typography (identUniquefy, titleWrap)
 import Metadata.Author (authorCollapse, extractTwitterUsername)
 import Utils (inlinesToText, replace, sed, writeUpdatedFile, printRed, toPandoc, anySuffix, delete, anyInfix)
-import qualified Config.Misc as C (cd, currentYearS, lastYearS)
+import qualified Config.Misc as C (cd)
 import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, readListName, readListSortedMagic, ListName, ListSortedMagic)
 import qualified Config.GenerateSimilar as CGS (minTagAuto)
 import Image (isImageFilename)
-import Blog (writeOutBlogEntries)
 -- import Text.Show.Pretty (ppShow)
 
 main :: IO ()
@@ -64,99 +63,13 @@ main = do C.cd
           -- Optimization: if there are only a few arguments, that means we are doing tag-directory development/debugging, and we should skip doing `/doc/newest` since we aren't going to look at it & it would increase runtime.
           when (length dirs > 5 || newestp) $
             generateDirectory True am meta ldb sortDB ["doc/", "doc/newest/", "/"] "doc/newest/"
-          -- /blog/, for off-site writings which get generated Markdown file stubs to transclude their annotation, is unique enough that we won't try to make the regular generateDirectory cover that case too:
-          generateDirectoryBlog meta
+          -- /blog/, for off-site writings which get generated Markdown file stubs to transclude their annotation, is unique enough that we won't try to make the regular generateDirectory cover that case too; see Blog.hs
 
           let chunkSize = 1 -- can't be >20 or else it'll OOM due to trying to force all the 100s of tag-directories in parallel
           let dirChunks = chunksOf chunkSize dirs'
 
           -- because of the expense of searching the annotation database for each tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
           unless fast $ Prelude.mapM_ (mapM_ (generateDirectory False am meta ldb sortDB dirs')) dirChunks
-
-generateDirectoryBlog :: Metadata -> IO ()
-generateDirectoryBlog md = do
-  writeOutBlogEntries md -- ensure up to date
-
-  let iddb = id2URLdb md -- [(ID, Path)]
-  direntries <- fmap (filter (/="index.md")) $ -- filter out self
-                listDirectory "blog/" -- eg. '2024-writing-online.md'
-  let absolutePaths = map (\m -> "/blog/" ++ delete ".md" m) direntries -- eg. '/blog/2024-writing-online'
-  let idents = zip (map ("gwern-"++) $ map (delete ".md") direntries) absolutePaths -- eg. '("gwern-2024-writing-online", "/blog/2024-writing-online")'
-  let paths = map (\(ident,absolute) -> (ident, absolute, fromMaybe (error ("generateDirectoryBlog.blog: something went wrong. idents: " ++ show idents)) $ lookup ident iddb)) idents -- eg. '("gwern-2024-writing-online","/blog/2024-writing-online","https://www.lesswrong.com/posts/PQaZiATafCh7n5Luf/gwern-s-shortform?commentId=KAtgQZZyadwMitWtb")'
-  let doublets = map (\(a,b,_) -> (a,b)) $ -- we don't need 'path' anywhere after AFAICT
-                       sortByDatePublished $
-                       map (\x@(_ident,absolute,path) -> case M.lookup path md of
-                        Nothing -> error $ "generateDirectory.generateDirectoryBlog: tried to look up the annotation corresponding to a /blog/ Markdown entry, yet there was none. This should be impossible! Variables: " ++ show x ++ "; " ++ show paths ++ ";" ++ show idents ++ "; " ++ show direntries
-                        Just mi -> (absolute, mi, path)
-                    ) paths
-  when (null doublets) $ error "generateDirectory.generateDirectoryBlog: no blog entries found! This should be impossible."
-  let lastEntryDate = (\(_,(_,_,date,_,_,_,_)) -> date) $ head doublets
-  let list1 = BulletList $ generateBlogLinksByYears doublets
-  let list2 = BulletList $ generateBlogTranscludes (zip (True : repeat False) doublets) -- note: we may at some point want to split by year, and then wrap in a `div.collapse`, to allow selective uncollapsing.
-
-  let header = unlines ["---", "title: Blog Posts"
-                       , "description: 'Index of my longer off-site writings, presented as annotations. (Sorted in reverse chronological order.)'"
-                       -- N/A: author, thumbnail, thumbnail-text, thumbnail-css
-                       , "created: 2009-01-27"
-                       , "modified: " ++ lastEntryDate
-                       , "status: log"
-                       , "importance: 0"
-                       , "css-extension: dropcaps-de-zs"
-                       , "backlink: False"
-                       , "placeholder: True"
-                       , "index: True"
-                       , "...\n"]
-
-  let blogSectionTransclude = Header 1 ("", [], []) [Str "View Full Posts"]
-  let document = Pandoc nullMeta [list1,
-                                  blogSectionTransclude,
-                                  list2]
-  let p = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} document
-
-  case p of
-    Left e   -> printRed (show e)
-    -- compare with the old version, and update if there are any differences:
-    Right p' -> do let contentsNew = T.pack header `T.append` p'
-                   writeUpdatedFile "directory" ("blog/index.md") contentsNew
-
-generateBlogLinksByYears :: [(FilePath, MetadataItem)] -> [[Block]]
-generateBlogLinksByYears doublets = let years = nubOrd $ map (\(_, (_,_,dc,_,_,_,_)) -> take 4 dc) doublets
-                                       in map (\y -> Para [Strong [Span (T.pack y,[],[]) [Str (T.pack y)], Str ":"]] : [generateBlogLinksByYear y]) years
-  where
-    generateBlogLinksByYear :: String -> Block
-    generateBlogLinksByYear year = let hits = filter (\(_, (_,_,dc,_,_,_,_)) -> year `isPrefixOf` dc) doublets
-                                       -- we may at some point want to wrap these sub-lists in a `div.collapse`
-                                       list = BulletList $ map generateBlogLink hits
-                                       -- to allow transclusion of 'most recent blog entries', we wrap the first entry, this year, as 'div#year-current', and then since that might not contain many entries (what if it's 01 January?), we also wrap the prior year as 'div#year-last':
-                                   in if year == C.currentYearS then Div ("year-current",["columns"],[]) [list]
-                                      else if year == C.lastYearS then
-                                             Div ("year-last",["columns"],[]) [list]
-                                           else list
-
-generateBlogLink :: (FilePath, MetadataItem) -> [Block]
-generateBlogLink (f, (tle,_,dc,_,_,_,_)) =
-  let link = Link (T.pack dc, ["link-annotated-not", "icon-not"], [("data-include-selector-not", "#return-to-blog-index-link")])
-                                      [RawInline (Format "html") (T.pack tle)] (T.pack f,"")
-  in
-    [Para [Str (T.pack ((drop 5 dc)++": ")), Strong [link]]]
-
-generateBlogTranscludes :: [(Bool, (FilePath, MetadataItem))] -> [[Block]]
-generateBlogTranscludes doublets = let years = nubOrd $ map (\(_, (_, (_,_,dc,_,_,_,_))) -> take 4 dc) doublets
-                                       in map (\y -> Para [Strong [Span (T.pack $ "transclude-"++y,[],[]) [Str (T.pack y)], Str ":"]] : [generateBlogTranscludesByYear y]) years
-  where
-    generateBlogTranscludesByYear :: String -> Block
-    generateBlogTranscludesByYear year = let hits = filter (\(_, (_,(_,_,dc,_,_,_,_))) -> year `isPrefixOf` dc) doublets
-                                       in Div ("",["collapse"],[]) $ concatMap generateBlogTransclude hits
-
-generateBlogTransclude :: (Bool, (FilePath, MetadataItem)) -> [Block]
-generateBlogTransclude (firstp, (f, (tle,_,_,_,_,_,_))) =
-  let link = Link (""
-                  , ["id-not", "link-annotated-not", "icon-not", "include-content"]++
-                    (if firstp then ["include-even-when-collapsed"] else []) -- Micro-optimization in annotation evaluation order: force the very first entry to be pre-rendered, for a faster popup if they hover over the logical entry in the first section (ie. the first one), or to mask how long it takes to load them all if they uncollapse the second section.
-                  , [("data-include-selector-not", "#return-to-blog-index-link")]) -- exclude as redundant if you're viewing on /blog/index, especially since it'll be transcluded repeatedly after each post
-                                      [RawInline (Format "html") (T.pack tle)] (T.pack f,"")
-  in
-    [Para [Strong [link]]]
 
 generateDirectory :: Bool -> ArchiveMetadata -> Metadata -> ListName -> ListSortedMagic -> [FilePath] -> FilePath -> IO ()
 generateDirectory newestp am md ldb sortDB dirs dir'' = do
@@ -387,29 +300,6 @@ listTagged newestp m dir = if not ("doc/" `isPrefixOf` dir) then return [] else
     -- for essays, not files/links, drop section anchors to look up/link:
     truncateAnchors :: String -> String
     truncateAnchors str = if '.' `elem` str then str else takeWhile (/='#') str
-
--- sort a list of entries in ascending order using the annotation last-modified date when available (as 'YYYY[-MM[-DD]]', which string-sorts correctly), and falling back to sorting on the filenames ('YYYY-author.pdf').
--- We generally prefer to reverse this to descending order, to show newest-first.
--- For cases where only alphabetic sorting is available, we fall back to alphabetical order on the URL.
-sortByDateModified :: [(FilePath, MetadataItem, FilePath)] -> [(FilePath, MetadataItem, FilePath)]
-sortByDateModified = sortBy compareEntries
-  where
-    compareEntries (f, (_, _, _, d, _, _, _), _) (f', (_, _, _, d', _, _, _), _)
-      | not (null d) || not (null d') = compare d' d -- Reverse order for dates, to show newest first
-      | head f  == '/' && head f' == '/' = compare f' f -- Reverse order for file paths when both start with '/'
-      | head f  == '/' = LT -- '/' paths come after non '/' paths
-      | head f' == '/' = GT -- non '/' paths come before '/' paths
-      | otherwise = compare f f' -- Alphabetical order for the rest
-
-sortByDatePublished :: [(FilePath, MetadataItem, FilePath)] -> [(FilePath, MetadataItem, FilePath)]
-sortByDatePublished = sortBy compareEntries
-  where
-    compareEntries (f, (_, _, d, _, _, _, _), _) (f', (_, _, d', _, _, _, _), _)
-      | not (null d) || not (null d') = compare d' d -- Reverse order for dates, to show newest first
-      | head f == '/' && head f' == '/' = compare f' f -- Reverse order for file paths when both start with '/'
-      | head f == '/' = LT -- '/' paths come after non '/' paths
-      | head f' == '/' = GT -- non '/' paths come before '/' paths
-      | otherwise = compare f f' -- Alphabetical order for the rest
 
 getDatesModified :: [(FilePath,MetadataItem,FilePath)] -> [String]
 getDatesModified [] = ["N/A"]

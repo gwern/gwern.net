@@ -14,23 +14,27 @@
 --
 -- And since the annotation is written separately from the /blog/ shell, strictly speaking, there is nothing barring a 'recursive' blog post: one just writes a '/blog/20xx-foo' annotation... which then creates itself. This allows for true standalone blog pages.
 --
--- Future work: Depending on volume, it may make sense to split into subdirectories by year. For multi-user websites, the obvious extension is to split by author-ID.
+-- Future work: Depending on volume, it may make sense to split into subdirectories by year. For multi-user websites, the obvious extension is to split by author-ID (cf. <https://gwern.net/blog/2024-multiuser-wiki>)
 
 module Blog (writeOutBlogEntries) where
 
 import Data.Char (isAlphaNum)
-import Control.Monad (unless)
+import Control.Monad (when, unless)
 import Data.List (isPrefixOf)
+import Data.Containers.ListUtils (nubOrd)
 import Data.Maybe (fromMaybe)
-import qualified Data.Map.Strict as M (toList, filterWithKey)
-import qualified Data.Text as T (pack, unpack)
+import qualified Data.Map.Strict as M (toList, filterWithKey, lookup)
+import qualified Data.Text as T (append, pack, unpack)
+import Text.Pandoc (pandocExtensions, writerExtensions, writeMarkdown, def, nullMeta, runPure, Block(BulletList, Header, Para, Div), Inline(Link, Span, Str, Strong, RawInline), Format(Format), Pandoc(Pandoc))
+import System.Directory (listDirectory)
 
 import Metadata.Date (isYear)
-import LinkID (metadataItem2ID)
+import LinkID (metadataItem2ID, id2URLdb)
+import LinkMetadata (sortByDatePublished)
 import LinkMetadataTypes (Metadata, MetadataList, MetadataItem, Path)
 import Unique (isUniqueList)
-import Utils (sed, writeUpdatedFile, printRed, replace)
-import qualified Config.Misc as C (cd, currentYear, author, authorL)
+import Utils (sed, writeUpdatedFile, printRed, replace, delete)
+import qualified Config.Misc as C (cd, currentYear, author, authorL, currentYearS, lastYearS)
 
 prefix, authorU, authorID :: String
 prefix   = "blog"
@@ -64,6 +68,8 @@ writeOutBlogEntries md =
      C.cd -- ensure the relative directory prefix is valid
      mapM_ writeOutBlogEntry targets
 
+     generateDirectoryBlog md
+
 checkIdent :: String -> Bool
 checkIdent "" = False
 checkIdent ident
@@ -90,7 +96,7 @@ writeOutBlogEntry (filepath, m) = writeUpdatedFile prefix filepath $ T.pack $ an
 -- cf. `generateDirectory.generateYAMLHeader`
 annotation2Markdown :: (Path, MetadataItem) -> String
 annotation2Markdown (url, (title, author, dateCreated, dateModified, kvs, _, _)) =
-  let get k def = fromMaybe def (lookup k kvs)
+  let get k defalt = fromMaybe defalt (lookup k kvs)
       description = get "description"   "N/A" -- TODO: maybe do a LLM call? a one-sentence summary should be easy
       status      = get "status"        "finished"
       importance  = get "importance"    "0"
@@ -119,3 +125,88 @@ annotation2Markdown (url, (title, author, dateCreated, dateModified, kvs, _, _))
        , ""
        , "<div class='text-center' id='return-to-blog-index-link'>[<a href='/blog/index' class='link-page link-tag directory-indexes-upwards link-annotated-not' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to blog directory'>Return to blog index</a>]</div>" -- we set an ID to allow the transclusion calls in /blog/index to hide it
        ]
+
+generateDirectoryBlog :: Metadata -> IO ()
+generateDirectoryBlog md = do
+  writeOutBlogEntries md -- ensure up to date
+
+  let iddb = id2URLdb md -- [(ID, Path)]
+  direntries <- fmap (filter (/="index.md")) $ -- filter out self
+                listDirectory "blog/" -- eg. '2024-writing-online.md'
+  let absolutePaths = map (\m -> "/blog/" ++ delete ".md" m) direntries -- eg. '/blog/2024-writing-online'
+  let idents = zip (map ("gwern-"++) $ map (delete ".md") direntries) absolutePaths -- eg. '("gwern-2024-writing-online", "/blog/2024-writing-online")'
+  let paths = map (\(ident,absolute) -> (ident, absolute, fromMaybe (error ("generateDirectoryBlog.blog: something went wrong. idents: " ++ show idents)) $ lookup ident iddb)) idents -- eg. '("gwern-2024-writing-online","/blog/2024-writing-online","https://www.lesswrong.com/posts/PQaZiATafCh7n5Luf/gwern-s-shortform?commentId=KAtgQZZyadwMitWtb")'
+  let doublets = map (\(a,b,_) -> (a,b)) $ -- we don't need 'path' anywhere after AFAICT
+                       sortByDatePublished $
+                       map (\x@(_ident,absolute,path) -> case M.lookup path md of
+                        Nothing -> error $ "generateDirectory.generateDirectoryBlog: tried to look up the annotation corresponding to a /blog/ Markdown entry, yet there was none. This should be impossible! Variables: " ++ show x ++ "; " ++ show paths ++ ";" ++ show idents ++ "; " ++ show direntries
+                        Just mi -> (absolute, mi, path)
+                    ) paths
+  when (null doublets) $ error "generateDirectory.generateDirectoryBlog: no blog entries found! This should be impossible."
+  let lastEntryDate = (\(_,(_,_,date,_,_,_,_)) -> date) $ head doublets
+  let list1 = BulletList $ generateBlogLinksByYears doublets
+  let list2 = BulletList $ generateBlogTranscludes (zip (True : repeat False) doublets) -- note: we may at some point want to split by year, and then wrap in a `div.collapse`, to allow selective uncollapsing.
+
+  let header = unlines ["---", "title: Blog Posts"
+                       , "description: 'Index of my longer off-site writings, presented as annotations. (Sorted in reverse chronological order.)'"
+                       -- N/A: author, thumbnail, thumbnail-text, thumbnail-css
+                       , "created: 2009-01-27"
+                       , "modified: " ++ lastEntryDate
+                       , "status: log"
+                       , "importance: 0"
+                       , "css-extension: dropcaps-de-zs"
+                       , "backlink: False"
+                       , "placeholder: True"
+                       , "index: True"
+                       , "...\n"]
+
+  let blogSectionTransclude = Header 1 ("", [], []) [Str "View Full Posts"]
+  let document = Pandoc nullMeta [list1,
+                                  blogSectionTransclude,
+                                  list2]
+  let p = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} document
+
+  case p of
+    Left e   -> printRed (show e)
+    -- compare with the old version, and update if there are any differences:
+    Right p' -> do let contentsNew = T.pack header `T.append` p'
+                   writeUpdatedFile "directory" ("blog/index.md") contentsNew
+
+generateBlogLinksByYears :: [(FilePath, MetadataItem)] -> [[Block]]
+generateBlogLinksByYears doublets = let years = nubOrd $ map (\(_, (_,_,dc,_,_,_,_)) -> take 4 dc) doublets
+                                       in map (\y -> Para [Strong [Span (T.pack y,[],[]) [Str (T.pack y)], Str ":"]] : [generateBlogLinksByYear y]) years
+  where
+    generateBlogLinksByYear :: String -> Block
+    generateBlogLinksByYear year = let hits = filter (\(_, (_,_,dc,_,_,_,_)) -> year `isPrefixOf` dc) doublets
+                                       -- we may at some point want to wrap these sub-lists in a `div.collapse`
+                                       list = BulletList $ map generateBlogLink hits
+                                       -- to allow transclusion of 'most recent blog entries', we wrap the first entry, this year, as 'div#year-current', and then since that might not contain many entries (what if it's 01 January?), we also wrap the prior year as 'div#year-last':
+                                   in if year == C.currentYearS then Div ("year-current",[],[]) [list]
+                                      else if year == C.lastYearS then
+                                             Div ("year-last",[],[]) [list]
+                                           else list
+
+generateBlogLink :: (FilePath, MetadataItem) -> [Block]
+generateBlogLink (f, (tle,_,dc,_,_,_,_)) =
+  let link = Link (T.pack dc, ["link-annotated-not", "icon-not"], [("data-include-selector-not", "#return-to-blog-index-link")])
+                                      [RawInline (Format "html") (T.pack tle)] (T.pack f,"")
+  in
+    [Para [Str (T.pack ((drop 5 dc)++": ")), Strong [link]]]
+
+generateBlogTranscludes :: [(Bool, (FilePath, MetadataItem))] -> [[Block]]
+generateBlogTranscludes doublets = let years = nubOrd $ map (\(_, (_, (_,_,dc,_,_,_,_))) -> take 4 dc) doublets
+                                       in map (\y -> Para [Strong [Span (T.pack $ "transclude-"++y,[],[]) [Str (T.pack y)], Str ":"]] : [generateBlogTranscludesByYear y]) years
+  where
+    generateBlogTranscludesByYear :: String -> Block
+    generateBlogTranscludesByYear year = let hits = filter (\(_, (_,(_,_,dc,_,_,_,_))) -> year `isPrefixOf` dc) doublets
+                                       in Div ("",["collapse"],[]) $ concatMap generateBlogTransclude hits
+
+generateBlogTransclude :: (Bool, (FilePath, MetadataItem)) -> [Block]
+generateBlogTransclude (firstp, (f, (tle,_,_,_,_,_,_))) =
+  let link = Link (""
+                  , ["id-not", "link-annotated-not", "icon-not", "include-content"]++
+                    (if firstp then ["include-even-when-collapsed"] else []) -- Micro-optimization in annotation evaluation order: force the very first entry to be pre-rendered, for a faster popup if they hover over the logical entry in the first section (ie. the first one), or to mask how long it takes to load them all if they uncollapse the second section.
+                  , [("data-include-selector-not", "#return-to-blog-index-link")]) -- exclude as redundant if you're viewing on /blog/index, especially since it'll be transcluded repeatedly after each post
+                                      [RawInline (Format "html") (T.pack tle)] (T.pack f,"")
+  in
+    [Para [Strong [link]]]

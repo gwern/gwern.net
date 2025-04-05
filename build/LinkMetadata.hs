@@ -4,12 +4,12 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-04-03 11:06:45 gwern"
+When:  Time-stamp: "2025-04-05 18:44:29 gwern"
 License: CC-0
 -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataSlow, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, walkAndUpdateLinkMetadataGTX, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readGTXFast, writeGTX, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationTransclusionBlock, authorsToCite, cleanAbstractsHTML, sortItemDate, sortItemPathDate, sortItemPathDateModified, sortItemDateModified, lookupFallback, sortItemPathDateCreated, fileTranscludesTest, addCanPrefetch) where
+module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataSlow, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, walkAndUpdateLinkMetadataGTX, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readGTXFast, writeGTX, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationTransclusionBlock, authorsToCite, cleanAbstractsHTML, sortItemDate, sortItemPathDate, sortItemPathDateModified, sortItemDateModified, sortByDateModified, sortByDatePublished, lookupFallback, sortItemPathDateCreated, fileTranscludesTest, addCanPrefetch) where
 
 import Control.Monad (unless, void, when, foldM_, (<=<))
 
@@ -831,3 +831,26 @@ sortItemDateModified = sortBy (\(pathA, itemA) (pathB, itemB) ->
                                 let dateCompare = compare (fourth itemB) (fourth itemA) in
                                   if dateCompare == EQ then compare pathA pathB
                                   else dateCompare)
+
+-- sort a list of entries in ascending order using the annotation last-modified date when available (as 'YYYY[-MM[-DD]]', which string-sorts correctly), and falling back to sorting on the filenames ('YYYY-author.pdf').
+-- We generally prefer to reverse this to descending order, to show newest-first.
+-- For cases where only alphabetic sorting is available, we fall back to alphabetical order on the URL.
+sortByDateModified :: [(FilePath, MetadataItem, FilePath)] -> [(FilePath, MetadataItem, FilePath)]
+sortByDateModified = sortBy compareEntries
+  where
+    compareEntries (f, (_, _, _, d, _, _, _), _) (f', (_, _, _, d', _, _, _), _)
+      | not (null d) || not (null d') = compare d' d -- Reverse order for dates, to show newest first
+      | head f  == '/' && head f' == '/' = compare f' f -- Reverse order for file paths when both start with '/'
+      | head f  == '/' = LT -- '/' paths come after non '/' paths
+      | head f' == '/' = GT -- non '/' paths come before '/' paths
+      | otherwise = compare f f' -- Alphabetical order for the rest
+
+sortByDatePublished :: [(FilePath, MetadataItem, FilePath)] -> [(FilePath, MetadataItem, FilePath)]
+sortByDatePublished = sortBy compareEntries
+  where
+    compareEntries (f, (_, _, d, _, _, _, _), _) (f', (_, _, d', _, _, _, _), _)
+      | not (null d) || not (null d') = compare d' d -- Reverse order for dates, to show newest first
+      | head f == '/' && head f' == '/' = compare f' f -- Reverse order for file paths when both start with '/'
+      | head f == '/' = LT -- '/' paths come after non '/' paths
+      | head f' == '/' = GT -- non '/' paths come before '/' paths
+      | otherwise = compare f f' -- Alphabetical order for the rest
