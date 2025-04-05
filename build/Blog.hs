@@ -16,6 +16,7 @@
 --
 -- Future work: Depending on volume, it may make sense to split into subdirectories by year. For multi-user websites, the obvious extension is to split by author-ID (cf. <https://gwern.net/blog/2024-multiuser-wiki>)
 
+{-# LANGUAGE OverloadedStrings #-}
 module Blog (writeOutBlogEntries) where
 
 import Data.Char (isAlphaNum)
@@ -191,7 +192,8 @@ generateBlogLink (f, (tle,_,dc,_,_,_,_)) =
   let link = Link (T.pack dc, ["link-annotated-not", "icon-not"], [("data-include-selector-not", "#return-to-blog-index-link")])
                                       [RawInline (Format "html") (T.pack tle)] (T.pack f,"")
   in
-    [Para [Str (T.pack ((drop 5 dc)++": ")), Strong [link]]]
+    [Para [Span ("",["blog-link-date"],[]) [Str (T.pack (drop 5 dc ++ ": "))],
+           Strong [link]]]
 
 generateBlogTranscludes :: [(Bool, (FilePath, MetadataItem))] -> [[Block]]
 generateBlogTranscludes doublets = let years = nubOrd $ map (\(_, (_, (_,_,dc,_,_,_,_))) -> take 4 dc) doublets

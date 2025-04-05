@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-04-04 12:30:01 gwern"
+# When:  Time-stamp: "2025-04-05 18:53:27 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -593,7 +593,7 @@ else
     find ./_site/metadata/ -type f -name "*.html" | parallel --max-args=500 cleanClasses || true
 
     # HACK: still haven't figured out how these keep getting reintroduced when the titlecase code responsible should be fixing them automatically now. So hack around by replacing them manually...
-    s 'cite-author-Plural' 'cite-author-plural' ; s 'Date-Range' 'date-range' ; s 'Inflation-Adjusted' 'inflation-adjusted' ; s 'Logotype-Latex-A' 'logotype-latex-a' ; s 'Logotype-Latex-E' 'logotype-latex-e' ; s 'SUbsup' 'subsup'; s 'Cite-Joiner' 'cite-joiner';
+    (s 'cite-author-Plural' 'cite-author-plural' ; s 'Date-Range' 'date-range' ; s 'Inflation-Adjusted' 'inflation-adjusted' ; s 'Logotype-Latex-A' 'logotype-latex-a' ; s 'Logotype-Latex-E' 'logotype-latex-e' ; s 'SUbsup' 'subsup'; s 'Cite-Joiner' 'cite-joiner';) > /dev/null
 
   if [ "$SLOW" ]; then
     # Testing compilation results:
@@ -701,7 +701,8 @@ else
             "abstract-tag-directory" "page-description-annotation" "link-bibliography" "link-bibliography-append" "expand-on-hover" "tag-index-link-bibliography-block"
             "doc-index-tag-short" "decorate-not" "quote-of-the-day" "interview" "reader-mode-note"
             "dropcap-dropcat" "desktop-not" "mobile-not" "adsense" "years-since" "date-range"
-            "^page-[a-z0-9-]+" "sidebar-links" "test-april-fools-2024" "test-april-fools-2025""test-april-fools-2026" "test-christmas" "test-easter"
+            "^page-[a-z0-9-]+" "sidebar-links"
+            "test-april-fools-2024" "test-april-fools-2025""test-april-fools-2026" "test-christmas" "test-easter"
             "test-halloween" "triptych" "logo-image" "dropcap-cheshire" "dropcap-de-zs" "dropcap-gene-wolfe"
             "dropcap-goudy" "dropcap-kanzlei" "dropcap-ninit" "dropcap-not" "dropcaps-cheshire"
             "dropcaps-de-zs" "dropcaps-dropcat" "dropcaps-gene-wolfe" "dropcaps-goudy" "dropcaps-kanzlei"
@@ -714,7 +715,7 @@ else
             "completion-status" "collapsible" "me" "new-essays" "new-links" "site" "accesskey"
             "dark-mode-selector-inline" "extracts-mode-selector-inline" "help-mode-selector-inline" "search-mode-selector-inline" "toolbar-mode-selector-inline"
             "link-bibliography-context" "extract-not" "fraction" "separator-inline" "dark-mode-invert"
-            "prefetch" "prefetch-not"
+            "prefetch" "prefetch-not" "blog-link-date"
         )
         html_classes_regexpattern=$(IFS='|'; echo "${html_classes_whitelist[*]}")
         html_classes=$(echo "$PAGES_ALL" | xargs --max-procs=0 --max-args=500 ./static/build/htmlClassesExtract.py | tr ' ' '\n' | sort --unique)
@@ -883,7 +884,7 @@ else
 
     λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | \
              xargs --max-args=500 grep --fixed-strings --with-filename --color=always \
-                   -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' -e '<a href="!W"' -e '’S ' -e '<span id="#' -e ' abd ' -e '<p><span class="abstract-collapse-only">' -e '{=HTML}' | \
+                   -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' -e '<a href="!W"' -e '’S ' -e '<span id="#' -e ' abd ' -e '<p><span class="abstract-collapse-only">' -e '{=HTML}' -e ' 1_e_' | \
                    gfv -e '/design-graveyard' --; }
     wrap λ "Miscellaneous fixed string errors in compiled HTML."
 
