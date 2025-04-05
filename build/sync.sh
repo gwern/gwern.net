@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-04-02 11:18:16 gwern"
+# When:  Time-stamp: "2025-04-04 12:30:01 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -88,18 +88,18 @@ else
             *) N="$ARG" ;;
         esac
     done
-    export SLOW SKIP_DIRECTORIES N
+    s() { gwsed "$@"; }
+    export SLOW SKIP_DIRECTORIES N s
 
     if [ "$SLOW" ]; then (cd ~/wiki/ && git status) || true; fi # quickly summarize pending changes
     bold "Pulling infrastructure updates…"
     # pull from Said Achmiz's repo, with his edits overriding mine in any conflict (`-Xtheirs`) & auto-merging with the default patch text (`--no-edit`), to make sure we have the latest JS/CSS. (This is a bit tricky because the use of versioning in the includes means we get a lot of merge conflicts, for some reason.)
     (cd ./static/ && git status && timeout 5m git pull -Xtheirs --no-edit --verbose 'https://gwern.obormot.net/static/.git/' master) || true
 
-    if [ "$SLOW" ]; then
 
+    if [ "$SLOW" ]; then
         bold "Executing string rewrite cleanups…" # automatically clean up some Gwern.net bad URL patterns, typos, inconsistencies, house-styles:
-        ( s() { gwsed "$@"; }
-          set +e
+        ( set +e
           ## domain/URL rewrites:
           s 'https://mobile.x.com' 'https://x.com'; s 'https://www.x.com' 'https://x.com'; s 'https://twitter.com/' 'https://x.com/'; s 'https://en.reddit.com/' 'https://www.reddit.com/'; s 'https://www.greaterwrong.com/posts/' 'https://www.lesswrong.com/posts'; s 'http://web.archive.org/web/' 'https://web.archive.org/web/'; s 'https://youtu.be/' 'https://www.youtube.com/watch?v='; s 'http://arxiv.org' 'https://arxiv.org'; s 'https://deepmind.com' 'https://www.deepmind.com'; s 'http://en.wikipedia.org' 'https://en.wikipedia.org'; s 'v1.full' '.full'; s 'v2.full' '.full'; s 'v3.full' '.full'; s 'v4.full' '.full'; s 'v5.full' '.full'; s 'v6.full' '.full'; s 'v7.full' '.full'; s 'v8.full' '.full'; s 'v9.full' '.full'; s '.full-text' '.full'; s '.full.full' '.full'; s '.full-text' '.full'; s '.full-text.full' '.full'; s '.full.full.full' '.full'; s '.full.full' '.full'; s '.gov/labs/pmc/articles/P' '.gov/pmc/articles/P';  s 'rjlipton.wpcomstaging.com' 'rjlipton.wordpress.com'; s 'www.super-memory.com' 'super-memory.com'; s 'https://www.bldgblog.com' 'https://bldgblog.com'; s 'https://www.clinicaltrials.gov' 'https://clinicaltrials.gov'; s 'https://arxiv.org/abs//' 'https://arxiv.org/abs/'; s 'http://paulgraham.com' 'https://paulgraham.com'; s 'http://www.paulgraham.com' 'https://paulgraham.com'; s "https://www.paulgraham.com" "https://paulgraham.com"; s 'https://scribe.rip' 'https://www.freedium.cfd'; s 'https://www.arxiv.org/' 'https://arxiv.org/';
           ## NOTE: domains which are bad or unfixable are handled by a later lint. This is only for safe rewrites.
@@ -592,6 +592,9 @@ else
     # TODO: rewriting in place doesn't work because of the symbolic links. need to copy ./metadata/ instead of symlinking?
     find ./_site/metadata/ -type f -name "*.html" | parallel --max-args=500 cleanClasses || true
 
+    # HACK: still haven't figured out how these keep getting reintroduced when the titlecase code responsible should be fixing them automatically now. So hack around by replacing them manually...
+    s 'cite-author-Plural' 'cite-author-plural' ; s 'Date-Range' 'date-range' ; s 'Inflation-Adjusted' 'inflation-adjusted' ; s 'Logotype-Latex-A' 'logotype-latex-a' ; s 'Logotype-Latex-E' 'logotype-latex-e' ; s 'SUbsup' 'subsup'; s 'Cite-Joiner' 'cite-joiner';
+
   if [ "$SLOW" ]; then
     # Testing compilation results:
     set +e
@@ -698,7 +701,7 @@ else
             "abstract-tag-directory" "page-description-annotation" "link-bibliography" "link-bibliography-append" "expand-on-hover" "tag-index-link-bibliography-block"
             "doc-index-tag-short" "decorate-not" "quote-of-the-day" "interview" "reader-mode-note"
             "dropcap-dropcat" "desktop-not" "mobile-not" "adsense" "years-since" "date-range"
-            "^page-[a-z0-9-]+" "sidebar-links" "test-april-fools" "test-christmas" "test-easter"
+            "^page-[a-z0-9-]+" "sidebar-links" "test-april-fools-2024" "test-april-fools-2025""test-april-fools-2026" "test-christmas" "test-easter"
             "test-halloween" "triptych" "logo-image" "dropcap-cheshire" "dropcap-de-zs" "dropcap-gene-wolfe"
             "dropcap-goudy" "dropcap-kanzlei" "dropcap-ninit" "dropcap-not" "dropcaps-cheshire"
             "dropcaps-de-zs" "dropcaps-dropcat" "dropcaps-gene-wolfe" "dropcaps-goudy" "dropcaps-kanzlei"

@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2025-03-25 12:17:54 gwern"
+# When:  Time-stamp: "2025-04-03 22:54:42 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -632,6 +632,10 @@ The provision of these subsidies had negative effects on the market by maintaini
 This paper analyzes the role and representation of food in the Japanese manga and anime series Golden Kamuy (Gōruden Kamui, 2014-present) by Satoru Noda.
 While ostensibly an action-packed narrative about the hunt for indigenous Ainu gold, Golden Kamuy has earned a reputation among fans as a gurume , or gourmet, manga and anime. Cooking scenes of both Ainu and Wajin food feature prominently throughout the series.
 This paper analyzes the rhetorical role of food in the fictional narrative and its connection to official and unofficial ideologies about ethnic harmony between Ainu and Wajin communities in Japan.
+- <abstract>I defend the extremist position that the fundamental ontology of the world consists of a vector in Hilbert space evolving according to the Schrödinger equation. The laws of physics are determined solely by the energy eigenspectrum of the Hamiltonian. The structure of our observed world, including space and fields living within it, should arise as a higher-level emergent description. I sketch how this might come about, although much work remains to be done.</abstract>
+I defend the extremist position that the fundamental ontology of the world consists of a vector in Hilbert space evolving according to the Schrödinger equation.
+The laws of physics are determined solely by the energy eigenspectrum of the Hamiltonian. The structure of our observed world, including space and fields living within it, should arise as a higher-level emergent description.
+I sketch how this might come about, although much work remains to be done.
 
 [End of examples. Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 

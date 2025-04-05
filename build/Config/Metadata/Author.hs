@@ -726,6 +726,7 @@ canonicals = M.fromList
   , ("shaneguML", "Shixiang Shane Gu")
   , ("michaeldirda", "Michael Dirda")
   , ("genewolfe", "Gene Wolfe")
+  , ("_ceee_", "Cee")
   ]
 
 -- tests: unique
@@ -1568,6 +1569,7 @@ authorLinkDB = M.fromList $
     , ("Stephen S. Rich", "https://med.virginia.edu/faculty/faculty-listing/ssr4n/")
     , ("Shixiang Shane Gu", "https://sites.google.com/view/gugurus/home")
     , ("Thomas D. Clareson", "https://sf-encyclopedia.com/entry/clareson_thomas_d")
+    , ("Cee", "https://x.com/_ceee_")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
