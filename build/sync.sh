@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-04-07 21:30:46 gwern"
+# When:  Time-stamp: "2025-04-08 12:18:11 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -1107,6 +1107,38 @@ else
 
     λ(){ find ./ -type f -name "[12][0-9][0-9]-*" -or -name "[12][0-9][0-9][0-9][0-9]-*"; }
     wrap λ "Malformed filenames: year prefixes which have one too many or few digits?" &
+
+    λ(){
+        # Function to find file sequences like 'prefix-9.ext', 'prefix-10.ext'
+        # suggesting they might need zero-padding (e.g., to prefix-09.ext).
+        # It specifically checks for the existence of the *unpadded* single-digit file.
+        check_unpadded_files() {
+            # 1. Find all files matching the pattern '*-10.*'
+            # 2. Filter out specific directory patterns using grep -v
+            # 3. Process each remaining candidate file line by line
+            find . -type f -name '*-10.*' | \
+                gfv -e './doc/www/' -e './metadata/' -e './static/' | \
+                while IFS= read -r file_minus_10; do
+                    # 4. Construct the potential corresponding unpadded filename ('*-9.*')
+                    #    - Get the part before '-10.' -> base (e.g., ./path/to/foo)
+                    #    - Get the extension after the last '.' -> ext (e.g., jpg)
+                    #    - Combine them as 'base-9.ext'
+                    local ext="${file_minus_10##*.}"
+                    local base="${file_minus_10%-10.*}"
+                    local file_minus_9="${base}-9.${ext}"
+
+                    # 5. Check if the corresponding unpadded file ('*-9.*') exists
+                    if [ -e "$file_minus_9" ]; then
+                        # 6. If it exists, print a message and list all files matching the base pattern '*'
+                        red "→ Potential padding needed for files matching: ${base}-*"
+                        # Use ls -d to prevent listing directory contents if a directory matches
+                        ls -d "${base}-"*
+                    fi
+                done
+        }
+        check_unpadded_files;
+    }
+    wrap λ "Malformed filenames: there are ≥10 files with the same prefix, but the first 9 may not be appropriately zero-padded to 'PREFIX-0n.EXT'."
 
     λ(){
         set +e;
