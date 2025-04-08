@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-04-01 19:28:20 gwern"
+# When:  Time-stamp: "2025-04-07 21:30:23 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -318,8 +318,15 @@ doc2pdf () {
 
 
 # trim whitespace from around JPG/PNG images
-crop_one () { if [[ "$*" =~ .*\.(jpg|png) ]]; then
-        nice convert "$(path2File "$@")" -crop "$(nice -n 19 ionice -c 3 convert "$@" -virtual-pixel edge -blur 0x5 -fuzz 1% -trim -format '%wx%h%O' info:)" +repage "$@"; fi }
+crop_one () {
+    if [[ "$*" =~ .*\.(jpg|png) ]]; then
+        (( $(identify -ping -format '%[fx:w*h]' "$@") > 25000000 )) 2>/dev/null && \
+            echo "Warning: Image '$@' is larger than 5000x5000 pixels." >&2
+        nice convert "$(path2File "$@")" \
+            -crop "$(nice -n 19 ionice -c 3 convert "$@" -virtual-pixel edge -blur 0x5 -fuzz 1% -trim -format '%wx%h%O' info:)" \
+            +repage "$@";
+    fi
+}
 crop () { export -f crop_one; ls $(path2File "$@") | parallel crop_one; }
 # WARNING: if 'export' isn't inside the function call, it breaks 'atd'! no idea why. may be connected to Shellshock.
 export -f crop crop_one
@@ -347,7 +354,7 @@ pad-black () {
 crop-pad () { crop "$@" && pad "$@"; }
 crop-pad-black () { crop "$@" && pad-black "$@"; }
 
-# function split_image () {     local image_path="$1";     local base_name=$(basename "$image_path" .png);     local height=$(identify -format "%h" "$image_path");     local half_height=$((height / 2))     convert "$image_path" -crop 100%x50%+0+0 "${base_name}-1.png";     convert "$image_path" -crop 100%x50%+0+$half_height "${base_name}-2.png"; }
+# function split_image () {     local image_path="$1";     local base_name=$(basename "$image_path" .png);     local height=$(identify -ping -format "%h" "$image_path");     local half_height=$((height / 2))     convert "$image_path" -crop 100%x50%+0+0 "${base_name}-1.png";     convert "$image_path" -crop 100%x50%+0+$half_height "${base_name}-2.png"; }
 
 # convert black background to white:  `mogrify -fuzz 5% -fill white -draw "color 0,0 floodfill"`
 

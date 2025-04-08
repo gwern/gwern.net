@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-04-05 18:53:27 gwern"
+# When:  Time-stamp: "2025-04-07 21:30:46 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -1597,7 +1597,7 @@ else
     wrap λ "Corrupted SVGs" &
 
     λ(){  find ./doc/ -type f -mtime -31 -name "*.png" | gfv -e '/static/img/' -e '/doc/www/misc/' | \
-              xargs identify -format '%F %[opaque]\n' | gf ' false' | cut --delimiter=' ' --field=1 | \
+              xargs identify -ping -format '%F %[opaque]\n' | gf ' false' | cut --delimiter=' ' --field=1 | \
               xargs mogrify -background white -alpha remove -alpha off |
               gfv -e ': ICC profile tag start not a multiple of 4' | \
               gfv -e '2024-12-04-gwern-claude36-secondlifesentence-sls-square-thumbnail-512px.png'; }
@@ -1609,7 +1609,7 @@ else
     wrap λ "Animated GIF is deprecated; GIFs should be converted to WebMs/MP4s."
 
     λ(){ JPGS_BIG="$(find ./doc/ -type f -mtime -31 -name "*.jpg" | gfv -e 'doc/www/misc/' | \
-                          parallel --max-args=500 "identify -format '%Q %F\n'" {} | sort --numeric-sort | \
+                          parallel --max-args=500 "identify -ping -format '%Q %F\n'" {} | sort --numeric-sort | \
                           ge -e '^[7-9][0-9] ' -e '^6[6-9]' -e '^100')"
          echo "$JPGS_BIG"
          compressJPG2 $(echo "$JPGS_BIG" | cut --delimiter=' ' --field=2); }
@@ -1656,7 +1656,7 @@ else
     ## TODO: images currently sit uneasily between 'archival' full-resolution originals (suitable for research/design/close examination) and 'optimized' web images for pleasant fast efficient browsing.
     ## We should probably return to a regular image thumbnail system, so we never downscale the originals, and serve appropriate thumbnails instead.
     # λ() { for IMAGE in $(find ./doc/ -type f -mtime -31 -name "*.jpg" -or -name "*.png" | gfv -e 'doc/www/' -e '2020-07-19-oceaninthemiddleofanisland-gpt3-chinesepoetrytranslation.png' -e '2020-05-22-caji9-deviantart-stylegan-ahegao.jpg' -e '2021-anonymous-meme-virginvschad-journalpapervsblogpost.jpg' -e 'tadne-l4rz-kmeans-k256-n120k-centroidsamples.jpg' -e '2009-august-newtype-rebuildinterview-maayasakamoto-pg090091.jpg' -e 'doc/fiction/science-fiction/batman/' -e 'dall-e' -e 'midjourney' -e 'stablediffusion' -e '2022-09-27-gwern-gwernnet-indentjustification2x2abtest.png' -e 'reinforcement-learning/2022-bakhtin' -e 'technology/2021-roberts-figure2' -e '2022-10-02-mollywhite-annotate-latecomersdesktopscreenshot.png' -e '/doc/anime/eva/' -e 'doc/www/misc/' -e '2021-power-poster.png' -e '2002-change-table2-preandposttestscoresultsfrommindmappingshowminimaleffect.png' -e 'genetics/selection/www.mountimprobable.com/assets/images/card.png' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure6-successfulcicerohumandialogueexamplesfromtestgames.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure3-differentcicerointentsleadtodifferentdialogues.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure5-theeffectofdialogueoncicerosplanningandintents3possiblescenariosinanegotiationwithengland.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure2-trainingandinferenceofcicerointentcontrolleddialogue.jpg' -e 'reinforcement-learning/imperfect-information/diplomacy/2022-bakhtin-figure1-architectureofcicerodiplomacyagent.jpg' -e '2021-roberts-figure2-manufacturingofhumanbloodbricks.jpg' -e 'gwern-gwernnet' -e '2023-11-03-gwern-googleimages-catwindowbox-imagequilt.jpg' -e '1999-marklombardi-olivernorthlakeresourcespanamairancontra198486-v4-detail.jpg' -e '2022-09-24-aella-fetishtaboonessvspopularity-chart-large.jpg' -e '2024-perkovic-figure1-kidneydiseasesurvivalcurvesonsemaglutidevsplacebo.jpg' -e '1992-02-18-neilgaiman-sandman-issue36-agameofyoupart5-overtheseatothesky-theendoftheland.jpg' -e 'elementsglass-amberantelope-triptych' ); do
-    #           SIZE_W=$(identify -format "%w" "$IMAGE")
+    #           SIZE_W=$(identify -ping -format "%w" "$IMAGE")
     #           if (( SIZE_W > 1800 )); then
     #               echo "Too wide image: $IMAGE $SIZE_W; shrinking…";
     #               mogrify -resize 1700x10000 "$IMAGE";

@@ -5990,4 +5990,5 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("PAC", "Probably_approximately_correct_learning")
         , ("Coalescence", "https://en.wikipedia.org/wiki/Coalescent_theory")
         , ("Coalescent", "https://en.wikipedia.org/wiki/Coalescent_theory")
+        , ("Hanabi", "Hanabi_(card game)")
         ]

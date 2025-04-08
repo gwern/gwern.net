@@ -812,7 +812,7 @@ linkIconTestUnitsText =
          , ("https://arxiv.org/abs/1612.08810#deepmind",  "deepmind","svg", blueDM)
          , ("/doc/reinforcement-learning/model/alphago/2016-silver.pdf#deepmind",  "deepmind","svg", blueDM)
          , ("https://deepmind.google/discover/blog/alphastar-mastering-the-real-time-strategy-game-starcraft-ii/",  "deepmind","svg", blueDM)
-         , ("https://www.lesswrong.com/posts/kANyEjDDFWkhSKbcK/two-interviews-with-the-founder-of-deepseek", "deepseek", "svg", blueDS)
+         , ("https://www.lesswrong.com/posts/kANyEjDDFWkhSKbcK/two-interviews-with-the-founder-of-deepseek#deepseek", "deepseek", "svg", blueDS)
          , ("https://docs.google.com/document/d/1MhA3M5ucBD7ZXcWk57_MKZ5jEgPX6_YiKye_EFP-adg/edit",  "word-doc","svg", blueG)
          , ("https://research.com/u/gudmar-thorleifsson-1",  "google-scholar","svg", blueG)
          , ("https://scholar.google.com/citations?user=9hEhCHYAAAAJ",  "google-scholar","svg", blueG)

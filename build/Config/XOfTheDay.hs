@@ -383,7 +383,7 @@ siteBlackList = [
           "vr.cs.ucl.ac.uk", "vision-explorer.allenai.org", "vfxblog.com", "vet.osu.edu", "vestnik.rsmu.press",
           "veridici.com", "vastabrupt.com", "v1.escapistmagazine.com", "users.econ.umn.edu", "uploads-ssl.webflow.com",
           "unesdoc.unesco.org", "tylermoore.utulsa.edu", "twigserial.wordpress.com", "tug.org", "tribune.com.pk",
-          "traditionsofconflict.com", "towakudai.blogs.com", "toughsf.blogspot.com", "tosche.net", "today.oregonstate.edu",
+          "towakudai.blogs.com", "toughsf.blogspot.com", "tosche.net", "today.oregonstate.edu",
           "timelines.issarice.com", "thoughtcrime.crummy.com", "theworld.org", "theumlaut.com", "thestrategybridge.org",
           "thepsychologist.bps.org.uk", "theplosblog.plos.org", "theoutline.com", "thenewstatistics.com", "thefloatinglibrary.com",
           "theeggandtherock.substack.com", "theeagle.com", "thedistantjourneytoyou.bandcamp.com", "the-toast.net", "terrytao.files.wordpress.com",

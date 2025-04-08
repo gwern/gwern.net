@@ -65,7 +65,7 @@ badStrings = ["", " ", "Quanta Magazine", "OSF", "CAIDA Resource Catalog", "Blog
      , "Justin Pombrio", "ōtoro.net", "Research Scientist", "Vanderbilt University School of Medicine"
      , "Olup Stories", "Human Verification", "Oceans Yet to Burn", "Wiremodal"
      , "OUH - OUH group members", "Sergey’s Blog", "Sensor Fusion: High Speed Robots"
-     , "SAS Proceedings and more - 404", "Inception Labs", "Access Denied", "News details", "UK", "Heart of the internet", "IMBEI", "naml.us", "Redirecting The Scholar's Stage", "Research units", "Reddit—The heart of the internet", "Reddit - The heart of the internet", "Bloomberg - Are you a robot?", "Aizk’s Site", "Aizk's Site", "Personal profile - UPJS Kosice", "Personal profile—UPJS Kosice", "Edward Tufte: New ET Writings, Artworks &amp; News", "fi-le.net"]
+     , "SAS Proceedings and more - 404", "Inception Labs", "Access Denied", "News details", "UK", "Heart of the internet", "IMBEI", "naml.us", "Redirecting The Scholar's Stage", "Research units", "Reddit—The heart of the internet", "Reddit - The heart of the internet", "Bloomberg - Are you a robot?", "Aizk’s Site", "Aizk's Site", "Personal profile - UPJS Kosice", "Personal profile—UPJS Kosice", "Edward Tufte: New ET Writings, Artworks &amp; News", "fi-le.net", "Personal Page"]
 
 -- A list of bad substrings to remove. Note this is used with `Utils.deleteMixedMany` to specialize down to either prefix or suffix deletion based on the trailing vs leading space (respectively). This should greatly reduce the risk of unintended deletions.
 -- testing: unique list

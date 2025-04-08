@@ -222,7 +222,7 @@ Popups = {
     updatePageScrollState: () => {
         GWLog("Popups.updatePageScrollState", "popups.js", 2);
 
-        if (Popups.allSpawnedPopups().findIndex(popup => 
+        if (Popups.allSpawnedPopups().findIndex(popup =>
         		(   Popups.popupIsMaximized(popup) == true
         		 && Popups.popupIsMinimized(popup) == false)
         	) == -1)
@@ -849,7 +849,7 @@ Popups = {
         Popups.clearPopupTimers(popup.spawningTarget);
 
         //  Update title bar buttons states (if any).
-        if (   popup.titleBar 
+        if (   popup.titleBar
         	&& options.updateTitleBarState == true)
             popup.titleBar.updateState();
 
@@ -881,7 +881,7 @@ Popups = {
         Popups.clearPopupTimers(popup.spawningTarget);
 
         //  Update title bar buttons states (if any).
-        if (   popup.titleBar 
+        if (   popup.titleBar
         	&& options.updateTitleBarState == true)
             popup.titleBar.updateState();
 
@@ -2120,9 +2120,9 @@ Popups = {
         //  Get the containing popup.
         let popup = Popups.containingPopFrame(event.target);
 
-        /*  Make sure that this is a left-click; that we’re clicking on the 
-        	popup (i.e. its edge) and not on any of the popup’s contained 
-        	elements; and that the popup is resizeable (i.e., that it is pinned 
+        /*  Make sure that this is a left-click; that we’re clicking on the
+        	popup (i.e. its edge) and not on any of the popup’s contained
+        	elements; and that the popup is resizeable (i.e., that it is pinned
         	or zoomed, and not minimized).
          */
         if (   event.button != 0
@@ -2318,9 +2318,9 @@ Popups = {
         //  Get the containing popup.
         let popup = Popups.containingPopFrame(event.target);
 
-		/*	Make sure that this is a left-click; that we’re clicking on an 
+		/*	Make sure that this is a left-click; that we’re clicking on an
 			empty part of the title bar or else on the title itself (but not on
-			a title bar button); and the the popup is draggable (i.e., that it 
+			a title bar button); and the popup is draggable (i.e., that it
 			is not minimized).
 		 */
 		if (   event.button != 0
@@ -2387,10 +2387,10 @@ Popups = {
 			popup.linkDragTarget.onclick = (event) => { return false; };
 
 		//  Set new viewport rect; clamp to screen.
-		Popups.setPopupViewportRect(popup, 
+		Popups.setPopupViewportRect(popup,
 									new DOMRect(popup.viewportRect.x + (event.clientX - popup.dragStartMouseCoordX),
 												popup.viewportRect.y + (event.clientY - popup.dragStartMouseCoordY),
-												0, 0), 
+												0, 0),
 									{ clampPositionToScreen: true });
 	},
 
@@ -2459,7 +2459,7 @@ Popups = {
         event.stopPropagation();
 
         let popup = Popups.containingPopFrame(event.target);
-	
+
 		if (Popups.popupIsMinimized(popup)) {
 			if (event.altKey == true) {
 				Popups.allMinimizedPopups().forEach(Popups.unminimizePopup);

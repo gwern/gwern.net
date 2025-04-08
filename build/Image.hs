@@ -186,7 +186,7 @@ imageMagickDimensions f =
     do exists <- doesFileExist f'
        if not exists then return ("","") else
         do let f'' = if isVideoFilename f' then f' ++ "-poster.jpg" else f'
-           (status,_,bs) <- runShellCommand "./" Nothing "identify" ["-format", "%h %w\n", f'']
+           (status,_,bs) <- runShellCommand "./" Nothing "identify" ["-ping", "-format", "%h %w\n", f'']
            case status of
              ExitFailure exit -> error $ "Image.imageMagickDimensions: `identify` exited with a failure on `f`=" ++ f ++ " : `f''=`" ++ f'' ++ "; exit status: " ++ show exit ++ ": raw exit status: " ++ B8.unpack bs
              _             -> do let string = B8.unpack bs
