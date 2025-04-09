@@ -34,7 +34,7 @@ import LinkID (metadataItem2ID, id2URLdb)
 import LinkMetadata (sortByDatePublished)
 import LinkMetadataTypes (Metadata, MetadataList, MetadataItem, Path)
 import Unique (isUniqueList)
-import Utils (sed, writeUpdatedFile, printRed, replace, delete)
+import Utils (sed, writeUpdatedFile, printRed, replace, delete, printGreen, truncateString)
 import qualified Config.Misc as C (cd, currentYear, author, authorL, currentYearS, lastYearS)
 
 prefix, authorU, authorID :: String
@@ -65,11 +65,16 @@ writeOutBlogEntries md =
                                                       sed ("^"++authorID++"-") "" ident ++
                                                       ".md")
                  idents
-     let targets = zip paths writings :: [(FilePath, (Path, MetadataItem))]
+     let targets = zipWith (\a (b,c) -> (a, b, c)) paths writings :: [(FilePath, Path, MetadataItem)]
      C.cd -- ensure the relative directory prefix is valid
      mapM_ writeOutBlogEntry targets
+     printGreen "Wrote out individual /blog/20*.md entries."
 
      generateDirectoryBlog md
+     printGreen "Wrote /blog/index.md."
+
+     generateDirectoryBlogSimplified targets
+     printGreen "Wrote /blog/newest.md."
 
 checkIdent :: String -> Bool
 checkIdent "" = False
@@ -91,12 +96,12 @@ filterForAuthoredAnnotations md =
                                   length abst > lengthMin)
   md
 
-writeOutBlogEntry :: (FilePath, (Path, MetadataItem)) -> IO ()
-writeOutBlogEntry (filepath, m) = writeUpdatedFile prefix filepath $ T.pack $ annotation2Markdown m
+writeOutBlogEntry :: (FilePath, Path, MetadataItem) -> IO ()
+writeOutBlogEntry (filepath, p,mi) = writeUpdatedFile prefix filepath $ T.pack $ annotation2Markdown p mi
 
 -- cf. `generateDirectory.generateYAMLHeader`
-annotation2Markdown :: (Path, MetadataItem) -> String
-annotation2Markdown (url, (title, author, dateCreated, dateModified, kvs, _, _)) =
+annotation2Markdown :: Path -> MetadataItem -> String
+annotation2Markdown url (title, author, dateCreated, dateModified, kvs, _, _) =
   let get k defalt = fromMaybe defalt (lookup k kvs)
       description = get "description"   "N/A" -- TODO: maybe do a LLM call? a one-sentence summary should be easy
       status      = get "status"        "finished"
@@ -129,10 +134,9 @@ annotation2Markdown (url, (title, author, dateCreated, dateModified, kvs, _, _))
 
 generateDirectoryBlog :: Metadata -> IO ()
 generateDirectoryBlog md = do
-  writeOutBlogEntries md -- ensure up to date
 
   let iddb = id2URLdb md -- [(ID, Path)]
-  direntries <- fmap (filter (/="index.md")) $ -- filter out self
+  direntries <- fmap (filter (\f -> f/="index.md" && f/="newest.md")) $ -- filter out self
                 listDirectory "blog/" -- eg. '2024-writing-online.md'
   let absolutePaths = map (\m -> "/blog/" ++ delete ".md" m) direntries -- eg. '/blog/2024-writing-online'
   let idents = zip (map ("gwern-"++) $ map (delete ".md") direntries) absolutePaths -- eg. '("gwern-2024-writing-online", "/blog/2024-writing-online")'
@@ -171,7 +175,7 @@ generateDirectoryBlog md = do
     Left e   -> printRed (show e)
     -- compare with the old version, and update if there are any differences:
     Right p' -> do let contentsNew = T.pack header `T.append` p'
-                   writeUpdatedFile "directory" ("blog/index.md") contentsNew
+                   writeUpdatedFile "directory" "blog/index.md" contentsNew
 
 generateBlogLinksByYears :: [(FilePath, MetadataItem)] -> [[Block]]
 generateBlogLinksByYears doublets = let years = nubOrd $ map (\(_, (_,_,dc,_,_,_,_)) -> take 4 dc) doublets
@@ -190,9 +194,9 @@ generateBlogLinksByYears doublets = let years = nubOrd $ map (\(_, (_,_,dc,_,_,_
 generateBlogLink :: (FilePath, MetadataItem) -> [Block]
 generateBlogLink (f, (tle,_,dc,_,_,_,_)) =
   let link = Link (T.pack dc, ["link-annotated-not", "icon-not"], [("data-include-selector-not", "#return-to-blog-index-link")])
-                                      [RawInline (Format "html") (T.pack tle)] (T.pack f,"")
+                                      [RawInline (Format "html") (T.pack $ truncateString 70 tle)] (T.pack f,"")
   in
-    [Para [Span ("",["blog-link-date"],[]) [Str (T.pack (drop 5 dc ++ ": "))],
+    [Para [Str (T.pack (drop 5 dc ++ ": ")),
            Strong [link]]]
 
 generateBlogTranscludes :: [(Bool, (FilePath, MetadataItem))] -> [[Block]]
@@ -212,3 +216,39 @@ generateBlogTransclude (firstp, (f, (tle,_,_,_,_,_,_))) =
                                       [RawInline (Format "html") (T.pack tle)] (T.pack f,"")
   in
     [Para [Strong [link]]]
+
+-- Create a list of the most recent 30 blog post items, which can be transcluded onto </index> to accompany the Newest/Popular/Notable section.
+-- The value of 30 is chosen to create 3×10 columns to parallel those 3 sections (and to let it reflow nicely and do the same trick of lopping off the last third if the screen is too narrow); but we want to link to the blog post index at the end as an ellipsis, so it's actually just 29 blog post entries being linked.
+-- It would be annoying and a bit bloated to make this a separate section on </blog/index> (do we hide it with CSS?), so we generate it as a separate page similar to that but simplified and specialized.
+generateDirectoryBlogSimplified :: [(FilePath, FilePath, MetadataItem)] -> IO ()
+generateDirectoryBlogSimplified [] = error $ "Blog.generateDirectoryBlogSimplified: passed no blog posts, which is impossible!"
+generateDirectoryBlogSimplified items =
+  do let items' = take 29 $ sortByDatePublished $ map (\(fp, u, mi) -> (fp,mi,u)) items
+     let lastEntryDate = (\(_,(_,_,date,_,_,_,_),_) -> date) $ head items'
+     let header = unlines ["---", "title: Recent Blog Posts"
+                          , "description: 'Index of my most recent longer off-site writings, presented as annotations. (Sorted in reverse chronological order. Intended for transclusion onto the homepage index.)'"
+                          -- N/A: author, thumbnail, thumbnail-text, thumbnail-css
+                          , "created: 2009-01-27"
+                          , "modified: " ++ lastEntryDate
+                          , "status: log"
+                          , "importance: 0"
+                          , "css-extension: dropcaps-de-zs"
+                          , "backlink: False"
+                          , "placeholder: False"
+                          , "index: True"
+                          , "...\n"]
+     let body = Div ("newest-list",[],[]) [
+           BulletList (
+               map (\(_, (tle, _, _, _, _, _, _), u) -> [Para [Link ("",[],[]) [RawInline (Format "html") (T.pack tle)] (T.pack u,"")]]) items' ++
+                [ [Para [Link ("",[],[]) [Strong [Str "…"]] ("/blog/index", "Full index of blog entries.")]] ]
+               )
+             ]
+     let document = Pandoc nullMeta [body]
+     let p = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} document
+     case p of
+       Left e   -> printRed (show e)
+       -- compare with the old version, and update if there are any differences:
+       Right p' -> do let contentsNew = T.pack header `T.append` p'
+                      writeUpdatedFile "directory" "blog/newest.md" contentsNew
+
+

@@ -3,8 +3,8 @@ module Utils where
 
 import Control.Monad (when, forM)
 import Data.Char (isSpace)
-import Data.List (group, intercalate, sort, isInfixOf, isPrefixOf, isSuffixOf, tails)
-import Data.Maybe (fromMaybe)
+import Data.List (group, intercalate, sort, isInfixOf, isPrefixOf, isSuffixOf, tails, elemIndices)
+import Data.Maybe (fromMaybe, listToMaybe)
 import qualified Data.Map as M (keys, filter, fromListWith)
 import Data.Containers.ListUtils (nubOrd)
 import qualified Data.Set as S (empty, member, insert, Set)
@@ -33,10 +33,9 @@ import System.IO.Unsafe (unsafePerformIO)
 import Text.Pandoc (def, nullAttr, nullMeta, runPure,
                     writerColumns, writePlain, Block(Div, RawBlock), Pandoc(Pandoc), Inline(..), MathType(InlineMath), Block(Para), readerExtensions, writerExtensions, readHtml, writeMarkdown, pandocExtensions, WriterOptions, Extension(Ext_shortcut_reference_links), enableExtension, Attr, Format(..), topDown, writeHtml5String)
 import Text.Pandoc.Walk (walk)
+import Unique (isUniqueList)
 
 import qualified Debug.Trace as DT (trace)
-
-import Unique (isUniqueList)
 
 -- Write only when changed, to reduce sync overhead; creates parent directories as necessary; writes
 -- to a temp file in /tmp/ (at a specified template name), and does an atomic rename to the final file.
@@ -621,3 +620,30 @@ isInflationLink _                         = False
 interleave :: [a] -> [a] -> [a]
 interleave (a1:a1s) (a2:a2s) = a1:a2:interleave a1s a2s
 interleave _        _        = []
+
+-- | Truncates a string to a maximum length, breaking at the last space
+--   before or at the limit and appending "…". Returns the original string
+--   if it's within the limit. Handles edge cases for short max lengths.
+--
+--   This is useful for, eg., truncating titles to fit in a certain column length, like on /index, where titles can't be >30 without risking line-wrapping.
+truncateString :: Int -> String -> String
+truncateString maxLen string
+    | null string = error $ "Utils.truncateString called on an empty string; this makes no sense. Truncation length: " ++ show maxLen
+    | maxLen < 1 = error $ "Utils.truncateString called with a nonsensical max string length: " ++ show maxLen ++ "; on the string: " ++ show string
+    | length string <= maxLen = string         -- Already fits
+    | maxLen < 3              = take maxLen string -- Too short for ellipsis
+    | otherwise =
+        let
+            -- Leave space for "…"
+            prefixLen = maxLen - 3
+            -- Potential prefix where the break might occur
+            prefix    = take prefixLen string
+            -- Find indices of all spaces within this potential prefix
+            spaceIndices = elemIndices ' ' prefix
+            -- Get the index of the *last* space found, if any
+            maybeLastSpaceIndex = listToMaybe (reverse spaceIndices)
+        in case maybeLastSpaceIndex of
+            -- No suitable space found, hard truncate the prefix and add "…"
+            Nothing      -> prefix ++ "…"
+            -- Found a space, truncate the *original* string just before it and add "…"
+            Just lastIdx -> take lastIdx string ++ "…"
