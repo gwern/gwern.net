@@ -145,6 +145,7 @@ generateDirectory newestp am md ldb sortDB dirs dir'' = do
         concatMap (\(p,(_,_,_,_,_,_,abstract),_) -> if isImageFilename p then [Image nullAttr [] (T.pack p,"")] else extractImages $ toPandoc abstract) $ sortByDateModified $ links ++ triplets
 
   let thumbnail = if null imageFirst then "" else "thumbnail: " ++ T.unpack (safeImageExtractURL (head imageFirst))
+  when (thumbnail /= "" && head thumbnail /= '/') $ error $ "generateDirectory.hs.generateDirectory.thumbnail: invalid thumbnail path: " ++ show thumbnail ++ "; directory was: " ++ show dir''
   let thumbnailText = delete "fig:" $ if null imageFirst then "" else "thumbnail-text: '" ++ replace "'" "''" (T.unpack (safeImageExtractCaption (head imageFirst))) ++ "'"
 
   let header = generateYAMLHeader parentDirectory' previous next tagSelf (minimum $ getDatesModified links) (maximum $ getDatesModified links) (length (dirsChildren++dirsSeeAlsos), length titledLinks, length untitledLinks) thumbnail thumbnailText

@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2025-04-03 11:13:22 gwern"
+When: Time-stamp: "2025-04-09 09:14:14 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -272,12 +272,17 @@ pageIdentifierToPath :: Item a -> String
 pageIdentifierToPath i = "/" ++ (delete "." (delete ".md" (toFilePath (itemIdentifier i))))
 
 imageDimensionWidth :: String -> Context String
-imageDimensionWidth d = field d $ \item -> do
-                  metadataMaybe <- getMetadataField (itemIdentifier item) "thumbnail"
-                  let (h,w) = case metadataMaybe of
-                        Nothing -> ("530","441")
-                        Just thumbnailPath -> let x@(result,_) = unsafePerformIO $ imageMagickDimensions $ tail thumbnailPath in if result/="" then x else error ("failed to read dimensions of an image‽ " ++ show thumbnailPath ++ " : " ++ show x)
-                  if d == "thumbnail-width" then return w else return h
+imageDimensionWidth d = field d $ \item ->
+  do
+   metadataMaybe <- getMetadataField (itemIdentifier item) "thumbnail"
+   let (h,w) = case metadataMaybe of
+         Nothing -> ("530","441")
+         Just thumbnailPath -> if null thumbnailPath || head thumbnailPath /= '/'
+           then error ("hakyll.imageDimensionWidth: thumbnailPath is invalid. Was: " ++ show thumbnailPath)
+           else let x@(result,_) = unsafePerformIO $ imageMagickDimensions $ tail thumbnailPath in
+                  if result/="" then x
+                  else error ("hakyll.imageDimensionWidth: Image.imageMagickDimensions failed to read dimensions of an image‽ " ++ show (tail thumbnailPath) ++ " : " ++ show x)
+   if d == "thumbnail-width" then return w else return h
 
 escapedTitleField :: String -> Context String
 escapedTitleField = mapContext (map toLower . replace "." "" . replace "/" "-" . delete ".md") . pathField
