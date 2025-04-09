@@ -239,8 +239,8 @@ generateDirectoryBlogSimplified items =
                           , "...\n"]
      let body = Div ("newest-list",[],[]) [
            BulletList (
-               map (\(_, (tle, _, _, _, _, _, _), u) -> [Para [Link ("",[],[]) [RawInline (Format "html") (T.pack tle)] (T.pack u,"")]]) items' ++
-                [ [Para [Link ("",[],[]) [Strong [Str "…"]] ("/blog/index", "Full index of blog entries.")]] ]
+               map (\(f, (tle, _, _, _, _, _, _), u) -> [Para [Link ("",["link-modified-recently-not", "link-annotated-not", "link-icon-not"],[]) [RawInline (Format "html") (T.pack tle)] (T.pack ("/"++(delete ".md" f)), if head u == '/' then "" else T.pack $ "Original URL: <" ++ u ++ ">")]]) items' ++
+                [ [Para [Link ("",["link-modified-recently-not", "link-annotated-not", "link-icon-not"],[]) [Strong [Str "…"]] ("/blog/index", "Full index of blog entries.")]] ]
                )
              ]
      let document = Pandoc nullMeta [body]

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-04-09 09:27:45 gwern"
+# When:  Time-stamp: "2025-04-09 12:04:58 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -344,9 +344,10 @@ else
     rm --recursive -- ./_cache/  &>/dev/null || true
 
     ## WARNING: this is a crazy hack to insert a sun horizontal rule 'in between' the first 3 sections
-    ## on /index (Newest/Popular/Notable), and the rest (starting with Statistics); the CSS for
+    ## on /index (Newest/Popular/Notable), then the Newest: Blog section, and then and the rest (starting with Statistics); the CSS for
     ## making the rule a block dividing the two halves just doesn't work in any other way, but
     ## Pandoc Markdown doesn't let you write stuff 'in between' sections, either. So… a hack.
+    sed -i -e 's/section id=\"newest-blog\"/hr class="horizontal-rule-nth-1" \/> <section id="newest-blog"/' ./_site/index
     sed -i -e 's/section id=\"statistics\"/hr class="horizontal-rule-nth-1" \/> <section id="statistics"/' ./_site/index
 
     bold "Building sitemap.xml…"
