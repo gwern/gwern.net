@@ -9607,11 +9607,11 @@ a[data-link-icon='scholarpedia'] {
     --link-icon-offset-y: 0.20em;
 }
 
-a[data-link-icon='springerlink'] {
-    --link-icon-size: 0.90em;
-    --link-icon-offset-x: 0.15em;
-    --link-icon-offset-y: 0.25em;
-    --link-icon-opacity: 0.75;
+a[data-link-icon='springerlink'] { /* WHITE CHESS KNIGHT '♘'-style SVG icon */
+    --link-icon-size: 0.85em;
+    --link-icon-offset-x: 0.10em;
+    --link-icon-offset-y: 0.4em;
+    --link-icon-opacity: 0.70;
 }
 
 a[data-link-icon='stack-exchange'] {
@@ -9761,10 +9761,19 @@ a[data-link-icon='worldcat'] {
     --link-icon-offset-x: 0.10em;
 }
 
-a[data-link-icon='pdf'] { /* Adobe Acrobat */
-    --link-icon-size: 0.45em;
-    --link-icon-offset-x: 0.10em;
-    --link-icon-opacity: 0.50;
+/* Similar to the 'W' Wikipedia icon, we shrink the PDF icon on desktop aggressively because there are *so* many. However, they are then illegible on a physical smartphone screen held normally (even if they look OK in a desktop browser's simulation). So we need to have a media-query conditional here. */
+@media not all and (max-width: 649px) {
+	a[data-link-icon='pdf'] { /* Adobe Acrobat */
+	    --link-icon-size: 0.45em;
+	    --link-icon-offset-x: 0.10em;
+	    --link-icon-opacity: 0.50;
+	}
+}
+@media all and (max-width: 649px) {
+    a[data-link-icon='pdf'] {
+        --link-icon-size-default: 0.6em;
+        --link-icon-offset-y-default: 0.25em;
+    }
 }
 
 /*=------------------=*/
