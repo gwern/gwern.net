@@ -2123,18 +2123,6 @@ span.smallcaps {
     font-variant-caps: small-caps;
 }
 
-/*  Hide date range metadata on /index.
- */
-body.page-index span.date-range sub {
-    display: none;
-}
-body.page-index span.date-range .subsup {
-    margin: 0;
-}
-body.page-index span.date-range .subsup sup {
-    top: -0.15em;
-}
-
 
 /*************/
 /* SIDENOTES */
@@ -2364,6 +2352,75 @@ body.page-404 div#new-popular-notable section ul ul {
     }
 }
 
+/*	“Newest: Blog” section.
+ */
+body.page-index section#newest-blog li::before {
+	top: 0.25em;
+}
+body.page-index section#newest-blog li p {
+	--adjusted-line-height: calc(var(--line-height) - 0.20);
+	
+	line-height: var(--adjusted-line-height);
+	padding-left: 1em;
+	text-indent: -1em;
+	margin-bottom: 0.25em;
+	hyphens: none;
+}
+@media all and (max-width: 649px) {
+	body.page-index section#newest-blog li p {
+		margin-bottom: 0.50em;
+	}
+}
+body.page-index section#newest-blog a code {
+	word-break: normal;
+}
+@media all and (max-width: 960px) {
+	body.page-index section#newest-blog .columns ul {
+		column-width: unset;
+	}
+	body.page-index section#newest-blog li {
+		padding-right: 1em;
+	}
+	/*	Hide 10th through 29th items.
+	 */
+	body.page-index section#newest-blog li:nth-of-type(n+10) {
+		display: none;
+	}
+	body.page-index section#newest-blog li:last-of-type {
+		display: list-item;
+	}
+}
+/*	This is the width breakpoint when one column becomes two.
+ */
+@media all and (min-width: 961px) {
+	body.page-index section#newest-blog .columns ul {
+		column-gap: 2em;
+	}
+	body.page-index section#newest-blog li {
+		padding-right: 3em;
+	}
+	@media all and (max-width: 1760px) {
+		body.page-index section#newest-blog {
+			grid-column-end: span 2;
+		}
+		/*	Hide 20th through 29th items.
+		 */
+		body.page-index section#newest-blog li:nth-of-type(n+20) {
+			display: none;
+		}
+		body.page-index section#newest-blog li:last-of-type {
+			display: list-item;
+		}
+	}
+	/*	This is where two columns become three.
+	 */
+	@media all and (min-width: 1761px) {
+		body.page-index section#newest-blog {
+			grid-column-end: span 3;
+		}
+	}
+}
+
 /**********************************/
 /*  Miscellaneous things on /index.
  */
@@ -2382,6 +2439,18 @@ body.page-404 div#new-popular-notable section ul ul {
     body.page-index section hr {
         display: none;
     }
+}
+
+/*  Hide date range metadata on /index.
+ */
+body.page-index span.date-range sub {
+    display: none;
+}
+body.page-index span.date-range .subsup {
+    margin: 0;
+}
+body.page-index span.date-range .subsup sup {
+    top: -0.15em;
 }
 
 /*=------=*/
