@@ -112,7 +112,7 @@ annotation2Markdown url (title, author, dateCreated, dateModified, kvs, _, _) =
        [ "---"
        , "title: '"              ++ replace "'" "’" title ++ "'"
        , "author: "              ++ author
-       , "description: "         ++ replace "'" "’" description
+       , "description: "         ++ ("\"" ++ replace "'" "’" description ++ "\"")
        , "created: "             ++ dateCreated
        , "modified: "            ++ dateModified
        , "status: "              ++ status
@@ -237,10 +237,10 @@ generateDirectoryBlogSimplified items =
                           , "placeholder: False"
                           , "index: True"
                           , "...\n"]
-     let body = Div ("newest-list",[],[]) [
+     let body = Div ("newest-list",["columns"],[]) [
            BulletList (
                map (\(f, (tle, _, _, _, _, _, _), u) -> [Para [Link ("",["link-modified-recently-not", "link-annotated-not", "link-icon-not"],[]) [RawInline (Format "html") (T.pack tle)] (T.pack ("/"++(delete ".md" f)), if head u == '/' then "" else T.pack $ "Original URL: <" ++ u ++ ">")]]) items' ++
-                [ [Para [Link ("",["link-modified-recently-not", "link-annotated-not", "link-icon-not"],[]) [Strong [Str "…"]] ("/blog/index", "Full index of blog entries.")]] ]
+                [ [Para [Link ("",["link-modified-recently-not", "link-annotated-not", "link-icon-not"],[]) [Str "[…]"] ("/blog/index", "Full index of blog entries.")]] ]
                )
              ]
      let document = Pandoc nullMeta [body]
