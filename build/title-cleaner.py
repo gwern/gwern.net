@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-04-04 22:46:48 gwern"
+# When:  Time-stamp: "2025-04-08 18:01:26 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -649,6 +649,8 @@ Personal profile - UPJS Kosice"
 ""
 - "https://www.geneticsnetworkamsterdam.org/personal-pages/personal-pages-karin-verweij/ Personal Page | Prof. dr. Karin Verweij"
 "Prof. dr. Karin Verweij"
+- "https://yuxi-liu-wired.github.io/essays/posts/cyc/ Cyc—Yuxi on the Wired"
+"Cyc"
 
 Task:
 

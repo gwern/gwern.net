@@ -625,7 +625,7 @@ interleave _        _        = []
 --   before or at the limit and appending "…". Returns the original string
 --   if it's within the limit. Handles edge cases for short max lengths.
 --
---   This is useful for, eg., truncating titles to fit in a certain column length, like on /index, where titles can't be >30 without risking line-wrapping.
+--   This is useful for, eg. truncating titles to fit in a certain column length, like on /index, where titles can't be >30 without risking line-wrapping.
 truncateString :: Int -> String -> String
 truncateString maxLen string
     | null string = error $ "Utils.truncateString called on an empty string; this makes no sense. Truncation length: " ++ show maxLen

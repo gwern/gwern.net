@@ -728,6 +728,9 @@ canonicals = M.fromList
   , ("genewolfe", "Gene Wolfe")
   , ("_ceee_", "Cee")
   , ("layer07_yuxi", "Yuxi Liu")
+  , ("elidourado", "Eli Dourado")
+  , ("kajaykumarr_", "AKR")
+  , ("nrehiew_", "wh")
   ]
 
 -- tests: unique
@@ -760,7 +763,7 @@ canonicalsWithInitials =
   , "Karl T. Compton", "Tom B. Brown", "Saskia P. Hagenaars", "Robert R. McCrae", "Nathan A. Gillespie"
   , "Marian L. Hamshere", "Richard W. Wrangham", "John R. Attia", "Joel Z. Leibo", "Jaspal S. Kooner"
   , "Larry V. Hedges", "Hugh Christian Watkins", "Stephen Cole Kleene", "David C. Glahn"
-  , "Bernhard Otto Boehm", "John W. Tukey", "Behrooz Z. Alizadeh", "Aki S. Havulinna", "Richard Sharpe Shaver", "Wouter J. Peyrot", "Wendy L. McArdle", "Peter T. Leeson", "Brian O. Bernstein", "Thorgeir E. Thorgeirsson", "Susan M. Ring", "Stephen S. Rich", "Philip S. Dale"]
+  , "Bernhard Otto Boehm", "John W. Tukey", "Behrooz Z. Alizadeh", "Aki S. Havulinna", "Richard Sharpe Shaver", "Wouter J. Peyrot", "Wendy L. McArdle", "Peter T. Leeson", "Brian O. Bernstein", "Thorgeir E. Thorgeirsson", "Susan M. Ring", "Stephen S. Rich", "Philip S. Dale", "Lee N. Robbins", "Hyman G. Rickover"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1571,10 +1574,15 @@ authorLinkDB = M.fromList $
     , ("Shixiang Shane Gu", "https://sites.google.com/view/gugurus/home")
     , ("Thomas D. Clareson", "https://sf-encyclopedia.com/entry/clareson_thomas_d")
     , ("Cee", "https://x.com/_ceee_")
-    , ("Pierre Fontanillas", "https://scholar.google.com/citations?user=J0PyHOkAAAAJ&hl=en&oi=ao")
+    , ("Pierre Fontanillas", "https://scholar.google.com/citations?user=J0PyHOkAAAAJ")
     , ("Phillip Isola", "https://web.mit.edu/phillipi/")
     , ("Philip S. Dale", "https://shs.unm.edu/people/faculty/docs/cv-dale-philip-2016-12.pdf")
     , ("Yuxi Liu", "https://yuxi-liu-wired.github.io/")
+    , ("Lee N. Robbins", "https://en.wikipedia.org/wiki/Lee_Robins")
+    , ("Eli Dourado", "https://www.thecgo.org/people/eli-dourado/")
+    , ("Tom Szilagyi", "https://tomscii.sig7.se/id/")
+    , ("AKR", "https://x.com/kajaykumarr_")
+    , ("wh", "https://x.com/nrehiew_")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2831,4 +2839,4 @@ authorWpLinkDB =
     , "Lyman Spitzer", "Ethan Zuckerman", "Scott Adams", "Justin Wolfers", "Richard Palais", "Ken White"
     , "Reginald Bretnor", "Poul Anderson", "Hal Clement", "Alan E. Nourse", "Theodore Sturgeon"
     , "Jerry Pournelle", "Katherine MacLean", "James E. Gunn", "Larry Niven", "Jack Williamson"
-    , "John Brunner", "Harlan Ellison", "Frederik Pohl", "A. E. Stallings", "Richard Sharpe Shaver", "Karl Sims", "C. S. Lewis", "Reed Albergotti"]
+    , "John Brunner", "Harlan Ellison", "Frederik Pohl", "A. E. Stallings", "Richard Sharpe Shaver", "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist", "Ken Perlin"]
