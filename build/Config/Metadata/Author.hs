@@ -731,6 +731,7 @@ canonicals = M.fromList
   , ("elidourado", "Eli Dourado")
   , ("kajaykumarr_", "AKR")
   , ("nrehiew_", "wh")
+  , ("Hastings", "Hastings Greer")
   ]
 
 -- tests: unique
@@ -1583,6 +1584,8 @@ authorLinkDB = M.fromList $
     , ("Tom Szilagyi", "https://tomscii.sig7.se/id/")
     , ("AKR", "https://x.com/kajaykumarr_")
     , ("wh", "https://x.com/nrehiew_")
+    , ("Thomas Pornin", "https://dblp.org/pid/07/4667.html")
+    , ("Hastings Greer", "https://www.lesswrong.com/users/hastings-greer")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2839,4 +2842,4 @@ authorWpLinkDB =
     , "Lyman Spitzer", "Ethan Zuckerman", "Scott Adams", "Justin Wolfers", "Richard Palais", "Ken White"
     , "Reginald Bretnor", "Poul Anderson", "Hal Clement", "Alan E. Nourse", "Theodore Sturgeon"
     , "Jerry Pournelle", "Katherine MacLean", "James E. Gunn", "Larry Niven", "Jack Williamson"
-    , "John Brunner", "Harlan Ellison", "Frederik Pohl", "A. E. Stallings", "Richard Sharpe Shaver", "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist", "Ken Perlin"]
+    , "John Brunner", "Harlan Ellison", "Frederik Pohl", "A. E. Stallings", "Richard Sharpe Shaver", "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist", "Ken Perlin", "Martin J. Lercher"]

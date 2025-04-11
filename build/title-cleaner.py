@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-04-08 18:01:26 gwern"
+# When:  Time-stamp: "2025-04-10 11:28:13 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -651,6 +651,8 @@ Personal profile - UPJS Kosice"
 "Prof. dr. Karin Verweij"
 - "https://yuxi-liu-wired.github.io/essays/posts/cyc/ Cyc—Yuxi on the Wired"
 "Cyc"
+- "https://www.modelshipsinthecinema.com/2016/12/hunt-for-red-october-1990.html model ships in the cinema: <em>Hunt for Red October</em> 1990"
+"<em>Hunt for Red October</em> 1990"
 
 Task:
 

@@ -21,7 +21,8 @@ type Path = String
 
 data Failure = Temporary | Permanent deriving Show
 
--- local essays: this excludes locally-hosted files such as PDFs:
+-- local essays: this excludes locally-hosted files such as PDFs.
+-- We define a local essay as a local page, not in /static/, which also has no file extension. All files are guaranteed to have an extension, and extensions are stripped from Markdown pages after compilation ('/foo.md' → '/foo'), so therefore a local filepath with no extension = a Markdown-compiled essay page.
 isPagePath :: T.Text -> Bool
 isPagePath f = let f' = delete "https://gwern.net" $ T.unpack f in
                  (not (not ("/" `isPrefixOf` f') || ("/static/" `isPrefixOf` f')) &&
