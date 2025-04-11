@@ -80,8 +80,8 @@ parseExtractCompileWrite am md path path' self selfAbsolute abstract = do
                       else
                         extractLinksFromPage (tail (takeWhile (/='#') path) ++ ".md") -- Markdown essay
                     else return $ nubOrd $ map (\(a,b) -> (T.unpack a, T.unpack b)) $ extractLinkIDsWith (const True) (T.pack path) $ toPandoc abstract -- annotation
-            -- delete self-links, such as in the ToC of scraped abstracts, or newsletters linking themselves as the first link (eg. '/newsletter/2022/05' will link to 'https://gwern.net/newsletter/2022/05' at the beginning)
-        let links = filter (\(l,_) -> not (self `isPrefixOf` l || selfAbsolute `isPrefixOf` l || isInflationURL (T.pack l))) linksRaw
+            -- delete self-links in essays, such as in the ToC of scraped abstracts, or newsletters linking themselves as the first link (eg. '/newsletter/2022/05' will link to 'https://gwern.net/newsletter/2022/05' at the beginning); but allow self-links for files or external URLs (eg. for when we do the hash trick to annotate different parts of the same URL/file and cross-reference them)
+        let links = filter (\(l,_) -> not ((isPagePath (T.pack l) && (self `isPrefixOf` l || selfAbsolute `isPrefixOf` l)) || isInflationURL (T.pack l))) linksRaw
         when (length (filter (\(l,_) -> not ("https://en.wikipedia.org/wiki/" `isPrefixOf` l))  links) >= C.mininumLinkBibliographyFragment) $
           do
 
