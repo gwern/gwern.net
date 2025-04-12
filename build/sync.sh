@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-04-09 12:04:58 gwern"
+# When:  Time-stamp: "2025-04-11 10:37:51 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -154,6 +154,7 @@ else
           s '_n_th' '<em>n</em>th'; s 'thumbnailText: ' 'thumbnail-text: '; s ' — ' '—'; s '_n_=' '_n_ = ';
           s '< a href' '<a href'; s 'modifed: 20' 'modified: 20'; s 'linklive-not' 'link-live-not'; s ' n-dimensional' ' <em>n</em>-dimensional'; s 'pdf#pg=' 'pdf#page='; s 'PDF#pg=' 'PDF#page='; s '<hr />' '<hr>'; s 'confidence: highly-likely' 'confidence: highly likely'; s 'drop-caps-de-zs' 'dropcaps-de-zs'; s '฿' '₿';
           s 'src="doc/' 'src="/doc/'; s 'href="doc/' 'href="/doc/';
+          s 'link-icon-not' 'icon-not';
 
           ## TODO: duplicate HTML classes from Pandoc reported as issue #8705 & fixed; fix should be in >pandoc 3.1.1 (2023-03-05), so can remove these two rewrites once I upgrade past that:
           s 'class="odd odd' 'class="odd'; s 'class="even even' 'class="even';
@@ -596,7 +597,7 @@ else
     find ./_site/metadata/ -type f -name "*.html" | parallel --max-args=500 cleanClasses || true
 
     # HACK: still haven't figured out how these keep getting reintroduced when the titlecase code responsible should be fixing them automatically now. So hack around by replacing them manually...
-    (s 'cite-author-Plural' 'cite-author-plural' ; s 'Date-Range' 'date-range' ; s 'Inflation-Adjusted' 'inflation-adjusted' ; s 'Logotype-Latex-A' 'logotype-latex-a' ; s 'Logotype-Latex-E' 'logotype-latex-e' ; s 'SUbsup' 'subsup'; s 'Cite-Joiner' 'cite-joiner';) > /dev/null
+    (s 'cite-author-Plural' 'cite-author-plural' ; s 'Date-Range' 'date-range' ; s 'Inflation-Adjusted' 'inflation-adjusted' ; s 'Logotype-Latex-A' 'logotype-latex-a' ; s 'Logotype-Latex-E' 'logotype-latex-e' ; s 'SUbsup' 'subsup'; s 'Cite-Joiner' 'cite-joiner';) &> /dev/null;
 
   if [ "$SLOW" ]; then
     # Testing compilation results:
@@ -705,7 +706,7 @@ else
             "doc-index-tag-short" "decorate-not" "quote-of-the-day" "interview" "reader-mode-note"
             "dropcap-dropcat" "desktop-not" "mobile-not" "adsense" "years-since" "date-range"
             "^page-[a-z0-9-]+" "sidebar-links"
-            "test-april-fools-2024" "test-april-fools-2025""test-april-fools-2026" "test-christmas" "test-easter"
+            "test-april-fools-2024" "test-april-fools-2025" "test-april-fools-2026" "test-christmas" "test-easter"
             "test-halloween" "triptych" "logo-image" "dropcap-cheshire" "dropcap-de-zs" "dropcap-gene-wolfe"
             "dropcap-goudy" "dropcap-kanzlei" "dropcap-ninit" "dropcap-not" "dropcaps-cheshire"
             "dropcaps-de-zs" "dropcaps-dropcat" "dropcaps-gene-wolfe" "dropcaps-goudy" "dropcaps-kanzlei"
@@ -1120,7 +1121,7 @@ else
             # 2. Filter out specific directory patterns using grep -v
             # 3. Process each remaining candidate file line by line
             find . -type f -name '*-10.*' | \
-                gfv -e './doc/www/' -e './metadata/' -e './static/' | \
+                gfv -e './doc/www/' -e './metadata/' -e './static/' -e './_site/' -e './_cache/' | \
                 while IFS= read -r file_minus_10; do
                     # 4. Construct the potential corresponding unpadded filename ('*-9.*')
                     #    - Get the part before '-10.' -> base (e.g., ./path/to/foo)
@@ -1439,7 +1440,7 @@ else
     wait;
     ## check that the robots-headers are being set appropriately:
     curl --silent --head "https://gwern.net/doc/www/www.usagi.org/4b4194c682efeeab1f37fd9956dff3fc3807e3c8.html"  "https://gwern.net/doc/www/www.usagi.org/df4966e6908602944e3f0f22e9a818ffbfe09086.html" | ge -q "^x-robots-tag: " || red "/doc/www/ paths missing robots tag! ✗" # these mirrors are chosen to trigger SSI errors, if SSI processing is incorrectly happening on /doc/www/ files
-    curl --silent --head "https://gwern.net/doc/index" | grep -E -q "^x-robots-tag: " && red "/doc/index has robots tag! ✗"
+    curl --silent --head "https://gwern.net/doc/index" | ge -q "^x-robots-tag: " && red "/doc/index has robots tag! ✗"
 
     ## check that all tag shortcuts are working, and create missing ones:
     ( find ./doc/ -type f -name "index.md" | sort | while read -r file; do

@@ -232,6 +232,7 @@ generateDirectoryBlogSimplified items =
                           , "modified: " ++ lastEntryDate
                           , "status: log"
                           , "importance: 0"
+                          , "confidence: log"
                           , "css-extension: dropcaps-de-zs"
                           , "backlink: False"
                           , "placeholder: False"
@@ -239,8 +240,8 @@ generateDirectoryBlogSimplified items =
                           , "...\n"]
      let body = Div ("newest-list",["columns"],[]) [
            BulletList (
-               map (\(f, (tle, _, _, _, _, _, _), u) -> [Para [Link ("",["link-modified-recently-not", "link-annotated-not", "link-icon-not"],[]) [RawInline (Format "html") (T.pack tle)] (T.pack ("/"++(delete ".md" f)), if head u == '/' then "" else T.pack $ "Original URL: <" ++ u ++ ">")]]) items' ++
-                [ [Para [Link ("",["link-modified-recently-not", "link-annotated-not", "link-icon-not"],[]) [Str "[…]"] ("/blog/index", "Full index of blog entries.")]] ]
+               map (\(f, (tle, _, _, _, _, _, _), u) -> [Para [Link ("",["link-modified-recently-not", "link-annotated-not", "icon-not"],[]) [RawInline (Format "html") (T.pack tle)] (T.pack ("/"++(delete ".md" f)), if head u == '/' then "" else T.pack $ "Original URL: <" ++ u ++ ">")]]) items' ++
+                [ [Para [Link ("",["link-modified-recently-not", "link-annotated-not", "icon-not"],[]) [Str "[…]"] ("/blog/index", "Full index of blog entries.")]] ]
                )
              ]
      let document = Pandoc nullMeta [body]
