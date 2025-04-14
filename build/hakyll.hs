@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2025-04-09 09:14:14 gwern"
+When: Time-stamp: "2025-04-14 12:29:30 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -39,7 +39,7 @@ import System.IO.Unsafe (unsafePerformIO)
 import qualified Data.Text as T (append, filter, isInfixOf, pack, unpack, length, strip)
 
 -- local custom modules:
-import Image (imageMagickDimensions, addImgDimensions, imageLinkHeightWidthSet, outlineImageInline)
+import Image (imageMagickDimensions, addImgDimensions, imageLinkHeightWidthSet)
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks)
 import LinkArchive (localizeLink, readArchiveMetadataAndCheck, ArchiveMetadata)
@@ -349,7 +349,7 @@ pandocTransform md adb indexp' p = -- linkAuto needs to run before `convertInter
               $ if indexp then pb else
                 walk (map nominalToRealInflationAdjuster) pb
      let pbth = wrapInParagraphs $ addPageLinkWalk $ walk headerSelflinkAndSanitize pbt
-     walkM (addCanPrefetch <=< outlineImageInline <=< imageLinkHeightWidthSet) pbth
+     walkM (addCanPrefetch <=< imageLinkHeightWidthSet) pbth
 
 -- check that a Gwern.net Pandoc Markdown file has the mandatory metadata fields (title, created, status, confidence), and does not have any unknown fields:
 -- checkEssayPandocMetadata :: Pandoc -> IO ()
