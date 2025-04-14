@@ -808,6 +808,8 @@ htmlRewriteFixed =
          , ("non–", "non-")
          , ("---", "&mdash;")
          , (" - ", "—")
+         , (" —", "—")
+         , ("— ", "—")
          , (" — ", "—")
          , (" -- ", "—") -- eg. 'Darknet Data Mining -- A Canadian Cyber-crime Perspective'
          , (" statistically insignificant", " non-statistically-significant")

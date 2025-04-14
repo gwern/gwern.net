@@ -175,7 +175,7 @@ tagsShort2LongRewrites =
    , ("regression-to-the-mean", "regression-to-mean"), ("regressiontothemean", "regression-to-mean"), ("regression-mean", "mean-regression"), ("reversion-to-the-mean", "regression-to-mean"), ("reversion-to-mean", "regression-to-mean"), ("mean-reversion", "regression-to-mean"), ("reversion", "regression-to-mean"), ("mean", "regression-to-mean")
    , ("lafferty", "r-a-lafferty"), ("ralafferty", "r-a-lafferty"), ("r-lafferty", "r-a-lafferty")
    , ("40", "4o"), ("04", "4o"), ("4-o", "4o"), ("o-4", "4o"), ("o4", "4o"), ("hertaible", "heritable")
-   , ("animal-bias", "statistics/bias/animal"), ("animal/bias", "statistics/bias/animal")
+   , ("animal-bias", "statistics/bias/animal"), ("animal/bias", "statistics/bias/animal"), ("schema", "scheme")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 

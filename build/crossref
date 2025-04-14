@@ -92,7 +92,7 @@ if [ "${*##*.}" = "pdf" ]; then
                                                     -e 'getContents >>= Metadata.Author.authorsUnknownPrint' | \
                                   gfv -e ' secs,' -e 'it :: ()' -e '[]')
             if [[ -n "$AUTHORS_UNKNOWN" ]]; then bold "Unknown authors: "; echo "$AUTHORS_UNKNOWN"; fi
-        )
+        ) &
     else
         echo "File doesn't exist? $TARGET"
     fi

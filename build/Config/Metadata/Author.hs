@@ -732,6 +732,8 @@ canonicals = M.fromList
   , ("kajaykumarr_", "AKR")
   , ("nrehiew_", "wh")
   , ("Hastings", "Hastings Greer")
+  , ("Donna Hart", "Donna Lee Hart")
+  , ("Richard J. Fateman", "Richard Fateman")
   ]
 
 -- tests: unique
@@ -764,7 +766,11 @@ canonicalsWithInitials =
   , "Karl T. Compton", "Tom B. Brown", "Saskia P. Hagenaars", "Robert R. McCrae", "Nathan A. Gillespie"
   , "Marian L. Hamshere", "Richard W. Wrangham", "John R. Attia", "Joel Z. Leibo", "Jaspal S. Kooner"
   , "Larry V. Hedges", "Hugh Christian Watkins", "Stephen Cole Kleene", "David C. Glahn"
-  , "Bernhard Otto Boehm", "John W. Tukey", "Behrooz Z. Alizadeh", "Aki S. Havulinna", "Richard Sharpe Shaver", "Wouter J. Peyrot", "Wendy L. McArdle", "Peter T. Leeson", "Brian O. Bernstein", "Thorgeir E. Thorgeirsson", "Susan M. Ring", "Stephen S. Rich", "Philip S. Dale", "Lee N. Robbins", "Hyman G. Rickover"]
+  , "Bernhard Otto Boehm", "John W. Tukey", "Behrooz Z. Alizadeh", "Aki S. Havulinna"
+  , "Richard Sharpe Shaver", "Wouter J. Peyrot", "Wendy L. McArdle", "Peter T. Leeson"
+  , "Brian O. Bernstein", "Thorgeir E. Thorgeirsson", "Susan M. Ring", "Stephen S. Rich"
+  , "Philip S. Dale", "Lee N. Robbins", "Hyman G. Rickover", "Lucia A. Hindorff"
+  , "Peter P. Pramstaller", "Kent M. Pitman"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1586,6 +1592,14 @@ authorLinkDB = M.fromList $
     , ("wh", "https://x.com/nrehiew_")
     , ("Thomas Pornin", "https://dblp.org/pid/07/4667.html")
     , ("Hastings Greer", "https://www.lesswrong.com/users/hastings-greer")
+    , ("Mark Horowitz#sociology", "https://www.shu.edu/profiles/markhorowitz.html")
+    , ("Neil R. Robertson", "https://scholar.google.com/scholar?q=Neil%20R.%20Robertson")
+    , ("Matthew R. Robinson", "https://scholar.google.com/citations?user=meuM090AAAAJ&hl=en&oi=ao")
+    , ("Lucia A. Hindorff", "https://loop.frontiersin.org/people/1008847/bio")
+    , ("Peter P. Pramstaller", "https://www.eurac.edu/en/people/peter-p-pramstaller")
+    , ("Joakim Dahlqvist", "https://piminski.com/")
+    , ("Weider D. Yu", "https://www.sjsu.edu/engineering/docs/cv/cv_yu_weider_d.pdf")
+    , ("Kent M. Pitman", "https://en.wikipedia.org/wiki/Kent_Pitman")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2314,7 +2328,7 @@ authorWpLinkDB =
     ,"Marjo-Riitta J\228rvelin", "Marjolein Kriek", "Mark A. Davis", "Mark A. McDaniel", "Mark A. Murphy"
     ,"Mark Aldrich", "Mark Braverman", "Mark Caulfield", "Mark D. McDonnell"
     ,"Mark D. Shriver", "Mark D. West", "Mark Gerstein", "Mark Girolami", "Mark Granovetter"
-    ,"Mark Horowitz", "Mark I. McCarthy", "Mark J. Daly", "Mark Jenkinson", "Mark Keil"
+    ,"Mark Alan Horowitz", "Mark I. McCarthy", "Mark J. Daly", "Mark Jenkinson", "Mark Keil"
     ,"Mark Kelly", "Mark Kirkpatrick", "Mark Lathrop", "Mark Lyons", "Mark Mazzetti"
     ,"Mark Miodownik", "Mark Monahan", "Mark Moss", "Mark Neumann", "Mark P. Mattson"
     ,"Mark P. Taylor", "Mark Phillips", "Mark Rowland", "Mark Russinovich", "Mark S. Allen"
@@ -2842,4 +2856,6 @@ authorWpLinkDB =
     , "Lyman Spitzer", "Ethan Zuckerman", "Scott Adams", "Justin Wolfers", "Richard Palais", "Ken White"
     , "Reginald Bretnor", "Poul Anderson", "Hal Clement", "Alan E. Nourse", "Theodore Sturgeon"
     , "Jerry Pournelle", "Katherine MacLean", "James E. Gunn", "Larry Niven", "Jack Williamson"
-    , "John Brunner", "Harlan Ellison", "Frederik Pohl", "A. E. Stallings", "Richard Sharpe Shaver", "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist", "Ken Perlin", "Martin J. Lercher"]
+    , "John Brunner", "Harlan Ellison", "Frederik Pohl", "A. E. Stallings", "Richard Sharpe Shaver"
+    , "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist"
+    , "Ken Perlin", "Martin J. Lercher", "Richard Fateman"]

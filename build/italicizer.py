@@ -4,7 +4,7 @@
 # italicizer.py: reformat a string to add italics as semantically appropriate (eg. book titles) using LLMs
 # Author: Gwern Branwen
 # Date: 2025-01-17
-# When:  Time-stamp: "2025-04-10 21:39:34 gwern"
+# When:  Time-stamp: "2025-04-13 18:39:17 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python italicizer.py
@@ -866,7 +866,7 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - "lechmazur/elimination_game: A multi-player tournament benchmark that tests LLMs in social reasoning, strategy, and deception. Players engage in public and private conversations, form alliances, and vote to eliminate each other"
 ""
-- "Octachron/roguetype: The first ever roguelike written in the OCaml type system"
+- "Octachron/roguetype: The first ever rogue-like written in the OCaml type system"
 ""
 - "Sayaka Murata’s Alien Eye"
 ""
@@ -891,6 +891,22 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 - "Billy Ray Waldon § Poliespo"
 ""
 - "Vietnam Veterans 3 Years after Vietnam: How Our Study Changed Our View of Heroin [2010 republication]"
+""
+- "Natural Kinds § pg9"
+""
+- "Pierre Menard, Author of the Quixote"
+"Pierre Menard, Author of the <em>Quixote</em>"
+- "The Analytical Language of John Wilkins"
+""
+- "A New Refutation of Time"
+""
+- "Celestial Emporium of Benevolent Knowledge"
+""
+- "The Influence of Predation on Primate and Early Human Evolution: Impetus for Cooperation"
+""
+- "Cat Vs Printer (with the original sound)"
+""
+- "The Return of the Eunuch"
 ""
 
 [End of examples. Reminder: your only task is to add missing italics you are sure of.]
