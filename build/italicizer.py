@@ -4,7 +4,7 @@
 # italicizer.py: reformat a string to add italics as semantically appropriate (eg. book titles) using LLMs
 # Author: Gwern Branwen
 # Date: 2025-01-17
-# When:  Time-stamp: "2025-04-13 18:39:17 gwern"
+# When:  Time-stamp: "2025-04-14 18:34:29 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python italicizer.py
@@ -40,7 +40,7 @@ else:
 
 completion = client.chat.completions.create(
   # temperature=0,
-    model="o3-mini", # the 4o/o1-mini models aren't smart enough but o1 is too expensive 😢; we compromise with 'o1-preview' which benefits from <https://platform.openai.com/docs/guides/prompt-caching> to cut its price when we run a lot of title-cleaning. Why is that when this seems like such an easy task, albeit a little fiddly? The smaller models seem to fail catastrophically on paper titles, no matter how many I put in, so my best guess is that this is 'tail dropping' behavior from the very aggressive shrinking of small models, to eliminate as much factual/memorized knowledge as possible. (ie. they've forgotten all these papers, which the original large models knew from pretraining on said papers, or at least metadata of those papers or on other papers referencing them)
+    model="gpt-4.1", # TODO: is GPT-4.1 better than o3-mini here? the 4o/o1-mini models aren't smart enough but o1 is too expensive 😢; we compromise with 'o1-preview' which benefits from <https://platform.openai.com/docs/guides/prompt-caching> to cut its price when we run a lot of title-cleaning. Why is that when this seems like such an easy task, albeit a little fiddly? The smaller models seem to fail catastrophically on paper titles, no matter how many I put in, so my best guess is that this is 'tail dropping' behavior from the very aggressive shrinking of small models, to eliminate as much factual/memorized knowledge as possible. (ie. they've forgotten all these papers, which the original large models knew from pretraining on said papers, or at least metadata of those papers or on other papers referencing them)
   messages=[
     # {"role": "system", "content": "You are a Wikipedia copyeditor. When in doubt, consult MOS:ITALIC <https://en.wikipedia.org/wiki/Wikipedia:Manual_of_Style/Text_formatting#Italic_type>."},
       {"role": "user", "content":
@@ -908,6 +908,8 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - "The Return of the Eunuch"
 ""
+- "Kezurou-kai #39"
+"<em>Kezurou-kai</em> #39"
 
 [End of examples. Reminder: your only task is to add missing italics you are sure of.]
 

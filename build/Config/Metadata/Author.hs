@@ -1600,6 +1600,8 @@ authorLinkDB = M.fromList $
     , ("Joakim Dahlqvist", "https://piminski.com/")
     , ("Weider D. Yu", "https://www.sjsu.edu/engineering/docs/cv/cv_yu_weider_d.pdf")
     , ("Kent M. Pitman", "https://en.wikipedia.org/wiki/Kent_Pitman")
+    , ("Jon Billing", "https://www.bigsandwoodworking.com/about/")
+    , ("Stefano Marinelli", "https://my-notes.dragas.net/about/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

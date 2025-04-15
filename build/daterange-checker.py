@@ -23,7 +23,7 @@ else:
     target = sys.argv[1]
 
 completion = client.chat.completions.create(
-  model="gpt-4o-mini",
+  model="gpt-4.1-mini",
   messages=[
     {"role": "system", "content": "You are a helpful and fastidious research assistant."},
       {"role": "user", "content":
