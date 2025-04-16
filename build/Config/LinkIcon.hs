@@ -461,7 +461,7 @@ linkIconRulesQuad u
  | u'' u "qntm.org" || u == "https://scp-wiki.wikidot.com/antimemetics-division-hub" || u == "https://scp-wiki.wikidot.com/qntm-s-author-page#toc2" = ("qntm", "text,quad,mono", "") -- qntm/Sam Hughes: programming & SF
  | aU'' u ["blog.samaltman.com", "samaltman.com"] = ("sama", "text,quad,mono", "") -- Sam Altman, username 'sama'
  | u' u "a16z" = ("az16", "text,quad,sans", "#ed8c00") -- Andreessen Horowitz/a16z (reworded to 'az16' because quad splits it badly: 'a1/6z' doesn't read easily); color: orange; TODO: white-on-orange text background
- | u'' u "www.dwarkeshpatel.com" = ("Dwkh", "text,sans,quad", "#f3c016") -- Dwarkesh Patel podcast (formerly, "Lunar Society"); icon: big portrait is unusable, and it is known primarily by 'Dwarkesh', so we just quad it; color: yellow (Substack theme?)
+ | u'' u "www.dwarkesh.com" = ("Dwkh", "text,sans,quad", "#f3c016") -- Dwarkesh Patel podcast (formerly, "Lunar Society"); icon: big portrait is unusable, and it is known primarily by 'Dwarkesh', so we just quad it; color: yellow (Substack theme?)
  | u'' u "ascii.textfiles.com" = ("ASCI", "text,quad,mono", "#006309") -- Jason Scott, ASCII web log; surprisingly, I do not seem to have linked any other textfiles.com subdomain? color: green (from background, because the dark-green would make a terrible link color)
  | u'' u "ralphmerkle.com" = ("RMKL", "text,quad", "")
  | u'' u "nyaa.si" = ("Nyaa", "text,quad,sans", "")
@@ -1302,7 +1302,7 @@ linkIconTestUnitsText =
          , ("https://infoproc.blogspot.com/2014/02/hints-of-genomic-dark-matter-rare.html", "Hsu", "text,tri,sans", "")
          , ("https://www.manifold1.com/episodes/robin-hanson-prediction-markets-the-future-of-civilization-and-polymathy-66/transcript#elon-musk", "Hsu", "text,tri,sans", "")
          , ("https://ki.se/en/people/paul-lichtenstein", "caduceus", "svg", "#830154")
-         , ("https://www.dwarkeshpatel.com/p/progress-update", "Dwkh", "text,sans,quad", "#f3c016")
+         , ("https://www.dwarkesh.com/p/progress-update", "Dwkh", "text,sans,quad", "#f3c016")
          , ("https://ascii.textfiles.com/archives/2229", "ASCI", "text,quad,mono", "#006309")
          , ("https://www.e-codices.unifr.ch/en/vad/0296/079r", "e", "text,sans", "#e7d7a5")
          , ("https://www.bartleby.com/lit-hub/poetry-of-byron/greece-iv/", "b", "text", "#101269")

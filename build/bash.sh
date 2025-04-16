@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-04-07 21:30:23 gwern"
+# When:  Time-stamp: "2025-04-15 10:36:47 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -797,6 +797,7 @@ compare_page () {
 }
 
 lorem_update () {
+    cd ~/wiki/
     bold "Updating snapshots…"
     mkdir -p "${SNAPSHOT_DIR}"
     get_lorem_pages | while read -r page; do

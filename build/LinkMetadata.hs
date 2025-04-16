@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-04-14 12:29:13 gwern"
+When:  Time-stamp: "2025-04-15 10:11:44 gwern"
 License: CC-0
 -}
 
@@ -584,7 +584,7 @@ generateAnnotationBlock md am (f, ann) blp slp lb =
            author = authorCollapse aut
 
            dt' = dateTruncateBad dt
-           date = if dt'=="" then [] else [Span ("", ["date", "cite-date"],
+           date = if dt'=="" || not (isDate dt) then [] else [Span ("", ["date", "cite-date"],
                                                  if length dt' > 4 then [("title",T.pack dt')] else []) -- don't set a redundant title
                                            [Str (T.pack $ take 4 dt')]]
            tags = if ts==[] then [] else [tagsToLinksSpan $ map T.pack ts]

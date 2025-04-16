@@ -45,6 +45,7 @@ cleanAuthorsRegexps = [
   ("([a-zA-Z]+),([A-Z][a-z]+)", "\\1, \\2") -- "Foo Bar,Quuz Baz" → "Foo Bar, Quuz Baz"
   , (",$", "")
   , (", +", ", ")
+  , ("^By ", "") -- "By XYZ" → "XYZ"
   , ("^([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1") -- "Smith, J." → "J. Smith"; for single words followed by a single letter, we can assume that it is a 'surname, initial' rather than 2 authors, 'surname1, surname2'
   , ("^([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1, \\4 \\3") -- likewise, but for the 2-author case: 'Smith, J.; Doe, J.'
   , ("^([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.); ([A-Z][a-z]+), ([A-Z]\\.)$", "\\2 \\1, \\4 \\3, \\6 \\5") -- 3-author
@@ -770,7 +771,7 @@ canonicalsWithInitials =
   , "Richard Sharpe Shaver", "Wouter J. Peyrot", "Wendy L. McArdle", "Peter T. Leeson"
   , "Brian O. Bernstein", "Thorgeir E. Thorgeirsson", "Susan M. Ring", "Stephen S. Rich"
   , "Philip S. Dale", "Lee N. Robbins", "Hyman G. Rickover", "Lucia A. Hindorff"
-  , "Peter P. Pramstaller", "Kent M. Pitman"]
+  , "Peter P. Pramstaller", "Kent M. Pitman", "Louise S. Bicknell", "Laura Jean Bierut"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1594,7 +1595,7 @@ authorLinkDB = M.fromList $
     , ("Hastings Greer", "https://www.lesswrong.com/users/hastings-greer")
     , ("Mark Horowitz#sociology", "https://www.shu.edu/profiles/markhorowitz.html")
     , ("Neil R. Robertson", "https://scholar.google.com/scholar?q=Neil%20R.%20Robertson")
-    , ("Matthew R. Robinson", "https://scholar.google.com/citations?user=meuM090AAAAJ&hl=en&oi=ao")
+    , ("Matthew R. Robinson", "https://scholar.google.com/citations?user=meuM090AAAAJ")
     , ("Lucia A. Hindorff", "https://loop.frontiersin.org/people/1008847/bio")
     , ("Peter P. Pramstaller", "https://www.eurac.edu/en/people/peter-p-pramstaller")
     , ("Joakim Dahlqvist", "https://piminski.com/")
@@ -1602,6 +1603,14 @@ authorLinkDB = M.fromList $
     , ("Kent M. Pitman", "https://en.wikipedia.org/wiki/Kent_Pitman")
     , ("Jon Billing", "https://www.bigsandwoodworking.com/about/")
     , ("Stefano Marinelli", "https://my-notes.dragas.net/about/")
+    , ("Elliot Richards", "https://www.maizegenetics.net/elliotrichards")
+    , ("Louise S. Bicknell", "https://www.otago.ac.nz/dsm-pathology/people/profile?id=2236")
+    , ("Krystal Hu", "https://www.reuters.com/authors/krystal-hu/")
+    , ("Lu Qi", "https://en.wikipedia.org/wiki/Lu_Qi_(computer_scientist)")
+    , ("Lu Qi#genetics", "https://scholar.google.com/citations?user=iWi5t54AAAAJ&hl=en&oi=ao")
+    , ("Lu Qi#Insta360", "http://luqi.info/")
+    , ("Lavinia Paternoster", "https://research-information.bris.ac.uk/en/persons/lavinia-paternoster")
+    , ("Laura Jean Bierut", "https://healthbehaviorcenter.wustl.edu/who-we-are/laura-j-bierut-m-d/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -1920,7 +1929,7 @@ authorWpLinkDB =
     ,"Elizabeth Gibney", "Elizabeth J. Perry", "Elizabeth K. Cahoon", "Elizabeth L. Bjork"
     ,"Elizabeth Pennisi", "Elizabeth S. Spelke", "Elizabeth Selvin", "Elizabeth Spelke", "Elizabeth Steele"
     ,"Elizabeth Weil", "Elizabeth Williamson", "Ella Fitzgerald", "Ellen Byron", "Ellen J. Langer"
-    ,"Ellen Leibenluft", "Elliot Richards", "Elliot S. Gershon", "Elliot S. Vesell", "Elliot M. Tucker-Drob"
+    ,"Ellen Leibenluft", "Elliot S. Gershon", "Elliot S. Vesell", "Elliot M. Tucker-Drob"
     ,"Elon Musk", "Elsdon Storey", "Emad Mostaque", "Emanuel Miller", "Emanuele Felice"
     ,"Emelia J. Benjamin", "Emi Hasegawa", "Emi Nakamura", "Emil Hagstr\246m", "Emil O. W. Kirkegaard"
     ,"Emilie Kaufmann", "Emilio Ferrer", "Emily Chew", "Emily Gerard"
