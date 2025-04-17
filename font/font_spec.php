@@ -9,7 +9,7 @@
 		for ToC and UI elements; primarily intended for Mac/iOS users
 	- IBM Plex Mono
 		for code blocks
-	- Initial-capital fonts 
+	- Initial-capital fonts
 		for 5 kinds of dropcaps; enabled in /static/css/default.css
 		- Deutsche Zierschrift
 			for general pages
@@ -25,7 +25,7 @@
 		for specific symbols; e.g. Unicode linkicons
 
 	NOTE on ‘font-display: swap’:
-	We display text as soon as possible (e.g., for body text, system font such 
+	We display text as soon as possible (e.g., for body text, system font such
 	as Baskerville; see font stacks defined in /static/css/initial.css)
 	and re-render with webfont (e.g. Source Serif 4) whenever it downloads:
 	https://developers.google.com/web/updates/2016/02/font-display
@@ -105,7 +105,7 @@ font-display	swap
 `normal			Bold-SUBSETTED
 
 <?php
-/*	Each dropcap font is subsetted into A-Z, so only *one* letter needs to be 
+/*	Each dropcap font is subsetted into A-Z, so only *one* letter needs to be
 	loaded (at a cost of 8-16KB), rather than 200-700KB or worse.
  */
 function all_the_letters() {
@@ -150,45 +150,8 @@ ttf
 font-display	swap
 <?php all_the_letters(); ?>
 
-Blackmoor Plain
-/static/font/blackletter/BlackmoorPlain
-otf
-font-display	swap
-`normal			`
-
-Cloister Black
-/static/font/blackletter/CloisterBlack
-ttf
-font-display	swap
-`normal			`
-
-Deutsche Schrift
-/static/font/blackletter/DeutscheSchrift
-ttf
-font-display	swap
-`normal			`
-
-Engravers Old English
-/static/font/blackletter/EngraversOldEnglish-
-ttf
-font-display	swap
-`normal			Regular
-`bold			Bold
-
 Great Primer Uncials
 /static/font/blackletter/GreatPrimerUncials
 otf
-font-display	swap
-`normal			`
-
-Gutenberg Gothic
-/static/font/blackletter/GutenbergGothic
-ttf
-font-display	swap
-`normal			`
-
-Hansa Gothic
-/static/font/blackletter/HansaGothic
-ttf
 font-display	swap
 `normal			`
