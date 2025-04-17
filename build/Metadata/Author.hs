@@ -3,7 +3,7 @@
 {- Metadata.Author.hs: module for managing 'author' metadata & hyperlinking author names in annotations
 Author: Gwern Branwen
 Date: 2024-04-14
-When:  Time-stamp: "2025-04-01 22:12:19 gwern"
+When:  Time-stamp: "2025-04-17 11:07:55 gwern"
 License: CC-0
 
 Authors are useful to hyperlink in annotations, but pose some problems: author names are often ambiguous in both colliding and having many non-canonical versions, are sometimes extremely high frequency & infeasible to link one by one, and there can be a large number of authors (sometimes hundreds or even thousands in some scientific fields).
@@ -35,7 +35,7 @@ This could further come with some browser automation like searching Wikipedia + 
 
 module Metadata.Author where
 
-import Control.Monad (void, unless)
+import Control.Monad (filterM, void, unless)
 import Data.Char (isLetter, toUpper)
 import Data.List (intersperse, intercalate)
 import Data.List.Split (splitOn)
@@ -47,7 +47,7 @@ import Text.Pandoc (Inline(Link, Span, Space, Str), nullAttr, Pandoc(Pandoc), Bl
 import Network.HTTP (urlEncode)
 
 import Data.FileStore.Utils (runShellCommand)
-import Interwiki (toWikipediaEnURLSearch)
+import Interwiki (toWikipediaEnURLSearch, toWikipediaEnURL, isWPArticle)
 import LinkMetadataTypes (Metadata)
 import Utils (split, frequency, trim, replaceMany, sedMany, printRed, printGreen)
 import qualified LinkBacklink as BL
@@ -207,8 +207,12 @@ authorsUnknown auts = map trim $ filter (\a -> not (isAuthor a || filterMeta (cl
 
 authorsUnknownPrint :: String -> IO ()
 authorsUnknownPrint "" = return ()
-authorsUnknownPrint auts = let missing = authorsUnknown $ splitOn ", " auts in
-                             unless (null missing) (printRed "Authors unknown: " >> printGreen (intercalate ", " missing))
+authorsUnknownPrint auts = do let missing = authorsUnknown $ splitOn ", " auts
+                              missingInWikipedia <- filterM (isWPArticle . toWikipediaEnURL . T.pack) missing
+                              unless (null missing) $ do printRed "Authors unknown: "
+                                                         printGreen (intercalate ", " missing)
+                              unless (null missingInWikipedia) $ do printGreen "Unknown authors possibly in Wikipedia:"
+                                                                    mapM_ (\aut -> print (aut ++ " :" ++ (T.unpack (toWikipediaEnURL (T.pack aut))))) missingInWikipedia
 
 -- final database of alias→author rewrites: combine the handwritten with the generated.
 -- WARNING: the two databases are required to be unique and non-overlapping; we could override generated with manual, but that kind of conflict indicates a semantic issue and must be dealt with by the user.

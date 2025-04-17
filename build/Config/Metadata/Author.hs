@@ -771,7 +771,7 @@ canonicalsWithInitials =
   , "Richard Sharpe Shaver", "Wouter J. Peyrot", "Wendy L. McArdle", "Peter T. Leeson"
   , "Brian O. Bernstein", "Thorgeir E. Thorgeirsson", "Susan M. Ring", "Stephen S. Rich"
   , "Philip S. Dale", "Lee N. Robbins", "Hyman G. Rickover", "Lucia A. Hindorff"
-  , "Peter P. Pramstaller", "Kent M. Pitman", "Louise S. Bicknell", "Laura Jean Bierut"]
+  , "Peter P. Pramstaller", "Kent M. Pitman", "Louise S. Bicknell", "Laura Jean Bierut", "Grover S. Krantz"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1611,6 +1611,8 @@ authorLinkDB = M.fromList $
     , ("Lu Qi#Insta360", "http://luqi.info/")
     , ("Lavinia Paternoster", "https://research-information.bris.ac.uk/en/persons/lavinia-paternoster")
     , ("Laura Jean Bierut", "https://healthbehaviorcenter.wustl.edu/who-we-are/laura-j-bierut-m-d/")
+    , ("Raymond F. Jones", "https://www.ebsco.com/research-starters/biography/raymond-f-jones")
+    , ("Grover S. Krantz", "https://en.wikipedia.org/wiki/Grover_Krantz")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2539,7 +2541,7 @@ authorWpLinkDB =
     ,"Raquel Urtasun", "Rasmus Kleis Nielsen", "Rasmus Larsen", "Raul Gonzalez", "Ravi Gupta"
     ,"Ravi Kalhan", "Ravishankar Iyer", "Ray Bradbury", "Ray Bull", "Ray Kurzweil"
     ,"Ray L. Birdwhistell", "Ray Monk", "Rayhan Asat", "Raymond B. Cattell", "Raymond E. Fancher"
-    ,"Raymond F. Jones", "Raymond J. Dolan", "Raymond J. Mooney", "Raymond Mooney", "Raymond Palmer"
+    , "Raymond J. Dolan", "Raymond J. Mooney", "Raymond Mooney", "Raymond Palmer"
     ,"Raymond S. Nickerson", "Raymond Walters", "Raza Muhammad", "Razib Khan", "Rebecca A. Hubbard"
     ,"Rebecca Andridge", "Rebecca D. Jackson", "Rebecca Diamond", "Rebecca Goldstein", "Rebecca Landa"
     ,"Rebecca Redfern", "Rebecca Saxe", "Rebecca Shiner", "Rebecca Sims", "Rebecca Struthers"
@@ -2869,4 +2871,4 @@ authorWpLinkDB =
     , "Jerry Pournelle", "Katherine MacLean", "James E. Gunn", "Larry Niven", "Jack Williamson"
     , "John Brunner", "Harlan Ellison", "Frederik Pohl", "A. E. Stallings", "Richard Sharpe Shaver"
     , "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist"
-    , "Ken Perlin", "Martin J. Lercher", "Richard Fateman"]
+    , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group"]

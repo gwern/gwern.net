@@ -19,7 +19,6 @@ import qualified Config.Interwiki as C (redirectDB, quoteOverrides, testCases)
 import Network.HTTP.Simple (parseRequest, httpLBS, getResponseBody, Response, getResponseStatusCode) -- http-conduit
 import qualified Data.ByteString.Lazy.UTF8 as U (toString, ByteString)
 import Control.Exception (catch, SomeException)
--- import Network.HTTP.Client (Response)
 
 -- if there is an English WP article, is it a disambiguation page? (we generally want to avoid linking to those)
 -- use curl to call the WP API and (to avoid complicated JSON processing overhead) simply look for the fixed string '"type":"disambiguation"', and return Just True/False.
@@ -42,27 +41,29 @@ isWPDisambig articleName = do
 
 -- verify that a WP article exists at the argument URL (not name/title), by checking for a 404 error.
 -- This print outs a warning message about bad WP articles and the response code.
+-- (To convert a string to a Wikipedia URL, use `toWikipediaEnURL`.)
+--
 -- WP uses standard 404 errors:
 -- $ curl --head 'https://en.wikipedia.org/wiki/George_Washington_XYZ'
 -- HTTP/2 404 / date: Sat, 26 Oct 2024 16:54:11 GMT / ...
 --
--- For reference, The WP API JSON response for an article which doesn't exist looks like this:
+-- For reference, the WP API JSON response for an article which doesn't exist looks like this:
 -- $ curl 'https://en.wikipedia.org/api/rest_v1/page/summary/George_Washington_XYZ'
 -- {"type":"https://mediawiki.org/wiki/HyperSwitch/errors/not_found","title":"Not found.","method":"get","detail":"Page or revision not found.","uri":"/en.wikipedia.org/v1/page/summary/George_Washington_XYZ"}
 -- As opposed to:
 -- $ curl 'https://en.wikipedia.org/api/rest_v1/page/summary/George_Washington'
 -- {"type":"standard","title":"George Washington", ... }
-isWPArticle :: T.Text -> IO ()
+isWPArticle :: T.Text -> IO Bool
 isWPArticle ""  = error "Interwiki.isWPArticle: called with an empty string! This should never happen."
 isWPArticle url = do
     request <- parseRequest ("HEAD " ++ T.unpack url)
     result  <- catch (Right <$> httpLBS request) handleExceptionIO :: IO (Either String (Response U.ByteString))
     case result of
-        Left err       -> putStrLn $ "Warning (Interwiki.isWPArticle): HTTP error when checking Wikipedia article URL: " ++ err
+        Left err       -> putStrLn ("Warning (Interwiki.isWPArticle): HTTP error when checking Wikipedia article URL: " ++ err) >> return False
         Right response ->
             if getResponseStatusCode response == 404
-                then putStrLn $ "Warning (Interwiki.isWPArticle): Wikipedia article does not exist (404 error): " ++ T.unpack url
-                else return ()
+                then putStrLn ("Warning (Interwiki.isWPArticle): Wikipedia article does not exist (404 error): " ++ T.unpack url) >> return False
+                else return True
   where
     handleExceptionIO :: SomeException -> IO (Either String a)
     handleExceptionIO e = return $ Left $ show e
