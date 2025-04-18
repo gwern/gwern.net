@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2025-04-14 12:29:30 gwern"
+When: Time-stamp: "2025-04-17 17:41:14 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -48,7 +48,7 @@ import LinkBacklink (getBackLinkCheck, getLinkBibLinkCheck, getSimilarLinkCheck)
 import LinkMetadata (addPageLinkWalk, readLinkMetadataSlow, writeAnnotationFragments, createAnnotations, hasAnnotation, addCanPrefetch)
 import LinkMetadataTypes (Metadata)
 import Tags (tagsToLinksDiv)
-import Typography (linebreakingTransform, typographyTransform, titlecaseInline, completionProgressHTML)
+import Typography (linebreakingTransform, typographyTransformTemporary, titlecaseInline, completionProgressHTML)
 import Utils (printGreen, replace, deleteMany, replaceChecked, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines, delete, toHTML, getMostRecentlyModifiedDir)
 import Test (testAll)
 import qualified Config.Misc as C (cd, currentYear)
@@ -332,7 +332,7 @@ descField escape d d' = field d' $ \item -> do
                          Right finalDesc -> return $ deleteMany ["<p>", "</p>", "&lt;p&gt;", "&lt;/p&gt;"] finalDesc -- strip <p></p> wrappers (both forms)
 
 pandocTransform :: Metadata -> ArchiveMetadata -> String -> Pandoc -> IO Pandoc
-pandocTransform md adb indexp' p = -- linkAuto needs to run before `convertInterwikiLinks` so it can add in all of the WP links and then convertInterwikiLinks will add link-annotated as necessary; it also must run before `typographyTransform`, because that will decorate all the 'et al's into <span>s for styling, breaking the LinkAuto regexp matches for paper citations like 'Brock et al 2018'
+pandocTransform md adb indexp' p = -- linkAuto needs to run before `convertInterwikiLinks` so it can add in all of the WP links and then convertInterwikiLinks will add link-annotated as necessary; it also must run before `typographyTransformTemporary`, because that will decorate all the 'et al's into <span>s for styling, breaking the LinkAuto regexp matches for paper citations like 'Brock et al 2018'
                            -- tag-directories/link-bibliographies special-case: we don't need to run all the heavyweight passes, and LinkAuto has a regrettable tendency to screw up section headers, so we check to see if we are processing a document with 'index: True' set in the YAML metadata, and if we are, we slip several of the rewrite transformations:
   do
      let duplicateHeaders = duplicateTopHeaders p in
@@ -345,7 +345,7 @@ pandocTransform md adb indexp' p = -- linkAuto needs to run before `convertInter
                  walk linkAuto p
      unless indexp $ createAnnotations md pw
      let pb = addPageLinkWalk pw  -- we walk local link twice: we need to run it before 'hasAnnotation' so essays don't get overridden, and then we need to add it later after all of the archives have been rewritten, as they will then be local links
-     pbt <- fmap typographyTransform . walkM (localizeLink adb) $ walk (hasAnnotation md)
+     pbt <- fmap typographyTransformTemporary . walkM (localizeLink adb) $ walk (hasAnnotation md)
               $ if indexp then pb else
                 walk (map nominalToRealInflationAdjuster) pb
      let pbth = wrapInParagraphs $ addPageLinkWalk $ walk headerSelflinkAndSanitize pbt

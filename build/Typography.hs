@@ -9,7 +9,7 @@
 --    for immediate sub-children, it can't count elements *globally*, and since Pandoc nests horizontal
 --    rulers and other block elements within each section, it is not possible to do the usual trick
 --    like with blockquotes/lists).
-module Typography (linebreakingTransform, typographyTransform, typesetHtmlFieldPermanent, titlecase', titlecaseInline, identUniquefy, mergeSpaces, C.titleCaseTestCases, titleCaseTest, typesetHtmlField, titleWrap, completionProgressHTML, completionProgressInline) where
+module Typography (linebreakingTransform, typographyTransformTemporary, typesetHtmlFieldPermanent, titlecase', titlecaseInline, identUniquefy, mergeSpaces, C.titleCaseTestCases, titleCaseTest, typesetHtmlField, titleWrap, completionProgressHTML, completionProgressInline) where
 
 import Control.Monad.State.Lazy (evalState, get, modify, put, State)
 import Data.Char (isPunctuation, isSpace, toUpper)
@@ -43,27 +43,28 @@ typesetHtmlFieldPermanent _        "" = ""
 typesetHtmlFieldPermanent permanent t = let fieldPandocMaybe = runPure $ readHtml def{readerExtensions = pandocExtensions} (T.pack t) in
                         case fieldPandocMaybe of
                           Left errr -> error $ "Typography.typesetHtmlField: string failed to read as Pandoc AST from HTML via Pandoc, erroring out! : " ++ t ++ show errr
-                          Right fieldPandoc -> let (Pandoc _ fieldPandoc') = (if permanent then typographyTransformPermanent else typographyTransform) fieldPandoc in
+                          Right fieldPandoc -> let (Pandoc _ fieldPandoc') = (if permanent then typographyTransformPermanent else typographyTransformTemporary) fieldPandoc in
                                                let compiledHTML = runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta fieldPandoc') in
                                                  case compiledHTML of
                                                    Right fieldHtml -> T.unpack fieldHtml
                                                    Left errors     -> error "Typography.typesetHtmlField: string failed from Pandoc AST to HTML via Pandoc, erroring out! original input: " ++ show t ++ "; errors: " ++ show errors
 
-
-typographyTransform :: Pandoc -> Pandoc
-typographyTransform = let year = CM.currentYear in parseRawAllClean . walk (dateRangeDuration year) . -- ensure 'citefyInline' gets to run first
+-- run time-bound passes which should not be stored permanently, but only used to generate outputs (which will be replaced eventually); currently this pass runs only the date-range/duration subscripts, but theoretically could include others like the inflation-adjustment.
+typographyTransformTemporary :: Pandoc -> Pandoc
+typographyTransformTemporary = let year = CM.currentYear in parseRawAllClean . walk (dateRangeDuration year) . -- ensure 'citefyInline' gets to run first in 'typographyTransformPermanent':
                                                 typographyTransformPermanent
 
 -- subset of transforms which are safe to store permanently eg. in the metadata database, and which won't change (this excludes primarily the date-range duration adjuster, which by definition will change every year; this doesn't need to exclude the inflation adjuster, because it is not included in the set of typography transforms, although perhaps it should be?)
 typographyTransformPermanent :: Pandoc -> Pandoc
 typographyTransformPermanent = let year = CM.currentYear in
-                        parseRawAllClean . -- clean up all spans/divs introduced by the finished rewrites
                         walk imageCaptionLinebreak .
+                        parseRawAllClean . -- clean up all spans/divs introduced by the finished rewrites
                         walk (linkLive . linkIcon) .
                         walk mergeSpaces .
                         linebreakingTransform .
                         rulersCycle C.cycleCount .
                         walk (citefyInline year) .
+                        walk imageCaptionLinebreak .
                         walk mergeSpaces .
                         parseRawAllClean -- clean up all anonymous or empty spans/divs so we have a clean AST to rewrite
 
@@ -95,10 +96,10 @@ citefyInline year x@(Str s) = let rewrite = go s in if [Str s] == rewrite then x
            in if null matchAll then [Str a] -- no citation anywhere
               else
                 case head matchAll of
-                  []       -> [Str a]
-                  _:[]     -> [Str a]
-                  _:_:[]   -> [Str a]
-                  _:_:_:[] -> [Str a]
+                  []      -> [Str a]
+                  [_]     -> [Str a]
+                  [_, _]  -> [Str a]
+                  [_,_,_] -> [Str a]
                   (fullMatch:first:second:third:_) ->
                     let
                         citeYear = case decimal third :: Either String (Int, T.Text) of
@@ -332,8 +333,11 @@ I can't find a way to make this work reliably in CSS-only because breaking at it
 Editing in a <br> by hand is doable and I've done it a few times but not sure this is the best way or I want to go back and edit it into them all when the rule seems reasonably clear: 'if a figcaption starts with <strong> then text then <em>, and then has additional text not starting with <strong>/<em>, wrap the additional text in a new paragraph.'
 So we implement this as a Pandoc AST rewrite on the 'Figure' element that that `![]()` compiles to.
 
-> figureCaptionLinebreak $ Figure nullAttr (Caption (Just [Strong [Str "Figure 1"],Str ": ",Emph [Str "figure short description."],Str "Figure long description after a linebreak."]) []) []
-→ Figure ("",[],[]) (Caption (Just [Strong [Str "Figure 1"],Str ": ",Emph [Str "figure short description."],LineBreak,Str "Figure long description after a linebreak."]) []) []
+> imageCaptionLinebreak $ Image nullAttr [Strong [Str "Figure 1"],Str ": ",Emph [Str "figure short description."],Str "Figure long description after a linebreak."] ("","")
+→ Image ("",[],[]) [Strong [Str "Figure 1"],Str ": ",Emph [Str "figure short description."],
+                    LineBreak,
+                    Str "Figure long description after a linebreak."]
+        ("","")
 -}
 -- Relevant Pandoc types:
 -- `Figure = Figure !Attr !Caption ![Block]`

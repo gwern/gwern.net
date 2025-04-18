@@ -36,7 +36,7 @@ import LinkBacklink (getSimilarLink, getForwardLinks, readBacklinksDB, Backlinks
 import Columns as CL (listLength)
 import LinkMetadata (readLinkMetadata, sortItemPathDate)
 import LinkMetadataTypes (Metadata, MetadataItem)
-import Typography (typographyTransform)
+import Typography (typographyTransformTemporary)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
 import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile, replace, safeHtmlWriterOptions, anyPrefixT, printRed, trim, sed, kvDOI, deleteMany)
 import Metadata.Author (authorsTruncateString)
@@ -373,7 +373,7 @@ generateMatches md bdb singleShot p abst matches =
              preface = if singleShot then [] else [Para [Link ("",["icon-special"], []) [Strong [Str "Similar Links:"]] ("/design#similar-links", "")]]
              linkList = BulletList $ similarItems ++ googleScholar
 
-             pandoc = (if singleShot then id else walk typographyTransform) $ Pandoc nullMeta $ preface ++ [linkList]
+             pandoc = (if singleShot then id else walk typographyTransformTemporary) $ Pandoc nullMeta $ preface ++ [linkList]
              html = let htmlEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc
                     in case htmlEither of
                                 Left e -> error $ show e ++ ":" ++ show p ++ ":" ++ show matches ++ ":" ++ show similarItems
