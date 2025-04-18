@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-04-14 09:47:13 gwern"
+# When:  Time-stamp: "2025-04-16 11:47:07 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -655,6 +655,8 @@ Personal profile - UPJS Kosice"
 "<em>Hunt for Red October</em> 1990"
 - "https://www.bigsandwoodworking.com/kezurou-kai-39/ Kezurou-kai #39 - Big Sand Woodworking"
 "Kezurou-kai #39"
+- "https://www.emigre.com/Fonts/Lo-Res-Monospaced Emigre: Lo-Res Monospaced Font Family"
+"Lo-Res Monospaced Font Family"
 
 Task:
 
