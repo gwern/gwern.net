@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-04-17 14:57:18 gwern"
+;;; When:  Time-stamp: "2025-04-18 10:46:07 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -907,6 +907,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("NOVA1" . "_NOVA1_")
                         (" X " . " Twitter ")
                         (" X." . " Twitter.")
+                        (" X," . " Twitter.")
+                        (" X;" . " Twitter.")
                         ("X, formerly known as Twitter," . "Twitter")
                         ("x-axis" . "_x_-axis")
                         ("x axis" . "_x_-axis")
@@ -1451,6 +1453,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        )
        (replace-all ",”" "”,")
        (replace-all ";”" "”;")
+       (query-replace ".”" "”." nil begin end)
        (replace-all ",\"" "\",")
        (replace-all ";\"" "\";")
        (replace-all "\n\n\n" "\n\n")

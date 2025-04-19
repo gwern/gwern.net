@@ -1613,6 +1613,7 @@ authorLinkDB = M.fromList $
     , ("Laura Jean Bierut", "https://healthbehaviorcenter.wustl.edu/who-we-are/laura-j-bierut-m-d/")
     , ("Raymond F. Jones", "https://www.ebsco.com/research-starters/biography/raymond-f-jones")
     , ("Grover S. Krantz", "https://en.wikipedia.org/wiki/Grover_Krantz")
+    , ("Gerald Goldstein", "https://scholar.google.com/scholar?q=Gerald%20Goldstein")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2871,4 +2872,4 @@ authorWpLinkDB =
     , "Jerry Pournelle", "Katherine MacLean", "James E. Gunn", "Larry Niven", "Jack Williamson"
     , "John Brunner", "Harlan Ellison", "Frederik Pohl", "A. E. Stallings", "Richard Sharpe Shaver"
     , "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist"
-    , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group"]
+    , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group", "Adrian Hon"]

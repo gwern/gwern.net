@@ -153,7 +153,7 @@ filterMetaBadSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode",
                           , "Admin", "C U. P. Printing", "Debenu ", "Quick P. D. F. Library 9.12", "www.debenu.com", "JPL 99", "MinnickD", "Office", "Owner"
                           , "SPDF", "Writer", "jcpham", "DLE4&lt;8", "8AB@0B&gt", "Paperless", "psjoin 0.2", "Apex", "Elsevier Science"
                           , "PsycINFO", "kristine gallo", "TeX", "PDFplus", "Elsevier", "N/A", "OmniPage", "scansoft", "Articlizer"
-                          , "ARTICLIZER", "c:/ncn", "1QS4P", "2-0crc", "Trove", "REV_ISS", "WEB_CDEV", "HelenMartin", "DALiM", "HP PDF", "PDF Formatter", "Xerox D125", "Copier-Printer", "PubTeX", "C:My Documents", ".wp", "Nova India", "/var/www", "oup_cercor", "oup_humrep", "Print Publisher", "11.1.4012/W"]
+                          , "ARTICLIZER", "c:/ncn", "1QS4P", "2-0crc", "Trove", "REV_ISS", "WEB_CDEV", "HelenMartin", "DALiM", "HP PDF", "PDF Formatter", "Xerox D125", "Copier-Printer", "PubTeX", "C:My Documents", ".wp", "Nova India", "/var/www", "oup_cercor", "oup_humrep", "Print Publisher", "11.1.4012/W", "PDFium"]
 
 filterMetaBadWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "downes", "American Medical Association"
                       , "om", "lhf", "comp", "Science Magazine", "Josh Lerner, Scott Stern (Editors)", "arsalan", "rssa_a0157 469..482", "Schniederjans_lo"
@@ -187,7 +187,7 @@ htmlRewriteTestCases = [("when moving from 8 to 256 GPUs", "when moving 8 → 25
 htmlRewriteRegexpAfter, htmlRewriteRegexpBefore, htmlRewriteFixed :: [(String, String)]
 htmlRewriteRegexpAfter = [ -- sedMany
          ("from ([0-9\\.]+) to ([0-9\\.]+)", "\\1 → \\2") -- "when moving from 8 to 256 GPUs" → "when moving 8 → 256 GPUs"
-         , ("^(<p>\\[<strong>Keywords</strong>: .+\\]</p>)$", "<!-- \\1 -->\n")
+         , ("^(<p>\\[<strong>Keywords</strong>: .+\\]</p>)$", "<!--  \\1  -->\n")
          -- NOTE: we do *not* do `("<span>(.*)</span.","\\1")` to strip attribute-less Spans (which are useless) because they often denote some sort of missing formatting or error, and suppressing them would mask problems & make debugging much harder. We leave them in for manual examination.
          , ("<li>([a-zA-Z0-9].*[^>])</li>", "<li><p>\\1</p></li>") -- work around Pandoc generating naked-text list items, which causes perennial downstream errors in the JS
          , ("([0-9.]+)E10[-−–—]([0-9]+)", "\\1 × 10<sup>−\\2")

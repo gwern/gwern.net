@@ -3,7 +3,7 @@
 {- Metadata.Author.hs: module for managing 'author' metadata & hyperlinking author names in annotations
 Author: Gwern Branwen
 Date: 2024-04-14
-When:  Time-stamp: "2025-04-17 11:07:55 gwern"
+When:  Time-stamp: "2025-04-18 20:58:03 gwern"
 License: CC-0
 
 Authors are useful to hyperlink in annotations, but pose some problems: author names are often ambiguous in both colliding and having many non-canonical versions, are sometimes extremely high frequency & infeasible to link one by one, and there can be a large number of authors (sometimes hundreds or even thousands in some scientific fields).
@@ -212,7 +212,7 @@ authorsUnknownPrint auts = do let missing = authorsUnknown $ splitOn ", " auts
                               unless (null missing) $ do printRed "Authors unknown: "
                                                          printGreen (intercalate ", " missing)
                               unless (null missingInWikipedia) $ do printGreen "Unknown authors possibly in Wikipedia:"
-                                                                    mapM_ (\aut -> print (aut ++ " :" ++ (T.unpack (toWikipediaEnURL (T.pack aut))))) missingInWikipedia
+                                                                    mapM_ (\aut -> putStrLn (aut ++ " : " ++ (T.unpack (toWikipediaEnURL (T.pack aut))))) missingInWikipedia
 
 -- final database of alias→author rewrites: combine the handwritten with the generated.
 -- WARNING: the two databases are required to be unique and non-overlapping; we could override generated with manual, but that kind of conflict indicates a semantic issue and must be dealt with by the user.

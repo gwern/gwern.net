@@ -90,7 +90,7 @@ if [ "${*##*.}" = "pdf" ]; then
             AUTHORS_UNKNOWN=""
             AUTHORS_UNKNOWN=$(echo "$AUTHOR" | ghci -istatic/build/ ./static/build/Metadata/Author.hs \
                                                     -e 'getContents >>= Metadata.Author.authorsUnknownPrint' | \
-                                  gfv -e ' secs,' -e 'it :: ()' -e '[]')
+                                  gfv -e ' secs,' -e 'it :: ()' -e '[]' -e 'Wikipedia article does not exist')
             if [[ -n "$AUTHORS_UNKNOWN" ]]; then bold "Unknown authors: "; echo "$AUTHORS_UNKNOWN"; fi
         ) &
     else
