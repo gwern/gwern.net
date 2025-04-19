@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-04-15 10:36:47 gwern"
+# When:  Time-stamp: "2025-04-19 10:41:25 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -674,10 +674,37 @@ is_downloading () {
 # `$ mvuri doc/www/www.patterns.app/d7aaf7b7491492af22c98dae1079fbfa93961b5b.html`
 # are all equivalent.
 mvuri () {
+    # URL case: argument begins with 'http'/'https', which means we are doing a manual insertion of a particular URL into the local-archive as a whole, rather than overwriting an existing snapshot, so we need to update the database once we've injected the new one:
+    if [[ "$1" =~ ^https?:// ]]; then
+        TARGET_PATH=$(linkArchive.sh --dry-run "$1")
+
+        if [[ -e "$TARGET_PATH" ]]; then
+            red "Refusing to overwrite existing $TARGET_PATH for $1. Do it manually if intended."
+            return 2
+        fi
+
+        # Oldest *.html in $HOME (browser just saved)
+        NEW=$(find "$HOME" -maxdepth 1 -name '*.html' -printf '%T@ %p\n' \
+              | sort --numeric-sort | cut --delimiter=' ' --fields=2- | head -n1)
+
+        if [[ -z "$NEW" ]]; then
+            red "No freshly-saved HTML file found in \$HOME to move to $TARGET_PATH."
+            exit 3
+        fi
+
+        (cd ~/wiki/
+         mkdir $(dirname "$TARGET_PATH") || true
+         mv "$NEW" "$TARGET_PATH"
+         ghci -istatic/build/ ./static/build/LinkArchive.hs \
+              -e "LinkArchive.insertLinkIntoDB (Right (Just \"$TARGET_PATH\")) \"$1\""
+        )
+        return 0
+    fi
+
     # Check if inotifywait is installed
     if ! command -v inotifywait &> /dev/null; then
         red "inotifywait could not be found. Please install 'inotify-tools' package."
-        exit
+        return 1
     fi
 
   local ENCODED_PATH="$1"

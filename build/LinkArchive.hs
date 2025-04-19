@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2025-03-20 09:33:16 gwern"
+When:  Time-stamp: "2025-04-19 10:50:16 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -84,7 +84,7 @@ Details:
   than the original, canonical URLs. (The local archive URLs are fragile and cause other problems;
   for example, they make my writing a lot harder as I can no longer search using a URL I right-click
   because all of the references in Markdown or annotations will be to the original URL, not the current
-  local archive in `/doc/www/`.) Our current attempt as of July 2024 is to link in the HTML source to the
+  local archive in `/doc/www/`.) Our current attempt as of April 2025 is to link in the HTML source to the
   local archive, `href=archive`, but then on page load, the links will be rewritten by JS to `href=original`.
   This should in theory give the best of both worlds.
 - the `data-url-original` metadata is used by `popups.js` to add to link popups a '[original]'
@@ -185,16 +185,20 @@ manualArchive n | n < 1 = error $ "manualArchive called with no work to do (𝑛
  do
   adb <- readArchiveMetadataAndCheck
   today <- CM.todayDay
+
   let adbPendingAll = M.filter isLeft adb
   print $ "All pending URLs: " ++ show (M.size adbPendingAll)
   let adbPending = M.filter (archiveItemDue today) adbPendingAll
   let itemsWithDates = [(url, date) | (url, Left date) <- M.toList adbPending]
   let cheapItems = filter (\(u,_) -> C.isCheapArchive u) itemsWithDates
+
   unless (null cheapItems) $ putStrLn ("Cheap: " ++ show cheapItems)
   let sortedItems = take n $ Data.List.sortOn snd itemsWithDates
   unless (null sortedItems) $ putStrLn ("n due: " ++ show sortedItems)
+
   let urlsToArchive = nubOrd $ map fst $ cheapItems ++ sortedItems
   adbExecuted <- mapConcurrently archiveItem urlsToArchive
+
   let adb' = M.union (M.fromList $ zip urlsToArchive adbExecuted) adb
   writeArchiveMetadata adb'
 
@@ -209,6 +213,8 @@ archiveItem url =
     return (Right archive)
 
 insertLinkIntoDB :: ArchiveMetadataItem -> String -> IO ()
+insertLinkIntoDB a                "" = error $ "LinkArchive.hs: called with empty URL! Other input was: " ++ show a
+insertLinkIntoDB (Right Nothing) url = error $ "LinkArchive.hs: called with meaningless ArchiveMetadataItem (Right Nothing)! Other input was: " ++ show url
 insertLinkIntoDB a url = do adb <- readArchiveMetadata
                             let adb' = M.insert url a adb
                             writeArchiveMetadata adb'
