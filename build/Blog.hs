@@ -42,7 +42,7 @@ prefix   = "blog"
 authorU  = C.author
 authorID = C.authorL
 lengthMin :: Int
-lengthMin = 1000
+lengthMin = 600
 
 writeOutBlogEntries :: Metadata -> IO ()
 writeOutBlogEntries md =
@@ -104,16 +104,22 @@ annotation2Markdown :: Path -> MetadataItem -> String
 annotation2Markdown url (title, author, dateCreated, dateModified, kvs, _, _) =
   let get k defalt = fromMaybe defalt (lookup k kvs)
       description = get "description"   "N/A" -- TODO: maybe do a LLM call? a one-sentence summary should be easy
-      status      = get "status"        "finished"
-      importance  = get "importance"    "0"
-      confidence  = get "confidence"    "log"
-      cssExt      = get "css-extension" "dropcaps-de-zs"
-  in unlines
+      status      = get "status"         "finished"
+      importance  = get "importance"     "0"
+      confidence  = get "confidence"     "log"
+      cssExt      = get "css-extension"  "dropcaps-de-zs"
+      thumbnail   = get "thumbnail"      ""
+      thumbnailT  = get "thumbnail-text" ""
+  in unlines $
        [ "---"
        , "title: '"              ++ replace "'" "’" title ++ "'"
        , "author: "              ++ author
        , "description: "         ++ ("\"" ++ replace "'" "’" description ++ "\"")
-       , "created: "             ++ dateCreated
+       ] ++
+       (if null thumbnail then [] else ["thumbnail: " ++ thumbnail]) ++
+       (if null thumbnailT then [] else ["thumbnail-text: \"" ++ thumbnailT ++ "\""]) ++
+       [
+       "created: "             ++ dateCreated
        , "modified: "            ++ dateModified
        , "status: "              ++ status
        , "importance: "          ++ importance

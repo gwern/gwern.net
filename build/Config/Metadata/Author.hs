@@ -222,6 +222,10 @@ canonicals = M.fromList
   , ("sdtoyer", "Sam Toyer")
   , ("sarah_cone", "Sarah Cone")
   , ("shawwn", "Shawn Presser")
+  , ("shawwnpresser", "Shawn Presser")
+  , ("joshwimmer", "Josh Wimmer")
+  , ("daviddebeer", "David Debeer")
+  , ("nickgevers", "Nick Gevers")
   , ("shawwwn", "Shawn Presser")
   , ("shawwwwn", "Shawn Presser")
   , ("swyx", "Shawn Wang")
@@ -427,6 +431,7 @@ canonicals = M.fromList
   , ("Zvi", "Zvi Mowshowitz")
   , ("TheZvi", "Zvi Mowshowitz")
   , ("Astralite Heart", "AstraliteHeart")
+  , ("astraliteheart", "AstraliteHeart")
   , ("Carrier Michael A.", "Michael A. Carrier")
   , ("Pearce Elizabeth N.", "Elizabeth N. Pearce")
   , ("Samuel Messick (edt)", "Samuel Messick")
@@ -1607,7 +1612,7 @@ authorLinkDB = M.fromList $
     , ("Louise S. Bicknell", "https://www.otago.ac.nz/dsm-pathology/people/profile?id=2236")
     , ("Krystal Hu", "https://www.reuters.com/authors/krystal-hu/")
     , ("Lu Qi", "https://en.wikipedia.org/wiki/Lu_Qi_(computer_scientist)")
-    , ("Lu Qi#genetics", "https://scholar.google.com/citations?user=iWi5t54AAAAJ&hl=en&oi=ao")
+    , ("Lu Qi#genetics", "https://scholar.google.com/citations?user=iWi5t54AAAAJ")
     , ("Lu Qi#Insta360", "http://luqi.info/")
     , ("Lavinia Paternoster", "https://research-information.bris.ac.uk/en/persons/lavinia-paternoster")
     , ("Laura Jean Bierut", "https://healthbehaviorcenter.wustl.edu/who-we-are/laura-j-bierut-m-d/")
@@ -2872,4 +2877,4 @@ authorWpLinkDB =
     , "Jerry Pournelle", "Katherine MacLean", "James E. Gunn", "Larry Niven", "Jack Williamson"
     , "John Brunner", "Harlan Ellison", "Frederik Pohl", "A. E. Stallings", "Richard Sharpe Shaver"
     , "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist"
-    , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group", "Adrian Hon"]
+    , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group", "Adrian Hon", "Aslak Tveito", "A. A. Markov"]

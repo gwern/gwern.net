@@ -142,11 +142,13 @@ generateDirectory newestp am md ldb sortDB dirs dir'' = do
 
   -- take the first image as the 'thumbnail', and preserve any caption/alt text and use as 'thumbnail-text'
   let imageFirst = take 1 $ filter safeSVGNot $ -- SVGs break as page thumbnails in many previews, so we exclude them
-        concatMap (\(p,(_,_,_,_,_,_,abstract),_) -> if isImageFilename p then [Image nullAttr [] (T.pack p,"")] else extractImages $ toPandoc abstract) $ sortByDateModified $ links ++ triplets
+        concatMap (\(p,(_,_,_,_,_,_,abstract),_) ->
+                     if isImageFilename p then [Image nullAttr [] (T.pack p,"")] else extractImages $ toPandoc abstract) $ sortByDateModified $ links ++ triplets
 
   let thumbnailPath = if null imageFirst then [] else T.unpack (safeImageExtractURL (head imageFirst))
   let thumbnail = if null imageFirst then "" else "thumbnail: " ++ thumbnailPath
-  when (thumbnailPath /= "" && head thumbnailPath /= '/') $ error $ "generateDirectory.hs.generateDirectory.thumbnail: invalid thumbnail path: " ++ show thumbnailPath ++ "; directory was: " ++ show dir''
+  when (thumbnailPath /= "" && head thumbnailPath /= '/') $
+    error $ "generateDirectory.hs.generateDirectory.thumbnail: invalid thumbnail path: " ++ show thumbnailPath ++ "; directory was: " ++ show dir''
   let thumbnailText = delete "fig:" $ if null imageFirst then "" else "thumbnail-text: '" ++ replace "'" "''" (T.unpack (safeImageExtractCaption (head imageFirst))) ++ "'"
 
   let header = generateYAMLHeader parentDirectory' previous next tagSelf (minimum $ getDatesModified links) (maximum $ getDatesModified links) (length (dirsChildren++dirsSeeAlsos), length titledLinks, length untitledLinks) thumbnail thumbnailText
