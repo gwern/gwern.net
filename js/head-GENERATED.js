@@ -1299,7 +1299,9 @@ function doAjax(options) {
 		onLoadStart: null,
 		onProgress: null,
 		onSuccess: null,
-		onFailure: null
+		onFailure: null,
+		checkFor404Redirect: true,
+		checkFor404RedirectURL: "/404"
 	}, options);
 
     let req = new XMLHttpRequest();
@@ -1312,7 +1314,23 @@ function doAjax(options) {
     });
     req.addEventListener("load", (event) => {
         if (event.target.status < 400) {
-			options.onSuccess?.(event);
+        	if (options.checkFor404Redirect) {
+	        	/*	This feature shouldn’t be necessary, but on some poorly
+	        		configured servers that abuse HTTP status codes in ways
+	        		contrary to the spec (and, indeed, to right thinking and
+	        		moral propriety), it is. Alas, we live in a fallen world.
+	        			—SA 2025-04-25
+	        	 */
+        		let the404URLString = URLFromString(options.checkFor404RedirectURL).href;
+        		if (   the404URLString != options.location.href
+        			&& the404URLString == URLFromString(event.target.responseURL).href) {
+					options.onFailure?.(event);
+        		} else {
+					options.onSuccess?.(event);        		
+        		}
+        	} else {
+				options.onSuccess?.(event);
+        	}
         } else {
 			options.onFailure?.(event);
         }
