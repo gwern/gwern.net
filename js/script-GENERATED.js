@@ -14826,8 +14826,21 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 				if (urlString == null) {
 					updatePageTitleElements("Invalid Query");
 					injectHelpfulErrorMessage(`ID <code>${normalizedRef}</code> does not exist.`);
-					injectIdPrefixMatches([ "Perhaps you want this:", "Perhaps you want one of these:" ], event.target.response, normalizedRef);
-					injectHelpfulSuggestion(normalizedRef.replace(/-/g, " ").replace(" et al", "").split(" ").filter(x => /^([0-9]{1,3}|[0-9]{5,})$/.test(x) == false).join(" "));
+
+					/*	Check for reversed ID, i.e. “2020-foo” instead of
+						“foo-2020”; if found, redirect to the right form.
+					 */
+					let reversedIDPatternParts = ref.match(/([12][0-9][0-9][0-9])-(.+)$/);
+					if (reversedIDPatternParts != null) {
+						location = URLFromString("/ref/" + `${reversedIDPatternParts[2]}-${reversedIDPatternParts[1]}`);
+					} else {
+						injectIdPrefixMatches([ "Perhaps you want this:", "Perhaps you want one of these:" ], event.target.response, normalizedRef);
+						injectHelpfulSuggestion(normalizedRef.replace(/-/g, " "
+															).replace(" et al", ""
+															).split(" "
+															).filter(x => /^([0-9]{1,3}|[0-9]{5,})$/.test(x) == false
+															).join(" "));
+					}
 				} else {
 					//	Synthesize and inject include-link.
 					let annotationIncludeLink = pageContentContainer.appendChild(synthesizeIncludeLink(event.target.response[normalizedRef], {
