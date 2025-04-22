@@ -740,6 +740,8 @@ canonicals = M.fromList
   , ("Hastings", "Hastings Greer")
   , ("Donna Hart", "Donna Lee Hart")
   , ("Richard J. Fateman", "Richard Fateman")
+  , ("Remi Munos", "Rémi Munos")
+  , ("Fred B. Cohen", "Fred Cohen")
   ]
 
 -- tests: unique
@@ -776,7 +778,7 @@ canonicalsWithInitials =
   , "Richard Sharpe Shaver", "Wouter J. Peyrot", "Wendy L. McArdle", "Peter T. Leeson"
   , "Brian O. Bernstein", "Thorgeir E. Thorgeirsson", "Susan M. Ring", "Stephen S. Rich"
   , "Philip S. Dale", "Lee N. Robbins", "Hyman G. Rickover", "Lucia A. Hindorff"
-  , "Peter P. Pramstaller", "Kent M. Pitman", "Louise S. Bicknell", "Laura Jean Bierut", "Grover S. Krantz"]
+  , "Peter P. Pramstaller", "Kent M. Pitman", "Louise S. Bicknell", "Laura Jean Bierut", "Grover S. Krantz", "Kent D. Taylor"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1296,6 +1298,11 @@ authorLinkDB = M.fromList $
     , ("Samuli Laine", "https://users.aalto.fi/~laines9/")
     , ("Li Dong", "https://scholar.google.com/citations?user=wEfQgPgAAAAJ")
     , ("ChatGPT-4 o1-pro", "https://openai.com/index/introducing-chatgpt-pro/")
+    , ("GPT-4.5", "https://openai.com/index/introducing-gpt-4-5/")
+    , ("GPT-4-o3", "https://openai.com/index/introducing-o3-and-o4-mini/#o3")
+    , ("GPT-4-o4-mini", "https://openai.com/index/introducing-o3-and-o4-mini/#o4-mini")
+    , ("GPT-4-o4-mini-high", "https://openai.com/index/introducing-o3-and-o4-mini/#o4-mini-high")
+    , ("Claude-3.7", "https://www.anthropic.com/news/claude-3-7-sonnet")
     , ("Brian Hayes", "https://en.wikipedia.org/wiki/Brian_Hayes_(scientist)")
     , ("Nat McAleese", "https://scholar.google.com/citations?user=crw6TeIAAAAJ")
     , ("Kevin Lu", "https://kevinlu.ai/")
@@ -1619,6 +1626,12 @@ authorLinkDB = M.fromList $
     , ("Raymond F. Jones", "https://www.ebsco.com/research-starters/biography/raymond-f-jones")
     , ("Grover S. Krantz", "https://en.wikipedia.org/wiki/Grover_Krantz")
     , ("Gerald Goldstein", "https://scholar.google.com/scholar?q=Gerald%20Goldstein")
+    , ("Lars Ingebrigtsen", "https://lars.ingebrigtsen.no/about/")
+    , ("Todor M. Markov", "https://todor-markov.github.io/")
+    , ("Arthur Guez", "https://scholar.google.com/citations?user=iyD9aw8AAAAJ&hl=en&oi=ao")
+    , ("Rémi Munos", "https://scholar.google.com/citations?hl=en&user=OvKEnVwAAAAJ&view_op=list_works&sortby=pubdate")
+    , ("Kyoko Watanabe", "https://scholar.google.com/citations?user=iKpof08AAAAJ&hl=en")
+    , ("Kent D. Taylor", "https://scholar.google.com/citations?user=lA7DyjkAAAAJ&hl=en&oi=ao")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2877,4 +2890,4 @@ authorWpLinkDB =
     , "Jerry Pournelle", "Katherine MacLean", "James E. Gunn", "Larry Niven", "Jack Williamson"
     , "John Brunner", "Harlan Ellison", "Frederik Pohl", "A. E. Stallings", "Richard Sharpe Shaver"
     , "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist"
-    , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group", "Adrian Hon", "Aslak Tveito", "A. A. Markov"]
+    , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group", "Adrian Hon", "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen"]
