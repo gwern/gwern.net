@@ -4063,8 +4063,18 @@ GW.notificationCenter.addHandlerForEvent("GW.hashHandlingSetupDidComplete", GW.b
     if (   location.hash > ""
         && /^#if_slide/.test(location.hash) == false
         && /^#:~:/.test(location.hash) == false
-        && document.querySelector(selectorFromHash(location.hash)) == null)
-        reportBrokenAnchorLink(location);
+        && document.querySelector(selectorFromHash(location.hash)) == null) {
+        	if (   /.+\/(index)?$/.test(location.pathname) == true
+        		&& location.hash.endsWith("-section")) {
+				/*	If hash is “#$ID-section” on a tag directory index page,
+					and no such section exists in the page, then redirect to 
+					/ref/$ID .
+				 */
+        		location = URLFromString("/ref/" + location.hash.slice(1, -1 * ("-section".length)));
+        	} else {
+				reportBrokenAnchorLink(location);
+        	}
+		}
 }, { once: true });
 GW.notificationCenter.addHandlerForEvent("GW.hashDidChange", GW.brokenAnchorCheck);
 
