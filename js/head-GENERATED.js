@@ -543,24 +543,42 @@ function elementFromHTML(elementHTML) {
 	return doc.firstElementChild;
 }
 
+/***********************************************************************/
+/*	Copy any of the given CSS classes that the source has to the target.
+	(If no classes are specified, then copy all classes the source has.)
+ */
+function copyClasses(source, target, classes) {
+	if (classes) {
+		classes.forEach(cssClass => {
+			if (source.classList.contains(cssClass))
+				target.classList.add(cssClass);
+		});
+	} else {
+        target.classList.add(...(source.classList));
+	}
+}
+
+/**************************************************************************/
+/*	Remove any of the given CSS classes that the element has.
+	(If no classes are specified, then remove all classes the element has.)
+ */
+function removeClasses(element, classes) {
+	if (classes) {
+		element.classList.remove(...classes);
+		if (element.className == "")
+			element.removeAttribute("class");
+	} else {
+        element.removeAttribute("class");
+	}
+}
+
 /***************************************************************************/
 /*	Transfer any of the given CSS classes that the source has to the target.
 	(If no classes are specified, then transfer all classes the source has.)
  */
 function transferClasses(source, target, classes) {
-	if (classes) {
-		classes.forEach(cssClass => {
-			if (source.classList.contains(cssClass)) {
-				source.classList.remove(cssClass);
-				target.classList.add(cssClass);
-			}
-		});
-		if (source.className == "")
-			source.removeAttribute("class");
-	} else {
-        target.classList.add(...(source.classList));
-        source.removeAttribute("class");
-	}
+	copyClasses(source, target, classes);
+	removeClasses(source, classes);
 }
 
 /****************************************/
@@ -709,9 +727,9 @@ function unwrap(wrapper, options) {
 
 		//	Move classes, if specified.
 		if (options.moveClasses === true) {
-			transferClasses(wrapper, child);
+			copyClasses(wrapper, child);
 		} else if (options.moveClasses instanceof Array) {
-			transferClasses(wrapper, child, options.moveClasses);
+			copyClasses(wrapper, child, options.moveClasses);
 		}
     }
 
@@ -756,7 +774,7 @@ function unwrapAll(selector, options) {
 
 	saveProperties (Array)
 		Array of property names which should be saved. If this is null, then
-		all properties are saves.
+		all properties are saved.
  */
 function saveStyles(element, options) {
 	options = Object.assign({
