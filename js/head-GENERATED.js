@@ -2864,6 +2864,8 @@ GW.layout = {
 		".epigraph",
 		".admonition",
 		".sidenote",
+		"th",
+		"td",
 		"#x-of-the-day"
 	],
 
@@ -4159,6 +4161,13 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 
 		if (block.matches(GW.layout.complexBlockElementSelector))
 			childBlocksOf(block).forEach(applyBlockSequenceClassesToBlock);
+
+		//	Tables need special handling.
+		if (block.matches(".table-wrapper")) {
+			block.querySelectorAll("th, td").forEach(cell => {
+				childBlocksOf(cell).forEach(applyBlockSequenceClassesToBlock);
+			});
+		}
 	};
 	childBlocksOf(blockContainer).forEach(applyBlockSequenceClassesToBlock);
 });
@@ -4201,6 +4210,13 @@ addLayoutProcessor("applyBlockSpacingInContainer", (blockContainer) => {
 
 		if (block.matches(GW.layout.complexBlockElementSelector))
 			childBlocksOf(block).forEach(applyBSMToBlock);
+
+		//	Tables need special handling.
+		if (block.matches(".table-wrapper")) {
+			block.querySelectorAll("th, td").forEach(cell => {
+				childBlocksOf(cell).forEach(applyBSMToBlock);
+			});
+		}
 	};
 	childBlocksOf(blockContainer).forEach(applyBSMToBlock);
 
