@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-04-21 10:21:57 gwern"
+# When:  Time-stamp: "2025-04-23 17:34:53 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -501,18 +501,6 @@ else
         TMP=$(mktemp /tmp/XXXXXXX.json)
         jq . "$JSON" >> "$TMP" && mv "$TMP" "$JSON"
     done &
-
-    bold "Reformatting HTML sources to look nicer using HTML Tidy…"
-    # WARNING: HTML Tidy breaks the static-compiled MathJax. One of Tidy's passes breaks the mjpage-generated CSS (messes with 'center', among other things). So we do Tidy *before* the MathJax.
-    # WARNING: HTML Tidy by default will wrap & add newlines for cleaner HTML in ways which don't show up in rendered HTML - *except* for when something is an 'inline-block', then the added newlines *will* show up, as excess spaces. <https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Whitespace#spaces_in_between_inline_and_inline-block_elements> <https://patrickbrosset.medium.com/when-does-white-space-matter-in-html-b90e8a7cdd33> And we use inline-blocks for the #page-metadata block, so naive HTML Tidy use will lead to the links in it having a clear visible prefixed space. We disable wrapping entirely by setting `-wrap 0` to avoid that.
-    tidyUpFragment () { tidy -indent -wrap 0 --merge-divs no --logical-emphasis yes -quiet --show-warnings no --show-body-only yes --fix-style-tags no --drop-empty-elements no --break-before-br no -modify "$@";
-                        stringReplace "<br />" "<br>" "$@"; }
-    ## tidy wants to dump whole well-formed HTML pages, not fragments to transclude, so switch.
-    tidyUpWhole () {    tidy -indent -wrap 0 --merge-divs no --logical-emphasis yes -quiet --show-warnings no --show-body-only no --fix-style-tags no --drop-empty-elements no --break-before-br no -modify "$@";
-                        stringReplace "<br />" "<br>" "$@"; }
-    export -f tidyUpFragment tidyUpWhole
-    find ./_site/metadata/annotation/ -type f -name "*.html" | parallel --max-args=100 tidyUpFragment
-    find ./ -type f -name "*.md" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | gfv -e '#' -e 'death-note-script' | parallel --max-args=100 tidyUpWhole
 
     ## use https://github.com/pkra/mathjax-node-page/ to statically compile the MathJax rendering of the MathML to display math instantly on page load
     ## background: https://joashc.github.io/posts/2015-09-14-prerender-mathjax.html installation: `npm install --prefix ~/src/ mathjax-node-page`
