@@ -16711,20 +16711,22 @@ addContentInjectHandler(GW.contentInjectHandlers.setMarginsOnFullWidthBlocks = (
 				//  Compensate for block indentation due to nesting (e.g., lists).
 				let additionalLeftAdjustmentPx = "0px";
 				let enclosingListItem = fullWidthBlock.closest("li");
-				if (enclosingListItem) {
+				let enclosingCollapse = fullWidthBlock.closest(".collapse-block");
+				if (   enclosingCollapse == null
+					&& enclosingListItem != null) {
 					let fullContentRect = fullWidthBlock.closest(".markdownBody").getBoundingClientRect();
 					let listContentRect = enclosingListItem.firstElementChild.getBoundingClientRect();
 					additionalLeftAdjustmentPx = (fullContentRect.x - listContentRect.x) + "px";
 				}
 
-				fullWidthBlock.style.marginLeft = `calc(
-														(-1 * (var(--GW-full-width-block-layout-left-adjustment) / 2.0))
-													  + (var(--GW-full-width-block-layout-side-margin))
-													  - ((var(--GW-full-width-block-layout-page-width) - 100%) / 2.0)
-													  + (${additionalLeftAdjustmentPx} / 2.0)
+				fullWidthBlock.style.marginLeft =  `calc(
+														 (-1 * (var(--GW-full-width-block-layout-left-adjustment) / 2.0))
+													   + (var(--GW-full-width-block-layout-side-margin))
+													   - ((var(--GW-full-width-block-layout-page-width) - 100%) / 2.0)
+													   + (${additionalLeftAdjustmentPx} / 2.0)
 													)`;
 				fullWidthBlock.style.marginRight = `calc(
-														 (var(--GW-full-width-block-layout-left-adjustment) / 2.0)
+														 ( 1 * (var(--GW-full-width-block-layout-left-adjustment) / 2.0))
 													   + (var(--GW-full-width-block-layout-side-margin))
 													   - ((var(--GW-full-width-block-layout-page-width) - 100%) / 2.0)
 													   - (${additionalLeftAdjustmentPx} / 2.0)
