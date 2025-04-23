@@ -621,7 +621,9 @@ Sidenotes = { ...Sidenotes,
 			let noteNumber = Notes.noteNumber(modifiedFootnote);
 
 			let sidenote = Sidenotes.sidenoteOfNumber(noteNumber);
-			if (sidenote == null)
+			//	Check whether sidenote exists and has done initial load.
+			if (   sidenote == null
+				|| sidenote.style.visibility > "")
 				return;
 
 			let citation = Sidenotes.citationOfNumber(noteNumber);
@@ -629,9 +631,11 @@ Sidenotes = { ...Sidenotes,
 			//	Inject the sidenote contents into the sidenote.
 			let includeLink = synthesizeIncludeLink(citation, {
 				"class": "include-strict include-unwrap",
-				"data-include-selector-not": ".footnote-self-link"
+				"data-include-selector-not": ".footnote-self-link",
+				"data-page-section-id": "footnotes"
 			});
 			includeLink.hash = "#" + Notes.footnoteIdForNumber(noteNumber);
+			includeLink.classList.remove("footnote-ref");
 			sidenote.querySelector(".sidenote-inner-wrapper").replaceChildren(includeLink);
 
 			//	Trigger transclude.
