@@ -3807,6 +3807,7 @@ section.footnotes {
 section.footnotes > hr:first-child {
     position: relative;
     display: flex;
+    clear: both;
     margin: -0.5em 0;
 }
 section.footnotes > hr:first-child::after {

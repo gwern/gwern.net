@@ -1020,6 +1020,39 @@ function isNodeEmpty_metadataAware(node) {
 	});
 }
 
+/******************************************************************************/
+/*	Returns the text content of a node, collapsing/stripping (as appropriate)
+	whitespace that occurs between HTML tags, with special handling for rows 
+	and sections of a table.
+ */
+function textContentOf(node) {
+	if (isNodeEmpty(node) == true)
+		return (node.textContent.includes("\n") 
+				? "\n"
+				: (node.textContent > ""
+				   ? " "
+				   : ""));
+
+	if (node.nodeType == Node.TEXT_NODE)
+		return node.textContent;
+
+	if (   node.nodeType == Node.ELEMENT_NODE
+		&& [ "THEAD", "TBODY", "TFOOT" ].includes(node.tagName))
+		return Array.from(node.children
+				).filter(childNode => childNode.nodeType == Node.ELEMENT_NODE
+				).map(childNode => textContentOf(childNode)
+				).join("\n");
+
+	if (   node.nodeType == Node.ELEMENT_NODE
+		&& node.tagName  == "TR")
+		return Array.from(node.children
+				).filter(childNode => childNode.nodeType == Node.ELEMENT_NODE
+				).map(childNode => textContentOf(childNode)
+				).join("\t");
+
+	return Array.from(node.childNodes).reduce((textContent, childNode) => (textContent + textContentOf(childNode)), "");
+}
+
 
 /*********************/
 /* LAYOUT PROCESSORS */

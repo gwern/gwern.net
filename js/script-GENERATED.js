@@ -10301,7 +10301,7 @@ Transclude = {
 		if (block == null) {
 			for (let selector of generalBlockElementSelectors) {
 				if (   (block = element.closest(selector) ?? block)
-					&& block.textContent.trim().length < Transclude.blockContextMaximumLength
+					&& textContentOf(block).trim().length < Transclude.blockContextMaximumLength
 					&& block.matches(Transclude.notBlockElementSelector) == false) {
 					break;
 				}
