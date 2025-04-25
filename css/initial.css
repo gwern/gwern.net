@@ -68,6 +68,10 @@ body {
     padding: 0;
 }
 
+body {
+	overflow-x: hidden;
+}
+
 main {
     position: relative;
     box-sizing: border-box;
