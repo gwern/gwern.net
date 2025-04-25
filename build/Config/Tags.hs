@@ -176,6 +176,7 @@ tagsShort2LongRewrites =
    , ("lafferty", "r-a-lafferty"), ("ralafferty", "r-a-lafferty"), ("r-lafferty", "r-a-lafferty")
    , ("40", "4o"), ("04", "4o"), ("4-o", "4o"), ("o-4", "4o"), ("o4", "4o"), ("hertaible", "heritable")
    , ("animal-bias", "statistics/bias/animal"), ("animal/bias", "statistics/bias/animal"), ("schema", "scheme")
+   , ("wm", "dual-n-back")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
@@ -417,7 +418,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("psychiatry/meditation", "meditation")
   , ("psychiatry/depression", "depression")
   , ("psychiatry/bipolar/autism", "BP & autism")
-  , ("psychiatry/bipolar/elon-musk", "Elon Musk (BP)")
+  , ("psychiatry/bipolar/elon-musk", "Elon Musk")
   , ("psychiatry/bipolar/sleep", "BP & sleep")
   , ("psychiatry/bipolar/lithium", "lithium (BP)")
   , ("psychiatry/bipolar/energy", "BP personality")

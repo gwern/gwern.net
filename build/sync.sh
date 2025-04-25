@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-04-23 17:34:53 gwern"
+# When:  Time-stamp: "2025-04-24 18:26:09 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -1070,6 +1070,9 @@ else
 
     λ(){ gec -e '<p><img ' -e '<img src="http' -e '<img src="[^h/].*"' ./metadata/*.gtx; }
     wrap λ "Check <figure> vs <img> usage, image hotlinking, non-absolute relative image paths in GTX metadata database" &
+
+    λ(){ grep --perl-regexp --null-data --only-matching --color=always '</[a-z]+>\n\n<[a-z]+>' ./metadata/*.gtx; }
+    wrap λ "Spurious blank lines in GTX?"
 
     λ(){ grep --perl-regexp --null --color --only-matching -e '\!\[.*\]\(.*\)\n\!\[.*\]\(.*\)' -- $PAGES; }
     wrap λ "look for images used without newline in between them; in some situations, this leads to odd distortions of aspect ratio/zooming or something (first discovered in /correlation in blockquotes)" &

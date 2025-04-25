@@ -369,7 +369,7 @@ generateSections md am links linksSorted linkswp = (if null links then [] else a
                  concatMap (generateReferenceToPreviousSection md) linksSorted
           wp
             = [Header 2 ("titled-links-wikipedia", ["collapse"], []) -- even 1 WP article transclude can be gigantic (especially with all the tables/infoboxes), so we won't use a heuristic like 'collapse if >3 entries'; we will always collapse them. We will instead tell the user how many there are, similar to lb/bl/sl, so they can better decide if they want to browse tagged WP articles or not.
-                 [Str ("Wikipedia" ++ " (" ++ show (length linkswp) ++ ")")],
+                 [Str $ T.pack ("Wikipedia" ++ " (" ++ show (length linkswp) ++ ")")],
                OrderedList (1, DefaultStyle, DefaultDelim)
                  (map (LM.generateAnnotationTransclusionBlock am) linkswp)]
 

@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-04-16 11:47:07 gwern"
+# When:  Time-stamp: "2025-04-24 20:58:48 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -657,6 +657,10 @@ Personal profile - UPJS Kosice"
 "Kezurou-kai #39"
 - "https://www.emigre.com/Fonts/Lo-Res-Monospaced Emigre: Lo-Res Monospaced Font Family"
 "Lo-Res Monospaced Font Family"
+- "https://davoortwilbo.blogspot.com/2015/07/2005-interview-i-did-with-gene-wolfe.html David T. Wilbanks: 2005 interview I did with Gene Wolfe for <em>Hellnotes</em>"
+"2005 interview I did with Gene Wolfe for Hellnotes"
+- "https://www.sfsite.com/fsf/2007/gwms0704.htm Fantasy and Science Fiction" # example of a site which slaps the same title on every page, despite the URL obviously not being just that
+""
 
 Task:
 

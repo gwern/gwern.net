@@ -742,6 +742,9 @@ canonicals = M.fromList
   , ("Richard J. Fateman", "Richard Fateman")
   , ("Remi Munos", "Rémi Munos")
   , ("Fred B. Cohen", "Fred Cohen")
+  , ("Kathy Stirrups", "Kathleen Stirrups")
+  , ("jachaseyoung", "Jordan Chase-Young")
+  , ("johnclute", "John Clute")
   ]
 
 -- tests: unique
@@ -778,7 +781,7 @@ canonicalsWithInitials =
   , "Richard Sharpe Shaver", "Wouter J. Peyrot", "Wendy L. McArdle", "Peter T. Leeson"
   , "Brian O. Bernstein", "Thorgeir E. Thorgeirsson", "Susan M. Ring", "Stephen S. Rich"
   , "Philip S. Dale", "Lee N. Robbins", "Hyman G. Rickover", "Lucia A. Hindorff"
-  , "Peter P. Pramstaller", "Kent M. Pitman", "Louise S. Bicknell", "Laura Jean Bierut", "Grover S. Krantz", "Kent D. Taylor"]
+  , "Peter P. Pramstaller", "Kent M. Pitman", "Louise S. Bicknell", "Laura Jean Bierut", "Grover S. Krantz", "Kent D. Taylor", "Robyn M. Dawes"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1628,10 +1631,17 @@ authorLinkDB = M.fromList $
     , ("Gerald Goldstein", "https://scholar.google.com/scholar?q=Gerald%20Goldstein")
     , ("Lars Ingebrigtsen", "https://lars.ingebrigtsen.no/about/")
     , ("Todor M. Markov", "https://todor-markov.github.io/")
-    , ("Arthur Guez", "https://scholar.google.com/citations?user=iyD9aw8AAAAJ&hl=en&oi=ao")
-    , ("Rémi Munos", "https://scholar.google.com/citations?hl=en&user=OvKEnVwAAAAJ&view_op=list_works&sortby=pubdate")
-    , ("Kyoko Watanabe", "https://scholar.google.com/citations?user=iKpof08AAAAJ&hl=en")
-    , ("Kent D. Taylor", "https://scholar.google.com/citations?user=lA7DyjkAAAAJ&hl=en&oi=ao")
+    , ("Arthur Guez", "https://scholar.google.com/citations?user=iyD9aw8AAAAJ")
+    , ("Rémi Munos", "https://scholar.google.com/citations?user=OvKEnVwAAAAJ&view_op=list_works&sortby=pubdate")
+    , ("Kyoko Watanabe", "https://scholar.google.com/citations?user=iKpof08AAAAJ")
+    , ("Kent D. Taylor", "https://scholar.google.com/citations?user=lA7DyjkAAAAJ")
+    , ("Hao Wu", "https://en.wikipedia.org/wiki/Hao_Wu_(biochemist)")
+    , ("Kathleen Stirrups", "https://scholar.google.com/scholar?q=Kathleen%20Stirrups")
+    , ("Jun-Yan Zhu", "https://www.cs.cmu.edu/~junyanz/")
+    , ("Jordan Chase-Young", "https://x.com/jachaseyoung")
+    , ("Jonathan Wai", "https://jonathanwai.net/research/")
+    , ("Ben Recht", "https://people.eecs.berkeley.edu/~brecht/bio.html")
+    , ("Robyn M. Dawes", "https://en.wikipedia.org/wiki/Robyn_Dawes")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2612,7 +2622,7 @@ authorWpLinkDB =
     ,"Roberta Sinatra", "Roberto Azevedo", "Roberto Car", "Roberto Cipolla", "Roberto Colom"
     ,"Roberto Esposito", "Roberto Toro", "Robin Carhart-Harris", "Robin Goldstein", "Robin Hanson"
     ,"Robin Haring", "Robin Lovell-Badge", "Robin M. Murray", "Robin Saikia", "Robin Young"
-    ,"Robyn Dawes", "Robyn Forbes", "Rochelle Buffenstein", "Roderic Broadhurst", "Rodney L. Lowman"
+    , "Robyn Forbes", "Rochelle Buffenstein", "Roderic Broadhurst", "Rodney L. Lowman"
     ,"Roger B. Myerson", "Roger Broughton", "Roger C. Schank", "Roger Carpenter", "Roger D. Cone"
     ,"Roger G. Barker", "Roger Lewin", "Roger N. Shepard", "Roger R. Schell", "Roger T. Hanlon"
     ,"Roger Wattenhofer", "Rohan Gunaratna", "Rohan Taylor", "Rohit Prakash", "Rohit Varma"
@@ -2890,4 +2900,5 @@ authorWpLinkDB =
     , "Jerry Pournelle", "Katherine MacLean", "James E. Gunn", "Larry Niven", "Jack Williamson"
     , "John Brunner", "Harlan Ellison", "Frederik Pohl", "A. E. Stallings", "Richard Sharpe Shaver"
     , "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist"
-    , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group", "Adrian Hon", "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen"]
+    , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group", "Adrian Hon"
+    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute"]
