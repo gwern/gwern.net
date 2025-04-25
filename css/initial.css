@@ -2247,23 +2247,23 @@ body.page-index #markdownBody #notable {
 }
 @media all and (min-width: 961px) {
     body.page-index #markdownBody,
-    body.page-404 div#new-popular-notable {
+    div#new-popular-notable {
         display: grid;
 		grid-template-columns: 1fr 1fr;
 		grid-column-gap: 2em;
 	}
 	body.page-index #markdownBody .abstract,
 	body.page-index #markdownBody hr,
-	body.page-404 div#new-popular-notable hr {
+	div#new-popular-notable hr {
 		grid-column-start: 1;
 		grid-column-end: -1;
 	}
 	@media all and (max-width: 1760px) {
-		body.page-404 div#new-popular-notable #notable {
+		div#new-popular-notable #notable {
 			grid-column-start: 1;
 			grid-column-end: -1;
 		}
-		body.page-404 div#new-popular-notable .columns ul {
+		div#new-popular-notable .columns ul {
 			column-gap: 2em;
 		}
 	}
@@ -2273,13 +2273,13 @@ body.page-index #markdownBody #notable {
      */
     @media all and (min-width: 1761px) {
         body.page-index #markdownBody,
-	    body.page-404 div#new-popular-notable {
+	    div#new-popular-notable {
             grid-template-columns: 45ch 45ch 45ch;
         }
         body.page-index #markdownBody {
             margin-left: -20ch;
         }
-	    body.page-404 div#new-popular-notable {
+	    div#new-popular-notable {
             margin-left: -22ch;
         }
         body.page-index #markdownBody #notable {
@@ -2292,7 +2292,7 @@ body.page-index #markdownBody #notable {
         body.page-index #markdownBody hr {
             margin-left: -10ch;
         }
-	    body.page-404 div#new-popular-notable hr {
+	    div#new-popular-notable hr {
             margin-left: -9.5ch;
         }
     }
@@ -2313,13 +2313,13 @@ body.page-index #markdownBody section .heading {
     padding: 0;
     border-bottom: 1px dotted currentColor;
 }
-body.page-404 div#new-popular-notable section .heading {
+div#new-popular-notable section .heading {
 	margin-left: 0;
 }
 /*  No pilcrows.
  */
 body.page-index #markdownBody section .heading a::after,
-body.page-404 div#new-popular-notable section .heading a::after {
+div#new-popular-notable section .heading a::after {
     display: none;
 }
 
@@ -2331,21 +2331,21 @@ body.page-404 div#new-popular-notable section .heading a::after {
    wrecking the 'color'. Since there is currently no three-level nesting, we don't need to worry about cycling,
    and just lighten the color of the first/second level markers by overriding them. */
 body.page-index #markdownBody section ul,
-body.page-404 div#new-popular-notable section ul {
+div#new-popular-notable section ul {
     --list-left-padding: 1.375em;
     --text-alignment: left;
     --list-bullet: var(--GW-image-single-white-star-svg);
     --list-bullet-opacity: 0.85;
 }
 body.page-index #markdownBody section ul ul,
-body.page-404 div#new-popular-notable section ul ul {
+div#new-popular-notable section ul ul {
     --list-bullet: var(--GW-image-single-white-star-rotated-svg);
     --list-bullet-opacity: 0.85;
 }
 
 @media all and (max-width: 649px) {
     body.page-index #markdownBody section ul p,
-    body.page-404 div#new-popular-notable section ul p {
+    div#new-popular-notable section ul p {
         margin-bottom: 0.15em;
         line-height: 1.65;
         overflow-wrap: break-word;
@@ -2354,10 +2354,10 @@ body.page-404 div#new-popular-notable section ul ul {
 
 /*	“Newest: Blog” section.
  */
-body.page-index section#newest-blog li::before {
+section#newest-blog li::before {
 	top: 0.25em;
 }
-body.page-index section#newest-blog li p {
+section#newest-blog li p {
 	--adjusted-line-height: calc(var(--line-height) - 0.20);
 	
 	line-height: var(--adjusted-line-height);
@@ -2367,55 +2367,55 @@ body.page-index section#newest-blog li p {
 	hyphens: none;
 }
 @media all and (max-width: 649px) {
-	body.page-index section#newest-blog li p {
+	section#newest-blog li p {
 		margin-bottom: 0.50em;
 	}
 }
-body.page-index section#newest-blog a code {
+section#newest-blog a code {
 	word-break: normal;
 }
 @media all and (max-width: 960px) {
-	body.page-index section#newest-blog .columns ul {
+	section#newest-blog .columns ul {
 		column-width: unset;
 	}
-	body.page-index section#newest-blog li {
+	section#newest-blog li {
 		padding-right: 1em;
 	}
 	/*	Hide 10th through 29th items.
 	 */
-	body.page-index section#newest-blog li:nth-of-type(n+10) {
+	section#newest-blog li:nth-of-type(n+10) {
 		display: none;
 	}
-	body.page-index section#newest-blog li:last-of-type {
+	section#newest-blog li:last-of-type {
 		display: list-item;
 	}
 }
 /*	This is the width breakpoint when one column becomes two.
  */
 @media all and (min-width: 961px) {
-	body.page-index section#newest-blog .columns ul {
+	section#newest-blog .columns ul {
 		column-gap: 2em;
 	}
-	body.page-index section#newest-blog li {
+	section#newest-blog li {
 		padding-right: 3em;
 	}
 	@media all and (max-width: 1760px) {
-		body.page-index section#newest-blog {
+		section#newest-blog {
 			grid-column-end: span 2;
 		}
 		/*	Hide 20th through 29th items.
 		 */
-		body.page-index section#newest-blog li:nth-of-type(n+20) {
+		section#newest-blog li:nth-of-type(n+20) {
 			display: none;
 		}
-		body.page-index section#newest-blog li:last-of-type {
+		section#newest-blog li:last-of-type {
 			display: list-item;
 		}
 	}
 	/*	This is where two columns become three.
 	 */
 	@media all and (min-width: 1761px) {
-		body.page-index section#newest-blog {
+		section#newest-blog {
 			grid-column-end: span 3;
 		}
 	}

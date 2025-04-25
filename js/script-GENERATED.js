@@ -13936,6 +13936,7 @@ Extracts.config = {
 	 */
 	hooklessLinksContainersSelector: [
 		"body.page-index #markdownBody",
+		"div#new-popular-notable",
 		"#sidebar",
 		".TOC",
 		"#floating-header",
