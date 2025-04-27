@@ -164,4 +164,4 @@ stringDelete = [" - The Public Domain Review"
             , " - Science Fiction, Fantasy, Philosophy & History", "The Silver Elves: ", "Bloomberg - "
             , " - Are you a robot?", " - Matt Lakeman", " - by Jacob Falkovich", " - <em>Daily Nous</em>"
             , " - Daily Nous", " - Wask", " - Yuxi on the Wired", "model ships in the cinema: "
-            , " - Big Sand Woodworking", "Emigre: ", "David T. Wilbanks: "]
+            , " - Big Sand Woodworking", "Emigre: ", "David T. Wilbanks: ", " - Asimov Press"]

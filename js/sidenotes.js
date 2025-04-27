@@ -753,8 +753,8 @@ Sidenotes = { ...Sidenotes,
 				sidenote.classList.toggle("hovering", false);
 			});
 
-			/*	NOTE: The absence of event bindings here to highlight the 
-				citation and the sidenote when the *citation* is hovered over 
+			/*	NOTE: The absence of event bindings here to highlight the
+				citation and the sidenote when the *citation* is hovered over
 				is not an oversight. Those events are bound elsewhere (see
 				rewrite.js).
 			 */
@@ -779,7 +779,7 @@ Sidenotes = { ...Sidenotes,
 			});
 
 			/*	Hide the “there is more hidden content below the fold”
-				(ellipsis) indicator when client scrolls to the bottom of a 
+				(ellipsis) indicator when client scrolls to the bottom of a
 				cut-off sidenote; show it otherwise.
 			 */
 			sidenote.scrollListener = addScrollListener(sidenote.onSidenoteScrollToggleHideMoreIndicator = (event) => {
@@ -838,7 +838,7 @@ Sidenotes = { ...Sidenotes,
 	/*  Q:  Why is this setup function so long and complex?
 		A:  In order to properly handle all of the following:
 
-		1.  The two different modes (footnote popups vs. sidenotes)
+		1.  The two different modes (footnote popups versus sidenotes)
 		2.  The interactions between sidenotes and collapse blocks
 		3.  Linking to footnotes/sidenotes
 		4.  Loading a URL that links to a footnote/sidenote
@@ -862,8 +862,8 @@ Sidenotes = { ...Sidenotes,
 			ifMatchesOrAlwaysDo: (mediaQuery) => {
 				if (   Notes.hashMatchesFootnote()
 					|| Notes.hashMatchesSidenote()) {
-					relocate("#" + (mediaQuery.matches 
-									? Notes.sidenoteIdForNumber(Notes.noteNumberFromHash()) 
+					relocate("#" + (mediaQuery.matches
+									? Notes.sidenoteIdForNumber(Notes.noteNumberFromHash())
 									: Notes.footnoteIdForNumber(Notes.noteNumberFromHash())));
 
 					//	Update targeting.
@@ -897,9 +897,9 @@ Sidenotes = { ...Sidenotes,
 		addContentInjectHandler(GW.contentInjectHandlers.setMarginNoteStyle = (eventInfo) => {
 			GWLog("setMarginNoteStyle", "sidenotes.js", 1);
 
-			/*	Set margin notes to ‘inline’ or ‘sidenote’ style, depending on 
+			/*	Set margin notes to ‘inline’ or ‘sidenote’ style, depending on
 				what mode the page is in (based on viewport width), whether each
-				margin note is in a constrained block, and whether it’s on the 
+				margin note is in a constrained block, and whether it’s on the
 				main page or in something like a pop-frame.
 			 */
 			eventInfo.container.querySelectorAll(".marginnote").forEach(marginNote => {
@@ -910,7 +910,7 @@ Sidenotes = { ...Sidenotes,
 			});
 		}, ">rewrite");
 
-		/*	When the main content loads, update the margin note style; and add 
+		/*	When the main content loads, update the margin note style; and add
 			event listener to re-update it when the viewport width changes.
 		 */
 		addContentLoadHandler(GW.contentLoadHandlers.addUpdateMarginNoteStyleForCurrentModeActiveMediaQuery = (eventInfo) => {
@@ -965,7 +965,7 @@ Sidenotes = { ...Sidenotes,
 			ifMatchesOrAlwaysDo: (mediaQuery) => {
 				document.querySelectorAll("a.footnote-ref").forEach(citation => {
 					if (citation.pathname == location.pathname)
-						citation.hash = "#" + (mediaQuery.matches 
+						citation.hash = "#" + (mediaQuery.matches
 											   ? Notes.sidenoteIdForNumber(Notes.noteNumber(citation))
 											   : Notes.footnoteIdForNumber(Notes.noteNumber(citation)));
 				});
@@ -985,7 +985,7 @@ Sidenotes = { ...Sidenotes,
 
 			document.querySelectorAll("a.footnote-ref").forEach(citation => {
 				if (citation.pathname == location.pathname)
-					citation.hash = "#" + (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches 
+					citation.hash = "#" + (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches
 										   ? Notes.sidenoteIdForNumber(Notes.noteNumber(citation))
 										   : Notes.footnoteIdForNumber(Notes.noteNumber(citation)));
 			});
@@ -1192,13 +1192,13 @@ Sidenotes = { ...Sidenotes,
 								 		  && info.container.querySelector("a.footnote-ref") != null)
 								 	  || info.container.closest("li.footnote") != null)));
 
-		/*	Invalidate cached notes for the base location pathname of the 
+		/*	Invalidate cached notes for the base location pathname of the
 			injected content when a sidenote loads.
 		 */
 		addContentInjectHandler(GW.contentInjectHandlers.invalidateNotesForCitationWhenSidenoteDidInject = (eventInfo) => {
 			GWLog("invalidateNotesForCitationWhenSidenoteDidInject", "sidenotes.js", 1);
 
-			if (eventInfo.container.querySelector(".footnote-back") != null)	
+			if (eventInfo.container.querySelector(".footnote-back") != null)
 				Notes.invalidateCachedNotesForPathname(eventInfo.loadLocation.pathname);
 		}, "<rewrite", (info) => (   info.document == document
 								  && info.container.closest(".sidenote") != null));
