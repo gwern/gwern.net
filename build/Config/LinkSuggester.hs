@@ -1200,7 +1200,7 @@ whiteList = [ ( "/crop#hands"
       , "Engelbart 1962"
       ]
     )
-  , ( "https://www.escholar.manchester.ac.uk/api/datastream?publicationPid=uk-ac-man-scw:227658&datastreamId=FULL-TEXT.PDF"
+  , ( "/doc/statistics/bayes/2014-mellor.pdf"
     , [ "Decision Making Using Thompson Sampling" , "Mellor 2014" ]
     )
   , ( "https://www.fimfiction.net/story/62074/Friendship-is-Optimal"

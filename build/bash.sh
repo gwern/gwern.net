@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-04-19 10:41:25 gwern"
+# When:  Time-stamp: "2025-04-27 19:44:22 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -345,6 +345,7 @@ pad () {
         mogrify -bordercolor white -border 30 "$(path2File "$FILE")"
     done
 }
+alias pad-white="pad"
 pad-black () {
     for FILE in "$@"; do
         # NOTE: the color is not 'black', to match the current Gwern.net dark-mode's black background, which is not full-black but slightly grayed to avoid excessive contrast:

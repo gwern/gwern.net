@@ -738,13 +738,15 @@ canonicals = M.fromList
   , ("kajaykumarr_", "AKR")
   , ("nrehiew_", "wh")
   , ("Hastings", "Hastings Greer")
-  , ("Donna Hart", "Donna Lee Hart")
   , ("Richard J. Fateman", "Richard Fateman")
   , ("Remi Munos", "Rémi Munos")
   , ("Fred B. Cohen", "Fred Cohen")
   , ("Kathy Stirrups", "Kathleen Stirrups")
   , ("jachaseyoung", "Jordan Chase-Young")
   , ("johnclute", "John Clute")
+  , ("Xander Balwit", "Alexandra Balwit")
+  , ("AlexandraBalwit", "Alexandra Balwit")
+  , ("___frye", "frye")
   ]
 
 -- tests: unique
@@ -781,7 +783,9 @@ canonicalsWithInitials =
   , "Richard Sharpe Shaver", "Wouter J. Peyrot", "Wendy L. McArdle", "Peter T. Leeson"
   , "Brian O. Bernstein", "Thorgeir E. Thorgeirsson", "Susan M. Ring", "Stephen S. Rich"
   , "Philip S. Dale", "Lee N. Robbins", "Hyman G. Rickover", "Lucia A. Hindorff"
-  , "Peter P. Pramstaller", "Kent M. Pitman", "Louise S. Bicknell", "Laura Jean Bierut", "Grover S. Krantz", "Kent D. Taylor", "Robyn M. Dawes"]
+  , "Peter P. Pramstaller", "Kent M. Pitman", "Louise S. Bicknell", "Laura Jean Bierut"
+  , "Grover S. Krantz", "Kent D. Taylor", "Robyn M. Dawes", "Donna Lee Hart", "John I. Nurnberger"
+  , "John P. Beilby"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1642,6 +1646,15 @@ authorLinkDB = M.fromList $
     , ("Jonathan Wai", "https://jonathanwai.net/research/")
     , ("Ben Recht", "https://people.eecs.berkeley.edu/~brecht/bio.html")
     , ("Robyn M. Dawes", "https://en.wikipedia.org/wiki/Robyn_Dawes")
+    , ("David Baker", "https://en.wikipedia.org/wiki/David_Baker_(biochemist)")
+    , ("Michael Levin", "https://en.wikipedia.org/wiki/Michael_Levin_(biologist)")
+    , ("Donna Lee Hart", "https://www.baue.com/obituaries/donna-lee-hart")
+    , ("Alexandra Balwit", "https://x.com/AlexandraBalwit")
+    , ("Louise Howard", "https://en.wikipedia.org/wiki/Louise_Howard_(psychiatrist)")
+    , ("John I. Nurnberger", "https://medicine.iu.edu/faculty/667/nurnberger-john")
+    , ("Jennie Hui", "https://research-repository.uwa.edu.au/en/persons/00031033")
+    , ("Jeff Donahue", "https://jeffdonahue.com/")
+    , ("John P. Beilby", "https://research-repository.uwa.edu.au/en/persons/00045091")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2901,4 +2914,4 @@ authorWpLinkDB =
     , "John Brunner", "Harlan Ellison", "Frederik Pohl", "A. E. Stallings", "Richard Sharpe Shaver"
     , "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist"
     , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group", "Adrian Hon"
-    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett"]
+    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston"]

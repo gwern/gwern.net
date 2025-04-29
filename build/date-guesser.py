@@ -4,7 +4,7 @@
 # date-guesser.py: extract recent dates in YYYY[[-MM]-DD] format from natural language inputs or structured text like URLs
 # Author: Gwern Branwen
 # Date: 2024-08-21
-# When:  Time-stamp: "2025-04-26 21:35:01 gwern"
+# When:  Time-stamp: "2025-04-28 20:04:51 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo 'https://erikbern.com/2016/04/04/nyc-subway-math' | python date-guesser.py
@@ -1073,6 +1073,18 @@ Task examples (with explanations in '#' comments):
 - "https://pmc.ncbi.nlm.nih.gov/articles/PMC10700140/"
 2023-11-22
 - "https://en.wikipedia.org/wiki/Buffalo_Bill%27s"
+""
+- "https://en.wikipedia.org/wiki/David_Baker_(biochemist)"
+""
+- "https://pmc.ncbi.nlm.nih.gov/articles/PMC4197971/ Prevalence of Mental Disorders, Psychological Distress, and Mental Health Services Use Among Lesbian, Gay, and Bisexual Adults in the United States Susan D. Cochran, J. Greer Sullivan, Vickie M. Mays"
+2003-02
+- "https://en.wikipedia.org/wiki/Hypercycle_(chemistry)"
+""
+- "https://archive.org/details/writingilluminat00johnuoft/page/193/mode/1up <em>Writing &amp; illuminating, &amp; lettering</em> : Johnston, Edward, 1872–1944"
+1917
+- "https://en.wikipedia.org/wiki/Mark_Twain"
+""
+- "https://mathshistory.st-andrews.ac.uk/Biographies/Dase/ Zacharias Dase (1824—1861)—Biography—MacTutor History of Mathematics"
 ""
 
 Task:

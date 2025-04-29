@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-04-26 09:48:39 gwern"
+# When:  Time-stamp: "2025-04-28 09:15:40 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -152,7 +152,7 @@ else
           s '</p></p>' '</p>'; s '’ ”' '’ ”'; s ' ”' ' “';
           s '[("doi","")]' ''; s '>/a>' '</a>'; s 'href="W!"' 'href="!W"'; s 'class="Logotype-Tex"' 'class="logotype-tex"'; s 'Class="Logotype-Tex"' 'class="logotype-tex"'; s '<span Class="' '<span class="';
           s '_n_th' '<em>n</em>th'; s 'thumbnailText: ' 'thumbnail-text: '; s ' — ' '—'; s '_n_=' '_n_ = ';
-          s '< a href' '<a href'; s 'modifed: 20' 'modified: 20'; s 'linklive-not' 'link-live-not'; s ' n-dimensional' ' <em>n</em>-dimensional'; s 'pdf#pg=' 'pdf#page='; s 'PDF#pg=' 'PDF#page='; s '<hr />' '<hr>'; s 'confidence: highly-likely' 'confidence: highly likely'; s 'drop-caps-de-zs' 'dropcaps-de-zs'; s '฿' '₿';
+          s '< a href' '<a href'; s 'modifed: 20' 'modified: 20'; s 'linklive-not' 'link-live-not'; s ' n-dimensional' ' <em>n</em>-dimensional'; s 'pdf#pg=' 'pdf#page='; s 'PDF#pg=' 'PDF#page='; s '<hr />' '<hr>'; s '</hr>' '<hr>'; s 'confidence: highly-likely' 'confidence: highly likely'; s 'drop-caps-de-zs' 'dropcaps-de-zs'; s '฿' '₿';
           s 'src="doc/' 'src="/doc/'; s 'href="doc/' 'href="/doc/';
           s 'link-icon-not' 'icon-not'; s '<!--<p>' '<!-- <p>'; s '</p>-->' '</p> -->';
 
@@ -945,8 +945,7 @@ else
             -e '[12][0-9][0-9][0-9]—[12][0-9][0-9][0-9]' -e '[\[( ~#"][12][0-9][0-9][0-9]-[12][0-9][0-9][0-9]' \
             -e ' -\$[1-9][0-9]+' -e ' -\$[1-9][0-9][0-9]' -e ' -\$[1-9][0-9][0-9]+' -e ' \$[0-9][0-9][0-9][0-9]' -e ' \$[0-9][0-9][0-9][0-9][0-9]' -e ' \$[1-9][0-9][0-9][0-9]' -e '[^=]\$[1-9][0-9][0-9][0-9][^)>kmg"]' -e '\$[0-9][0-9][0-9][0-9][0-9]' -e '\[\$[12][0-9][0-9][0-9]' \
             -e '[12][0-9][0-9][0-9]-[012][0-9]-[12][0-9][0-9][0-9]-[012][0-9]' -e '[0-9][0-9]−[0-9][0-9]' \
-            -e '<p>\.\.[A-Z]'
-            -- ./metadata/*.gtx; }
+            -e '<p>\.\.[A-Z]' -- ./metadata/*.gtx; }
     wrap λ "Check possible syntax errors in GTX metadata database (regexp matches)." &
 
     λ(){ gfc -e ']{' -e 'id="cb1"' -e '<dd>' -e '<dl>' \
@@ -985,7 +984,7 @@ else
             -e '%7E' -e '<p>. ' -e '<p>, ' -e '<p>; ' -e '= ~' -e 'data-cites="' \
             -e '=“”' -e '““{' -e '““}' -e '““[' -e '““]' -e 'Ã' -e '’S ' -e '<span id="#' -e 'href=/' -e 'href=http' \
             -e '<n/em>' -e '!=' -e '%3Cem%3E' -e '%3C/em%3E' -e '%3Cstrong%3E' -e '%3C/strong%3E' \
-            -e ' r-squared' -e ' R-squared' -- ./metadata/*.gtx | \
+            -e ' r-squared' -e ' R-squared' -e '&gt ' -e '&lt ' -e '&lte ' -e '&gte ' -- ./metadata/*.gtx | \
              gfv -e 'popular_shelves' -e 'Le corps dans les étoiles: l’homme zodiacal';
          gf -e ' TeX' -e ' LaTeX' -- ./metadata/*.gtx | gfv -e 'logotype-';
        }
@@ -1142,14 +1141,28 @@ else
         OTHERS="$(find metadata/annotation/ -name "*.html"; echo index)"
         for PAGE in $PAGES $OTHERS ./404; do
             HTML="${PAGE%.md}"
-            TIDY=$(tidy -quiet -errors --fix-style-tags no --doctype html5 ./_site/"$HTML" 2>&1 >/dev/null | \
-                       gfv -e '<link> proprietary attribute ' -e 'Warning: trimming empty <span>' \
-                             -e "Error: missing quote mark for attribute value" -e 'Warning: <img> proprietary attribute "loading"' \
-                             -e 'Warning: <svg> proprietary attribute "alt"' -e 'Warning: <source> proprietary attribute "alt"' \
-                             -e 'Warning: missing <!DOCTYPE> declaration' -e 'Warning: inserting implicit <body>' \
-                             -e "Warning: inserting missing 'title' element" -e 'Warning: <img> proprietary attribute "decoding"' \
-                             -e 'Warning: <a> escaping malformed URI reference' -e 'Warning: <script> proprietary attribute "fetchpriority"' \
-                             -e 'Warning: <img> lacks "alt" attribute' -e 'fix-style-tags: yes to move')
+            # we do not reformat HTML files with Tidy, because it has caused too many subtle bugs in the long run.
+            # however, we still want to use Tidy to lint and look for HTML validation problems.
+            # But if we do that on the original unmodified HTML, we get a ton of apparently spurious warnings we don't care about and which are Tidyisms, especially with closing tags.
+            # So we compromise by running Tidy first, which defaults to printing to stdout, and then linting that:
+            TIDY=$(tidy -quiet --fix-style-tags no --doctype html5 "$HTML_FILE" 2>/dev/null | \
+                       tidy -quiet -errors --fix-style-tags no --doctype html5 - 2>&1 | \
+                       gfv \
+                                  -e '<link> proprietary attribute ' \
+                                  -e 'Warning: trimming empty <span>' \
+                                  -e "Error: missing quote mark for attribute value" \
+                                  -e 'Warning: <img> proprietary attribute "loading"' \
+                                  -e 'Warning: <svg> proprietary attribute "alt"' \
+                                  -e 'Warning: <source> proprietary attribute "alt"' \
+                                  -e 'Warning: missing <!DOCTYPE> declaration' \
+                                  -e 'Warning: inserting implicit <body>' \
+                                  -e "Warning: inserting missing 'title' element" \
+                                  -e 'Warning: <img> proprietary attribute "decoding"' \
+                                  -e 'Warning: <a> escaping malformed URI reference' \
+                                  -e 'Warning: <script> proprietary attribute "fetchpriority"' \
+                                  -e 'Warning: <img> lacks "alt" attribute' \
+                                  -e 'fix-style-tags: yes to move'
+                       )
             if [[ -n $TIDY ]]; then echo -e "\n\e[31m$PAGE\e[0m:\n$TIDY"; fi
         done
 

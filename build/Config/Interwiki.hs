@@ -5993,4 +5993,5 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("Hanabi", "Hanabi_(card game)")
         , ("Agda", "Agda_(programming language)")
         , ("CBT", "Cognitive_behavioral_therapy")
+        , ("Manic", "Mania")
         ]
