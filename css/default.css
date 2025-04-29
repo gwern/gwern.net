@@ -972,6 +972,8 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
 .collapse.file-include-collapse {
     --collapse-toggle-top-height: calc(2.25 * var(--base-font-size));
     --collapse-toggle-bottom-height: calc(2.25 * var(--base-font-size));
+
+	clear: both;
 }
 
 .collapse.aux-links-append > .disclosure-button > .collapse-iceberg-indicator {
