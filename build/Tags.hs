@@ -148,11 +148,14 @@ listTagDirectoriesAll = listTagDirectories True
 
 -- try to infer a long tag from a short tag, first by exact match, then by suffix, then by prefix, then by infix, then give up.
 -- so eg. 'sr1' → 'SR1' → 'darknet-markets/silk-road/1', 'road/1' → 'darknet-markets/silk-road/1', 'darknet-markets/silk' → 'darknet-markets/silk-road', 'silk-road' → 'darknet-markets/silk-road'
-guessTagFromShort :: [String] -> String -> String
-guessTagFromShort _ "" = ""
-guessTagFromShort l s = fixedPoint (f l) (replace "=" "-" s)
+guessTagFromShort :: [String] -> [String] -> String -> String
+guessTagFromShort _ _ "" = ""
+guessTagFromShort raw l s = fixedPoint (f l) (replace "=" "-" s)
  where f m t = let allTags = nubOrd $ sort m in
                  if t `elem` allTags then t else -- exact match, no guessing required
+                   -- hopelessly ambiguous ones which should be error (for now)
+                   if s `elem` C.shortTagBlacklist then error ("Tags.guessTagFromShort: tag was on short-tag blacklist as an error. Offending tag was: " ++ s ++ "; original input: " ++ show raw)
+                   else
                  case lookup t C.tagsShort2Long of
                    Just tl -> tl -- is an existing short/petname
                    Nothing -> let shortFallbacks =
@@ -168,7 +171,7 @@ guessTagFromShort l s = fixedPoint (f l) (replace "=" "-" s)
 
 shortTagTest ::[String] -> [(String, String, String)]
 shortTagTest alltags = filter (\(_, realOutput, shouldbeOutput) -> realOutput /= shouldbeOutput) $
-  map (\(input,output) -> (input, guessTagFromShort alltags input, output)) (C.shortTagTestSuite ++ selfTagTestSuite)
+  map (\(input,output) -> (input, guessTagFromShort [] alltags input, output)) (C.shortTagTestSuite ++ selfTagTestSuite)
   where selfTagTestSuite :: [(String,String)] -- every long tag should rewrite to itself, of course
         selfTagTestSuite = zip alltags alltags
 

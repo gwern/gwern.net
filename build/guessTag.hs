@@ -7,4 +7,4 @@ import Tags (listTagsAll, guessTagFromShort)
 main :: IO ()
 main = do tags    <- listTagsAll
           (arg:_) <- getArgs
-          putStr (guessTagFromShort tags arg)
+          putStr (guessTagFromShort [] tags arg)

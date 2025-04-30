@@ -182,12 +182,11 @@ tagsShort2LongRewrites =
 
 tagsShort2Long = tagsShort2LongRewrites ++
   -- ^ custom tag shortcuts, to fix typos etc
-  -- hopelessly ambiguous ones which should be error (for now)
-  map (\s -> (s, error s)) shortTagBlacklist ++
-  -- attempt to infer short→long rewrites from the displayed tag names, which are long→short; but note that many of them are inherently invalid and the mapping only goes one way.
+  -- attempt to infer short → long rewrites from the displayed tag names, which are long→short; but note that many of them are inherently invalid and the mapping only goes one way.
    map (\(a,b) -> (map toLower b,a)) (filter (\(_,fancy) -> not (anyInfix fancy [" ", "<", ">", "(",")"])) tagsLong2Short)
 
 -- testing: unique list
+-- 'shortTagBlacklist' is used primarily in Tags.guessTagFromShort:
 shortTagBlacklist :: [String]
 shortTagBlacklist = ["a", "al", "an", "analysis", "and", "are", "as", "at", "be", "box", "done", "e", "error", "f",
                       "fine", "free", "g", "git", "if", "in", "is", "it", "of", "on", "option", "rm", "sed", "strong", "t",
