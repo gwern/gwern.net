@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-04-26 20:02:55 gwern"
+# When:  Time-stamp: "2025-04-29 13:31:56 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -663,6 +663,8 @@ Personal profile - UPJS Kosice"
 ""
 - "https://www.asimov.press/p/obit Eulogy to the <em>Obits</em>—by Alexandra Balwit—Asimov Press"
 "Eulogy to the <em>Obits</em>"
+- "https://sampatt.com/blog/2025-04-28-can-o3-beat-a-geoguessr-master Sam Patterson"
+""
 
 Task:
 

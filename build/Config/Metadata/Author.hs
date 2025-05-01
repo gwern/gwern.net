@@ -747,6 +747,9 @@ canonicals = M.fromList
   , ("Xander Balwit", "Alexandra Balwit")
   , ("AlexandraBalwit", "Alexandra Balwit")
   , ("___frye", "frye")
+  , ("cube_flipper", "Cube Flipper")
+  , ("Irving John Good", "I. J. Good")
+  , ("avturchin", "Alexey Turchin")
   ]
 
 -- tests: unique
@@ -785,7 +788,7 @@ canonicalsWithInitials =
   , "Philip S. Dale", "Lee N. Robbins", "Hyman G. Rickover", "Lucia A. Hindorff"
   , "Peter P. Pramstaller", "Kent M. Pitman", "Louise S. Bicknell", "Laura Jean Bierut"
   , "Grover S. Krantz", "Kent D. Taylor", "Robyn M. Dawes", "Donna Lee Hart", "John I. Nurnberger"
-  , "John P. Beilby"]
+  , "John P. Beilby", "James L. Kirkland", "Jakob N. Foerster"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1655,6 +1658,12 @@ authorLinkDB = M.fromList $
     , ("Jennie Hui", "https://research-repository.uwa.edu.au/en/persons/00031033")
     , ("Jeff Donahue", "https://jeffdonahue.com/")
     , ("John P. Beilby", "https://research-repository.uwa.edu.au/en/persons/00045091")
+    , ("Cube Flipper", "https://smoothbrains.net/")
+    , ("Sam Patterson", "https://sampatt.com/about")
+    , ("James L. Kirkland", "https://www.afar.org/james-l.-kirkland")
+    , ("Jakob N. Foerster", "https://www.jakobfoerster.com/")
+    , ("Iz Beltagy", "https://beltagy.net/")
+    , ("Alexey Turchin", "https://scholar.google.com/citations?user=LyRLy0EAAAAJ")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

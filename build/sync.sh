@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-04-28 09:15:40 gwern"
+# When:  Time-stamp: "2025-04-30 10:52:32 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -1143,9 +1143,9 @@ else
             HTML="${PAGE%.md}"
             # we do not reformat HTML files with Tidy, because it has caused too many subtle bugs in the long run.
             # however, we still want to use Tidy to lint and look for HTML validation problems.
-            # But if we do that on the original unmodified HTML, we get a ton of apparently spurious warnings we don't care about and which are Tidyisms, especially with closing tags.
+            # But if we do that on the original unmodified HTML, we get a ton of apparently spurious warnings we don't care about and which are Tidy-isms, especially with closing tags.
             # So we compromise by running Tidy first, which defaults to printing to stdout, and then linting that:
-            TIDY=$(tidy -quiet --fix-style-tags no --doctype html5 "$HTML_FILE" 2>/dev/null | \
+            TIDY=$(tidy -quiet --fix-style-tags no --doctype html5 "$HTML" 2>/dev/null | \
                        tidy -quiet -errors --fix-style-tags no --doctype html5 - 2>&1 | \
                        gfv \
                                   -e '<link> proprietary attribute ' \
