@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-04-27 19:44:22 gwern"
+# When:  Time-stamp: "2025-05-01 11:55:19 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -213,96 +213,320 @@ pdf-cut-append () { if [ $# -ne 1 ]; then red "Wrong number of arguments argumen
 # concatenate a set of PDFs, and preserve the metadata of the first PDF; this is useful for combining a paper with its supplement or other related documents, while not erasing the metadata the way naive `pdftk` concatenation would:
 # This accepts Docx files as well due to their frequency in supplemental files, so `pdf-append foo.pdf supplement-1.doc supplement-2.pdf` is allowed (Docx is converted to PDF by `doc2pdf`).
 # (The appended PDFs are soft-deleted by default, by moving them to the used temporary directory, which is not removed afterwards. In case of a rare problem, they can be retrieved from there.)
+# (Assuming helper functions red, bold, path2File exist)
+#!/bin/bash
+
+# Helper function stubs (replace with your actual implementations if needed)
+# Example using tput for colors:
+red() { tput setaf 1; echo "$@" >&2; tput sgr0; }
+yellow() { tput setaf 3; echo "$@" >&2; tput sgr0; }
+bold() { tput bold; echo "$@" >&2; tput sgr0; }
+# Example path2File using realpath (requires realpath command)
+path2File() { realpath -m "$1" 2>/dev/null || echo "$1"; } # -m allows non-existent
+
+
+# --- pdf-append Function ---
+
+# Concatenates a set of files (PDFs, documents, spreadsheets, images) into a single PDF.
+#
+# Usage:
+#   pdf-append <target_pdf> <input_file_2> [input_file_3 ...]
+#
+# Arguments:
+#   <target_pdf> : The path to the first PDF, which will also be the final output file.
+#                  Its metadata will be preserved. If it doesn't exist, it will be created.
+#                  If it exists but is not a PDF, the script will attempt to convert it
+#                  (if supported type) and use it as the first part, but metadata
+#                  preservation might be limited.
+#   <input_file_N> : Additional files to append. Supported types:
+#                    - PDF (.pdf)
+#                    - Documents (.doc, .docx, .odt) via 'doc2pdf' or 'libreoffice'
+#                    - Spreadsheets (.xlsx, .xls, .ods, .csv) via 'libreoffice'
+#                    - Images (.png, .jpg, .jpeg, .webp, .avif, .gif) via 'img2pdf' or 'convert'
+#
+# Behavior:
+#   - Non-PDF inputs are converted to temporary PDFs.
+#   - All processed PDFs are concatenated using 'pdftk'.
+#   - Metadata from the original <target_pdf> (first argument) is applied to the final output
+#     using 'exiftool'. If the first argument wasn't originally a PDF, metadata might
+#     be sourced from the *first successfully processed PDF* in the list.
+#   - The original input files (from the 2nd argument onwards) are moved to a temporary
+#     directory (`TEMP_DIR`) as a "soft delete" for potential recovery. This directory
+#     is reported at the end and is *not* automatically removed.
+#   - Temporary files (converted PDFs) within TEMP_DIR are *not* automatically removed.
+#
+# Dependencies:
+#   bash, pdftk, exiftool, realpath (or adjust path2File)
+#   Optional (for conversions):
+#     libreoffice (for docs/spreadsheets)
+#     doc2pdf (alternative for docs, often wraps LibreOffice/other)
+#     img2pdf (preferred for images)
+#     convert (from ImageMagick, fallback for images)
+#
 pdf-append () {
-    if [ $# -lt 2 ]; then red "Not enough arguments" >&2 && return 1; fi
-    # Convert all arguments to their true filepaths
+    # Enable case-insensitive matching for file extensions during processing
+    shopt -s nocasematch
+
+    if [ $# -lt 2 ]; then
+        red "Usage: pdf-append <target_pdf> <input_file_2> [input_file_3 ...]" >&2
+        shopt -u nocasematch # Restore default matching
+        return 1
+    fi
+
+    # Convert all arguments to their potentially canonical filepaths
+    # Allows non-existent target path using realpath -m or similar in path2File
     local updated_args=()
+    local file
     for file in "$@"; do
-        updated_args+=( "$(path2File "$file")" )
+        local resolved_path
+        resolved_path=$(path2File "$file") # Assumes path2File handles non-existent paths gracefully
+        if [ -z "$resolved_path" ]; then
+             # This might occur if path2File fails unexpectedly even with non-existent handling
+             red "Error resolving path for argument: $file" >&2
+             shopt -u nocasematch
+             return 1
+        fi
+         updated_args+=( "$resolved_path" )
     done
+    # Update the positional parameters ($1, $2, etc.) with resolved paths
     set -- "${updated_args[@]}"
 
-    ORIGINAL="$1"
-    TARGET="$(mktemp /tmp/XXXXXX.pdf)"
-    TEMP_DIR="$(mktemp --directory)"
+    # The first argument serves as the final destination and primary metadata source
+    local TARGET_DEST_PDF="$1"
 
-    # Convert non-PDF files to PDF using doc2pdf
-    PDF_FILES=()
-    # Store the files that will need to be moved to temp dir (all except first)
-    FILES_TO_MOVE=("${@:2}")
+    # Create temporary storage locations
+    local TEMP_TARGET # Temporary file for the combined PDF before final move
+    TEMP_TARGET="$(mktemp /tmp/pdf-append-combined-XXXXXX.pdf)"
+    local TEMP_DIR # Directory for intermediate files and moved originals
+    TEMP_DIR="$(mktemp --directory /tmp/pdf-append-work-XXXXXX)"
 
+    # Ensure temporary files/dirs are cleaned up on script exit/interrupt, unless successful
+    trap 'rm -f "$TEMP_TARGET"; rm -rf "$TEMP_DIR"' EXIT HUP INT TERM
+
+    # Array to hold paths to all PDFs ready for concatenation (originals + converted)
+    local PDF_FILES=()
+    # Array to hold original paths of input files (2nd onwards) to be moved at the end
+    local FILES_TO_MOVE=("${@:2}") # Capture originals for soft-delete later
+
+    # --- Process and Convert Input Files ---
+    local output_pdf # Holds path for converted temporary PDF
     for file in "$@"; do
-        if [[ "$file" =~ \.(pdf|PDF)$ ]]; then
+        # Define potential output path within TEMP_DIR for conversions
+        # Using process ID ($$) makes it slightly more robust against unlikely name collisions
+        output_pdf="$TEMP_DIR/$(basename "$file" | sed 's/[^a-zA-Z0-9._-]/_/g')-$$.pdf"
+
+        if [[ "$file" =~ \.pdf$ ]]; then
+            # Add existing PDFs directly to the list
             PDF_FILES+=("$file")
+
         elif [[ "$file" =~ \.(doc|docx|odt)$ ]]; then
-            output_pdf="$TEMP_DIR/$(basename "${file%.*}").pdf"
-            doc2pdf "$file" "$output_pdf"
-            PDF_FILES+=("$output_pdf")
-        elif [[ "$file" =~ \.(xlsx|xls|ods|csv)$ ]]; then
-            output_pdf="$TEMP_DIR/$(basename "${file%.*}").pdf"
-
-            # Create output directory
-            mkdir -p "$TEMP_DIR"
-
-            # Clean temp profile for LibreOffice
-            local LO_USER_PROFILE="file:///tmp/LibO_PDF_Conversion_$(date +%s)"
-
-            # Convert spreadsheet to PDF, handling spaces in paths
-            libreoffice --headless \
-                        -env:UserInstallation="$LO_USER_PROFILE" \
-                        --convert-to pdf \
-                        --outdir "$TEMP_DIR" \
-                        "$file" >/dev/null 2>&1 || { red "Failed to convert spreadsheet: $file" >&2; continue; }
-
-            # Check if conversion was successful and find the output file
-            if [ ! -f "$output_pdf" ]; then
-                # Try to find the generated PDF
-                local FOUND_PDF="$(find "$TEMP_DIR" -maxdepth 1 -name "$(basename "${file%.*}").pdf" -print -quit)"
-                if [ -n "$FOUND_PDF" ]; then
-                    output_pdf="$FOUND_PDF"
+            bold "Converting Document: $file" >&2
+            if command -v doc2pdf &> /dev/null; then
+                if doc2pdf "$file" "$output_pdf"; then
+                    PDF_FILES+=("$output_pdf")
                 else
-                    red "Conversion produced no output for: $file" >&2
-                    continue
+                    red "doc2pdf conversion failed for: $file" >&2
+                    # Continue processing other files
                 fi
+            elif command -v libreoffice &> /dev/null; then
+                 bold " (using LibreOffice as fallback for document)" >&2
+                 local LO_USER_PROFILE="file:///tmp/LibO_PDF_Conversion_$(date +%s)_$$"
+                 if libreoffice --headless --invisible \
+                            -env:UserInstallation="$LO_USER_PROFILE" \
+                            --convert-to pdf:writer_pdf_Export \
+                            --outdir "$TEMP_DIR" \
+                            "$file" &>/dev/null; then
+                      # LibreOffice might create a file with a different basename if source had spaces/etc
+                      local expected_lo_output="$TEMP_DIR/$(basename "${file%.*}").pdf"
+                      if [[ -f "$expected_lo_output" ]]; then
+                           # Rename to our predictable name if needed
+                           if [[ "$expected_lo_output" != "$output_pdf" ]]; then
+                               mv "$expected_lo_output" "$output_pdf" || red "Failed to rename LO output"
+                           fi
+                           PDF_FILES+=("$output_pdf")
+                      else
+                           red "LibreOffice conversion produced no output for: $file" >&2
+                      fi
+                      rm -rf "${LO_USER_PROFILE#file://}"
+                 else
+                      red "LibreOffice conversion failed for: $file" >&2
+                      rm -rf "${LO_USER_PROFILE#file://}"
+                 fi
+            else
+                 red "Skipping document: $file (doc2pdf or libreoffice not found)" >&2
             fi
 
-            PDF_FILES+=("$output_pdf")
+        elif [[ "$file" =~ \.(xlsx|xls|ods|csv)$ ]]; then
+            bold "Converting Spreadsheet: $file" >&2
+            if command -v libreoffice &> /dev/null; then
+                local LO_USER_PROFILE="file:///tmp/LibO_PDF_Conversion_$(date +%s)_$$"
+                if libreoffice --headless --invisible \
+                            -env:UserInstallation="$LO_USER_PROFILE" \
+                            --convert-to pdf:calc_pdf_Export \
+                            --outdir "$TEMP_DIR" \
+                            "$file" &>/dev/null; then
+                    # Check if conversion was successful and find the output file
+                    local expected_lo_output="$TEMP_DIR/$(basename "${file%.*}").pdf"
+                    if [[ -f "$expected_lo_output" ]]; then
+                          # Rename to our predictable name if needed
+                         if [[ "$expected_lo_output" != "$output_pdf" ]]; then
+                              mv "$expected_lo_output" "$output_pdf" || red "Failed to rename LO output"
+                         fi
+                        PDF_FILES+=("$output_pdf")
+                    else
+                        # Sometimes LO might output just ".pdf" if filename is tricky, try finding *any* new PDF
+                        local found_pdf=$(find "$TEMP_DIR" -maxdepth 1 -name '*.pdf' -newer "$file" -print -quit)
+                         if [[ -n "$found_pdf" ]] && [[ -f "$found_pdf" ]]; then
+                            yellow "Warning: LibreOffice created unexpected PDF name '$found_pdf' for '$file'. Using it." >&2
+                            mv "$found_pdf" "$output_pdf" || red "Failed to rename found LO output"
+                            PDF_FILES+=("$output_pdf")
+                        else
+                            red "LibreOffice conversion produced no verifiable output for: $file" >&2
+                        fi
+                    fi
+                    rm -rf "${LO_USER_PROFILE#file://}"
+                else
+                    red "LibreOffice conversion failed for: $file" >&2
+                    rm -rf "${LO_USER_PROFILE#file://}"
+                fi
+            else
+                red "Skipping spreadsheet: $file (libreoffice not found)" >&2
+            fi
+
+        elif [[ "$file" =~ \.(png|jpg|jpeg|webp|avif|gif)$ ]]; then
+             bold "Converting Image: $file" >&2
+             if command -v img2pdf &> /dev/null; then
+                 # Attempt conversion using img2pdf
+                 if img2pdf "$file" -o "$output_pdf"; then
+                     PDF_FILES+=("$output_pdf")
+                 else
+                      red "img2pdf conversion failed for image: $file" >&2
+                 fi
+             elif command -v convert &> /dev/null; then
+                  # Fallback to ImageMagick's convert
+                  bold " (using ImageMagick 'convert' as fallback)" >&2
+                  if convert "$file" "$output_pdf"; then
+                      PDF_FILES+=("$output_pdf")
+                  else
+                      red "ImageMagick 'convert' failed for image: $file" >&2
+                  fi
+             else
+                 # Neither conversion tool is available
+                 red "Skipping image: $file (img2pdf and convert not found)" >&2
+             fi
 
         else
-            red "Skipping unsupported file: $file" >&2
+            # Handle files that are not PDF and not of a supported convertible type
+            # Special check: If the *first* file is unsupported, we cannot proceed meaningfully.
+             if [[ "$file" == "$TARGET_DEST_PDF" ]]; then
+                 red "First input file '$file' is not a PDF and is not a supported type for conversion. Cannot proceed." >&2
+                 shopt -u nocasematch; trap - EXIT HUP INT TERM; rm -f "$TEMP_TARGET"; rm -rf "$TEMP_DIR"; return 1;
+            else
+                 red "Skipping unsupported file type: $file" >&2
+            fi
         fi
     done
 
-    # Concatenate PDFs
-    if pdftk "${PDF_FILES[@]}" cat output "$TARGET"; then
-        # If concatenation successful, preserve metadata from the first PDF
-        if exiftool -TagsFromFile "$ORIGINAL" "$TARGET" && mv "$TARGET" "$ORIGINAL"; then
-            # Move the original files (excluding the first one) to temp directory
-            for file in "${FILES_TO_MOVE[@]}"; do
-                if [ -f "$file" ]; then
-                    mv "$file" "$TEMP_DIR/"
-                    bold "Moved $file to $TEMP_DIR" >&2
+    # --- Validation Before Concatenation ---
+    if [ ${#PDF_FILES[@]} -lt 1 ]; then
+        red "No PDF files available (or created) to concatenate." >&2
+        shopt -u nocasematch; trap - EXIT HUP INT TERM; rm -f "$TEMP_TARGET"; rm -rf "$TEMP_DIR"; return 1;
+    fi
+    # Check if only the first file remains (no new files added/valid)
+     if [ ${#PDF_FILES[@]} -eq 1 ] && [ "${PDF_FILES[0]}" == "$TARGET_DEST_PDF" ]; then
+         bold "Input consists only of the target file '$TARGET_DEST_PDF'. No changes needed." >&2
+         shopt -u nocasematch; trap - EXIT HUP INT TERM; rm -f "$TEMP_TARGET"; rm -rf "$TEMP_DIR"; return 0
+     fi
+
+    # --- Concatenation ---
+    bold "Concatenating ${#PDF_FILES[@]} PDF file(s) into temporary file..." >&2
+    if pdftk "${PDF_FILES[@]}" cat output "$TEMP_TARGET"; then
+        bold "Concatenation successful." >&2
+
+        # --- Metadata Preservation ---
+        local ORIGINAL_METADATA_SOURCE="$TARGET_DEST_PDF" # Default source is the first input file path
+        bold "Attempting to preserve metadata from '$ORIGINAL_METADATA_SOURCE'..." >&2
+
+        # Check if the designated source file actually exists (it might have been converted)
+        if [ ! -f "$ORIGINAL_METADATA_SOURCE" ]; then
+             # If the original first file doesn't exist (was non-PDF and now lives in TEMP_DIR),
+             # try using the *first PDF* that was actually processed as the metadata source.
+             if [ -f "${PDF_FILES[0]}" ]; then
+                 ORIGINAL_METADATA_SOURCE="${PDF_FILES[0]}"
+                 yellow "Warning: Original first file path '$TARGET_DEST_PDF' not found. Using metadata from first processed PDF: $ORIGINAL_METADATA_SOURCE" >&2
+             else
+                 # This case is unlikely if concatenation succeeded, but handle it.
+                 yellow "Warning: Cannot find suitable source file for metadata. Skipping preservation." >&2
+                 ORIGINAL_METADATA_SOURCE="" # Indicate failure to find source
+             fi
+        fi
+
+        # Apply metadata if a source was determined
+        if [[ -n "$ORIGINAL_METADATA_SOURCE" ]]; then
+            if exiftool -q -q -TagsFromFile "$ORIGINAL_METADATA_SOURCE" -all:all --pdf-update:all "$TEMP_TARGET" -overwrite_original >/dev/null; then
+                bold "Metadata preserved." >&2
+            else
+                 # exiftool might leave a backup file on failure, try cleaning it
+                 exiftool -delete_original= "$TEMP_TARGET" &>/dev/null
+                 yellow "Warning: exiftool failed to preserve metadata from '$ORIGINAL_METADATA_SOURCE'. Output PDF may lack original metadata." >&2
+            fi
+        fi
+
+        # --- Final Output ---
+        bold "Moving temporary result to final destination: $TARGET_DEST_PDF" >&2
+        if mv "$TEMP_TARGET" "$TARGET_DEST_PDF"; then
+            bold "Successfully created/updated: $TARGET_DEST_PDF" >&2
+
+            # --- Cleanup: Move Original Input Files (Soft Delete) ---
+            # Moves the original files listed in FILES_TO_MOVE (inputs from 2nd onwards)
+            # This happens regardless of whether their conversion was successful or if they were used.
+            bold "Moving original appended source files to $TEMP_DIR..." >&2
+            local file_to_move
+            for file_to_move in "${FILES_TO_MOVE[@]}"; do
+                # Check if the original file still exists at its path before moving
+                if [ -f "$file_to_move" ]; then
+                    if ! mv "$file_to_move" "$TEMP_DIR/"; then
+                        yellow "Warning: Failed to move original file '$file_to_move' to $TEMP_DIR" >&2
+                    fi
+                # Optional: Could add handling here if the file_to_move is already in TEMP_DIR (e.g., was a converted file path)
+                # else
+                #    echo "Debug: Original file '$file_to_move' not found at original path, likely already processed/moved." >&2
                 fi
             done
 
-            # List contents of temp directory
-            bold "Contents of temporary directory:" >&2
-            ls -l "$TEMP_DIR" >&2
+            bold "Original appended files and intermediate PDFs are in: $TEMP_DIR" >&2
+            # Optional: List contents for user confirmation
+            # ls -lh "$TEMP_DIR" >&2
 
-            # I usually know before I look at the PDF's metadata that I will be appending to it, because I will have already downloaded the supplementary files etc. So I won't have yet looked to see what I have to add. We'll save a step by assuming that is the case, and running `crossref` on it:
-            crossref "$ORIGINAL"
+            # --- Post-processing ---
+            if command -v crossref &>/dev/null; then
+                bold "Running crossref on final PDF..." >&2
+                crossref "$TARGET_DEST_PDF"
+            fi
 
+            # Success: Disable the cleanup trap so TEMP_DIR persists
+            trap - EXIT HUP INT TERM
+            shopt -u nocasematch # Restore default matching
+            # Explicitly state that TEMP_DIR is kept:
+            bold "Temporary directory $TEMP_DIR has been kept for inspection or recovery." >&2
+            # To clean up automatically instead, uncomment the next line and remove the bold message above:
+            # rm -rf "$TEMP_DIR"
             return 0
         else
-            red "Error preserving metadata or moving target file" >&2
-            rm -f "$TARGET"
+            red "Error: Failed to move temporary file '$TEMP_TARGET' to final destination '$TARGET_DEST_PDF'." >&2
+            # Let the EXIT trap handle cleanup of TEMP_TARGET and TEMP_DIR
+            shopt -u nocasematch
             return 1
         fi
     else
-        red "PDF concatenation failed" >&2
-        rm -f "$TARGET"
+        red "Error: PDF concatenation failed using pdftk." >&2
+        # Let the EXIT trap handle cleanup of TEMP_TARGET and TEMP_DIR
+        shopt -u nocasematch
         return 1
     fi
+
+    # Should not be reached, but ensure case-insensitivity is turned off
+    shopt -u nocasematch
 }
 
 doc2pdf () {
