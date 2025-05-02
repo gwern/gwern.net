@@ -750,6 +750,8 @@ canonicals = M.fromList
   , ("cube_flipper", "Cube Flipper")
   , ("Irving John Good", "I. J. Good")
   , ("avturchin", "Alexey Turchin")
+  , ("KelseyTuoc", "Kelsey Piper")
+  , ("ByrneHobart", "Byrne Hobart")
   ]
 
 -- tests: unique
@@ -1476,7 +1478,6 @@ authorLinkDB = M.fromList $
     , ("Sarah E. Bergen", "https://ki.se/en/people/sarah-bergen")
     , ("Mike Stay", "https://math.ucr.edu/~mike/")
     , ("Bent Petersen", "https://researchprofiles.ku.dk/en/persons/bent-petersen")
-    , ("Bryne Hobart", "https://www.thediff.co/")
     , ("Peter A. Holmans", "https://scholar.google.com/citations?user=mOQF3UUAAAAJ")
     , ("Patricia B. Munroe", "https://www.qmul.ac.uk/whri/people/academic-staff/items/munroepatricia.html")
     , ("Pamela A. F. Madden", "https://psychiatry.wustl.edu/people/pamela-madden-phd/")
@@ -1664,6 +1665,8 @@ authorLinkDB = M.fromList $
     , ("Jakob N. Foerster", "https://www.jakobfoerster.com/")
     , ("Iz Beltagy", "https://beltagy.net/")
     , ("Alexey Turchin", "https://scholar.google.com/citations?user=LyRLy0EAAAAJ")
+    , ("Kelsey Piper", "https://en.wikipedia.org/wiki/Kelsey_Piper")
+    , ("Byrne Hobart", "https://www.thediff.co/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
