@@ -145,8 +145,9 @@ $if(index)$<body class="page-$safe-url$">$else$<body class="page-$safe-url$ $css
         </section>$endif$
       $if(linkbib-yes)$<section id="link-bibliography-section" class="level1 collapse">
         <h1 class="collapse"><a href="#link-bibliography-section" title="Link to section: § 'Bibliography'">Bibliography</a></h1> <!-- NOTE: In theory, '.collapse' on a '<h1>' is redundant with the '<section>'; but added to parallel Pandoc-generated headers which set all attributes/classes on both. -->
-        <a id="link-bibliography" href="/metadata/annotation/link-bibliography/$escaped-url$" title="Bibliography of links cited in this page (forward citations). Lazily-transcluded version at footer of page for easier scrolling." class="include-even-when-collapsed link-bibliography" data-link-icon="bibliography" data-link-icon-type="svg">[Bibliography of links/references used in page]</a>$endif$
-      </section>$endif$
+        <a id="link-bibliography" href="/metadata/annotation/link-bibliography/$escaped-url$" title="Bibliography of links cited in this page (forward citations). Lazily-transcluded version at footer of page for easier scrolling." class="include-even-when-collapsed link-bibliography" data-link-icon="bibliography" data-link-icon-type="svg">[Bibliography of links/references used in page]</a>
+          </section>$endif$
+      $endif$
       </div> <!-- NOTE: unmatched, because it closes the opening div from the hakyll.hs $$body$$ Pandoc template -->
 
     </article>
