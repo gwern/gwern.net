@@ -4,12 +4,12 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-04-15 10:11:44 gwern"
+When:  Time-stamp: "2025-05-04 17:31:45 gwern"
 License: CC-0
 -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataSlow, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, walkAndUpdateLinkMetadataGTX, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readGTXFast, writeGTX, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationTransclusionBlock, authorsToCite, cleanAbstractsHTML, sortItemDate, sortItemPathDate, sortItemPathDateModified, sortItemDateModified, sortByDateModified, sortByDatePublished, lookupFallback, sortItemPathDateCreated, fileTranscludesTest, addCanPrefetch) where
+module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataSlow, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, walkAndUpdateLinkMetadataGTX, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readGTXFast, writeGTX, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationTransclusionBlock, authorsToCite, cleanAbstractsHTML, sortItemDate, sortItemPathDate, sortItemPathDateModified, sortItemDateModified, sortByDateModified, sortByDatePublished, lookupFallback, sortItemPathDateCreated, fileTranscludesTest, addCanPrefetch, annotationSizeDB, addSizeToLinks) where
 
 import Control.Monad (unless, void, when, foldM_, (<=<))
 
@@ -43,22 +43,56 @@ import Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjuster
 import Interwiki (convertInterwikiLinks, isWPAPI)
 import Typography (titlecase', typesetHtmlField, titleWrap)
 import Image (addImgDimensions, imageLinkHeightWidthSet, isImageFilename, isVideoFilename)
-import LinkArchive (localizeLink, ArchiveMetadata, localizeLinkURL)
+import LinkArchive (localizeLink, ArchiveMetadata, localizeLinkURL, calculateArchiveSizePercentiles)
 import LinkBacklink (getSimilarLinkCheck, getSimilarLinkCount, getBackLinkCount, getBackLinkCheck, getLinkBibLinkCheck, getAnnotationLink)
 import LinkID (authorsToCite, generateID, getDisambiguatedPairs)
 import LinkLive (linkLive, alreadyLive, linkLiveString)
-import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList, Failure(Temporary, Permanent), isPagePath, hasHTMLSubstitute)
+import LinkMetadataTypes (Metadata, MetadataItem, Path, MetadataList, Failure(Temporary, Permanent), isPagePath, hasHTMLSubstitute, SizeDB)
 import Query (extractLinksInlines)
 import Tags (listTagsAll, tagsToLinksSpan)
 import Metadata.Format (processDOI, cleanAbstractsHTML, linkCanonicalize, balanced) -- authorsInitialize,
 import Metadata.Date (dateTruncateBad, isDate)
-import Utils (writeUpdatedFile, printGreen, printRed, anyInfix, anyPrefix, anySuffix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, hasClass, parseRawAllClean, hasExtensionS, isLocal, kvDOI, delete)
+import Utils (writeUpdatedFile, printGreen, printRed, anyInfix, anyPrefix, anySuffix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, hasClass, parseRawAllClean, hasExtensionS, isLocal, kvDOI, delete, safeGetFileSize, calculateSizeToPercentileMap, addKey, hasKey)
 import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
 import LinkIcon (linkIcon)
 import GTX (appendLinkMetadata, readGTXFast, readGTXSlow, rewriteLinkMetadata, writeGTX)
 import Metadata.Author (authorCollapse)
 import qualified Config.Metadata.Author as CA (authorLinkDB, authorWhitelist)
+
+addSizeToLinks :: SizeDB -> Inline -> Inline
+addSizeToLinks sdb x@(Link _ _ (url,_)) = if hasClass "filesize-not" x || hasKey "filesize-bytes" x || hasKey "filesize-percentile" x then x
+                       else case M.lookup (T.unpack url) sdb of
+                              Nothing -> x
+                              Just (byte,percentile) -> addKey ("filesize-bytes", T.pack $ show byte) $ addKey ("filesize-percentile", T.pack $ show percentile) x
+addSizeToLinks _ x = x
+
+-- we have 3 kinds of URLs we can look up sizes for: (1) external URLs which have been locally-archived and have a known fixed on-disk size we can easily obtain; due to the subtleties of splitting HTML files, we outsource that to LinkArchive.calculateArchiveSizePercentiles; (2) local files with extensions like PDFs, which we can simply call `safeGetFileSize`; (3) local *essays* with no extensions, but also no ID/anchor fragment, where we append ".md"; (4) local essays with anchors/IDs, which logically we would parse the Markdown to infer what the 'actual' size is of the specified ID but we will punt and just treat it as if the anchor were not there, by deleting it.
+annotationSizeDB :: Metadata -> ArchiveMetadata -> IO SizeDB
+annotationSizeDB md am =
+  do archiveSizes <- calculateArchiveSizePercentiles am :: IO SizeDB
+
+     let localFiles = (filter (\u -> '.' `elem` u && isLocal (T.pack u)) $ M.keys md) :: [FilePath]
+     fileSizesRaw <- Par.mapM (\u -> do let u' = takeWhile (/='#') $ tail u
+                                        size <- fromIntegral <$> safeGetFileSize u'
+                                        return size
+                          ) localFiles
+     let fileHistogram = calculateSizeToPercentileMap fileSizesRaw
+     let filePercentiles = zipWith (\u s -> (u, (s, fromMaybe 0 $ M.lookup s fileHistogram))) localFiles fileSizesRaw :: [(FilePath, (Int,Int))]
+     let fileSizes = M.fromList filePercentiles :: SizeDB
+
+     let localEssays = (filter (\u -> '.' `notElem` u && isLocal (T.pack u)) $ M.keys md) :: [FilePath]
+     essaySizesRaw <- Par.mapM (\u -> do let u' = (takeWhile (/='#') $ tail u) ++ ".md"
+                                         size <- fromIntegral <$> safeGetFileSize u'
+                                         return size
+                          ) localEssays
+     let essayHistogram = calculateSizeToPercentileMap essaySizesRaw
+     let essayPercentiles = zipWith (\u s -> (u, (s, fromMaybe 0 $ M.lookup s essayHistogram))) localEssays essaySizesRaw :: [(FilePath, (Int,Int))]
+     let essaySizes = M.fromList essayPercentiles :: SizeDB
+
+     let sizes = essaySizes `M.union` archiveSizes `M.union` fileSizes
+
+     return sizes
 
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
 -- we exclude several directories (doc/, static/) entirely; a Gwern.net page is then any
@@ -358,16 +392,16 @@ duplicateAbstracts mdl = do
                                 unlines (map ("  - " ++) offendingPaths)
                  error errorMsg
 
-writeAnnotationFragments :: ArchiveMetadata -> Metadata  -> Bool -> IO ()
-writeAnnotationFragments am md writeOnlyMissing =
+writeAnnotationFragments :: ArchiveMetadata -> Metadata -> SizeDB -> Bool -> IO ()
+writeAnnotationFragments am md sizes writeOnlyMissing =
   do let ml = M.toList md
      -- first pass: process all possible partials, so they are written out & on-disk for the` getAnnotationLinkCheck` in `addHasAnnotation`
-     mapM_ (uncurry $ writeAnnotationFragment am md writeOnlyMissing) $ filter (\(_,(_,_,_,_,_,_,abst)) -> length abst <= C.minimumAnnotationLength) ml
+     mapM_ (uncurry $ writeAnnotationFragment am md sizes writeOnlyMissing) $ filter (\(_,(_,_,_,_,_,_,abst)) -> length abst <= C.minimumAnnotationLength) ml
      -- second pass: process all possible annotations. (This is awkward but without building in a whole dependency system or a global database or keeping the per-annotation processing, it's hard to see how to ensure no race condition with the annotation checking.)
-     mapM_ (uncurry $ writeAnnotationFragment am md writeOnlyMissing) ml
-writeAnnotationFragment :: ArchiveMetadata -> Metadata -> Bool -> Path -> MetadataItem -> IO ()
-writeAnnotationFragment _ _ _ _ ("","","",_,[],[],"") = return ()
-writeAnnotationFragment am md onlyMissing u i@(a,b,c,dc,kvs,ts,abst) =
+     mapM_ (uncurry $ writeAnnotationFragment am md sizes writeOnlyMissing) ml
+writeAnnotationFragment :: ArchiveMetadata -> Metadata -> SizeDB -> Bool -> Path -> MetadataItem -> IO ()
+writeAnnotationFragment _ _ _ _ _ ("","","",_,[],[],"") = return ()
+writeAnnotationFragment am md sdb onlyMissing u i@(a,b,c,dc,kvs,ts,abst) =
       if (("/index#" `isInfixOf` u && "/index#abstract" /= u) && ("#section" `isInfixOf` u || "-section" `isSuffixOf` u)) ||
          anyInfix u ["/index#see-also", "/index#links", "/index#miscellaneous"] then return ()
       else do let u' = linkCanonicalize u
@@ -402,6 +436,7 @@ writeAnnotationFragment am md onlyMissing u i@(a,b,c,dc,kvs,ts,abst) =
                       unless (null abst) $ void $ createAnnotations md pandoc
                       pandoc' <- do let p = walk (hasAnnotation md) $
                                             walk (linkIcon . linkLive . nominalToRealInflationAdjuster) $
+                                            walk (addSizeToLinks sdb) $
                                                   convertInterwikiLinks $
                                                   walk addPageLinkWalk $
                                                   parseRawAllClean pandoc

@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2025-05-04 13:38:47 gwern"
+When:  Time-stamp: "2025-05-04 17:01:23 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -124,8 +124,9 @@ import Data.ByteString.Char8 (pack, unpack)
 import System.FilePath (takeFileName, takeExtension, dropExtension)
 import System.Directory (doesFileExist, makeAbsolute, doesDirectoryExist)
 import Control.Concurrent.Async (mapConcurrently)
+import qualified Control.Monad.Parallel as Par (mapM)
 
-import LinkMetadataTypes (ArchiveMetadataItem, ArchiveMetadataList, ArchiveMetadata, Path)
+import LinkMetadataTypes (ArchiveMetadataItem, ArchiveMetadataList, ArchiveMetadata, Path, SizeDB)
 
 import qualified Config.Misc as CM (cd, todayDay)
 import Utils (writeUpdatedFile, putStrStdErr, green, printRed', printGreen, safeGetFileSize, getDirectoryContentsSizeRecursive, calculateSizeToPercentileMap)
@@ -134,13 +135,13 @@ import qualified Config.LinkArchive as C (whiteList, transformURLsForArchiving, 
 -- | Calculate file size and percentile rank for each entry in the archive database.
 --   Percentiles are calculated relative to all entries with positive file sizes.
 --   Returns a map from URL to (Size, Percentile).
-calculateArchiveSizePercentiles :: ArchiveMetadata -> IO (M.Map FilePath (Int, Int))
+calculateArchiveSizePercentiles :: ArchiveMetadata -> IO SizeDB
 calculateArchiveSizePercentiles am = do
     let keys :: [FilePath]
         keys = M.keys am
 
     -- Get (Maybe Int) size for each key
-    sizes <- mapM (getTotalSizeArchiveURL am . T.pack) keys
+    sizes <- Par.mapM (getTotalSizeArchiveURL am . T.pack) keys
 
     -- Pair keys with their maybe sizes
     let keyedSizes :: [(FilePath, Int)]

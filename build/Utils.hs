@@ -367,6 +367,14 @@ addKey key (Link  (i, cl, ks) s (url, tt)) = Link  (i, cl, nubOrd (key : ks)) s 
 addKey key (Span  (i, cl, ks) s)           = Span  (i, cl, nubOrd (key : ks)) s
 addKey key x = error $ "Utils.addKey: attempted to add a key from the key-value dict of an Inline where that makes no sense? " ++ show key ++ " : " ++ show x
 
+hasKey :: T.Text -> Inline -> Bool
+hasKey key (Code  (_, _, kvs) _)   = any (\(k, _) -> k == key) kvs
+hasKey key (Image (_, _, kvs) _ _) = any (\(k, _) -> k == key) kvs
+hasKey key (Link  (_, _, kvs) _ _)  = any (\(k, _) -> k == key) kvs
+hasKey key (Span  (_, _, kvs) _)    = any (\(k, _) -> k == key) kvs
+-- For other elements, return False as they don't have key-value attributes.
+hasKey _ _ = False
+
 hasExtension :: T.Text -> T.Text -> Bool
 hasExtension ext p = extension p == ext
 

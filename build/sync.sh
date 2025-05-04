@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-05-03 21:34:41 gwern"
+# When:  Time-stamp: "2025-05-04 18:54:57 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -342,7 +342,7 @@ else
 
     # cleanup post:
     rm -- ./static/build/hakyll ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks ./static/build/link-extractor &>/dev/null || true
-    rm --recursive -- ./_cache/  &>/dev/null || true
+    rm --recursive -- ./_cache/ &>/dev/null || true
 
     ## WARNING: this is a crazy hack to insert a sun horizontal rule 'in between' the first 3 sections
     ## on /index (Newest/Popular/Notable), then the Newest: Blog section, and then and the rest (starting with Statistics); the CSS for
@@ -350,6 +350,7 @@ else
     ## Pandoc Markdown doesn't let you write stuff 'in between' sections, either. So… a hack.
     sed -i -e 's/section id=\"newest-blog\"/hr class="horizontal-rule-nth-1"> <section id="newest-blog"/' ./_site/index
     sed -i -e 's/section id=\"statistics\"/hr class="horizontal-rule-nth-1"> <section id="statistics"/' ./_site/index
+    gwsed "<hr />" "<hr>" &>/dev/null;
 
     bold "Building sitemap.xml…"
     ## generate a sitemap file for search engines:
@@ -541,8 +542,8 @@ else
     export -f separator
     echo "$PAGES_ALL" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 separator
 
-    bold "Cleaning up Pandoc’s closed-tag-isms…" # TODO: why *does* Pandoc do this even with HTML5 output if it's invalid?
-    hr () { sed -i -e 's/<hr ?\/>/<hr>/g' -e 's/><\/img>/>/g' -- "$@"; } # they are primarily generated in the footnote section, but who knows where else?
+    bold "Cleaning up Pandoc’s self-closing-tag-isms…" # TODO: why *does* Pandoc do this even with HTML5 output if it's invalid?
+    hr () { sed -i -e 's/<hr \/>/<hr>/g' -e 's/<hr\/>/<hr>/g' -e 's/><\/img>/>/g' -- "$@"; } # they are primarily generated in the footnote section, but who knows where else?
     export -f hr
     echo "$PAGES_ALL" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 hr
 
@@ -712,7 +713,7 @@ else
             "completion-status" "collapsible" "me" "new-essays" "new-links" "site" "accesskey"
             "dark-mode-selector-inline" "extracts-mode-selector-inline" "help-mode-selector-inline" "search-mode-selector-inline" "toolbar-mode-selector-inline"
             "link-bibliography-context" "extract-not" "fraction" "separator-inline" "dark-mode-invert"
-            "prefetch" "prefetch-not"
+            "prefetch" "prefetch-not" "size-not"
         )
         html_classes_regexpattern=$(IFS='|'; echo "${html_classes_whitelist[*]}")
         html_classes=$(echo "$PAGES_ALL" | xargs --max-procs=0 --max-args=500 ./static/build/htmlClassesExtract.py | tr ' ' '\n' | sort --unique)

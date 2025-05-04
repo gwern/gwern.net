@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2025-05-03 19:15:41 gwern"
+When: Time-stamp: "2025-05-04 17:16:45 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -45,8 +45,8 @@ import Interwiki (convertInterwikiLinks)
 import LinkArchive (localizeLink, readArchiveMetadataAndCheck, ArchiveMetadata)
 import LinkAuto (linkAuto)
 import LinkBacklink (getBackLinkCheck, getLinkBibLinkCheck, getSimilarLinkCheck)
-import LinkMetadata (addPageLinkWalk, readLinkMetadataSlow, writeAnnotationFragments, createAnnotations, hasAnnotation, addCanPrefetch)
-import LinkMetadataTypes (Metadata)
+import LinkMetadata (addPageLinkWalk, readLinkMetadataSlow, writeAnnotationFragments, createAnnotations, hasAnnotation, addCanPrefetch, annotationSizeDB, addSizeToLinks)
+import LinkMetadataTypes (Metadata, SizeDB)
 import Tags (tagsToLinksDiv)
 import Typography (linebreakingTransform, typographyTransformTemporary, titlecaseInline, completionProgressHTML)
 import Utils (printGreen, replace, deleteMany, replaceChecked, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines, delete, toHTML, getMostRecentlyModifiedDir)
@@ -73,6 +73,8 @@ main =
     printGreen ("Popup annotations parsing…" :: String)
     meta <- readLinkMetadataSlow
 
+    sizes <- annotationSizeDB meta am :: IO SizeDB
+
     printGreen ("Writing blog entries…" :: String)
     writeOutBlogEntries meta
 
@@ -81,10 +83,10 @@ main =
 
        if not (null annotationBuildAllForce) then
          preprocess $ do printGreen ("Rewriting all annotations…" :: String)
-                         writeAnnotationFragments am meta False
+                         writeAnnotationFragments am meta sizes False
        else do
                preprocess $ do printGreen ("Writing missing annotations…" :: String)
-                               writeAnnotationFragments am meta True
+                               writeAnnotationFragments am meta sizes True
                if not (null annotationOneShot) then preprocess $ printGreen "Finished writing missing annotations, and one-shot mode specified, so exiting now." else do
 
                  when slow $ preprocess testAll
@@ -108,7 +110,7 @@ main =
                                 ident <- getUnderlying
                                 indexpM <- getMetadataField ident "index"
                                 let indexp = fromMaybe "" indexpM
-                                pandocCompilerWithTransformM readerOptions woptions (unsafeCompiler . pandocTransform meta am indexp)
+                                pandocCompilerWithTransformM readerOptions woptions (unsafeCompiler . pandocTransform meta am sizes indexp)
                                   >>= loadAndApplyTemplate "static/template/default.html" (postCtx meta timestamp)
                                   >>= imgUrls
 
@@ -331,8 +333,8 @@ descField escape d d' = field d' $ \item -> do
                          Left _          -> noResult "no description field"
                          Right finalDesc -> return $ deleteMany ["<p>", "</p>", "&lt;p&gt;", "&lt;/p&gt;"] finalDesc -- strip <p></p> wrappers (both forms)
 
-pandocTransform :: Metadata -> ArchiveMetadata -> String -> Pandoc -> IO Pandoc
-pandocTransform md adb indexp' p = -- linkAuto needs to run before `convertInterwikiLinks` so it can add in all of the WP links and then convertInterwikiLinks will add link-annotated as necessary; it also must run before `typographyTransformTemporary`, because that will decorate all the 'et al's into <span>s for styling, breaking the LinkAuto regexp matches for paper citations like 'Brock et al 2018'
+pandocTransform :: Metadata -> ArchiveMetadata -> SizeDB -> String -> Pandoc -> IO Pandoc
+pandocTransform md adb sizes indexp' p = -- linkAuto needs to run before `convertInterwikiLinks` so it can add in all of the WP links and then convertInterwikiLinks will add link-annotated as necessary; it also must run before `typographyTransformTemporary`, because that will decorate all the 'et al's into <span>s for styling, breaking the LinkAuto regexp matches for paper citations like 'Brock et al 2018'
                            -- tag-directories/link-bibliographies special-case: we don't need to run all the heavyweight passes, and LinkAuto has a regrettable tendency to screw up section headers, so we check to see if we are processing a document with 'index: True' set in the YAML metadata, and if we are, we slip several of the rewrite transformations:
   do
      let duplicateHeaders = duplicateTopHeaders p in
@@ -346,6 +348,7 @@ pandocTransform md adb indexp' p = -- linkAuto needs to run before `convertInter
      unless indexp $ createAnnotations md pw
      let pb = addPageLinkWalk pw  -- we walk local link twice: we need to run it before 'hasAnnotation' so essays don't get overridden, and then we need to add it later after all of the archives have been rewritten, as they will then be local links
      pbt <- fmap typographyTransformTemporary . walkM (localizeLink adb) $ walk (hasAnnotation md)
+              $ walk (addSizeToLinks sizes)
               $ if indexp then pb else
                 walk (map nominalToRealInflationAdjuster) pb
      let pbth = wrapInParagraphs $ addPageLinkWalk $ walk headerSelflinkAndSanitize pbt

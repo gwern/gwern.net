@@ -19,6 +19,10 @@ type MetadataItem = (String, String, String, String, [(String,String)], [String]
 type MetadataList = [(Path, MetadataItem)]
 type Path = String
 
+-- the size of each URL if known, in bytes and as a percentile; percentiles are normalized within 3 classes:
+-- essays (Markdown), local file sizes (PDFs, HTML files etc), and local-archive snapshots of external URLs (taking into account the split-HTML archives as well).
+type SizeDB = M.Map FilePath (Int,Int)
+
 data Failure = Temporary | Permanent deriving Show
 
 -- local essays: this excludes locally-hosted files such as PDFs.
