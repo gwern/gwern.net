@@ -1,16 +1,16 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Utils where
 
-import Control.Monad (when, forM)
+import Control.Monad (when, forM, foldM)
 import Data.Char (isSpace)
 import Data.List (group, intercalate, sort, isInfixOf, isPrefixOf, isSuffixOf, tails, elemIndices)
 import Data.Maybe (fromMaybe, listToMaybe)
-import qualified Data.Map as M (keys, filter, fromListWith)
+import qualified Data.Map as M (keys, filter, fromListWith, empty, fromList, map, Map)
 import Data.Containers.ListUtils (nubOrd)
 import qualified Data.Set as S (empty, member, insert, Set)
 import Data.Text.IO as TIO (readFile, writeFile)
 import Network.URI (parseURIReference, uriAuthority, uriPath, uriRegName, parseURI, uriScheme, uriAuthority, uriPath, uriRegName, isURIReference, isRelativeReference, uriToString, escapeURIString, isUnescapedInURI)
-import System.Directory (createDirectoryIfMissing, doesFileExist, renameFile, listDirectory, getModificationTime)
+import System.Directory (createDirectoryIfMissing, doesFileExist, renameFile, listDirectory, getModificationTime, doesDirectoryExist, getFileSize)
 import System.FilePath (takeDirectory, takeExtension, (</>))
 import System.IO (stderr, hPutStr)
 import System.IO.Temp (emptySystemTempFile)
@@ -27,7 +27,7 @@ import Data.Time.Calendar (Day, diffDays)
 import Data.Time.Clock.POSIX (utcTimeToPOSIXSeconds)
 
 import Text.Regex (subRegex, mkRegex) -- WARNING: for Unicode support, this needs to be 'regex-compat-tdfa' package, otherwise, the search-and-replaces will go badly awry!
-import Control.Exception (catch, evaluate, SomeException)
+import Control.Exception (catch, evaluate, try, SomeException)
 import System.IO.Unsafe (unsafePerformIO)
 
 import Text.Pandoc (def, nullAttr, nullMeta, runPure,
@@ -36,6 +36,122 @@ import Text.Pandoc.Walk (walk)
 import Unique (isUniqueList)
 
 import qualified Debug.Trace as DT (trace)
+
+import qualified Data.Map.Strict as Map (fromList, lookup)
+
+-- Helper function to create a map from size to its percentile rank (0–100)
+-- Takes the list of all positive sizes found.
+calculateSizeToPercentileMap :: [Int] -> M.Map Int Int
+calculateSizeToPercentileMap [] = M.empty
+calculateSizeToPercentileMap positiveSizes =
+    let n = length positiveSizes
+    in case n of
+        0 -> M.empty
+        1 -> M.fromList [(head positiveSizes, 100)] -- Only value is 100th percentile
+        _ ->
+            let sortedSizes = sort positiveSizes
+                -- Create pairs of (value, 0-based rank), handling duplicates correctly for lookup
+                -- Example: [50, 100, 100, 150] -> [(50,0), (100,1), (100,2), (150,3)]
+                rankedSizes = zip sortedSizes [(0::Int)..]
+                -- Create a map from each unique value to its *highest* rank
+                -- Example: Map { 50 => 0, 100 => 2, 150 => 3 }
+                rankMap = M.fromList rankedSizes
+                -- Pre-calculate denominator
+                n_minus_1 = fromIntegral (n - 1) :: Double
+                -- Function to calculate percentile from rank
+                calculatePerc rank = round $ (fromIntegral rank / n_minus_1) * 100.0
+            -- Create the final map by applying calculation to each rank in the rankMap
+            in M.map calculatePerc rankMap
+
+-- | Calculates the percentile rank (0–100) for each positive integer in a list.
+--   Non-positive values (< 1) are ignored.
+--
+--   The order of the returned percentiles corresponds to the order of the
+--   original positive values in the input list.
+--   Percentile is calculated as: round( (rank / (count − 1)) · 100 )
+--   where 'rank' is the 0-based index in the sorted list (using the highest
+--   rank for duplicate values), and 'count' is the total number of positive values.
+--
+--   Returns an empty list if there are no positive values.
+--   Returns [100] if there is exactly one positive value.
+calculatePercentilesFromWholeNumbers :: [Int] -> [Int]
+calculatePercentilesFromWholeNumbers [] = []
+calculatePercentilesFromWholeNumbers fileSizes =
+    let -- 1. Filter out non-positive values
+        positiveSizes = filter (> 0) fileSizes
+        -- 2. Get the count of positive values
+        n = length positiveSizes
+    in case n of
+        -- 3. Handle edge cases
+        0 -> [] -- No positive values, result is empty
+        1 -> [100] -- Only one value, it's the 100th percentile by definition here
+        _ -> -- 4. Main calculation for n > 1
+            let -- a. Sort the positive values to determine ranks
+                sortedSizes = sort positiveSizes
+
+                -- b. Create pairs of (value, 0-based rank/index)
+                -- Example: [50, 100, 150, 200, 200] -> [(50,0), (100,1), (150,2), (200,3), (200,4)]
+                rankedSizes = zip sortedSizes [(0::Int)..]
+
+                -- c. Create a map from each unique value to its *highest* rank.
+                --    `Map.fromList` handles duplicates by keeping the last entry for a given key.
+                -- Example: Map.fromList [(50,0), (100,1), (150,2), (200,3), (200,4)]
+                --       -> Map { 50 => 0, 100 => 1, 150 => 2, 200 => 4 }
+                rankMap = Map.fromList rankedSizes
+
+                -- d. Pre-calculate the denominator for percentile calculation (as Double)
+                --    Using n-1 ensures the smallest value gets 0 and the largest gets 100.
+                n_minus_1 = fromIntegral (n - 1) :: Double
+
+                -- e. Function to calculate percentile for a single size using the rank map
+                calculatePerc size =
+                    -- Look up the highest rank for this size
+                    case Map.lookup size rankMap of
+                        -- This should ideally not happen if size came from positiveSizes
+                        Nothing -> error $ "Utils.calculatePercentilesFromWholeNumbers: Internal error: size " ++ show size ++ " not found in rank map."
+                        Just rank ->
+                            -- Calculate percentile: (rank / (n-1)) * 100, then round
+                            round $ (fromIntegral rank / n_minus_1) * 100.0
+
+            -- f. Map the calculation function over the *original* filtered list
+            --    to preserve the order corresponding to the input.
+            in map calculatePerc positiveSizes
+
+safeGetFileSize :: FilePath -> IO Integer
+safeGetFileSize ""   = error "Utils.safeGetFileSize: passed empty string."
+safeGetFileSize path = do
+    result <- try (getFileSize path) :: IO (Either SomeException Integer)
+    case result of
+        Left _  -> return 0
+        Right size -> return size
+
+getDirectoryContentsSizeRecursive :: FilePath -> IO Integer
+getDirectoryContentsSizeRecursive "" = error "Utils.getDirectoryContentsSizeRecursive: passed empty string."
+getDirectoryContentsSizeRecursive dirPath = do
+    isDir <- doesDirectoryExist dirPath
+    if not isDir then
+        return 0
+    else do
+        listResult <- try (listDirectory dirPath) :: IO (Either SomeException [FilePath])
+        case listResult of
+            Left _ -> return 0
+            Right entries -> do
+                let fullPaths = map (dirPath </>) entries
+                foldM processEntry 0 fullPaths
+  where
+    processEntry :: Integer -> FilePath -> IO Integer
+    processEntry currentTotal entryPath = do
+        isFile <- doesFileExist entryPath
+        if isFile then do
+            fileSize <- safeGetFileSize entryPath
+            return (currentTotal + fileSize)
+        else do
+            isDirectory <- doesDirectoryExist entryPath
+            if isDirectory then do
+                subDirSize <- getDirectoryContentsSizeRecursive entryPath
+                return (currentTotal + subDirSize)
+            else
+                return currentTotal
 
 -- Write only when changed, to reduce sync overhead; creates parent directories as necessary; writes
 -- to a temp file in /tmp/ (at a specified template name), and does an atomic rename to the final file.

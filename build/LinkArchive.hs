@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2025-04-19 10:50:16 gwern"
+When:  Time-stamp: "2025-05-04 13:38:47 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -100,14 +100,14 @@ thousands of dying links, regular reader frustration, and a considerable waste o
 dealing with the latest broken links. -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkArchive (localizeLink, manualArchive, readArchiveMetadata, readArchiveMetadataAndCheck, testLinkRewrites, localizeLinkURL, ArchiveMetadata) where
+module LinkArchive (localizeLink, manualArchive, readArchiveMetadata, readArchiveMetadataAndCheck, testLinkRewrites, localizeLinkURL, getTotalSizeArchive, getTotalSizeArchiveURL, calculateArchiveSizePercentiles, ArchiveMetadata) where
 
 import Control.Monad (filterM, unless)
 import Data.Either (isLeft)
-import qualified Data.Map.Strict as M (toList, fromList, insert, lookup, toAscList, union, filter, size)
+import qualified Data.Map.Strict as M (toList, fromList, insert, lookup, toAscList, union, filter, size, keys, Map)
 import Data.List (isInfixOf, isPrefixOf, sortOn, sort)
 import Data.Containers.ListUtils (nubOrd)
-import Data.Maybe (isNothing, fromMaybe)
+import Data.Maybe (isNothing, fromMaybe, mapMaybe)
 import Text.Read (readMaybe)
 import qualified Data.Text.IO as TIO (readFile)
 import qualified Data.Text as T (pack, unpack, append, Text)
@@ -121,15 +121,109 @@ import Text.Show.Pretty (ppShow)
 import Data.ByteString.Base16 (encode) -- base16-bytestring
 import Crypto.Hash.SHA1 (hash) -- cryptohash
 import Data.ByteString.Char8 (pack, unpack)
-import System.FilePath (takeFileName)
-import System.Directory (doesFileExist)
+import System.FilePath (takeFileName, takeExtension, dropExtension)
+import System.Directory (doesFileExist, makeAbsolute, doesDirectoryExist)
 import Control.Concurrent.Async (mapConcurrently)
 
 import LinkMetadataTypes (ArchiveMetadataItem, ArchiveMetadataList, ArchiveMetadata, Path)
 
 import qualified Config.Misc as CM (cd, todayDay)
-import Utils (writeUpdatedFile, putStrStdErr, green, printRed', printGreen)
+import Utils (writeUpdatedFile, putStrStdErr, green, printRed', printGreen, safeGetFileSize, getDirectoryContentsSizeRecursive, calculateSizeToPercentileMap)
 import qualified Config.LinkArchive as C (whiteList, transformURLsForArchiving, transformURLsForLiveLinking, transformURLsForMobile, archiveDelay, isCheapArchive, localizeLinkTestDB, localizeLinktestCases)
+
+-- | Calculate file size and percentile rank for each entry in the archive database.
+--   Percentiles are calculated relative to all entries with positive file sizes.
+--   Returns a map from URL to (Size, Percentile).
+calculateArchiveSizePercentiles :: ArchiveMetadata -> IO (M.Map FilePath (Int, Int))
+calculateArchiveSizePercentiles am = do
+    let keys :: [FilePath]
+        keys = M.keys am
+
+    -- Get (Maybe Int) size for each key
+    sizes <- mapM (getTotalSizeArchiveURL am . T.pack) keys
+
+    -- Pair keys with their maybe sizes
+    let keyedSizes :: [(FilePath, Int)]
+        keyedSizes = zip keys sizes
+
+    -- Filter out non-positive sizes, keeping valid (FilePath, Size) pairs
+    let validPairs :: [(FilePath, Int)]
+        validPairs = [ (fp, size) | (fp, size) <- keyedSizes, size > 0 ]
+
+    -- Extract just the positive sizes to calculate the percentile map
+    let positiveSizes :: [Int]
+        positiveSizes = map snd validPairs
+
+    -- Create the lookup map from Size -> Percentile using the helper
+    let sizeToPercentileMap :: M.Map Int Int
+        sizeToPercentileMap = calculateSizeToPercentileMap positiveSizes
+
+    -- Build the final list of (FilePath, (Size, Percentile)) tuples
+    -- Use mapMaybe to handle potential lookup failures gracefully (though unlikely here)
+    let finalData :: [(FilePath, (Int, Int))]
+        finalData = mapMaybe (\x@(fp, size) ->
+                                -- Look up the percentile for this size
+                                let percentMaybe = M.lookup size sizeToPercentileMap in
+                                case percentMaybe of
+                                  Just percentile -> Just (fp, (size, percentile))
+                                  Nothing         -> error $ "LinkArchive.calculateArchiveSizePercentiles.finalData: yielded a Nothing! Should never happen? case was: " ++ show x ++ " : " ++ show percentMaybe
+                             ) validPairs
+
+    -- Create the final Map and return it (we are already in IO)
+    return $ M.fromList finalData
+
+getTotalSizeArchiveURL :: ArchiveMetadata -> T.Text -> IO Int
+getTotalSizeArchiveURL _ ""   = error "LinkArchive.getTotalSizeArchiveURL: passed empty URL."
+getTotalSizeArchiveURL am url = do archive <- tail <$> localizeLinkURL am (T.unpack url)
+                                   if archive == T.unpack url
+                                     then return (-1)
+                                     else do size <- getTotalSizeArchive archive
+                                             case size of
+                                               Nothing -> return 0
+                                               Just i -> return i
+
+-- | Calculates the total size of a Gwern.net local-archive file path.
+--   If the file ends in '.html', it *adds* the size of all files
+--   in a potential subdirectory named without the '.html' extension,
+--   accounting for the splitting.
+--
+--   Returns Nothing if the initial file path does not exist or is not a file.
+--   Returns Just Int representing the total size in bytes otherwise.
+getTotalSizeArchive :: FilePath -> IO (Maybe Int)
+getTotalSizeArchive ""   = error "LinkArchive.getTotalSizeArchive: passed empty URL."
+getTotalSizeArchive relativeFilePath = do
+    -- *** Convert to absolute path immediately ***
+    absFilePath <- makeAbsolute relativeFilePath
+
+    fileExists <- doesFileExist absFilePath -- Use absolute path
+    if not fileExists then
+        return Nothing
+    else do
+        -- Get size of the primary file (using absolute path)
+        initialFileSize <- safeGetFileSize absFilePath
+
+        -- Check if it's an HTML file
+        let extension = takeExtension absFilePath -- Ext from abs path (no functional diff)
+        if extension == ".html" then do
+            -- *** Derive potential directory from the absolute path ***
+            let potentialDirPath = dropExtension absFilePath
+            -- putStrLn $ "DEBUG: Checking for resource directory: " ++ potentialDirPath -- Keep if needed
+
+            -- *** Check existence using the derived absolute path ***
+            isResourceDir <- doesDirectoryExist potentialDirPath
+            -- putStrLn $ "DEBUG: Does resource directory exist? " ++ show isResourceDir -- Keep if needed
+
+            if isResourceDir then do
+                -- Get the size of the resource directory contents (pass absolute path)
+                resourceDirSize <- getDirectoryContentsSizeRecursive potentialDirPath
+                let totalSize = initialFileSize + resourceDirSize
+                return $ Just (fromIntegral totalSize)
+            else do
+                -- HTML file exists, but corresponding directory doesn't. Return only HTML size.
+                return $ Just (fromIntegral initialFileSize)
+        else do
+            -- Not an HTML file, just return its size
+            return $ Just (fromIntegral initialFileSize)
 
 localizeLink :: ArchiveMetadata -> Inline -> IO Inline
 localizeLink adb (Link (identifier, classes, pairs) b (targetURL, targetDescription)) = do
