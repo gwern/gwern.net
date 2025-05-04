@@ -100,8 +100,8 @@ generateID md url author date
   generateID' :: T.Text
   generateID'
     | head url' `elem` ['!', '$', '₿'] = error $ "LinkID.generateID.generateID': invalid pseudo-URL passed in. Inputs were: "  ++ show [url, author, date]
-    -- is it a /blog/ self-post? If so, we can infer the ID immediately from the slug, avoiding needing to add a manual ID to its annotation, reducing friction; eg. '/blog/2025-large-files' → 'gwern-2025-large-files'
-    | "/blog/2" `isPrefixOf` url' = T.pack (CM.authorL ++ "-" ++ delete "/blog/" url')
+    -- is it a /blog/ self-post? If so, we can infer the ID immediately from the slug, avoiding needing to add a manual ID to its annotation, reducing friction; eg. '/blog/2025/large-files' → 'gwern-2025-large-files'
+    | "/blog/2" `isPrefixOf` url' = T.pack (CM.authorL ++ "-" ++ replace "/" "-" (delete "/blog/" url'))
   -- indexes or tag-directories shouldn't be cited as they would be often linked many times on a page due to transcludes:
   -- | ("https://gwern.net" `isPrefixOf` url || "/" `isPrefixOf` url) && ("/index" `isSuffixOf` url) = ""
   -- eg. '/face' = '#gwern-face'; `generateID "https://gwern.net/font" "Gwern Branwen" "2021-01-01"` → "gwern-font" (since we are using the short URL/slug, we don't need a year/date to disambiguate, and those are often meaningless on Gwern.net anyway).
