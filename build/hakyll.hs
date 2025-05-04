@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2025-04-17 17:41:14 gwern"
+When: Time-stamp: "2025-05-03 19:15:41 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -325,7 +325,7 @@ descField escape d d' = field d' $ \item -> do
                      let cleanedDesc = runPure $ do
                               pandocDesc <- readMarkdown def{readerExtensions=pandocExtensions} (T.pack desc)
                               let pandocDesc' = convertInterwikiLinks $ linebreakingTransform pandocDesc
-                              htmlDesc <- writeHtml5String def pandocDesc' -- NOTE: we can skip 'safeHtmlWriterOptions' use here because descriptions are always very simple & will never have anything complex like tables
+                              htmlDesc <- writeHtml5String safeHtmlWriterOptions pandocDesc' -- NOTE: we need 'safeHtmlWriterOptions' here because while descriptions are always very simple & will never have anything complex like tables, they *usually* are long enough to trigger line-wrapping, which causes problems for anyone parsing <meta> tags
                               return $ (\t -> if escape then escapeHtml t else t) $ T.unpack htmlDesc
                       in case cleanedDesc of
                          Left _          -> noResult "no description field"
