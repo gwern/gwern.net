@@ -112,7 +112,7 @@ gwern md p
                                          else if color then "invert-auto" else "invert-not"
                         let thumbnailFigure = if thumbnail'=="" then "" else
                               let imgClass =  "class=\"float-right page-thumbnail " ++ color' ++ " " ++ unwords thumbnailCSS ++ "\""
-                              in ("<figure><img " ++ imgClass ++ " height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ thumbnail' ++ "\" title=\"" ++ thumbnailText ++ "\" alt=\"\" /></figure>")
+                              in ("<figure><img " ++ imgClass ++ " height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ thumbnail' ++ "\" title=\"" ++ thumbnailText ++ "\" alt=\"\"></figure>")
 
                         let doi = [] -- I explored the idea but DOIs are too expensive & ultimately do little useful
                         -- let footnotesP = "<section class=\"footnotes\"" `isInfixOf` b

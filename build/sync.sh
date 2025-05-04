@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-05-01 22:59:01 gwern"
+# When:  Time-stamp: "2025-05-03 21:34:41 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -348,8 +348,8 @@ else
     ## on /index (Newest/Popular/Notable), then the Newest: Blog section, and then and the rest (starting with Statistics); the CSS for
     ## making the rule a block dividing the two halves just doesn't work in any other way, but
     ## Pandoc Markdown doesn't let you write stuff 'in between' sections, either. So… a hack.
-    sed -i -e 's/section id=\"newest-blog\"/hr class="horizontal-rule-nth-1" \/> <section id="newest-blog"/' ./_site/index
-    sed -i -e 's/section id=\"statistics\"/hr class="horizontal-rule-nth-1" \/> <section id="statistics"/' ./_site/index
+    sed -i -e 's/section id=\"newest-blog\"/hr class="horizontal-rule-nth-1"> <section id="newest-blog"/' ./_site/index
+    sed -i -e 's/section id=\"statistics\"/hr class="horizontal-rule-nth-1"> <section id="statistics"/' ./_site/index
 
     bold "Building sitemap.xml…"
     ## generate a sitemap file for search engines:
@@ -540,6 +540,11 @@ else
     separator () { sed -i 's/ • / <span class=separator-inline>•<\/span> /g' -- "$@"; }
     export -f separator
     echo "$PAGES_ALL" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 separator
+
+    bold "Cleaning up Pandoc’s closed-tag-isms…" # TODO: why *does* Pandoc do this even with HTML5 output if it's invalid?
+    hr () { sed -i -e 's/<hr ?\/>/<hr>/g' -e 's/><\/img>/>/g' -- "$@"; } # they are primarily generated in the footnote section, but who knows where else?
+    export -f hr
+    echo "$PAGES_ALL" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 hr
 
     # 1. turn "As per Foo et al 2020, we can see." → "<p>As per Foo et al 2020, we can see.</p>" (&nbsp;); likewise for 'Foo 2020' or 'Foo & Bar 2020'
     # 2. add non-breaking character to punctuation after links to avoid issues with links like '[Foo](/bar);' where ';' gets broken onto the next line (this doesn't happen in regular text, but only after links, so I guess browsers have that builtin but only for regular text handling?), (U+2060 WORD JOINER (HTML &#8288; • &NoBreak; • WJ))
@@ -828,7 +833,7 @@ else
               -e '[12][0-9][0-9][0-9]—[01][0-9]—[0-3][0-9]' -e '[12][0-9][0-9][0-9]—[01][0-9]-[0-3][0-9]' -e '[12][0-9][0-9][0-9]-[01][0-9]—[0-3][0-9]' \
               -e '[12][0-9][0-9][0-9]—[12][0-9][0-9][0-9]' -e '[\[( ~#"][12][0-9][0-9][0-9]-[12][0-9][0-9][0-9]' \
               -e ' -\$[1-9][0-9]+' -e ' -\$[1-9][0-9][0-9]' -e ' -\$[1-9][0-9][0-9]+' -e ' \$[0-9][0-9][0-9][0-9]' -e ' \$[0-9][0-9][0-9][0-9][0-9]' -e ' \$[1-9][0-9][0-9][0-9]' -e '[^=]\$[1-9][0-9][0-9][0-9][^)>kmg"]' -e '\$[0-9][0-9][0-9][0-9][0-9]' -e '\[\$[12][0-9][0-9][0-9]' \
-              -e '<div class="epigraph"$' \
+              -e '<div class="epigraph"$' -e '</>' \
               -- $PAGES | \
               gfv '/utext'; }
      wrap λ "Markdown: miscellaneous regexp errors."
@@ -876,7 +881,7 @@ else
 
     λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | \
              xargs --max-args=500 grep --fixed-strings --with-filename --color=always \
-                   -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' -e '<a href="!W"' -e '’S ' -e '<span id="#' -e ' abd ' -e '<p><span class="abstract-collapse-only">' -e '{=HTML}' -e ' 1_e_' | \
+                   -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' -e '<a href="!W"' -e '’S ' -e '<span id="#' -e ' abd ' -e '<p><span class="abstract-collapse-only">' -e '{=HTML}' -e ' 1_e_' -e '>><' -e '</>' | \
                    gfv -e '/design-graveyard' --; }
     wrap λ "Miscellaneous fixed string errors in compiled HTML."
 
@@ -986,7 +991,7 @@ else
             -e '<n/em>' -e '!=' -e '%3Cem%3E' -e '%3C/em%3E' -e '%3Cstrong%3E' -e '%3C/strong%3E' \
             -e ' r-squared' -e ' R-squared' -e '&gt ' -e '&lt ' -e '&lte ' -e '&gte ' -- ./metadata/*.gtx | \
              gfv -e 'popular_shelves' -e 'Le corps dans les étoiles: l’homme zodiacal';
-         gf -e ' TeX' -e ' LaTeX' -- ./metadata/*.gtx | gfv -e 'logotype-';
+         gf -e ' TeX' -e ' LaTeX' -e '>><' -e '</>' -- ./metadata/*.gtx | gfv -e 'logotype-';
        }
     wrap λ "#3: Check possible syntax errors in GTX metadata database (fixed string matches)." &
 
