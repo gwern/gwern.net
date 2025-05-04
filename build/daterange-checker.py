@@ -4,7 +4,7 @@
 # daterange-checker.py: check dates in context for whether they are actually numbers
 # Author: Gwern Branwen
 # Date: 2024-08-04
-# When:  Time-stamp: "2025-01-19 22:38:45 gwern"
+# When:  Time-stamp: "2025-05-03 11:21:52 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python daterange-checker.py
@@ -190,7 +190,7 @@ Empirical Methods in Natural Language Processing , pp.&nbsp;35–42, <span class
 ""
 - Input: <text><p><a href="http://www.walterzorn.de/en/tooltip/tooltip_e.htm" id="zorn-2002" class="link-modified-recently" title="‘DHTML JavaScript Tooltips’, Zorn 2002">“DHTML JavaScript Tooltips (<span class="date-range" title="The date range 2002–2008 lasted 6 years, ending 16 years ago.">2002<span class="subsup"><sup>–</sup><sub>6</sub></span>2008<sub>16ya</sub></span>)”</a>, Walter Zorn (d. <span class="date-range">2009<sub>15ya</sub></span>)</p></text> →
 ""
-- Input: <text>><p><a href="https://en.wikipedia.org/wiki/Will_H._Bradley" class="link-live" data-link-icon="wikipedia" data-link-icon-type="svg" data-url-iframe="https://en.m.wikipedia.org/wiki/Will_H._Bradley#bodyContent" title="Will H. Bradley">Will H. Bradley</a> Art Nouveau cover of the noted printing magazine & showcase, <em>The Inland Printer</em> (v14, #3, <span class="date-range">1894<sub>130ya</sub></span></text> →
+- Input: <text><p><a href="https://en.wikipedia.org/wiki/Will_H._Bradley" class="link-live" data-link-icon="wikipedia" data-link-icon-type="svg" data-url-iframe="https://en.m.wikipedia.org/wiki/Will_H._Bradley#bodyContent" title="Will H. Bradley">Will H. Bradley</a> Art Nouveau cover of the noted printing magazine & showcase, <em>The Inland Printer</em> (v14, #3, <span class="date-range">1894<sub>130ya</sub></span></text> →
 ""
 - Input: <text>"<p>One might wonder why I had so much traffic to an English page; do just that many Germans know English? No, it turns out my link in their page didn’t come with an “English” warning. I added this warning on 2012-05-20, and while there was a major traffic spike after that and then a long outage June-September <span class="date-range">2012<sub>12ya</sub></span> where the link was broken due to my own carelessness, the warning seems to have substantially reduced click-throughs according to my <a href="/doc/wikipedia/2012-gwern-dnbfaqwikipedia.pdf" data-link-icon="pdf" data-link-icon-type="svg">analytics</a>.<a href="#fnref28" class="footnote-back" role="doc-backlink">↩︎</a></p>"</text> →
 ""

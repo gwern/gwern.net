@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-04-29 13:31:56 gwern"
+# When:  Time-stamp: "2025-05-02 19:44:29 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -665,6 +665,11 @@ Personal profile - UPJS Kosice"
 "Eulogy to the <em>Obits</em>"
 - "https://sampatt.com/blog/2025-04-28-can-o3-beat-a-geoguessr-master Sam Patterson"
 ""
+- https://www.ft.com/content/c04389a3-c672-43ce-8d9e-724668c0e490 Subscribe to read"
+""
+- "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5216904"
+Shifting Work Patterns with Generative AI by Eleanor Wiske Dillon, Sonia Jaffe, Nicole Immorlica, Christopher Stanton :: SSRN"
+"Shifting Work Patterns with Generative AI"
 
 Task:
 

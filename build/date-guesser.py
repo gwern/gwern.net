@@ -4,7 +4,7 @@
 # date-guesser.py: extract recent dates in YYYY[[-MM]-DD] format from natural language inputs or structured text like URLs
 # Author: Gwern Branwen
 # Date: 2024-08-21
-# When:  Time-stamp: "2025-04-30 19:54:36 gwern"
+# When:  Time-stamp: "2025-05-03 20:01:09 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo 'https://erikbern.com/2016/04/04/nyc-subway-math' | python date-guesser.py
@@ -76,6 +76,7 @@ Do not make up dates; if you are unsure, print only the empty string "".
 Do not add any commentary or explanations.
 For Arxiv URLs, only the first 4 numbers are meaningful, in the form: `YYMM`; the numbers after the period are an ID and the date *cannot* be guessed from them!
 For archived URLs such as Internet Archive URLs, the date of the snapshot is *not* the date of publication.
+Wikipedia articles have no date due to complicated editing histories and 'created' having no particular meaning for them. Do not return dates for any Wikipedia articles.
 
 Task examples (with explanations in '#' comments):
 
@@ -1098,6 +1099,26 @@ Task examples (with explanations in '#' comments):
 2025-04-28
 - "https://www.newsweek.com/elon-musk-wears-hats-trump-cabinet-amid-report-hes-working-home-2066305 Elon Musk Wears Two Hats with Trump Cabinet Amid Report He’s Working from Home"
 2025-04-30
+- "https://asteriskmag.com/issues/09/deros-and-the-ur-abduction"
+2025-01
+- "https://speechmap.substack.com/p/chinese-open-source-model-roundup?open=false#%C2%A7the-chimera Chinese Open Source Model Roundup: DeepSeek, Qwen3, variants and more"
+2025-05-01
+- "https://www.nytimes.com/2025/05/02/health/snakes-universal-antivenom-tim-friede.html"
+2025-05-02
+- "https://en.wikipedia.org/wiki/Kay_Granger#Retirement"
+""
+- "https://www.ft.com/content/c04389a3-c672-43ce-8d9e-724668c0e490"
+2025-05-02
+- "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5216904"
+2025-04-25
+- "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3246856/"
+2012-01
+- "https://blog.janestreet.com/the-joy-of-expect-tests/"
+2023-01-09
+- "https://goodsniff.substack.com/p/creating-bluey-tales-from-the-art-891"
+2025-04-08
+- "https://en.wikipedia.org/wiki/L%C3%A1szl%C3%B3_Polg%C3%A1r#Polg%C3%A1r_sisters"
+""
 
 Task:
 

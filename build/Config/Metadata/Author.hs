@@ -752,6 +752,7 @@ canonicals = M.fromList
   , ("avturchin", "Alexey Turchin")
   , ("KelseyTuoc", "Kelsey Piper")
   , ("ByrneHobart", "Byrne Hobart")
+  , ("goodsniff", "Catriona Drummond")
   ]
 
 -- tests: unique
@@ -1667,6 +1668,12 @@ authorLinkDB = M.fromList $
     , ("Alexey Turchin", "https://scholar.google.com/citations?user=LyRLy0EAAAAJ")
     , ("Kelsey Piper", "https://en.wikipedia.org/wiki/Kelsey_Piper")
     , ("Byrne Hobart", "https://www.thediff.co/")
+    , ("Tim Friede", "https://www.centivax.com/tim")
+    , ("James Jacobs", "https://en.wikipedia.org/wiki/James_Jacobs_(game_designer)")
+    , ("George Tucker", "https://sites.google.com/view/gjt")
+    , ("Anirudh Goyal", "https://anirudh9119.github.io/")
+    , ("John Bruno Hare", "https://www.sacred-texts.com/jbhobit.htm")
+    , ("Catriona Drummond", "https://www.catrionadrummond.com/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2926,4 +2933,4 @@ authorWpLinkDB =
     , "John Brunner", "Harlan Ellison", "Frederik Pohl", "A. E. Stallings", "Richard Sharpe Shaver"
     , "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist"
     , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group", "Adrian Hon"
-    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston"]
+    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz"]
