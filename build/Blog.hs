@@ -42,13 +42,20 @@ prefix, authorU, authorID :: String
 prefix   = "blog"
 authorU  = C.author
 authorID = C.authorL
-lengthMin, titleMax :: Int
+lengthMin, lengthMax, titleMax :: Int
 lengthMin = 600
+lengthMax = 30000 -- at this length, should probably be split out to a standalone essay
 titleMax = 71 -- chosen empirically based on what lengths seem to trigger line-wrapping when transcluded on /index in Firefox/Chromium
 
 writeOutBlogEntries :: Metadata -> IO ()
 writeOutBlogEntries md =
   do let writings = filterForAuthoredAnnotations md
+
+     when (null writings) $ error "Blog.writeOutBlogEntries: no blog posts found‽"
+
+     let writingsTooLong = filter (\(_,(_,_,_,_,_,_,abst)) -> length abst > lengthMax) writings
+     unless (null writingsTooLong) $ do printRed ("Blog.writeOutBlogEntries.writingsTooLong: these " ++ show (length writingsTooLong) ++ " blog posts are getting rather long. Consider turning them into regular top-level pages?")
+                                        print writingsTooLong
 
      let dates = map (\(_,(_,_,dc,_,_,_,_)) -> dc) writings
      let badDates = filter (\x -> length x /= 10) dates
