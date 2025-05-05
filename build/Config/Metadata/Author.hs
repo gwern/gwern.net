@@ -1674,6 +1674,10 @@ authorLinkDB = M.fromList $
     , ("Anirudh Goyal", "https://anirudh9119.github.io/")
     , ("John Bruno Hare", "https://www.sacred-texts.com/jbhobit.htm")
     , ("Catriona Drummond", "https://www.catrionadrummond.com/")
+    , ("Albert Webson", "https://representation.ai/")
+    , ("Yanping Huang", "https://scholar.google.com/citations?user=uEtBQScAAAAJ&hl=en&oi=ao")
+    , ("Mostafa Dehghani", "https://scholar.google.com/citations?user=MiHOX3QAAAAJ&hl=en&oi=ao")
+    , ("Ming Ding", "https://scholar.google.com/citations?user=Va50YzkAAAAJ&hl=en&oi=ao")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

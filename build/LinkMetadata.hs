@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-05-04 17:31:45 gwern"
+When:  Time-stamp: "2025-05-04 20:36:38 gwern"
 License: CC-0
 -}
 
@@ -61,10 +61,10 @@ import Metadata.Author (authorCollapse)
 import qualified Config.Metadata.Author as CA (authorLinkDB, authorWhitelist)
 
 addSizeToLinks :: SizeDB -> Inline -> Inline
-addSizeToLinks sdb x@(Link _ _ (url,_)) = if hasClass "filesize-not" x || hasKey "filesize-bytes" x || hasKey "filesize-percentile" x then x
+addSizeToLinks sdb x@(Link _ _ (url,_)) = if hasClass "filesize-not" x || hasKey "filesize-bytes" x || hasKey "filesize-percentage" x then x
                        else case M.lookup (T.unpack url) sdb of
                               Nothing -> x
-                              Just (byte,percentile) -> addKey ("filesize-bytes", T.pack $ show byte) $ addKey ("filesize-percentile", T.pack $ show percentile) x
+                              Just (byte,percentile) -> addKey ("filesize-bytes", T.pack $ show byte) $ addKey ("filesize-percentage", T.pack $ show percentile) x
 addSizeToLinks _ x = x
 
 -- we have 3 kinds of URLs we can look up sizes for: (1) external URLs which have been locally-archived and have a known fixed on-disk size we can easily obtain; due to the subtleties of splitting HTML files, we outsource that to LinkArchive.calculateArchiveSizePercentiles; (2) local files with extensions like PDFs, which we can simply call `safeGetFileSize`; (3) local *essays* with no extensions, but also no ID/anchor fragment, where we append ".md"; (4) local essays with anchors/IDs, which logically we would parse the Markdown to infer what the 'actual' size is of the specified ID but we will punt and just treat it as if the anchor were not there, by deleting it.

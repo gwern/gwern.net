@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2025-04-03 22:54:42 gwern"
+# When:  Time-stamp: "2025-05-04 20:27:02 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -636,6 +636,10 @@ This paper analyzes the rhetorical role of food in the fictional narrative and i
 I defend the extremist position that the fundamental ontology of the world consists of a vector in Hilbert space evolving according to the Schrödinger equation.
 The laws of physics are determined solely by the energy eigenspectrum of the Hamiltonian. The structure of our observed world, including space and fields living within it, should arise as a higher-level emergent description.
 I sketch how this might come about, although much work remains to be done.
+- <abstract>We propose “Insect-Computer Hybrid Speaker”, which enables us to make musics made from combinations of computer and insects. Lots of studies have proposed methods and interfaces for controlling insects and obtaining feedback. However, there have been less research on the use of insects for interaction with third parties. In this paper, we propose a method in which cicadas are used as speakers triggered by using Electrical Muscle Stimulation (EMS). We explored and investigated the suitable waveform of chirp to be controlled, the appropriate voltage range, and the maximum pitch at which cicadas can chirp.</abstract>
+We propose <strong>Insect-Computer Hybrid Speaker</strong>, which enables us to make musics made from combinations of computer and insects. Lots of studies have proposed methods and interfaces for controlling insects and obtaining feedback. However, there have been less research on the use of insects for interaction with third parties.
+In this paper, we propose a method in which cicadas are used as speakers triggered by using Electrical Muscle Stimulation (EMS).
+We explored and investigated the suitable waveform of chirp to be controlled, the appropriate voltage range, and the maximum pitch at which cicadas can chirp.
 
 [End of examples. Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 
