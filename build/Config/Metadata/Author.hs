@@ -764,7 +764,7 @@ canonicalsWithInitials =
   , "Scott D. Gordon", "Michel G. Nivard", "Howard J. Edenberg", "Cristen Jennifer Willer"
   , "Bruce M. Psaty", "Benjamin W. Domingue", "Tune H. Pers", "Travis T. Mallard", "Lars L. Lind"
   , "Kenneth O. Stanley", "Sarah E. Harris", "Preben Bo Mortensen", "Rodney J. Scott", "Riccardo E. Marioni"
-  , "Irving John Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra"
+  , "I. J. Good", "Robert J. Cava", "Ilja M. Nolte", "David W. Scott", "Ben A. Oostra"
   , "Edmund L. Gettier", "Aidan N. Gomez", "Rona J. Strawbridge", "Joyce Y. Tung"
   , "Joshua B. Tenenbaum", "Daniel W. Belsky", "Albert Vernon Smith", "Zachary C. Lipton"
   , "Themistocles L. Assimes", "Nilesh J. Samani", "Daniel F. Gudbjartsson", "Kilian Q. Weinberger"
@@ -791,7 +791,7 @@ canonicalsWithInitials =
   , "Philip S. Dale", "Lee N. Robbins", "Hyman G. Rickover", "Lucia A. Hindorff"
   , "Peter P. Pramstaller", "Kent M. Pitman", "Louise S. Bicknell", "Laura Jean Bierut"
   , "Grover S. Krantz", "Kent D. Taylor", "Robyn M. Dawes", "Donna Lee Hart", "John I. Nurnberger"
-  , "John P. Beilby", "James L. Kirkland", "Jakob N. Foerster"]
+  , "John P. Beilby", "James L. Kirkland", "Jakob N. Foerster", "Harrison J. Kell"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1675,9 +1675,13 @@ authorLinkDB = M.fromList $
     , ("John Bruno Hare", "https://www.sacred-texts.com/jbhobit.htm")
     , ("Catriona Drummond", "https://www.catrionadrummond.com/")
     , ("Albert Webson", "https://representation.ai/")
-    , ("Yanping Huang", "https://scholar.google.com/citations?user=uEtBQScAAAAJ&hl=en&oi=ao")
-    , ("Mostafa Dehghani", "https://scholar.google.com/citations?user=MiHOX3QAAAAJ&hl=en&oi=ao")
-    , ("Ming Ding", "https://scholar.google.com/citations?user=Va50YzkAAAAJ&hl=en&oi=ao")
+    , ("Yanping Huang", "https://scholar.google.com/citations?user=uEtBQScAAAAJ")
+    , ("Mostafa Dehghani", "https://scholar.google.com/citations?user=MiHOX3QAAAAJ")
+    , ("Ming Ding", "https://scholar.google.com/citations?user=Va50YzkAAAAJ")
+    , ("Hongshen Li", "https://www.ee.cuhk.edu.hk/~hsli/")
+    , ("Harrison J. Kell", "https://scholar.google.com/citations?user=KaIwZ4kAAAAJ&hl=en&oi=ao")
+    , ("Gyda Bjornsdottir", "https://scholar.google.com/citations?user=2mKbABYAAAAJ&hl=en&oi=ao")
+    , ("Eva Reinmaa", "https://scholar.google.com/scholar?q=Eva%20Reinmaa")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2054,7 +2058,7 @@ authorWpLinkDB =
     ,"Gary LaFree", "Gary Lynch", "Gary Marcus", "Gary S. Becker", "Gary Saul Morson"
     ,"Gavin A. Schmidt", "Gavin Andresen", "Gavin E. Crooks", "Gavin Wright", "Ge Li"
     ,"Ge Yang", "Gemma Modinos", "Gene E. Robinson", "Gene Tsudik", "Gene V. Glass"
-    ,"Gene Wolfe", "Generation Scotland", "Geoff Davis", "Geoff MacDonald"
+    ,"Gene Wolfe", "Generation Scotland", "Geoff Davis"
     ,"Geoffrey F. Miller", "Geoffrey Hinton", "Geoffrey Hodgson", "Geoffrey Holmes", "Geoffrey J. Gordon"
     ,"Geoffrey Ling", "Geoffrey M. Hodgson", "Geoffrey Wood", "Georg Ehret", "Georg Simmel"
     ,"George Altman", "George B. Dantzig", "George B. Grant", "George Boolos", "George D. Smith"
@@ -2581,7 +2585,7 @@ authorWpLinkDB =
     ,"Pierre Pinson", "Pierre-Simon Laplace", "Pierre-Yves Oudeyer", "Pieter Abbeel", "Pietro De Camilli"
     ,"Pietro Perona", "Pinchas Cohen", "Planet Money", "Polina Anikeeva"
     , "Pontiano Kaleebu", "Pontus Skoglund", "Pony Preservation Project"
-    , "Poul-Henning Kamp", "Pradeep Dubey", "Pradeep Sharma", "Pranab Bardhan", "Prateek Jain"
+    , "Poul-Henning Kamp", "Pradeep Dubey", "Pradeep Sharma", "Pranab Bardhan"
     ,"Preslav Nakov", "Price V. Fishback", "Priya Krishna", "Przemyslaw Prusinkiewicz", "Psychiatric Genomics Consortium"
     ,"Pushmeet Kohli", "Pushpak Bhattacharyya", "Qi Cao", "Qi Dong", "Qi Guo"
     ,"Qi Sun", "Qi Tian", "Qi Zhou", "Qi Zhu", "Qian Liu"
@@ -2937,4 +2941,4 @@ authorWpLinkDB =
     , "John Brunner", "Harlan Ellison", "Frederik Pohl", "A. E. Stallings", "Richard Sharpe Shaver"
     , "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist"
     , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group", "Adrian Hon"
-    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz"]
+    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder"]

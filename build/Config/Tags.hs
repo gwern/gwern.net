@@ -78,7 +78,7 @@ tagsShort2LongRewrites =
    , ("uighurs", "history/uighur"), ("ai/adversarial", "ai/nn/adversarial"), ("add", "psychiatry/adhd")
    , ("asperger", "psychiatry/autism"), ("aspergers", "psychiatry/autism"), ("personality/conscientiousness", "psychology/personality/conscientiousness")
    , ("conscientiousness", "psychology/personality/conscientiousness"), ("anorexia-nervosa", "psychiatry/anorexia"), ("anxiety-disorder", "psychiatry/anxiety")
-   , ("masked-auto-encoder", "ai/nn/vae/mae"), ("masked-autoencoder", "ai/nn/vae/mae"), ("masked", "ai/nn/vae/mae")
+   , ("masked-auto-encoder", "ai/nn/vae/mae"), ("masked-autoencoder", "ai/nn/vae/mae"), ("masked", "ai/nn/vae/mae"), ("autoencoder", "ai/nn/vae"), ("auto-encoder", "ai/nn/vae")
    , ("alzheimer's", "psychiatry/alzheimers"), ("ad", "advertising"), ("alzheimers-disease", "psychiatry/alzheimers")
    , ("alzheimer", "psychiatry/alzheimers"), ("psychedelics", "psychedelic"), ("stylometric", "statistics/stylometry")
    , ("stylometrics", "statistics/stylometry"), ("dune", "fiction/science-fiction/frank-herbert"), ("herbert", "fiction/science-fiction/frank-herbert")
