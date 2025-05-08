@@ -1682,6 +1682,7 @@ authorLinkDB = M.fromList $
     , ("Harrison J. Kell", "https://scholar.google.com/citations?user=KaIwZ4kAAAAJ&hl=en&oi=ao")
     , ("Gyda Bjornsdottir", "https://scholar.google.com/citations?user=2mKbABYAAAAJ&hl=en&oi=ao")
     , ("Eva Reinmaa", "https://scholar.google.com/scholar?q=Eva%20Reinmaa")
+    , ("Ideogram", "https://ideogram.ai/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2941,4 +2942,4 @@ authorWpLinkDB =
     , "John Brunner", "Harlan Ellison", "Frederik Pohl", "A. E. Stallings", "Richard Sharpe Shaver"
     , "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist"
     , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group", "Adrian Hon"
-    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder"]
+    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger"]
