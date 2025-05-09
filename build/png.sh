@@ -12,7 +12,6 @@ pngOne () {
         nice -n 19 pngnq -v -s1 "$temp_file"
         optimized_file="${temp_file%.*}"-nq8.png
         if [ -f "$optimized_file" ]; then
-            nice -n 19 advpng --shrink-insane --iter 30 --recompress "$optimized_file"
             nice -n 19 optipng -o9 "$optimized_file"
             new_size=$(stat --printf="%s" "$optimized_file")
             # calculate the percentage difference
