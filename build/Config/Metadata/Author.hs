@@ -791,7 +791,7 @@ canonicalsWithInitials =
   , "Philip S. Dale", "Lee N. Robbins", "Hyman G. Rickover", "Lucia A. Hindorff"
   , "Peter P. Pramstaller", "Kent M. Pitman", "Louise S. Bicknell", "Laura Jean Bierut"
   , "Grover S. Krantz", "Kent D. Taylor", "Robyn M. Dawes", "Donna Lee Hart", "John I. Nurnberger"
-  , "John P. Beilby", "James L. Kirkland", "Jakob N. Foerster", "Harrison J. Kell"]
+  , "John P. Beilby", "James L. Kirkland", "Jakob N. Foerster", "Harrison J. Kell", "Enda M. Byrne"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1678,11 +1678,15 @@ authorLinkDB = M.fromList $
     , ("Yanping Huang", "https://scholar.google.com/citations?user=uEtBQScAAAAJ")
     , ("Mostafa Dehghani", "https://scholar.google.com/citations?user=MiHOX3QAAAAJ")
     , ("Ming Ding", "https://scholar.google.com/citations?user=Va50YzkAAAAJ")
-    , ("Hongshen Li", "https://www.ee.cuhk.edu.hk/~hsli/")
-    , ("Harrison J. Kell", "https://scholar.google.com/citations?user=KaIwZ4kAAAAJ&hl=en&oi=ao")
-    , ("Gyda Bjornsdottir", "https://scholar.google.com/citations?user=2mKbABYAAAAJ&hl=en&oi=ao")
+    , ("Hongsheng Li", "https://www.ee.cuhk.edu.hk/~hsli/")
+    , ("Harrison J. Kell", "https://scholar.google.com/citations?user=KaIwZ4kAAAAJ")
+    , ("Gyda Bjornsdottir", "https://scholar.google.com/citations?user=2mKbABYAAAAJ")
     , ("Eva Reinmaa", "https://scholar.google.com/scholar?q=Eva%20Reinmaa")
     , ("Ideogram", "https://ideogram.ai/")
+    , ("Weizhu Chen", "https://scholar.google.com/citations?user=LG_E-4EAAAAJ&hl=en&oi=ao")
+    , ("Enda M. Byrne", "https://about.uq.edu.au/experts/1834")
+    , ("David Dohan", "https://scholar.google.com/citations?hl=en&user=iZ5cY0AAAAAJ&view_op=list_works&sortby=pubdate")
+    , ("Jonathan Imber", "https://www.wellesley.edu/people/jonathan-imber")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2835,7 +2839,7 @@ authorWpLinkDB =
     ,"Walter Mischel", "Walter R. Dornberger", "Walter Scheidel", "Walter Sinnott-Armstrong", "Walter Y. Oi"
     ,"Warner R. Schilling", "Warren Weaver", "Wei Bi", "Wei Dai", "Wei Fang"
     ,"Wei Fu", "Wei Gan", "Wei Gao", "Wei Han", "Wei He"
-    ,"Wei Huang", "Wei Ji Ma", "Wei Lu", "Wei Song", "Wei Wen"
+    ,"Wei Huang", "Wei Ji Ma", "Wei Lu", "Wei Wen"
     ,"Wei Xiong", "Wei Xu", "Wei Yu", "Wei Zheng", "Weihua Zhang"
     ,"Weinan E", "Wellcome Trust Case Control Consortium", "Wells Tower", "Wen Gao", "Wen Qin"
     ,"Wen Shen", "Wen Sun", "Wen Wang", "Wen Xie", "Wen Zhou"
@@ -2880,7 +2884,7 @@ authorWpLinkDB =
     ,"Yi Jiang", "Yi Ma", "Yi Mao", "Yi Rao", "Yi Shang"
     ,"Yi Wang", "Yi Wei", "Yi Wen", "Yi Wu", "Yi Yu"
     ,"Yi Zuo", "Yifan Xu", "Yihan Wang", "Yili Wu", "Yilin Fan"
-    ,"Yilin Yang", "Yiling Chen", "Yilu Wang", "Yiming Zhang", "Ying Gu"
+    ,"Yilin Yang", "Yiling Chen", "Yilu Wang", "Ying Gu"
     ,"Ying Guo", "Ying Lu", "Ying Shan", "Ying Wu", "Ying Xu"
     ,"Ying Yang", "Ying Zhu", "Ying-Hui Fu", "Yingying Chen", "Yinsheng Wang"
     ,"Yishan Wong", "Yiwei Zhang", "Yixuan Li", "Yoav Benjamini", "Yoav Shoham"
@@ -2942,4 +2946,4 @@ authorWpLinkDB =
     , "John Brunner", "Harlan Ellison", "Frederik Pohl", "A. E. Stallings", "Richard Sharpe Shaver"
     , "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist"
     , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group", "Adrian Hon"
-    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger"]
+    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins"]

@@ -4,7 +4,7 @@
 # date-guesser.py: extract recent dates in YYYY[[-MM]-DD] format from natural language inputs or structured text like URLs
 # Author: Gwern Branwen
 # Date: 2024-08-21
-# When:  Time-stamp: "2025-05-07 10:17:29 gwern"
+# When:  Time-stamp: "2025-05-08 19:19:21 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo 'https://erikbern.com/2016/04/04/nyc-subway-math' | python date-guesser.py
@@ -1137,6 +1137,10 @@ Task examples (with explanations in '#' comments):
 2021-02-22
 - "https://nymag.com/intelligencer/article/openai-chatgpt-ai-cheating-education-college-students-school.html"
 2025-05-07
+- "https://www.astralcodexten.com/p/testing-ais-geoguessr-genius"
+2025-05-02
+- "https://stevenadler.substack.com/p/is-chatgpt-actually-fixed-now?open=false#%C2%A7what-evaluations-did-i-run"
+"2025-05-08"
 
 Task:
 
