@@ -753,6 +753,8 @@ canonicals = M.fromList
   , ("KelseyTuoc", "Kelsey Piper")
   , ("ByrneHobart", "Byrne Hobart")
   , ("goodsniff", "Catriona Drummond")
+  , ("slatestarcodex", "Scott Alexander")
+  , ("tradegal_", "Ricki Heicklen")
   ]
 
 -- tests: unique
@@ -791,7 +793,7 @@ canonicalsWithInitials =
   , "Philip S. Dale", "Lee N. Robbins", "Hyman G. Rickover", "Lucia A. Hindorff"
   , "Peter P. Pramstaller", "Kent M. Pitman", "Louise S. Bicknell", "Laura Jean Bierut"
   , "Grover S. Krantz", "Kent D. Taylor", "Robyn M. Dawes", "Donna Lee Hart", "John I. Nurnberger"
-  , "John P. Beilby", "James L. Kirkland", "Jakob N. Foerster", "Harrison J. Kell", "Enda M. Byrne"]
+  , "John P. Beilby", "James L. Kirkland", "Jakob N. Foerster", "Harrison J. Kell", "Enda M. Byrne", "Brendan P. Zietsch", "William Bennett Bean"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1683,10 +1685,15 @@ authorLinkDB = M.fromList $
     , ("Gyda Bjornsdottir", "https://scholar.google.com/citations?user=2mKbABYAAAAJ")
     , ("Eva Reinmaa", "https://scholar.google.com/scholar?q=Eva%20Reinmaa")
     , ("Ideogram", "https://ideogram.ai/")
-    , ("Weizhu Chen", "https://scholar.google.com/citations?user=LG_E-4EAAAAJ&hl=en&oi=ao")
+    , ("Weizhu Chen", "https://scholar.google.com/citations?user=LG_E-4EAAAAJ")
     , ("Enda M. Byrne", "https://about.uq.edu.au/experts/1834")
-    , ("David Dohan", "https://scholar.google.com/citations?hl=en&user=iZ5cY0AAAAAJ&view_op=list_works&sortby=pubdate")
+    , ("David Dohan", "https://scholar.google.com/citations?user=iZ5cY0AAAAAJ&view_op=list_works&sortby=pubdate")
     , ("Jonathan Imber", "https://www.wellesley.edu/people/jonathan-imber")
+    , ("Ricki Heicklen", "https://trading.camp/")
+    , ("Daphne Ippolito", "https://www.daphnei.com/")
+    , ("Bruno Etain", "https://scholar.google.com/citations?user=xAxPE74AAAAJ&hl=en&oi=ao")
+    , ("Brendan P. Zietsch", "https://psychology.uq.edu.au/profile/2404/brendan-zietsch")
+    , ("Aviral Kumar", "https://scholar.google.com/citations?user=zBUwaGkAAAAJ&hl=en&oi=ao")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -1880,7 +1887,7 @@ authorWpLinkDB =
     ,"Christopher Re", "Christopher R\233", "Christopher Talbot", "Christopher Weber", "Christos Davatzikos"
     ,"Christos H. Papadimitriou", "Christos Kozyrakis", "Christos Pantelis", "Christos Papadimitriou", "Christos S. Mantzoros"
     ,"Christy L. Haynes", "Chu Chen", "Chuan He", "Chun Ye", "Chun Yuan"
-    ,"Chunyu Wang", "Churchill Eisenhart", "Cindy Ramirez", "Cisca Wijmenga", "Claire Allen"
+    ,"Chunyu Wang", "Churchill Eisenhart", "Cindy Ramirez", "Cisca Wijmenga"
     ,"Claire Haworth", "Claire Massey", "Clancy Blair", "Clara Sousa-Silva", "Claude Bouchard"
     ,"Claude Gaillard", "Claude Marcus", "Claude Roux", "Claude Shannon", "Claudi L. H. Bockting"
     ,"Claudia Clopath", "Claudio Stampi", "Claudius Gros", "Claus Lamm", "Clay Shirky"
@@ -2946,4 +2953,4 @@ authorWpLinkDB =
     , "John Brunner", "Harlan Ellison", "Frederik Pohl", "A. E. Stallings", "Richard Sharpe Shaver"
     , "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist"
     , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group", "Adrian Hon"
-    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins"]
+    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins", "Charles Baudelaire"]

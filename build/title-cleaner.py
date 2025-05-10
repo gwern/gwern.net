@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-05-05 17:12:09 gwern"
+# When:  Time-stamp: "2025-05-10 17:33:41 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -674,6 +674,8 @@ Shifting Work Patterns with Generative AI by Eleanor Wiske Dillon, Sonia Jaffe, 
 ""
 - "https://languagelog.ldc.upenn.edu/nll/?p=3546 Language Log"
 ""
+- "https://adamleblanc.page/portfolio/schist01/ Schist01: A wrist-mounted keyboard prototype—Adam LeBlanc"
+"Schist01: A wrist-mounted keyboard prototype"
 
 Task:
 

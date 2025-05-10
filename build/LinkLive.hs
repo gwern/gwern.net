@@ -8,7 +8,7 @@ Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs fr
 to work (reasonably) well as cross-site popups inside a frame.
 `extracts-contents.js` at runtime reads the class to decide which links will be live-popup-able.
 To block it, set `.link-live-not`.
-(This is for external links. The equivalent for *internal* popups, to block them popping up, use `.extract-not`. An example of this would be links to </lorem-dropcaps>: that page exists to show off dropcaps... but dropcaps are disabled inside popups & popovers, for lack of space, and therefore popping up any part of that page is pointless. We want to disable popups, so the interested desktop reader is forced to load the page instead, at which point they can then see something.)
+(This is for external links. The equivalent for *internal* popups, to block them popping up, use `.extract-not`. An example of this would be links to </lorem-dropcap>: that page exists to show off dropcaps... but dropcaps are disabled inside popups & popovers, for lack of space, and therefore popping up any part of that page is pointless. We want to disable popups, so the interested desktop reader is forced to load the page instead, at which point they can then see something.)
 
 Live popups are an alternative to, or a further step from, annotations. They let the reader preview
 a link instantly. This is useful when an annotation is not available, or when the reader has read
