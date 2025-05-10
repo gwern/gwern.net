@@ -2503,6 +2503,20 @@ body.page-doc-index #see-alsos code {
     padding: 0;
 }
 
+/*=--------=*/
+/*= /index =*/
+/*=--------=*/
+
+body.page-fiction-october.reader-mode-active #page-metadata {
+	display: none;
+}
+
+body.page-fiction-october.reader-mode-active.masked-links-hidden .footnote-ref,
+body.page-fiction-october.reader-mode-active.masked-links-hidden .footnote-back,
+body.page-fiction-october.reader-mode-active.masked-links-hidden .footnote-back-block {
+    opacity: initial;
+}
+
 
 /*****************************/
 /* SOURCE CODE FILE PREVIEWS */
