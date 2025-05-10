@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-05-05 15:31:33 gwern"
+# When:  Time-stamp: "2025-05-10 10:27:49 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -152,7 +152,7 @@ else
           s '</p></p>' '</p>'; s '’ ”' '’ ”'; s ' ”' ' “';
           s '[("doi","")]' ''; s '>/a>' '</a>'; s 'href="W!"' 'href="!W"'; s 'class="Logotype-Tex"' 'class="logotype-tex"'; s 'Class="Logotype-Tex"' 'class="logotype-tex"'; s '<span Class="' '<span class="';
           s '_n_th' '<em>n</em>th'; s 'thumbnailText: ' 'thumbnail-text: '; s ' — ' '—'; s '_n_=' '_n_ = ';
-          s '< a href' '<a href'; s 'modifed: 20' 'modified: 20'; s 'linklive-not' 'link-live-not'; s ' n-dimensional' ' <em>n</em>-dimensional'; s 'pdf#pg=' 'pdf#page='; s 'PDF#pg=' 'PDF#page='; s '<hr />' '<hr>'; s '</hr>' '<hr>'; s 'confidence: highly-likely' 'confidence: highly likely'; s 'drop-caps-de-zs' 'dropcaps-de-zs'; s '฿' '₿';
+          s '< a href' '<a href'; s 'modifed: 20' 'modified: 20'; s 'linklive-not' 'link-live-not'; s ' n-dimensional' ' <em>n</em>-dimensional'; s 'pdf#pg=' 'pdf#page='; s 'PDF#pg=' 'PDF#page='; s '<hr />' '<hr>'; s '</hr>' '<hr>'; s 'confidence: highly-likely' 'confidence: highly likely'; s 'drop-caps-de-zs' 'dropcaps-de-zs'; s '฿' '₿'; s 'mg/day' 'mg⧸day';
           s 'src="doc/' 'src="/doc/'; s 'href="doc/' 'href="/doc/';
           s 'link-icon-not' 'icon-not'; s '<!--<p>' '<!-- <p>'; s '</p>-->' '</p> -->';
 
@@ -543,7 +543,7 @@ else
     echo "$PAGES_ALL" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 separator
 
     bold "Cleaning up Pandoc’s self-closing-tag-isms…" # TODO: why *does* Pandoc do this even with HTML5 output if it's invalid?
-    hr () { sed -i -e 's/<hr \/>/<hr>/g' -e 's/<hr\/>/<hr>/g' -e 's/><\/img>/>/g' -- "$@"; } # they are primarily generated in the footnote section, but who knows where else?
+    hr () { sed -i -e 's/<hr \/>/<hr>/g' -e 's/<hr\/>/<hr>/g' -e 's/><\/img>/>/g' -e 's/<br \/>/<br>/g'  -- "$@"; } # they are primarily generated in the footnote section, but who knows where else?
     export -f hr
     echo "$PAGES_ALL" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 hr
 
@@ -695,7 +695,7 @@ else
             "mjx-msup" "mjx-mtext" "mjx-munderover" "mjx-numerator" "mjx-op" "mjx-over"
             "mjx-row" "mjx-stack" "mjx-sub" "mjx-sup" "mjx-surd" "mjx-texatom"
             "mjx-TeXmathchoice" "mjx-under" "mjx-vsize" "new" "outline-not" "outline"
-            "warning" "markdown-body" "similars" "similars-append" "similar-links-search" "text-center"
+            "warning" "markdown-body" "similars" "similars-append" "similar-links-search" "text-center" "text-right"
             "abstract-tag-directory" "page-description-annotation" "link-bibliography" "link-bibliography-append" "expand-on-hover" "tag-index-link-bibliography-block"
             "doc-index-tag-short" "decorate-not" "quote-of-the-day" "interview" "reader-mode-note"
             "dropcap-dropcat" "desktop-not" "mobile-not" "adsense" "years-since" "date-range"

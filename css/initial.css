@@ -2077,6 +2077,9 @@ span.date-range {
 a span.date-range {
     font-variant-numeric: tabular-nums;
 }
+/* Allow specifying it manually (helpful for cases like ISBNs) */
+.markdownBody .tabular-nums { font-variant-numeric: tabular-nums; }
+
 span.date-range .subsup {
     align-items: center;
     bottom: 0;
@@ -2368,7 +2371,7 @@ section#newest-blog li::before {
 }
 section#newest-blog li p {
 	--adjusted-line-height: calc(var(--line-height) - 0.20);
-	
+
 	line-height: var(--adjusted-line-height);
 	padding-left: 1em;
 	text-indent: -1em;
