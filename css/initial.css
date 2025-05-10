@@ -1253,6 +1253,11 @@ p.empty-graf {
     text-indent: 0;
 }
 
+.markdownBody p.text-right {
+	text-align: right;
+	text-indent: 0;
+}
+
 
 /***************/
 /* BLOCKQUOTES */

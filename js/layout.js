@@ -64,6 +64,7 @@ GW.layout = {
 	firstGrafAllowablePreviousBlockSelector: [
 		":not(p)",
 		".text-center",
+		".text-right",
 		".section-metadata",
 		".margin-notes-block",
 		".page-description-annotation",

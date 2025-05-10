@@ -8710,6 +8710,10 @@ Content = {
         depending on context. Using either class causes the spinner to be shown
         or not shown (respectively), unconditionally.
 
+        This is useful for minimizing GUI animation distraction/clutter on some
+        transclusions, especially in conjunction with '.include-strict' or with
+        'infrastructure' transclusions.
+
 		(Note that these two classes, unlike the others listed in this section,
 		 DO NOT mark a link as an include-link. They must be used in conjunction
 		 with the `include` class, or with one or more of the optional include
@@ -18075,6 +18079,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifySpecialTextBlockTagTypes = (
 	//	Classes which are on <div> but should be on <p>.
 	let problematicBlockSelector = [
 		"text-center",
+		"text-right",
 		"smallcaps"
 	].map(className => `div.${className}`).join(", ");
 

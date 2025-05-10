@@ -3510,6 +3510,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifySpecialTextBlockTagTypes = (
 	//	Classes which are on <div> but should be on <p>.
 	let problematicBlockSelector = [
 		"text-center",
+		"text-right",
 		"smallcaps"
 	].map(className => `div.${className}`).join(", ");
 
