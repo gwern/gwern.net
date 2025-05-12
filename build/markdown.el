@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-04-18 10:46:07 gwern"
+;;; When:  Time-stamp: "2025-05-11 18:54:31 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1168,8 +1168,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("\\([023456789]\\)th" . "\\1^th^")
                         ("\\([1]\\)st"        . "\\1^st^")
                         ("\\([3]\\)rd"        . "\\1^rd^")
-                        ("\\(four\\|fif\\|six\\|seven\\|eigh\\|nin\\|ten\\)th"        . "\\1^th^")
-                        ("\\(four\\|fif\\|six\\|seven\\|eigh\\|nin\\|ten\\)th"        . "\\1^th^")
+                        ; ("\\(four\\|fif\\|six\\|seven\\|eigh\\|nin\\|ten\\)th"        . "\\1^th^")
+                        ; ("\\(four\\|fif\\|six\\|seven\\|eigh\\|nin\\|ten\\)th"        . "\\1^th^")
                         ; numbers, ranges or changes:
                         ; NOTE: we deliberately omit EN DASH-ification of ranges involving negative numbers. For example, '−0.3 to −3.7'
                         ; would look confusing if written '−0.3–−3.7'. It's correct & unambiguous because it uses MINUS SIGN & EN DASH
@@ -1453,7 +1453,11 @@ Mostly string search-and-replace to enforce house style in terms of format."
        )
        (replace-all ",”" "”,")
        (replace-all ";”" "”;")
+       (replace-all " “ " " “")
+       (replace-all " \\?”" "?”")
+       (replace-all " I Q " " IQ ")
        (query-replace ".”" "”." nil begin end)
+       (query-replace " : " ": " nil begin end)
        (replace-all ",\"" "\",")
        (replace-all ";\"" "\";")
        (replace-all "\n\n\n" "\n\n")
@@ -1541,6 +1545,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (query-replace "R2<" " R^2^ <" nil begin end)
          (query-replace "R2>" " R^2^ <" nil begin end)
          (query-replace "r2" "R^2^" nil begin end)
+         (query-replace "r<sup>2</sup>" "R^2^" nil begin end)
+         (query-replace "r^2^" "R^2^" nil begin end)
          (query-replace "χ2" "χ^2^" nil begin end)
          (query-replace "mm 2" "mm^2^" nil begin end)
          (query-replace "age2" "age^2^" nil begin end)
@@ -1796,6 +1802,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
        ; (query-replace-regexp " \"'\\(.+?\\)', " " \"‘\\1’, " nil begin end) ; avoid downstream YAML errors from titles encoded in tooltips with single straight quotes
        (replace-all "\n\n\n" "\n\n")
 
+       (pdf-fix-spaced-words begin end)
+
        ; do this at the end to minimize errors from things that would've been fixed
        (when (and (equal (buffer-name) "foo")
                   ; avoid breaking numbered-lists & headers
@@ -1822,6 +1830,35 @@ Mostly string search-and-replace to enforce house style in terms of format."
      (message "Remember to collapse appendices, annotate links, add inflation-adjustments to all '$'/'₿'s, add margin notes, 'invert' images, and run `markdown-lint`")
      nil
      )))))
+
+(defun pdf-fix-spaced-words (begin end)
+  "Query-collapse spaced-glyph-runs like “I n”, “W h e n”.
+In a range of BEGIN and END, or the entire buffer if not.
+Keys during prompt: y = replace, n = skip, ! = replace rest, q = quit."
+  (interactive
+   (if (use-region-p)
+       (list (region-beginning) (region-end))
+     (list (point-min) (point-max))))
+  (let* ((re "\\b[[:alpha:]]\\(?:[ \u00A0][[:alpha:]]\\)\\{1,40\\}\\b")
+         (end-marker (copy-marker end t))
+         (replace-all nil))
+    (goto-char begin)
+    (catch 'done
+      (while (re-search-forward re end-marker t)
+        (let* ((orig  (match-string 0))
+               (fixed (replace-regexp-in-string "[ \u00A0]" "" orig)))
+          (unless replace-all
+            (let ((c (read-char-choice
+                      (format "Replace “%s” → “%s”? (y, n, !, q) " orig fixed)
+                      '(?y ?n ?! ?q))))
+              (cl-case c
+                (?y (replace-match fixed t t))
+                (?n nil)
+                (?! (setq replace-all t)
+                    (replace-match fixed t t))
+                (?q (throw 'done nil)))))
+          (when replace-all
+            (replace-match fixed t t)))))))
 
 (defun clean-pdf-text (&optional start end)
   "Clean PDF-ish text in buffer/region using `/static/build/clean-pdf.py`.

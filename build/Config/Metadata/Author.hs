@@ -793,7 +793,7 @@ canonicalsWithInitials =
   , "Philip S. Dale", "Lee N. Robbins", "Hyman G. Rickover", "Lucia A. Hindorff"
   , "Peter P. Pramstaller", "Kent M. Pitman", "Louise S. Bicknell", "Laura Jean Bierut"
   , "Grover S. Krantz", "Kent D. Taylor", "Robyn M. Dawes", "Donna Lee Hart", "John I. Nurnberger"
-  , "John P. Beilby", "James L. Kirkland", "Jakob N. Foerster", "Harrison J. Kell", "Enda M. Byrne", "Brendan P. Zietsch", "William Bennett Bean"]
+  , "John P. Beilby", "James L. Kirkland", "Jakob N. Foerster", "Harrison J. Kell", "Enda M. Byrne", "Brendan P. Zietsch", "William Bennett Bean", "James E. Cutting"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1691,9 +1691,14 @@ authorLinkDB = M.fromList $
     , ("Jonathan Imber", "https://www.wellesley.edu/people/jonathan-imber")
     , ("Ricki Heicklen", "https://trading.camp/")
     , ("Daphne Ippolito", "https://www.daphnei.com/")
-    , ("Bruno Etain", "https://scholar.google.com/citations?user=xAxPE74AAAAJ&hl=en&oi=ao")
+    , ("Bruno Etain", "https://scholar.google.com/citations?user=xAxPE74AAAAJ")
     , ("Brendan P. Zietsch", "https://psychology.uq.edu.au/profile/2404/brendan-zietsch")
-    , ("Aviral Kumar", "https://scholar.google.com/citations?user=zBUwaGkAAAAJ&hl=en&oi=ao")
+    , ("Aviral Kumar", "https://scholar.google.com/citations?user=zBUwaGkAAAAJ")
+    , ("Guy Gur-Ari", "https://scholar.google.com/citations?user=mx8P4QUAAAAJ&hl=en&oi=ao")
+    , ("Atri Rudra", "https://cse.buffalo.edu/faculty/atri/")
+    , ("Antonio Terracciano", "https://public.med.fsu.edu/com/directory/Details/Full/16780")
+    , ("Anna Tong", "https://www.reuters.com/authors/anna-tong/")
+    , ("Coltan Scrivner", "https://www.coltanscrivner.com/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2953,4 +2958,4 @@ authorWpLinkDB =
     , "John Brunner", "Harlan Ellison", "Frederik Pohl", "A. E. Stallings", "Richard Sharpe Shaver"
     , "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist"
     , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group", "Adrian Hon"
-    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins", "Charles Baudelaire"]
+    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins", "Charles Baudelaire", "James E. Cutting"]

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-05-10 10:27:49 gwern"
+# When:  Time-stamp: "2025-05-11 09:43:25 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -678,7 +678,7 @@ else
             "c9" "c10" "cf" "co" "dv" "fu"
             "kw" "op" "s1" "st" "reader-mode" "reader-mode-style-not" "scrape-abstract-not"
             "abstract" "abstract-collapse" "abstract-collapse-only" "admonition" "admonition-title" "book-review-meta"
-            "book-review-review" "tip" "xml" "warning" "al" "an"
+            "book-review-review" "tip" "xml" "yaml" "warning" "al" "an"
             "bn" "cn" "cv" "do" "dt" "er"
             "error" "ex" "fl" "im" "in" "ot"
             "pp" "re" "sc" "ss" "va" "citation"
@@ -694,7 +694,7 @@ else
             "mjx-mo" "mjx-mrow" "mjx-mspace" "mjx-msqrt" "mjx-mstyle" "mjx-msubsup"
             "mjx-msup" "mjx-mtext" "mjx-munderover" "mjx-numerator" "mjx-op" "mjx-over"
             "mjx-row" "mjx-stack" "mjx-sub" "mjx-sup" "mjx-surd" "mjx-texatom"
-            "mjx-TeXmathchoice" "mjx-under" "mjx-vsize" "new" "outline-not" "outline"
+            "mjx-TeXmathchoice" "mjx-under" "mjx-vsize" "tabular-nums" "new" "outline-not" "outline"
             "warning" "markdown-body" "similars" "similars-append" "similar-links-search" "text-center" "text-right"
             "abstract-tag-directory" "page-description-annotation" "link-bibliography" "link-bibliography-append" "expand-on-hover" "tag-index-link-bibliography-block"
             "doc-index-tag-short" "decorate-not" "quote-of-the-day" "interview" "reader-mode-note"

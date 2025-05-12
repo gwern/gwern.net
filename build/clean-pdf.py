@@ -4,7 +4,7 @@
 # clean-pdf.py: fix formatting & spelling errors in malformatted text (especially PDFs)
 # Author: Gwern Branwen
 # Date: 2020-07-03
-# When:  Time-stamp: "2025-03-29 15:41:37 gwern"
+# When:  Time-stamp: "2025-05-11 18:54:53 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XYZ" xclip -o | python clean-pdf.py
@@ -171,6 +171,36 @@ GROUPS E X P E R I M E N T</text>
 Regression Fallacies in the Matched Groups Experiment
 - <text>Authors: Darren K. McGuire, M.D., M.H.Sc., Nikolaus Marx, M.D., Sharon L. Mulvagh, M.D., John E. Deanfield, M.D., Silvio E. Inzucchi, M.D., Rodica Pop-Busui, M.D., Ph.D., Johannes F.E. Mann, M.D., Scott S. Emerson, M.D., Ph.D., Neil R. Poulter, F.Med.Sci., Mads D.M. Engelmann, M.D., Ph.D., Maria Sejersten Ripa, M.D., M.D.Sc., G. Kees Hovingh, M.D., Ph.D., Kirstine Brown-Frandsen, M.D., Stephen C. Bain, M.D., Matthew A. Cavender, M.D., M.P.H. https://orcid.org/0000-0002-4466-4760, Mette Gislum, M.Sc., Jens-Peter David, Ph.D., and John B. Buse, M.D., Ph.D* -11Author Info & Affiliations</text>
 Darren K. McGuire, Nikolaus Marx, Sharon L. Mulvagh, John E. Deanfield, Silvio E. Inzucchi, Rodica Pop-Busui, Johannes F. E. Mann, Scott S. Emerson, Neil R. Poulter, Mads D. M. Engelmann, Maria Sejersten Ripa, G. Kees Hovingh, Kirstine Brown-Frandsen, Stephen C. Bain, Matthew A. Cavender, Mette Gislum, Jens-Peter David, John B. Buse
+- <text>Children do not fear the atomic bomb<sup>[1](/doc/psychology/1964-escalona.pdf), 11</sup>. They do not even fear the
+things they have been taught to be careful about: street traffic and germs.
+The strange truth is that they fear an unrealistic source of danger in or
+urban civilization: wild animals.</text>
+Children do not fear the atomic bomb<sup>[1](/doc/psychology/1964-escalona.pdf), 11</sup>. They do not even fear the things they have been taught to be careful about: street traffic and germs. The strange truth is that they fear an unrealistic source of danger in or urban civilization: wild animals.
+- <text>In all other tabula-
+tions and discussions, the subjects are the 112 students whose IQs fell be-
+tween 80 --144.</text>
+In all other tabulations and discussions, the subjects are the 112 students whose IQs fell between 80--144.
+- <text>and animated skeletons, are left behind after age 10. T h u s the questions about
+the effect of television dramas highlighting horror becomes a matter of age.</text>
+and animated skeletons, are left behind after age 10. Thus the questions about the effect of television dramas highlighting horror becomes a matter of age.
+- <text>All four of the major theories of childhood (psychoanalysis, behaviorism,
+the collective unconscious, and maturation) contribute, albeit incompletely,
+to an understanding of childhood fears.
+A strong maturational factor, partly influenced by intelligence and partly
+influenced by the amount of responsibility thrust upon the child, seems to be
+a t work upon an archaic instinctual base. T h e child is born with the capa-
+city to fear, apparently more than is necessary to preserve his life.</text>
+All four of the major theories of childhood (psychoanalysis, behaviorism, the collective unconscious, and maturation) contribute, albeit incompletely, to an understanding of childhood fears.
+
+A strong maturational factor, partly influenced by intelligence and partly influenced by the amount of responsibility thrust upon the child, seems to be at work upon an archaic instinctual base. The child is born with the capacity to fear, apparently more than is necessary to preserve his life.
+- <text>As the child matures, the emotion of fear fastens upon more and more
+realistic objects depending upon experience learning rather than upon instruc-
+tion.
+T h e intensity of the child’s fear depends for the most part upon the family
+relationships.</text>
+As the child matures, the emotion of fear fastens upon more and more realistic objects depending upon experience learning rather than upon instruction.
+
+The intensity of the child’s fear depends for the most part upon the family relationships.
 
 [End of examples. Reminder: your job is to clean PDF copy-pastes of cruft and garbage.]
 
