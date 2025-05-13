@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-05-11 18:54:31 gwern"
+;;; When:  Time-stamp: "2025-05-12 09:59:40 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -823,6 +823,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("Ntotal" . "_N_~total~")
                         (" Ne " . " <em>N<sub>e</sub></em> ")
                         ("$N_e$" . "_N_~_e_~")
+                        ("n<sub>total</sub>", "<em>n</em><sub>total</sub>")
+                        ("n~total~", "<em>n</em><sub>total</sub>")
                         ("$\frac{n}{2}$" . "_n_⧸2")
                         ("$\frac{N}{2}$" . "_n_⧸2")
                         ("<em>b</em> = " . "β = ")
