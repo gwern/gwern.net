@@ -581,6 +581,16 @@ function transferClasses(source, target, classes) {
 	removeClasses(source, classes);
 }
 
+/**********************************************************************/
+/*	Copy any of the given attributes that the source has to the target.
+ */
+function copyAttributes(source, target, attributes) {
+	attributes.forEach(attribute => {
+		if (source.hasAttribute(attribute))
+			target.setAttribute(attribute, source.getAttribute(attribute));
+	});
+}
+
 /****************************************/
 /*  Wrap an element in a wrapper element.
 
@@ -682,6 +692,9 @@ function wrapAll(selector, wrapperSpec, options) {
 		of this option field is an array, then all classes which are in the 
 		array are moved from the wrapper to each element child.
 
+	moveAttributes (Array)
+		Like the `moveClasses` option, but *only* takes an array, not a boolean.
+
 	preserveBlockSpacing (boolean)
 		If the value of this option field is `true`, then the value of the 
 		`--bsm` CSS property of the wrapper (if any) is assigned to the first
@@ -691,6 +704,7 @@ function unwrap(wrapper, options) {
 	options = Object.assign({
 		moveID: false,
 		moveClasses: false,
+		moveAttributes: null,
 		preserveBlockSpacing: false
 	}, options);
 
@@ -731,6 +745,10 @@ function unwrap(wrapper, options) {
 		} else if (options.moveClasses instanceof Array) {
 			copyClasses(wrapper, child, options.moveClasses);
 		}
+
+		//	Move attributes, if specified.
+		if (options.moveAttributes instanceof Array)
+			copyAttributes(wrapper, child, options.moveAttributes);
     }
 
     wrapper.remove();

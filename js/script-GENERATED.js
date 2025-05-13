@@ -8538,10 +8538,10 @@ Content = {
 
     An include-link is a link (<a> tag) which has the `include` class, e.g.:
 
-        <a class="include" href="/sidenotes#comparisons"></a>
+        <a class="include" href="/sidenote#comparisons"></a>
 
     At load time, this tag will be replaced with the `#comparisons` section of
-    the /Sidenotes page.
+    the `/sidenote` page.
 
     If the include-link’s URL (i.e., the value of its `href` attribute) has no
     hash (a.k.a. fragment identifier), then the entire page content will be
@@ -8733,9 +8733,9 @@ Content = {
     To use transclude range syntax, an include-link’s URL should have a “double”
     hash, i.e. a hash consisting of two ‘#’-prefixed parts:
 
-        <a class="include" href="/sidenotes#tufte-css#tables"></a>
+        <a class="include" href="/sidenote#tufte-css#tables"></a>
 
-    This will include all parts of the "/sidenotes" page’s content starting from
+    This will include all parts of the "/sidenote" page’s content starting from
     the element with ID `tufte-css`, all the way up to (but *not* including!)
     the element with ID `tables`.
 
@@ -18086,7 +18086,8 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifySpecialTextBlockTagTypes = (
     eventInfo.container.querySelectorAll(problematicBlockSelector).forEach(div => {
         unwrap(div, {
         	moveID: true,
-        	moveClasses: true
+        	moveClasses: true,
+        	moveAttributes: [ "title" ]
         });
     });
 }, "rewrite");

@@ -3517,7 +3517,8 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifySpecialTextBlockTagTypes = (
     eventInfo.container.querySelectorAll(problematicBlockSelector).forEach(div => {
         unwrap(div, {
         	moveID: true,
-        	moveClasses: true
+        	moveClasses: true,
+        	moveAttributes: [ "title" ]
         });
     });
 }, "rewrite");
