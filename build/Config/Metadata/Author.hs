@@ -1703,7 +1703,7 @@ authorLinkDB = M.fromList $
     , ("Andrea Ganna", "https://researchers.mgh.harvard.edu/profile/13438682/Andrea-Ganna")
     , ("Allan H. Young", "https://kclpure.kcl.ac.uk/portal/en/persons/allan.young")
     , ("Ziwei Liu", "https://liuziwei7.github.io/")
-    , ("Zhifeng Chen", "https://scholar.google.com/citations?user=EemUE4gAAAAJ&hl=en&oi=ao")
+    , ("Zhifeng Chen", "https://scholar.google.com/citations?user=EemUE4gAAAAJ")
     , ("Adah Maurer", "https://nospank.net/adah1.htm")
     ]
 
@@ -2964,4 +2964,4 @@ authorWpLinkDB =
     , "John Brunner", "Harlan Ellison", "Frederik Pohl", "A. E. Stallings", "Richard Sharpe Shaver"
     , "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist"
     , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group", "Adrian Hon"
-    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins", "Charles Baudelaire", "James E. Cutting", "American Veterinary Medical Association", "John Rosengrant", "Christopher Smart"]
+    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins", "Charles Baudelaire", "James E. Cutting", "American Veterinary Medical Association", "John Rosengrant", "Christopher Smart", "Rick Gibson", "Christian Bök"]

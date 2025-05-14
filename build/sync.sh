@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-05-12 15:09:26 gwern"
+# When:  Time-stamp: "2025-05-13 21:23:31 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -543,7 +543,7 @@ else
     echo "$PAGES_ALL" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 separator
 
     bold "Cleaning up Pandoc’s self-closing-tag-isms…" # TODO: why *does* Pandoc do this even with HTML5 output if it's invalid?
-    hr () { sed -i -e 's/<hr \/>/<hr>/g' -e 's/<hr\/>/<hr>/g' -e 's/><\/img>/>/g' -e 's/<br \/>/<br>/g'  -- "$@"; } # they are primarily generated in the footnote section, but who knows where else?
+    hr () { sed -i -e 's/<hr \/>/<hr>/g' -e 's/<hr\/>/<hr>/g' -e 's/<hr><\/hr>/<hr>/g' -e 's/><\/img>/>/g' -e 's/<br \/>/<br>/g'  -- "$@"; } # they are primarily generated in the footnote section, but who knows where else?
     export -f hr
     echo "$PAGES_ALL" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 hr
 

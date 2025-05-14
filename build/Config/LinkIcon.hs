@@ -457,7 +457,7 @@ linkIconRulesQuad u
  | u'' u "ourworldindata.org" = ("OWID", "text,quad,mono", "") -- Our World In Data (OWID) <https://en.wikipedia.org/wiki/Our_World_in_Data>; NOTE: uses monospace because the 'W' is so wide
  | u'' u "www.cnbc.com" = ("CNBC", "text,quad,sans", "") -- CNBC: peacock logo/favicon <https://en.wikipedia.org/wiki/File:CNBC_2023.svg> doesn't seem viable as a small monochrome link-icon; TODO: color SVG icon
  | u'' u "www.scmp.com" = ("SCM", "text,tri", "#ffca05") -- South China Morning Post (SCMP) <https://en.wikipedia.org/wiki/South_China_Morning_Post>; major HK newspaper, partially CCP-censored post-2016 Alibaba acquisition; logo is a yellow square next to a blue square, so monochrome version would be hard (light gray next to black?); 'SCMP' unfortunately doesn't work as a quad, because the width of 'MP' is far larger than 'SC' and playing around with it, I can't get it to look good, so we settle for just the first three; color: yellow; TODO: color SVG icon yellow-black flag color
- | aU'' u ["magazine.atavist.com", "read.atavist.com"] = ("Atvt", "text,quad", "") -- Atavist Magazine <https://en.wikipedia.org/wiki/Atavist>; can't use the italic-capital serif A logo because it looks identical to _The Atlantic_, so disemvowel the name to a 4-letter abbreviation. Annoyingly, they move around and use multiple sub-domains. TODO: white-on-black text background
+ | aU'' u ["magazine.atavist.com"] = ("Atvt", "text,quad", "") -- Atavist Magazine <https://en.wikipedia.org/wiki/Atavist>; can't use the italic-capital serif A logo because it looks identical to _The Atlantic_, so disemvowel the name to a 4-letter abbreviation. Annoyingly, they move around and use multiple sub-domains. TODO: white-on-black text background
  | u'' u "qntm.org" || u == "https://scp-wiki.wikidot.com/antimemetics-division-hub" || u == "https://scp-wiki.wikidot.com/qntm-s-author-page#toc2" = ("qntm", "text,quad,mono", "") -- qntm/Sam Hughes: programming & SF
  | aU'' u ["blog.samaltman.com", "samaltman.com"] = ("sama", "text,quad,mono", "") -- Sam Altman, username 'sama'
  | u' u "a16z" = ("az16", "text,quad,sans", "#ed8c00") -- Andreessen Horowitz/a16z (reworded to 'az16' because quad splits it badly: 'a1/6z' doesn't read easily); color: orange; TODO: white-on-orange text background
@@ -975,7 +975,7 @@ linkIconTestUnitsText =
          , ("https://www.courtlistener.com/docket/16288633/1/united-states-v-takowsky/", "PACR", "text,quad", "")
          , ("https://publicdomainreview.org/essay/the-lost-world-of-the-london-coffeehouse/",  "TPDR","text,quad", "")
          , ("https://magazine.atavist.com/whatsoever-things-are-true/", "Atvt", "text,quad", "")
-         , ("https://read.atavist.com/american-hippopotamus", "Atvt", "text,quad", "")
+         , ("https://magazine.atavist.com/american-hippopotamus/", "Atvt", "text,quad", "")
          , ("https://tasvideos.org/3653M", "TASV", "text,quad", "")
          , ("https://text.npr.org/974534021", "npr", "text,tri,sans", "#237bbd")
          , ("https://www.npr.org/2011/04/16/135450214/eight-is-too-much-for-short-sleepers", "npr", "text,tri,sans", "#237bbd")

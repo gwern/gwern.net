@@ -319,7 +319,7 @@ siteBlackList = [
           "www.foreignaffairs.com", "www.douglas-self.com", "www.datascienceassn.org", "www.ai21.com", "www.aeaweb.org",
           "worrydream.com", "wondermark.com", "whyevolutionistrue.com", "vocadb.net", "tom7.org",
           "thecodelesscode.com", "taibbi.substack.com", "strangeremains.com", "status451.com", "slimemoldtimemold.com",
-          "sites.duke.edu", "www.semianalysis.com", "samizdat.co", "rejecthero.wordpress.com", "read.atavist.com",
+          "sites.duke.edu", "www.semianalysis.com", "samizdat.co", "rejecthero.wordpress.com",
           "projects.tampabay.com", "practicalguidetoevil.wordpress.com", "poets.org", "ooo.ghostbows.ooo",
           "obscuritory.com", "nvlabs.github.io", "nonint.com", "news.nationalgeographic.com", "msls.net",
           "moon-tone.bandcamp.com", "journal.sjdm.org", "joshmitteldorf.scienceblog.com", "jacquesmattheij.com", "iosband.github.io",
