@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2025-05-04 20:27:02 gwern"
+# When:  Time-stamp: "2025-05-15 11:18:31 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -640,6 +640,10 @@ I sketch how this might come about, although much work remains to be done.
 We propose <strong>Insect-Computer Hybrid Speaker</strong>, which enables us to make musics made from combinations of computer and insects. Lots of studies have proposed methods and interfaces for controlling insects and obtaining feedback. However, there have been less research on the use of insects for interaction with third parties.
 In this paper, we propose a method in which cicadas are used as speakers triggered by using Electrical Muscle Stimulation (EMS).
 We explored and investigated the suitable waveform of chirp to be controlled, the appropriate voltage range, and the maximum pitch at which cicadas can chirp.
+- <abstract>Artists face choices between the pecuniary benefits of selling to the market and the non-pecuniary benefits of creating to please their own tastes. We examine how changes in wages, lump-sum income, and capital-labor ratios affect the artist’s pursuit of self-satisfaction versus market sales. Using our model of labor supply, we consider the economic forces behind the high/low culture split, why some artistic media offer greater scope for the avant-garde than others, why so many artists dislike the market, and how economic growth and taxation affect the quantity and form of different kinds of art.</abstract>
+Artists face choices between the pecuniary benefits of selling to the market and the non-pecuniary benefits of creating to please their own tastes.
+We examine how changes in wages, lump-sum income, and capital-labor ratios affect the artist’s pursuit of self-satisfaction versus market sales.
+Using our model of labor supply, we consider the economic forces behind the high/low culture split, why some artistic media offer greater scope for the avant-garde than others, why so many artists dislike the market, and how economic growth and taxation affect the quantity and form of different kinds of art.
 
 [End of examples. Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 

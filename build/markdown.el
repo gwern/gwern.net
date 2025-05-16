@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-05-12 09:59:40 gwern"
+;;; When:  Time-stamp: "2025-05-14 18:27:06 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -418,7 +418,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("T h e" . "The")
                      ("Author links open overlay panel" . "")
                      ("et al.," . "et al")
-                     ("\n---\n" . "\n<hr />\n")
+                     ("\n---\n" . "\n<hr>\n")
                      ("" . " = ")
                      ("" . " < ")
                      ("\n " . "\n")

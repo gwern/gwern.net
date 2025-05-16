@@ -756,6 +756,7 @@ canonicals = M.fromList
   , ("slatestarcodex", "Scott Alexander")
   , ("tradegal_", "Ricki Heicklen")
   , ("AVMA", "American Veterinary Medical Association")
+  , ("andreasschou", "Andreas Schou")
   ]
 
 -- tests: unique
@@ -1705,6 +1706,11 @@ authorLinkDB = M.fromList $
     , ("Ziwei Liu", "https://liuziwei7.github.io/")
     , ("Zhifeng Chen", "https://scholar.google.com/citations?user=EemUE4gAAAAJ")
     , ("Adah Maurer", "https://nospank.net/adah1.htm")
+    , ("Zhe Gan", "https://zhegan27.github.io/")
+    , ("Yonatan Belinkov", "https://belinkov.com/")
+    , ("Yasaman Bahri", "https://scholar.google.com/citations?hl=en&user=p2_vHmAAAAAJ&view_op=list_works&sortby=pubdate")
+    , ("Xiaodong Liu#microsoft", "https://scholar.google.com/citations?user=NIewcxMAAAAJ&hl=en&oi=ao")
+    , ("Xiaodong Liu#deepseek", "https://scholar.google.com/citations?user=4jnUJGIAAAAJ&hl=en&oi=ao")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2964,4 +2970,4 @@ authorWpLinkDB =
     , "John Brunner", "Harlan Ellison", "Frederik Pohl", "A. E. Stallings", "Richard Sharpe Shaver"
     , "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist"
     , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group", "Adrian Hon"
-    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins", "Charles Baudelaire", "James E. Cutting", "American Veterinary Medical Association", "John Rosengrant", "Christopher Smart", "Rick Gibson", "Christian Bök"]
+    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins", "Charles Baudelaire", "James E. Cutting", "American Veterinary Medical Association", "John Rosengrant", "Christopher Smart", "Rick Gibson", "Christian Bök", "David Hestenes", "Yu-Ao_Chen", "Frank Wilczek", "Pan Jianwei"]

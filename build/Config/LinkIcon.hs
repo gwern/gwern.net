@@ -745,7 +745,7 @@ linkIconTestUnitsText =
          , ("https://iqtest.dk/main.swf",  "file-video","svg", "#490202")
          , ("https://boingboing.net/2011/02/03/cosmic-commodities-h.html", "bb", "text,mono", "#ff0202")
          , ("/doc/ai/1986-michie-onmachineintelligence.pdf#page=99",  "pdf","svg", redAdobe)
-         , ("https://pdfs.semanticscholar.org/00d3/6b267777b670abd1a3b98a21bf662245a7c4.pdf",  "pdf","svg", redAdobe)
+         , ("/doc/science/physics/1992-hestenes.pdf",  "pdf","svg", redAdobe)
          , ("https://www.ieee-security.org/TC/SPW2014/papers/5103a209.PDF", "pdf", "svg", redAdobe)
          , ("https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.108.7127&rep=rep1&type=pdf",  "pdf","svg", redAdobe)
          , ("https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.75.2289&rep=rep1&type=pdf",  "pdf","svg", redAdobe)
