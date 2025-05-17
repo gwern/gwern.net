@@ -2529,7 +2529,7 @@ body.page-doc-index #see-alsos code {
 /*= /index =*/
 /*=--------=*/
 
-body.page-fiction-october.reader-mode-active #page-metadata,
+body.page-fiction-october.reader-mode-active #page-metadata.
 body.page-fiction-october.reader-mode-active #TOC {
 	display: none;
 }
@@ -3012,6 +3012,7 @@ body.page-index[class*='special-christmas'] #sidebar a.logo {
 }
 /*  Elements to be deleted completely.
  */
+body.reader-mode-active .reader-mode-not,
 body.reader-mode-active #sidebar,
 body.reader-mode-active #page-metadata .page-status,
 body.reader-mode-active #page-metadata .page-confidence,
