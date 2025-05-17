@@ -14659,9 +14659,9 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 	};
 
 	let updatePageTitleElements = (newTitleHTML) => {
-		eventInfo.document.querySelectorAll("title, header h1").forEach(element => {
-			element.replaceChildren(newDocument(newTitleHTML));
-		});
+		let newPageTitle = newDocument(newTitleHTML);
+		eventInfo.document.querySelector("title")?.replaceChildren(newPageTitle.textContent);
+		eventInfo.document.querySelector("header h1")?.replaceChildren(newPageTitle);
 	};
 
 	let injectHelpfulErrorMessage = (errorMessageHTML) => {
