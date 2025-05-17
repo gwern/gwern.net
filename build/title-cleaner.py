@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-05-13 12:25:08 gwern"
+# When:  Time-stamp: "2025-05-17 17:35:29 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -680,6 +680,11 @@ Shifting Work Patterns with Generative AI by Eleanor Wiske Dillon, Sonia Jaffe, 
 ""
 - "https://www.rifters.com/crawl/?p=11511 No Moods, Ads or Cutesy Fucking Icons"
 ""
+- https://robhorning.substack.com/p/font-activations Font activations—by Rob Horning—Internal exile"
+"Font activations"
+- "https://blog.blackhc.net/2025/05/active-learning-vs-filtering/ Active Learning vs. Data Filtering:<br />
+Selection vs. Rejection"
+"Active Learning vs. Data Filtering: Selection vs. Rejection"
 
 Task:
 

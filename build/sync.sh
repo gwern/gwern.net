@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-05-16 12:53:54 gwern"
+# When:  Time-stamp: "2025-05-17 15:07:58 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -676,9 +676,9 @@ else
             "TOC" "uri" "at" "bu" "c1" "c2"
             "c3" "c4" "c5" "c6" "c7" "c8"
             "c9" "c10" "cf" "co" "dv" "fu"
-            "kw" "op" "s1" "st" "reader-mode" "reader-mode-style-not" "scrape-abstract-not"
-            "abstract" "abstract-collapse" "abstract-collapse-only" "admonition" "admonition-title" "book-review-meta"
-            "book-review-review" "tip" "xml" "yaml" "warning" "al" "an"
+            "kw" "op" "s1" "st" "reader-mode" "reader-mode-style-not" "reader-mode-not" "reader-mode-note"
+            "scrape-abstract-not" "abstract" "abstract-collapse" "abstract-collapse-only" "admonition" "admonition-title"
+            "book-review-meta" "book-review-review" "tip" "xml" "yaml" "warning" "al" "an"
             "bn" "cn" "cv" "do" "dt" "er"
             "error" "ex" "fl" "im" "in" "ot"
             "pp" "re" "sc" "ss" "va" "citation"
@@ -697,7 +697,7 @@ else
             "mjx-TeXmathchoice" "mjx-under" "mjx-vsize" "tabular-nums" "new" "outline-not" "outline"
             "warning" "markdown-body" "similars" "similars-append" "similar-links-search" "text-center" "text-right"
             "abstract-tag-directory" "page-description-annotation" "link-bibliography" "link-bibliography-append" "expand-on-hover" "tag-index-link-bibliography-block"
-            "doc-index-tag-short" "decorate-not" "quote-of-the-day" "interview" "reader-mode-note"
+            "doc-index-tag-short" "decorate-not" "quote-of-the-day" "interview"
             "dropcap-dropcat" "desktop-not" "mobile-not" "adsense" "years-since" "date-range"
             "^page-[a-z0-9-]+" "sidebar-links"
             "test-april-fools-2024" "test-april-fools-2025" "test-april-fools-2026" "test-christmas" "test-easter"
@@ -1663,7 +1663,7 @@ else
     wrap λ "Compressing high-quality JPGs to ≤65% quality…" &
 
     bold "Compressing new PNGs…"
-    png.sh $(find ./doc/ -type f -name "*.png" -mtime -3 | gfv -e './doc/www/misc/') &> /dev/null &
+    png.sh $(find ./doc/ -type f -name "*.png" -mtime -3 | gfv -e './doc/www/misc/' -e '2025-05-03-gwern-gpto3-demotivationalposter-heraclitus-youcanneverreproducethesamebugtwice.png') &> /dev/null &
 
     # because GIF videos are *so* big, we lossily-compress GIFs in the WWW split archives using `gifsicle`
     λ(){ optimize_gif() { # update the original GIF only if >10% size reduction; NOTE: this also avoids the issue where `gifsicle` *always* changes the file metadata by clobbering the original, even when no real change was made (which is a WONTFIX by the maintainer: <https://github.com/kohler/gifsicle/issues/201>).

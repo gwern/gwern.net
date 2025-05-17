@@ -1718,6 +1718,7 @@ authorLinkDB = M.fromList $
     , ("Toni-Kim Clarke", "https://scholar.google.com/citations?user=noD7zAMAAAAJ&hl=en&oi=ao")
     , ("Tim B. Bigdeli", "https://scholar.google.com/citations?user=rzEbP_cAAAAJ&hl=en&oi=ao")
     , ("Thorkild I. A. Sørensen", "https://orcid.org/0000-0003-4821-430X")
+    , ("Ben Shindel", "https://www.benshindel.com/about/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2974,7 +2975,7 @@ authorWpLinkDB =
     , "Lyman Spitzer", "Ethan Zuckerman", "Scott Adams", "Justin Wolfers", "Richard Palais", "Ken White"
     , "Reginald Bretnor", "Poul Anderson", "Hal Clement", "Alan E. Nourse", "Theodore Sturgeon"
     , "Jerry Pournelle", "Katherine MacLean", "James E. Gunn", "Larry Niven", "Jack Williamson"
-    , "John Brunner", "Harlan Ellison", "Frederik Pohl", "A. E. Stallings", "Richard Sharpe Shaver"
+    , "John Brunner", "Harlan Ellison", "A. E. Stallings", "Richard Sharpe Shaver"
     , "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist"
     , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group", "Adrian Hon"
     , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins", "Charles Baudelaire", "James E. Cutting", "American Veterinary Medical Association", "John Rosengrant", "Christopher Smart", "Rick Gibson", "Christian Bök", "David Hestenes", "Yu-Ao_Chen", "Frank Wilczek", "Pan Jianwei", "Gillian Cookson"]
