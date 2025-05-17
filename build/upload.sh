@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2025-04-01 19:30:47 gwern"
+# When:  Time-stamp: "2025-05-16 11:49:19 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -34,8 +34,10 @@ done
 _upload() {
   wait
 
-  (locate "$1" &)
-  FILENAME="$1"
+  # immediately lowercase it with a blind move to get that requirement out of the way:
+  FILENAME="$(echo "$1" | tr '[:upper:]' '[:lower:]')"
+  mv "$1" "$FILENAME" 2>&1 /dev/null || true
+  (locate "$FILENAME" &)
 
   ## Check whether there are any files with the same extension as the upload candidate; if not, it is likely erroneous in some way and we bail out to the user:
   ## TODO: allow an override `--force` option: in the case of large-files, we have no easy way to 'manually' add files, we're supposed to always go through `upload.sh`.
@@ -54,18 +56,18 @@ _upload() {
   # we don't want to try to compile random Markdown snippets, so rename to `.txt` which will be treated as a static asset:
   if [[ $FILENAME == *.md ]]; then
     NEW_FILENAME="${FILENAME%.md}.txt"
-    mv "$1" "$NEW_FILENAME"
+    mv "$FILENAME" "$NEW_FILENAME"
     echo "Renamed: $FILENAME to $NEW_FILENAME"
   fi
   if [[ $FILENAME == *.jpeg ]]; then
     FILENAME="${FILENAME%.jpeg}.jpg"
-    mv "$1" "$FILENAME"
+    mv "$FILENAME" "$FILENAME"
     # we avoid WebP as still too exotic; a WebP could be converted to PNG or JPG, depending on what it encoded, but since we check elsewhere for PNGs that should be JPG, we can just default to converting it to PNG to be safe:
   elif [[ $FILENAME == *.webp ]]; then
     PNG_FILENAME="${FILENAME%.webp}.png"
     if convert "$FILENAME" "$PNG_FILENAME"; then
       FILENAME="$PNG_FILENAME"
-      rm "$1"  # successful, so remove the original WebP file
+      rm "$FILENAME"  # successful, so remove the original WebP file
       bold "Converted WebP to PNG: $PNG_FILENAME"
     else
       red "Failed to convert WebP to PNG. Proceeding with original WebP file."
@@ -94,7 +96,7 @@ _upload() {
             return 5
         fi
 
-        new_filename="${base_name}-${i}.${extension}"
+        new_filename="$(echo ${base_name}-${i}.${extension})"
         # avoid spurious collisions with temporary/working files in the infrastructure repo or the scratch directory:
         new_file_path=$(find ~/wiki/ -type f ! -path "~/wiki/static/*" ! -path "~/wiki/doc/www/*" -name "$new_filename" -print -quit)
 

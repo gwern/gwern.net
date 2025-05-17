@@ -757,6 +757,9 @@ canonicals = M.fromList
   , ("tradegal_", "Ricki Heicklen")
   , ("AVMA", "American Veterinary Medical Association")
   , ("andreasschou", "Andreas Schou")
+  , ("Sean (Xiang) Ren", "Xiang Ren")
+  , ("Sean Xiang Ren", "Xiang Ren")
+  , ("Sean Ren", "Xiang Ren")
   ]
 
 -- tests: unique
@@ -795,7 +798,7 @@ canonicalsWithInitials =
   , "Philip S. Dale", "Lee N. Robbins", "Hyman G. Rickover", "Lucia A. Hindorff"
   , "Peter P. Pramstaller", "Kent M. Pitman", "Louise S. Bicknell", "Laura Jean Bierut"
   , "Grover S. Krantz", "Kent D. Taylor", "Robyn M. Dawes", "Donna Lee Hart", "John I. Nurnberger"
-  , "John P. Beilby", "James L. Kirkland", "Jakob N. Foerster", "Harrison J. Kell", "Enda M. Byrne", "Brendan P. Zietsch", "William Bennett Bean", "James E. Cutting", "Allan H. Young"]
+  , "John P. Beilby", "James L. Kirkland", "Jakob N. Foerster", "Harrison J. Kell", "Enda M. Byrne", "Brendan P. Zietsch", "William Bennett Bean", "James E. Cutting", "Allan H. Young", "Tim B. Bigdeli"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1708,9 +1711,13 @@ authorLinkDB = M.fromList $
     , ("Adah Maurer", "https://nospank.net/adah1.htm")
     , ("Zhe Gan", "https://zhegan27.github.io/")
     , ("Yonatan Belinkov", "https://belinkov.com/")
-    , ("Yasaman Bahri", "https://scholar.google.com/citations?hl=en&user=p2_vHmAAAAAJ&view_op=list_works&sortby=pubdate")
-    , ("Xiaodong Liu#microsoft", "https://scholar.google.com/citations?user=NIewcxMAAAAJ&hl=en&oi=ao")
-    , ("Xiaodong Liu#deepseek", "https://scholar.google.com/citations?user=4jnUJGIAAAAJ&hl=en&oi=ao")
+    , ("Yasaman Bahri", "https://scholar.google.com/citations?user=p2_vHmAAAAAJ&view_op=list_works&sortby=pubdate")
+    , ("Xiaodong Liu#microsoft", "https://scholar.google.com/citations?user=NIewcxMAAAAJ")
+    , ("Xiaodong Liu#deepseek", "https://scholar.google.com/citations?user=4jnUJGIAAAAJ")
+    , ("Xiang Ren", "https://www.seanre.com/")
+    , ("Toni-Kim Clarke", "https://scholar.google.com/citations?user=noD7zAMAAAAJ&hl=en&oi=ao")
+    , ("Tim B. Bigdeli", "https://scholar.google.com/citations?user=rzEbP_cAAAAJ&hl=en&oi=ao")
+    , ("Thorkild I. A. Sørensen", "https://orcid.org/0000-0003-4821-430X")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2970,4 +2977,4 @@ authorWpLinkDB =
     , "John Brunner", "Harlan Ellison", "Frederik Pohl", "A. E. Stallings", "Richard Sharpe Shaver"
     , "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist"
     , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group", "Adrian Hon"
-    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins", "Charles Baudelaire", "James E. Cutting", "American Veterinary Medical Association", "John Rosengrant", "Christopher Smart", "Rick Gibson", "Christian Bök", "David Hestenes", "Yu-Ao_Chen", "Frank Wilczek", "Pan Jianwei"]
+    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins", "Charles Baudelaire", "James E. Cutting", "American Veterinary Medical Association", "John Rosengrant", "Christopher Smart", "Rick Gibson", "Christian Bök", "David Hestenes", "Yu-Ao_Chen", "Frank Wilczek", "Pan Jianwei", "Gillian Cookson"]
