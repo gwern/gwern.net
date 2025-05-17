@@ -2529,7 +2529,8 @@ body.page-doc-index #see-alsos code {
 /*= /index =*/
 /*=--------=*/
 
-body.page-fiction-october.reader-mode-active #page-metadata {
+body.page-fiction-october.reader-mode-active #page-metadata,
+body.page-fiction-october.reader-mode-active #TOC {
 	display: none;
 }
 

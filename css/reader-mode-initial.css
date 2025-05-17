@@ -1,5 +1,6 @@
 /*  Elements to be deleted completely.
  */
+body.reader-mode-active .reader-mode-not, /* allow hiding arbitrary elements in reader-mode for page-specific purposes rather than site-wide elements; TODO: there ought to be the logically symmetrical class like '.reader-mode-override'/'.reader-mode-force-show'/'.reader-mode-visible' to allow showing arbitrary elements in reader-mode as well. */
 body.reader-mode-active #sidebar,
 body.reader-mode-active #page-metadata .page-status,
 body.reader-mode-active #page-metadata .page-confidence,
