@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-05-14 18:27:06 gwern"
+;;; When:  Time-stamp: "2025-05-17 20:50:39 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -281,7 +281,7 @@ START and END specify the region to operate on."
     ("Section" "§" nil 0) ; 'SECTION SIGN'
     ("bc" "because" nil 0)
     ("moda" "modafinil" nil 0)
-    ("ss" "statistically-significant" nil 0)
+    ; ("ss" "statistically-significant" nil 0)
     ("psi" "ψ" nil 0)
     ("arrowright" "→" nil 0)
     ("arrowleft" "←" nil 0)

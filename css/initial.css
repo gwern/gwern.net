@@ -2511,6 +2511,9 @@ body.page-doc-index #see-alsos code {
 /*=--------=*/
 
 body.page-fiction-october.reader-mode-active #page-metadata,
+body.page-fiction-october.reader-mode-active #similars-section,
+body.page-fiction-october.reader-mode-active #backlinks-section,
+body.page-fiction-october.reader-mode-active #link-bibliography-section,
 body.page-fiction-october.reader-mode-active #TOC {
     display: none;
 }
