@@ -14835,7 +14835,7 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 					/*	Check for reversed ID, i.e. “2020-foo” instead of
 						“foo-2020”; if found, redirect to the right form.
 					 */
-					let reversedIDPatternParts = ref.match(/([12][0-9][0-9][0-9])-(.+)$/);
+					let reversedIDPatternParts = ref.match(/^([12][0-9][0-9][0-9])-(.+)$/);
 					if (reversedIDPatternParts != null) {
 						location = URLFromString("/ref/" + `${reversedIDPatternParts[2]}-${reversedIDPatternParts[1]}`);
 					} else {
