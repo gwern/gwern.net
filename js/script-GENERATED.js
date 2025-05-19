@@ -22251,6 +22251,8 @@ DarkMode = { ...DarkMode,
 	/*****************/
 	/*	Configuration.
 	 */
+	activateTriggerElementsSelector: ".dark-mode-enable-when-here",
+
 	modeOptions: [
 		[ "auto", "Auto", "Auto Light/Dark", "Auto Light/Dark", "Set light or dark mode automatically, according to system-wide setting (Win: Start → Personalization → Colors; Mac: Apple → System-Preferences → Appearance; iOS: Settings → Display-and-Brightness; Android: Settings → Display)", "adjust-solid" ],
 		[ "light", "Light", "Light Mode", "Light Mode", "Light mode at all times (black-on-white)", "sun-solid" ],
@@ -22277,6 +22279,9 @@ DarkMode = { ...DarkMode,
 
 		//	Inject primary (page toolbar widget) mode selector.
 		DarkMode.injectModeSelector();
+
+		//	Spawn observers for activate-on-scroll-down.
+		DarkMode.spawnObservers();
 
 		/*	Inject inline mode selectors in already-loaded content, and add
 			rewrite processor to inject any inline selectors in subsequently
@@ -22466,6 +22471,29 @@ DarkMode = { ...DarkMode,
 							 : "light";
 			modeSelector.querySelector(`.select-mode-${activeMode}`).classList.add("active");
 		}
+	},
+
+	//	Called by: DarkMode.setup
+	spawnObservers: () => {
+		GWLog("DarkMode.spawnObserver", "dark-mode.js", 2);
+
+		document.querySelectorAll(DarkMode.activateTriggerElementsSelector).forEach(element => {
+			let observer = new IntersectionObserver((entries, observer) => {
+				entries.forEach(entry => {
+					if (entry.isIntersecting == false)
+						return;
+
+					if (DarkMode.currentMode() != "dark") {
+						DarkMode.defaultMode = "dark";
+						DarkMode.setMode();
+					}
+					observer.disconnect();
+				});
+			}, { threshold: 1.0 });
+
+			//	Commence observation.
+			observer.observe(element);
+		});
 	}
 };
 
@@ -22478,7 +22506,16 @@ ReaderMode = { ...ReaderMode,
 	 */
 	maskedLinksSelector: "p a",
 
-	deactivateTriggerElementSelector: "#reader-mode-disable-when-here, #see-also, #external-links, #appendix, #appendices, #navigation, #footer, #footer-decoration-container",
+	deactivateTriggerElementsSelector: [
+		".reader-mode-disable-when-here",
+		"#see-also",
+		"#external-links",
+		"#appendix",
+		"#appendices",
+		"#navigation",
+		"#footer",
+		"#footer-decoration-container"
+	].join(", "),
 
 	showMaskedLinksDelay: 250,
 

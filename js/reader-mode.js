@@ -4,7 +4,16 @@ ReaderMode = { ...ReaderMode,
 	 */
 	maskedLinksSelector: "p a",
 
-	deactivateTriggerElementSelector: "#reader-mode-disable-when-here, #see-also, #external-links, #appendix, #appendices, #navigation, #footer, #footer-decoration-container",
+	deactivateTriggerElementsSelector: [
+		".reader-mode-disable-when-here",
+		"#see-also",
+		"#external-links",
+		"#appendix",
+		"#appendices",
+		"#navigation",
+		"#footer",
+		"#footer-decoration-container"
+	].join(", "),
 
 	showMaskedLinksDelay: 250,
 
