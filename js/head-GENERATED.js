@@ -1109,9 +1109,10 @@ function paragraphizeTextNodesOfElement(element, options) {
 
 				//	Insert paragraph (with the previously removed nodes).
 				element.insertBefore(graf, node)
-			}
 
-			nodeSequence = [ ];
+				//	Reset node sequence.
+				nodeSequence = [ ];
+			}
 
 			//	Remove <br> elements.
 			if (   node?.nodeType == Node.ELEMENT_NODE

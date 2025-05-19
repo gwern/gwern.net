@@ -88,30 +88,30 @@ body {
 }
 
 body {
-	overflow-x: hidden;
+    overflow-x: hidden;
 }
 
 main {
     position: relative;
     box-sizing: border-box;
-	min-height: 100vh;
+    min-height: 100vh;
     max-width: var(--GW-body-max-width);
     margin: 0 auto;
     padding: 1rem
-    		 var(--GW-body-side-padding)
-    		 1.25rem
-    		 var(--GW-body-side-padding);
-	display: flex;
-	flex-flow: column;
+             var(--GW-body-side-padding)
+             1.25rem
+             var(--GW-body-side-padding);
+    display: flex;
+    flex-flow: column;
 }
 @media all and (max-width: 649px) {
-	main {
-		overflow: hidden;
-		padding: 1rem
-				 var(--GW-body-side-padding)
-				 4.25rem
-				 var(--GW-body-side-padding);
-	}
+    main {
+        overflow: hidden;
+        padding: 1rem
+                 var(--GW-body-side-padding)
+                 4.25rem
+                 var(--GW-body-side-padding);
+    }
 }
 
 
@@ -120,7 +120,7 @@ main {
 /***********/
 
 #sidebar {
-	position: relative;
+    position: relative;
     display: flex;
 }
 
@@ -157,14 +157,14 @@ main {
 }
 
 @media all and (max-width: 649px) {
-	#sidebar {
-		margin-right: -1px;
-	}
+    #sidebar {
+        margin-right: -1px;
+    }
 
     /*  Logo.
      */
     #sidebar a.logo {
-    	margin: 1px 0 1px -1px;
+        margin: 1px 0 1px -1px;
         padding: 0.5em 0.375em;
     }
     #sidebar a.logo .logo-image {
@@ -220,11 +220,11 @@ main {
         font-weight: 600;
     }
 
-	@media all and (max-width: 779px) {
-		#sidebar .sidebar-links .mobile-not {
-			display: none;
-		}
-	}
+    @media all and (max-width: 779px) {
+        #sidebar .sidebar-links .mobile-not {
+            display: none;
+        }
+    }
     @media all and (max-width: 1179px) {
         /*  Logo.
          */
@@ -273,7 +273,7 @@ main {
 
 article {
     margin-top: 1.75rem;
-	flex: 1 1 auto;
+    flex: 1 1 auto;
 }
 
 
@@ -395,16 +395,16 @@ header h1 em {
 #page-metadata .page-metadata-fields > span:last-child::after {
     display: none;
 }
-/*	Adjust icon spacing.
+/*  Adjust icon spacing.
  */
 #page-metadata .page-metadata-fields .progress-indicator-icon {
-	margin: 0 0 0 0.25em;
+    margin: 0 0 0 0.25em;
 }
-/*	Adjust z-order of text elements.
+/*  Adjust z-order of text elements.
  */
 #page-metadata .page-metadata-fields a + span {
-	position: relative;
-	z-index: 1;
+    position: relative;
+    z-index: 1;
 }
 
 /*  Flex order.
@@ -433,10 +433,10 @@ header h1 em {
     white-space: normal;
 }
 
-/*	Importance.
+/*  Importance.
  */
 #page-metadata .page-metadata-fields .page-importance {
-	font-variant-numeric: tabular-nums;
+    font-variant-numeric: tabular-nums;
 }
 
 /*=------------=*/
@@ -549,8 +549,8 @@ header h1 em {
     --text-alignment: left;
     --text-hyphenation: none;
 
-	--background-color: var(--GW-TOC-background-color);
-	--border-color: var(--GW-TOC-border-color);
+    --background-color: var(--GW-TOC-background-color);
+    --border-color: var(--GW-TOC-border-color);
 
     border: 1px solid var(--border-color);
     background-color: var(--background-color);
@@ -986,7 +986,7 @@ body[class*='-index'] #TOC.TOC-links-only li {
 /****************/
 
 #markdownBody {
-	position: relative;
+    position: relative;
 }
 
 .markdownBody {
@@ -1065,7 +1065,7 @@ section.level1:nth-of-type(n+4) {
  */
 
 .heading {
-	display: flow-root;
+    display: flow-root;
     margin: 0;
     position: relative;
     line-height: 1;
@@ -1151,15 +1151,15 @@ section.level6 > .heading {
     background: none;
 }
 
-/*	No visited link styling in headings.
+/*  No visited link styling in headings.
  */
 .markdownBody .heading a:link,
 .markdownBody .heading a:visited {
-	color: var(--GW-body-link-color);
+    color: var(--GW-body-link-color);
 }
 .markdownBody .heading a:hover,
 .markdownBody .heading a:visited:hover {
-	color: var(--GW-body-link-hover-color);
+    color: var(--GW-body-link-hover-color);
 }
 
 /*  Disable bold within headings.
@@ -1273,8 +1273,8 @@ p.empty-graf {
 }
 
 .markdownBody p.text-right {
-	text-align: right;
-	text-indent: 0;
+    text-align: right;
+    text-indent: 0;
 }
 
 
@@ -1383,7 +1383,7 @@ li {
 /*=-----------------------=*/
 
 ul > li::before {
-	--dark-mode-invert-filter: var(--list-bullet-dark-mode-invert-filter);
+    --dark-mode-invert-filter: var(--list-bullet-dark-mode-invert-filter);
 
     content: var(--list-bullet);
     position: absolute;
@@ -1562,7 +1562,7 @@ figure {
 figure img,
 figure video,
 figure svg {
-	position: relative;
+    position: relative;
     display: block;
     max-height: calc(100vh - 8rem);
     max-width: 100%;
@@ -1664,7 +1664,7 @@ figure.width-full {
 }
 
 /****************/
-/*	Figures misc.
+/*  Figures misc.
  */
 
 /*  Figure in the page abstract.
@@ -1735,10 +1735,10 @@ figure.width-full {
     pointer-events: none;
 }
 #markdownBody .marginnote.only-icon.inline {
-	margin-right: 0.2em;
+    margin-right: 0.2em;
 }
 #markdownBody .marginnote.only-icon.sidenote {
-	font-size: inherit;
+    font-size: inherit;
     padding-top: 0.1em;
 }
 
@@ -1752,9 +1752,9 @@ figure.width-full {
 }
 
 @media all and (min-width: 1497px) {
-	#markdownBody .margin-notes-block {
-		display: none;
-	}
+    #markdownBody .margin-notes-block {
+        display: none;
+    }
 }
 
 .markdownBody .margin-notes-block.hidden {
@@ -1774,11 +1774,11 @@ figure.width-full {
 
 [class*='display-random-'],
 [class*='display-random-'] > * {
-	display: none;
+    display: none;
 }
 [class*='display-random-'].visible,
 [class*='display-random-'].visible > .visible {
-	display: initial;
+    display: initial;
 }
 
 
@@ -1787,7 +1787,7 @@ figure.width-full {
 /****************/
 
 .clear-floats {
-	clear: both;
+    clear: both;
 }
 
 
@@ -1927,21 +1927,21 @@ a code {
 .inline-icon {
     --link-underline-background-color: var(--background-color);
 
-	--icon-opacity: 1.00;
-	--icon-width: 1.00em;
-	--icon-height: 1.00em;
-	--icon-offset-x: 0.00em;
-	--icon-offset-y: 0.00em;
+    --icon-opacity: 1.00;
+    --icon-width: 1.00em;
+    --icon-height: 1.00em;
+    --icon-offset-x: 0.00em;
+    --icon-offset-y: 0.00em;
 
     position: relative;
     top: calc(0.05em + var(--icon-offset-y));
     left: var(--icon-offset-x);
     background-color: var(--link-underline-background-color);
-	padding-left: calc(var(--icon-width) + 0.2em);
+    padding-left: calc(var(--icon-width) + 0.2em);
 }
 
 .inline-icon::before {
-	--dark-mode-invert-filter: invert(1);
+    --dark-mode-invert-filter: invert(1);
 
     content: "";
     position: absolute;
@@ -1958,31 +1958,31 @@ a code {
 
 .icon-moon-solid,
 .icon-gear-solid {
-	--icon-opacity: 0.70;
+    --icon-opacity: 0.70;
     --icon-width: 0.90em;
     --icon-height: 1.00em;
 }
 .icon-book-open-solid,
 .icon-message-slash-solid,
 .icon-eye-slash-solid {
-	--icon-opacity: 0.70;
+    --icon-opacity: 0.70;
     --icon-width: 0.90em;
     --icon-height: 0.75em;
 }
 .icon-manicule-left,
 .icon-manicule-right {
-	--icon-opacity: 0.85;
+    --icon-opacity: 0.85;
     --icon-width: 1.70em;
     --icon-height: 1.10em;
     --icon-offset-y: -0.05em;
 }
 .icon-sun-solid {
-	--icon-opacity: 0.75;
+    --icon-opacity: 0.75;
     --icon-width: 1.00em;
     --icon-height: 1.00em;
 }
 .icon-magnifying-glass {
-	--icon-opacity: 0.90;
+    --icon-opacity: 0.90;
     --icon-width: 0.90em;
     --icon-height: 1.00em;
 }
@@ -1995,9 +1995,9 @@ a code {
     --icon-width: 0.65em;
     --icon-height: 1.00em;
 
-	/*	This icon uses a special data-URI variable.
-	 */
-	--icon-url: var(--GW-image-single-white-star-on-black-circle-svg);
+    /*  This icon uses a special data-URI variable.
+     */
+    --icon-url: var(--GW-image-single-white-star-on-black-circle-svg);
 }
 
 .icon-special.progress-indicator-icon {
@@ -2019,7 +2019,7 @@ a code {
     position: relative;
     top: 0.05em;
     background-color: var(--link-underline-background-color);
-	padding-left: calc(var(--icon-width) + 0.2em);
+    padding-left: calc(var(--icon-width) + 0.2em);
 }
 .has-recently-modified-icon .recently-modified-icon-hook::before {
     content: "";
@@ -2130,10 +2130,10 @@ span.date-range > sub {
     }
 }
 
-/*	Small caps blocks.
+/*  Small caps blocks.
  */
 p.smallcaps {
-	font-variant-caps: small-caps;
+    font-variant-caps: small-caps;
 }
 
 /*  Auto-smallcaps introductory paragraphs of documents or sub-documents.
@@ -2162,7 +2162,7 @@ span.smallcaps {
 /*  Hide sidenote columns on narrow viewports.
     */
 @media all and (max-width: 1760px) {
-	#sidenote-column-left,
+    #sidenote-column-left,
     #sidenote-column-right {
         display: none;
     }
@@ -2260,18 +2260,18 @@ body.page-index #sidebar a.logo {
         color: var(--GW-nav-header-link-color);
     }
 
-	@media all and (min-width: 1180px) {
-		body.page-index #sidebar a.logo {
-			opacity: 1.0;
-		}
-	}
+    @media all and (min-width: 1180px) {
+        body.page-index #sidebar a.logo {
+            opacity: 1.0;
+        }
+    }
 }
 
 /*****************/
 /*  Column layout.
  */
 
-/*	Suppress bonus section in single/double-column layout.
+/*  Suppress bonus section in single/double-column layout.
  */
 body.page-index #markdownBody #notable {
     display: none;
@@ -2280,50 +2280,50 @@ body.page-index #markdownBody #notable {
     body.page-index #markdownBody,
     div#new-popular-notable {
         display: grid;
-		grid-template-columns: 1fr 1fr;
-		grid-column-gap: 2em;
-	}
-	body.page-index #markdownBody .abstract,
-	body.page-index #markdownBody hr,
-	div#new-popular-notable hr {
-		grid-column-start: 1;
-		grid-column-end: -1;
-	}
-	@media all and (max-width: 1760px) {
-		div#new-popular-notable #notable {
-			grid-column-start: 1;
-			grid-column-end: -1;
-		}
-		div#new-popular-notable .columns ul {
-			column-gap: 2em;
-		}
-	}
+        grid-template-columns: 1fr 1fr;
+        grid-column-gap: 2em;
+    }
+    body.page-index #markdownBody .abstract,
+    body.page-index #markdownBody hr,
+    div#new-popular-notable hr {
+        grid-column-start: 1;
+        grid-column-end: -1;
+    }
+    @media all and (max-width: 1760px) {
+        div#new-popular-notable #notable {
+            grid-column-start: 1;
+            grid-column-end: -1;
+        }
+        div#new-popular-notable .columns ul {
+            column-gap: 2em;
+        }
+    }
     /*  On sufficiently-wide screens, we can get 3 columns in nicely; to preserve
         the initial row being ‘meta’ blocks, we leave #notable visible
         (for a newest/popular/notable triplet)
      */
     @media all and (min-width: 1761px) {
         body.page-index #markdownBody,
-	    div#new-popular-notable {
+        div#new-popular-notable {
             grid-template-columns: 45ch 45ch 45ch;
         }
         body.page-index #markdownBody {
             margin-left: -20ch;
         }
-	    div#new-popular-notable {
+        div#new-popular-notable {
             margin-left: -22ch;
         }
         body.page-index #markdownBody #notable {
             display: block;
         }
         body.page-index #markdownBody .abstract {
-			max-width: calc(var(--GW-body-max-width) - 2 * var(--GW-body-side-padding));
+            max-width: calc(var(--GW-body-max-width) - 2 * var(--GW-body-side-padding));
             margin-left: 20ch;
         }
         body.page-index #markdownBody hr {
             margin-left: -10ch;
         }
-	    div#new-popular-notable hr {
+        div#new-popular-notable hr {
             margin-left: -9.5ch;
         }
     }
@@ -2345,7 +2345,7 @@ body.page-index #markdownBody section .heading {
     border-bottom: 1px dotted currentColor;
 }
 div#new-popular-notable section .heading {
-	margin-left: 0;
+    margin-left: 0;
 }
 /*  No pilcrows.
  */
@@ -2383,73 +2383,73 @@ div#new-popular-notable section ul ul {
     }
 }
 
-/*	“Newest: Blog” section.
+/*  “Newest: Blog” section.
  */
 section#newest-blog li::before {
-	top: 0.25em;
+    top: 0.25em;
 }
 section#newest-blog li p {
-	--adjusted-line-height: calc(var(--line-height) - 0.20);
+    --adjusted-line-height: calc(var(--line-height) - 0.20);
 
-	line-height: var(--adjusted-line-height);
-	padding-left: 1em;
-	text-indent: -1em;
-	margin-bottom: 0.25em;
-	hyphens: none;
+    line-height: var(--adjusted-line-height);
+    padding-left: 1em;
+    text-indent: -1em;
+    margin-bottom: 0.25em;
+    hyphens: none;
 }
 @media all and (max-width: 649px) {
-	section#newest-blog li p {
-		margin-bottom: 0.50em;
-	}
+    section#newest-blog li p {
+        margin-bottom: 0.50em;
+    }
 }
 section#newest-blog a code {
-	word-break: normal;
+    word-break: normal;
 }
 @media all and (max-width: 960px) {
-	section#newest-blog .columns ul {
-		column-width: unset;
-	}
-	section#newest-blog li {
-		padding-right: 1em;
-	}
-	/*	Hide 10th through 29th items.
-	 */
-	section#newest-blog li:nth-of-type(n+10) {
-		display: none;
-	}
-	section#newest-blog li:last-of-type {
-		display: list-item;
-	}
+    section#newest-blog .columns ul {
+        column-width: unset;
+    }
+    section#newest-blog li {
+        padding-right: 1em;
+    }
+    /*  Hide 10th through 29th items.
+     */
+    section#newest-blog li:nth-of-type(n+10) {
+        display: none;
+    }
+    section#newest-blog li:last-of-type {
+        display: list-item;
+    }
 }
-/*	This is the width breakpoint when one column becomes two.
+/*  This is the width breakpoint when one column becomes two.
  */
 @media all and (min-width: 961px) {
-	section#newest-blog .columns ul {
-		column-gap: 2em;
-	}
-	section#newest-blog li {
-		padding-right: 3em;
-	}
-	@media all and (max-width: 1760px) {
-		section#newest-blog {
-			grid-column-end: span 2;
-		}
-		/*	Hide 20th through 29th items.
-		 */
-		section#newest-blog li:nth-of-type(n+20) {
-			display: none;
-		}
-		section#newest-blog li:last-of-type {
-			display: list-item;
-		}
-	}
-	/*	This is where two columns become three.
-	 */
-	@media all and (min-width: 1761px) {
-		section#newest-blog {
-			grid-column-end: span 3;
-		}
-	}
+    section#newest-blog .columns ul {
+        column-gap: 2em;
+    }
+    section#newest-blog li {
+        padding-right: 3em;
+    }
+    @media all and (max-width: 1760px) {
+        section#newest-blog {
+            grid-column-end: span 2;
+        }
+        /*  Hide 20th through 29th items.
+         */
+        section#newest-blog li:nth-of-type(n+20) {
+            display: none;
+        }
+        section#newest-blog li:last-of-type {
+            display: list-item;
+        }
+    }
+    /*  This is where two columns become three.
+     */
+    @media all and (min-width: 1761px) {
+        section#newest-blog {
+            grid-column-end: span 3;
+        }
+    }
 }
 
 /**********************************/
@@ -2465,7 +2465,7 @@ section#newest-blog a code {
     (which has no class set on it).
  */
 @media all and (min-width: 650px) {
-	/*  Horizontal ruler on the home page.
+    /*  Horizontal ruler on the home page.
      */
     body.page-index section hr {
         display: none;
@@ -2489,13 +2489,13 @@ body.page-index span.date-range .subsup sup {
 /*=-------=*/
 
 @media all and (min-width: 650px) {
-	body.page-404 #markdownBody {
-		margin-top: 3em;
-	}
+    body.page-404 #markdownBody {
+        margin-top: 3em;
+    }
 }
 
 body.page-404 figure {
-	--float-side-margin: 3em;
+    --float-side-margin: 3em;
 }
 body.page-404 figure figcaption {
     margin-top: 0.5em;
@@ -2530,8 +2530,11 @@ body.page-doc-index #see-alsos code {
 /*=--------=*/
 
 body.page-fiction-october.reader-mode-active #page-metadata,
+body.page-fiction-october.reader-mode-active #similars-section,
+body.page-fiction-october.reader-mode-active #backlinks-section,
+body.page-fiction-october.reader-mode-active #link-bibliography-section,
 body.page-fiction-october.reader-mode-active #TOC {
-	display: none;
+    display: none;
 }
 
 body.page-fiction-october.reader-mode-active.masked-links-hidden .footnote-ref,

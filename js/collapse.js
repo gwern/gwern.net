@@ -384,6 +384,12 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 				if (   collapseWrapper.classList.contains("collapse-block")
 					&& collapseAbstract.firstElementChild?.tagName == "BLOCKQUOTE")
 					collapseAbstract.classList.add("abstract");
+
+				//	Hide iceberg indicator on inline collapses with blank abstracts.
+				if (   collapseWrapper.classList.contains("collapse-inline")
+					&& (   isNodeEmpty(collapseAbstract)
+						|| collapseWrapper.classList.contains("has-abstract-collapse-only")))
+					collapseWrapper.classList.add("iceberg-not");
 			} else {
 				if (collapseWrapper.classList.contains("collapse-inline")) {
 					/*	Add default abstract (just an ellipsis) to inline
@@ -395,8 +401,8 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 						innerHTML: " …"
 					}), collapseWrapper.firstChild);
 
-					//	Mark with a special class.
-					collapseWrapper.classList.add("collapse-inline-special");
+					//	Mark with a special class. Also hide iceberg indicator.
+					collapseWrapper.classList.add("collapse-inline-special", "iceberg-not");
 				} else {
 					//	Mark those collapse blocks that have no abstracts.
 					collapseWrapper.classList.add("no-abstract");
@@ -431,31 +437,52 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 			&& isOnlyChild(collapseWrapper))
 			unwrap(collapseWrapper.parentElement);
 
-		//	Construct collapse content wrapper.
-		let collapseContentWrapperTagName = collapseWrapper.tagName == "SPAN" ? "SPAN" : "DIV";
-		let collapseContentWrapper = newElement(collapseContentWrapperTagName, { "class": "collapse-content-wrapper" });
-		let childNodesArray = Array.from(collapseWrapper.childNodes);
-		collapseContentWrapper.append(...childNodesArray.slice(childNodesArray.findLastIndex(node => {
-			return (   node instanceof Element 
-					&& node.matches(".heading, .abstract-collapse, .abstract-collapse-only"));
-		}) + 1));
-		collapseWrapper.append(collapseContentWrapper);
+		//	Construct collapse content wrapper(s).
+		let nodes = Array.from(collapseWrapper.childNodes);
+		let nodeSequence = [ ];
+		let node;
+		do {
+			node = nodes.shift();
+			if (   node != null
+				&& (   node instanceof Element 
+					&& node.matches(".heading, .abstract-collapse, .abstract-collapse-only")) == false) {
+				if (isNodeEmpty_metadataAware(node)) {
+					node?.remove();
+				} else {
+					nodeSequence.push(node);
+				}
+			} else {
+				if (nodeSequence.length > 0) {
+					let collapseContentWrapperTagName = collapseWrapper.tagName == "SPAN" ? "SPAN" : "DIV";
+					let collapseContentWrapper = newElement(collapseContentWrapperTagName, { "class": "collapse-content-wrapper" });
+					collapseContentWrapper.append(...nodeSequence);
 
-		//  Inject the disclosure button.
+					collapseWrapper.insertBefore(collapseContentWrapper, node);
+
+					nodeSequence = [ ];
+				}
+			}				
+		} while (node);
+
+		//  Inject the disclosure button(s).
 		if (collapseWrapper.classList.contains("collapse-inline")) {
-			//	Additional wrapper for inline collapses.
-			let collapseContentOuterWrapper = wrapElement(collapseContentWrapper, "span.collapse-content-outer-wrapper");
-			
+			let collapseContentWrappers = Array.from(collapseWrapper.childNodes).filter(childNode => childNode.matches?.(".collapse-content-wrapper"));
+			collapseContentWrappers.forEach(collapseContentWrapper => {
+				//	Additional wrapper for inline collapses.
+				wrapElement(collapseContentWrapper, "span.collapse-content-outer-wrapper");
+			});
+
 			//	Button at start.
-			collapseContentOuterWrapper.insertBefore(newDisclosureButton({ block: false, start: true }),
-													 collapseContentOuterWrapper.firstChild);
+			collapseContentWrappers.first.parentElement.insertBefore(newDisclosureButton({ block: false, start: true }),
+																	 collapseContentWrappers.first);
 
 			//	Button at end.
-			collapseContentOuterWrapper.insertBefore(newDisclosureButton({ block: false, start: false }),
-													 null);
+			collapseContentWrappers.last.parentElement.insertBefore(newDisclosureButton({ block: false, start: false }),
+																	null);
 		} else {
+			let firstCollapseContentWrapper = Array.from(collapseWrapper.childNodes).filter(child => child.matches(".collapse-content-wrapper")).first;
 			collapseWrapper.insertBefore(newDisclosureButton({ block: true }),
-										 collapseContentWrapper);
+										 firstCollapseContentWrapper);
 		}
 
 		//	Inject the size indicator.

@@ -676,7 +676,7 @@ section.collapse > .heading {
     top: 0;
 }
 .collapse-inline.expanded > .collapse-content-outer-wrapper > .disclosure-button .collapse-iceberg-indicator,
-.collapse-inline > .abstract-collapse-only + .collapse-content-outer-wrapper > .disclosure-button .collapse-iceberg-indicator {
+.collapse-inline.iceberg-not > .collapse-content-outer-wrapper > .disclosure-button .collapse-iceberg-indicator {
     display: none;
 }
 
