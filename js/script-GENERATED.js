@@ -22506,7 +22506,7 @@ ReaderMode = { ...ReaderMode,
 	 */
 	maskedLinksSelector: "p a",
 
-	deactivateTriggerElementsSelector: [
+	deactivateTriggerElementSelector: [
 		".reader-mode-disable-when-here",
 		"#see-also",
 		"#external-links",
