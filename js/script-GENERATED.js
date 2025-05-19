@@ -14681,34 +14681,25 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 		is only one result; the second being the plural-case message, to be
 		used if there are multiple results). Otherwise, it should be a string.
 	 */
-	let injectIdPrefixMatches = (message, mapping, ref) => {
-		let idPrefixMatches = Object.entries(mapping).filter(entry =>
-			   entry[0].startsWith(ref)
-			&& entry[0] != ref
-		);
-		if (idPrefixMatches.length > 0) {
-			if (typeof message == "object")
-				message = idPrefixMatches.length == 1 ? message[0] : message[1];
-			injectHelpfulErrorMessage(message);
-			let includeLinkClass = idPrefixMatches.length == 1
-								   ? "include-annotation"
-								   : "include-annotation-partial";
-			pageContentContainer.appendChild(elementFromHTML(
-				  `<ul>`
-				+ idPrefixMatches.map(entry => (
-					  `<li><p>`
-					+ `<a href="/ref/${entry[0]}">${entry[0]}</a>: `
-					+ synthesizeIncludeLink(entry[1], {
-						"class": "link-annotated ${includeLinkClass}",
-						"data-include-selector-not": ".data-field.date, .aux-links-field-container"
-					  }, {
-					  	innerHTML: `<code>${entry[1]}</code>`
-					  }).outerHTML
-					+ `</p></li>`
-				  )).join("")
-				+ `</ul>`));
-			activateIncludeLinks();
-		}
+	let injectIdPrefixMatches = (matches, message) => {
+		if (typeof message == "object")
+			message = matches.length == 1 ? message[0] : message[1];
+		injectHelpfulErrorMessage(message);
+		pageContentContainer.appendChild(elementFromHTML(
+			  `<ul>`
+			+ matches.map(entry => (
+				  `<li><p>`
+				+ `<a href="/ref/${entry[0]}">${entry[0]}</a>: `
+				+ synthesizeIncludeLink(entry[1], {
+					"class": "link-annotated include-annotation-partial",
+					"data-include-selector-not": ".data-field.date, .aux-links-field-container"
+				  }, {
+					innerHTML: `<code>${entry[1]}</code>`
+				  }).outerHTML
+				+ `</p></li>`
+			  )).join("")
+			+ `</ul>`));
+		activateIncludeLinks();
 	};
 
 	let injectUrlPrefixMatches = (matches) => {
@@ -14718,7 +14709,7 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 			+ matches.map(entry => (
 				  `<li><p>`
 				+ synthesizeIncludeLink(entry[0], {
-					"class": "link-annotated include-annotation"
+					"class": "link-annotated include-annotation-partial"
 				  }, {
 					innerHTML: `<code>${entry[0]}</code>`
 				  }).outerHTML
@@ -14839,7 +14830,23 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 					if (reversedIDPatternParts != null) {
 						location = URLFromString("/ref/" + `${reversedIDPatternParts[2]}-${reversedIDPatternParts[1]}`);
 					} else {
-						injectIdPrefixMatches([ "Perhaps you want this:", "Perhaps you want one of these:" ], event.target.response, normalizedRef);
+						//	Get all prefix matches (in both directions).
+						let idPrefixMatches = Object.entries(event.target.response).filter(entry =>
+							   (   entry[0].startsWith(normalizedRef)
+								|| normalizedRef.startsWith(entry[0]))
+							&& entry[0] != normalizedRef
+						);
+						if (idPrefixMatches.length > 1) {
+							/*	If multiple matches, list them all, transcluding
+								annotations where available (attempt in all cases, and
+								those that fail will just become regular links).
+							 */
+							injectIdPrefixMatches(idPrefixMatches, "Perhaps you want one of these:");
+						} else if (idPrefixMatches.length == 1) {
+							//	If only one match, redirect to the matching /ref/ page.
+							document.head.appendChild(elementFromHTML(`<link rel="canonical" href="${URLFromString('/ref/' + idPrefixMatches.first[0]).href}">`));
+							location = URLFromString("/ref/" + idPrefixMatches.first[0]);
+						}
 						injectHelpfulSuggestion(normalizedRef.replace(/-/g, " "
 															).replace(" et al", ""
 															).split(" "
@@ -14858,6 +14865,7 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 						updatePageTitleElements("Invalid Query");
 						injectHelpfulErrorMessage(  `No annotation exists for ID <code>${normalizedRef}</code>`
 												  + ` (<a href="${urlString}"><code>${URLFromString(urlString).href}</code></a>).`);
+
 						injectIdPrefixMatches([ "Perhaps you want this instead:", "Perhaps you want one of these instead:" ], event.target.response, normalizedRef);
 						injectHelpfulSuggestion(urlString);
 					}, {
