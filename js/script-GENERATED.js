@@ -18092,6 +18092,7 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifySpecialTextBlockTagTypes = (
 	].map(className => `div.${className}`).join(", ");
 
     eventInfo.container.querySelectorAll(problematicBlockSelector).forEach(div => {
+		paragraphizeTextNodesOfElementRetainingMetadata(div);
         unwrap(div, {
         	moveID: true,
         	moveClasses: true,
