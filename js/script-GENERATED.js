@@ -17571,6 +17571,9 @@ addContentInjectHandler(GW.contentInjectHandlers.designateLocalNavigationLinkIco
             in favor of this JS hook, to simplify code & ensure a single source
             of truth.
          */
+		if (link.hash == "#top")
+			link.dataset.linkIcon = "\u{2191}" // ‘↑’ UPWARDS ARROW;
+
         let target = eventInfo.document.querySelector(selectorFromHash(link.hash));
         if (target == null)
         	return;
