@@ -153,7 +153,7 @@ filterMetaBadSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode",
                           , "Admin", "C U. P. Printing", "Debenu ", "Quick P. D. F. Library 9.12", "www.debenu.com", "JPL 99", "MinnickD", "Office", "Owner"
                           , "SPDF", "Writer", "jcpham", "DLE4&lt;8", "8AB@0B&gt", "Paperless", "psjoin 0.2", "Apex", "Elsevier Science"
                           , "PsycINFO", "kristine gallo", "TeX", "PDFplus", "Elsevier", "N/A", "OmniPage", "scansoft", "Articlizer"
-                          , "ARTICLIZER", "c:/ncn", "1QS4P", "2-0crc", "Trove", "REV_ISS", "WEB_CDEV", "HelenMartin", "DALiM", "HP PDF", "PDF Formatter", "Xerox D125", "Copier-Printer", "PubTeX", "C:My Documents", ".wp", "Nova India", "/var/www", "oup_cercor", "oup_humrep", "Print Publisher", "11.1.4012/W", "PDFium"]
+                          , "ARTICLIZER", "c:/ncn", "1QS4P", "2-0crc", "Trove", "REV_ISS", "WEB_CDEV", "HelenMartin", "DALiM", "HP PDF", "PDF Formatter", "Xerox D125", "Copier-Printer", "PubTeX", "C:My Documents", ".wp", "Nova India", "/var/www", "oup_cercor", "oup_humrep", "Print Publisher", "11.1.4012/W", "PDFium", "Internet Archive (Scribe Version", "4.0-initial-155-gbba175a5"]
 
 filterMetaBadWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "downes", "American Medical Association"
                       , "om", "lhf", "comp", "Science Magazine", "Josh Lerner, Scott Stern (Editors)", "arsalan", "rssa_a0157 469..482", "Schniederjans_lo"

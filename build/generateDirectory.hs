@@ -219,7 +219,7 @@ generateDirectory newestp am md ldb sortDB dirs dir'' = do
 -- And for new essays, but not annotations/links, we want to use a broader definition of 'new' to include *modified*: as modified >= created, we just use modification time instead
 filterDbNewest :: Int -> Int -> Int -> Metadata -> Metadata
 filterDbNewest selfN annotationN linkN md = let -- ml = M.toList md
-                                                mdAnnotated = M.filterWithKey (\p (_,_,_,_,_,_,abst) -> abst /= "" && not ("/index" `isSuffixOf` p || "/index-long" `isSuffixOf` p || "/newsletter/" `isPrefixOf` p || "/lorem" `isPrefixOf` p || "/changelog" `isPrefixOf` p)) md
+                                                mdAnnotated = M.filterWithKey (\p (_,_,_,_,_,_,abst) -> abst /= "" && not ("/index" `isSuffixOf` p || "/newsletter/" `isPrefixOf` p || "/lorem" `isPrefixOf` p || "/changelog" `isPrefixOf` p)) md
                                                 selfs      = take selfN $ sortItemDateModified $ M.toList $ M.filterWithKey (\p (_,aut,_,_,_,_,_) -> aut `anyInfix` ["Gwern", "gwern"] && not ('#' `elem` p)) mdAnnotated
 
                                                 annotations = take annotationN $ sortItemPathDateCreated $ M.toList $

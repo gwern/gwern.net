@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-05-17 20:50:39 gwern"
+;;; When:  Time-stamp: "2025-05-18 21:02:36 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -54,7 +54,7 @@
 
 ; (setq major-mode 'markdown-mode) ; needs to be done via 'Customize'?
 (setq markdown-command
-   "pandoc --mathjax --metadata title='Markdown-preview' --to=html5 --standalone --number-sections --toc --reference-links --css=https://gwern.net/static/css/default.css -f markdown+smart --template=/home/gwern/wiki/static/template/pandoc/template-html5-articleedit.html5 -V lang=en-us")
+   "pandoc --mathjax --metadata title=markdown-preview --to=html5 --standalone --number-sections --toc --reference-links --css=https://gwern.net/static/css/default.css -f markdown+smart --template=/home/gwern/wiki/static/template/pandoc/template-html5-articleedit.html5 -V lang=en-us")
 (setq markdown-enable-math t)
 (setq markdown-italic-underscore t)
 
@@ -356,7 +356,6 @@ Mostly string search-and-replace to enforce house style in terms of format."
                      ("â" . "“")
                      ("ì" . "“")
                      ("â" . "”")
-                     ("î" . "”")
                      ("í" . "’")
                      ("â" . "–")
                      ("â" . "−")

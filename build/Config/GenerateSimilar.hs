@@ -31,7 +31,7 @@ blackList p = p `elem` blackListURLs
 
 -- testing: `Test` as unique-list & valid URI (`isURIReference`)
 blackListURLs :: [String] -- TODO: experiment with removing the blacklist to see if the pathologies have gone away
-blackListURLs = ["/index", "/index-long", "/changelog", "/help"] -- ["https://www.biorxiv.org/content/10.1101/2020.04.03.024554.full",
+blackListURLs = ["/index", "/changelog", "/help"] -- ["https://www.biorxiv.org/content/10.1101/2020.04.03.024554.full",
                 --         "/doc/genetics/heritable/correlation/2019-kandler.pdf", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4210287/",
                 --         "https://www.wired.com/1996/12/ffglass/", "https://andrewmayne.com/2021/05/18/a-simple-method-to-keep-gpt-3-focused-in-a-conversation/",
                 --         "https://www.dutchnews.nl/2022/07/german-fighter-pilot-identified-after-79-years-from-dna-on-envelope/",
