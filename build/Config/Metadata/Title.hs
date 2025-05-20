@@ -4,7 +4,7 @@ separators :: String
 separators = "—·|"
 
 badStringPatterns, badStrings :: [String]
-badStringPatterns = ["Redirecting to ", "404 ", "Page Unavailable", "Page not found", "Page Not Found", "CAPTCHA", "s shortform feed"]
+badStringPatterns = ["Redirecting to ", "404 ", "Page Unavailable", "Page not found", "Page Not Found", "CAPTCHA", "s shortform feed", "Item not found"]
 
 -- testing: unique keys
 stringReplace :: [(String,String)]
@@ -164,4 +164,4 @@ stringDelete = [" - The Public Domain Review"
             , " - Science Fiction, Fantasy, Philosophy & History", "The Silver Elves: ", "Bloomberg - "
             , " - Are you a robot?", " - Matt Lakeman", " - by Jacob Falkovich", " - <em>Daily Nous</em>"
             , " - Daily Nous", " - Wask", " - Yuxi on the Wired", "model ships in the cinema: "
-            , " - Big Sand Woodworking", "Emigre: ", "David T. Wilbanks: ", " - Asimov Press", " :: SSRN", " - Adam LeBlanc", "Gesta Septentrionalis: ", " - Internal exile", " - Ben"]
+            , " - Big Sand Woodworking", "Emigre: ", "David T. Wilbanks: ", " - Asimov Press", " :: SSRN", " - Adam LeBlanc", "Gesta Septentrionalis: ", " - Internal exile", " - Ben", " | The Calvin and Hobbes Wiki"]

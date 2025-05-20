@@ -799,7 +799,7 @@ canonicalsWithInitials =
   , "Philip S. Dale", "Lee N. Robbins", "Hyman G. Rickover", "Lucia A. Hindorff"
   , "Peter P. Pramstaller", "Kent M. Pitman", "Louise S. Bicknell", "Laura Jean Bierut"
   , "Grover S. Krantz", "Kent D. Taylor", "Robyn M. Dawes", "Donna Lee Hart", "John I. Nurnberger"
-  , "John P. Beilby", "James L. Kirkland", "Jakob N. Foerster", "Harrison J. Kell", "Enda M. Byrne", "Brendan P. Zietsch", "William Bennett Bean", "James E. Cutting", "Allan H. Young", "Tim B. Bigdeli"]
+  , "John P. Beilby", "James L. Kirkland", "Jakob N. Foerster", "Harrison J. Kell", "Enda M. Byrne", "Brendan P. Zietsch", "William Bennett Bean", "James E. Cutting", "Allan H. Young", "Tim B. Bigdeli", "Tara C. Matise", "Stephen J. Chanock"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1716,11 +1716,15 @@ authorLinkDB = M.fromList $
     , ("Xiaodong Liu#microsoft", "https://scholar.google.com/citations?user=NIewcxMAAAAJ")
     , ("Xiaodong Liu#deepseek", "https://scholar.google.com/citations?user=4jnUJGIAAAAJ")
     , ("Xiang Ren", "https://www.seanre.com/")
-    , ("Toni-Kim Clarke", "https://scholar.google.com/citations?user=noD7zAMAAAAJ&hl=en&oi=ao")
-    , ("Tim B. Bigdeli", "https://scholar.google.com/citations?user=rzEbP_cAAAAJ&hl=en&oi=ao")
+    , ("Toni-Kim Clarke", "https://scholar.google.com/citations?user=noD7zAMAAAAJ")
+    , ("Tim B. Bigdeli", "https://scholar.google.com/citations?user=rzEbP_cAAAAJ")
     , ("Thorkild I. A. Sørensen", "https://orcid.org/0000-0003-4821-430X")
     , ("Ben Shindel", "https://www.benshindel.com/about/")
     , ("Winston Rowntree", "https://en.wikipedia.org/wiki/Subnormality")
+    , ("Tara C. Matise", "https://en.wikipedia.org/wiki/Tara_Matise")
+    , ("Steve Buyske", "https://statweb.rutgers.edu/buyske/index.html")
+    , ("Stephen J. Chanock", "https://en.wikipedia.org/wiki/Stephen_Chanock")
+    , ("Stefan Herms", "https://scholar.google.com/citations?user=zL4Fj_8AAAAJ&hl=en&oi=ao")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2780,7 +2784,7 @@ authorWpLinkDB =
     ,"Stefano DellaVigna", "Stefano Ugolini", "Steffen Schmidt", "Stella Chen", "Stephan Collishaw"
     ,"Stephan Lewandowsky", "Stephan Ripke", "Stephan Zipfel", "Stephanie Forrest", "Stephanie J. London"
     ,"Stephanie Lin", "Stephanie Lopez", "Stephen Ansolabehere", "Stephen C. Stearns"
-    ,"Stephen Ceci", "Stephen Chanock", "Stephen E. Epstein", "Stephen E. Fienberg", "Stephen E. Harris"
+    ,"Stephen Ceci", "Stephen E. Epstein", "Stephen E. Fienberg", "Stephen E. Harris"
     ,"Stephen Franks", "Stephen G. Waxman", "Stephen Hsu", "Stephen J. Ceci", "Stephen J. Elledge"
     ,"Stephen J. O\8217Brien", "Stephen J. Roberts", "Stephen J. Simpson", "Stephen J. Wright", "Stephen L. Carter"
     ,"Stephen L. Macknik", "Stephen LaBerge", "Stephen Laurence", "Stephen M. Omohundro", "Stephen M. Stigler"

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-05-18 22:58:10 gwern"
+# When:  Time-stamp: "2025-05-19 10:01:57 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -677,7 +677,7 @@ else
             "TOC" "uri" "at" "bu" "c1" "c2"
             "c3" "c4" "c5" "c6" "c7" "c8"
             "c9" "c10" "cf" "co" "dv" "fu"
-            "kw" "op" "s1" "st" "reader-mode" "reader-mode-style-not" "reader-mode-not" "reader-mode-note"
+            "kw" "op" "s1" "st" "reader-mode" "reader-mode-style-not" "reader-mode-not" "reader-mode-note" "reader-mode-disable-when-here"
             "scrape-abstract-not" "abstract" "abstract-collapse" "abstract-collapse-only" "admonition" "admonition-title"
             "book-review-meta" "book-review-review" "tip" "xml" "yaml" "warning" "al" "an"
             "bn" "cn" "cv" "do" "dt" "er"
@@ -835,7 +835,7 @@ else
               -e '[12][0-9][0-9][0-9]—[01][0-9]—[0-3][0-9]' -e '[12][0-9][0-9][0-9]—[01][0-9]-[0-3][0-9]' -e '[12][0-9][0-9][0-9]-[01][0-9]—[0-3][0-9]' \
               -e '[12][0-9][0-9][0-9]—[12][0-9][0-9][0-9]' -e '[\[( ~#"][12][0-9][0-9][0-9]-[12][0-9][0-9][0-9]' \
               -e ' -\$[1-9][0-9]+' -e ' -\$[1-9][0-9][0-9]' -e ' -\$[1-9][0-9][0-9]+' -e ' \$[0-9][0-9][0-9][0-9]' -e ' \$[0-9][0-9][0-9][0-9][0-9]' -e ' \$[1-9][0-9][0-9][0-9]' -e '[^=]\$[1-9][0-9][0-9][0-9][^)>kmg"]' -e '\$[0-9][0-9][0-9][0-9][0-9]' -e '\[\$[12][0-9][0-9][0-9]' \
-              -e '<div class="epigraph"$' -e '</>' -e 'Borge[^s]' \
+              -e '<div class="epigraph"$' -e '</>' -e 'Borge[^rsu]' \
               -- $PAGES | \
               gfv '/utext'; }
      wrap λ "Markdown: miscellaneous regexp errors."

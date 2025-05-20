@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-05-17 17:35:29 gwern"
+# When:  Time-stamp: "2025-05-19 09:56:24 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -685,6 +685,8 @@ Shifting Work Patterns with Generative AI by Eleanor Wiske Dillon, Sonia Jaffe, 
 - "https://blog.blackhc.net/2025/05/active-learning-vs-filtering/ Active Learning vs. Data Filtering:<br />
 Selection vs. Rejection"
 "Active Learning vs. Data Filtering: Selection vs. Rejection"
+- "https://calvinandhobbes.fandom.com/wiki/Noodle_Incident Noodle Incident | The Calvin and Hobbes Wiki"
+"Noodle Incident"
 
 Task:
 
