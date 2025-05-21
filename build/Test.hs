@@ -178,6 +178,9 @@ testAll = do Config.Misc.cd
              let linkidLength = length $ isUniqueList linkids
              printGreen ("Checked URL hash uniqueness for: " ++ show linkidLength)
 
+             let invalidIDs = filter (isDate . T.unpack) linkids
+             unless (null invalidIDs) $ printRed ("IDs: Some IDs are valid dates, which should never happen and indicates metadata corruption: " ++ show invalidIDs)
+
              printGreen ("Testing file-transclusions…" :: String)
              let fileTranscludes = fileTranscludesTest md am
              let fileTranscludesResults = filter (uncurry (/=)) fileTranscludes

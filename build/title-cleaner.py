@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-05-19 09:56:24 gwern"
+# When:  Time-stamp: "2025-05-20 20:54:42 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -687,6 +687,12 @@ Selection vs. Rejection"
 "Active Learning vs. Data Filtering: Selection vs. Rejection"
 - "https://calvinandhobbes.fandom.com/wiki/Noodle_Incident Noodle Incident | The Calvin and Hobbes Wiki"
 "Noodle Incident"
+- "https://interrobangtype.co/product/wt-morris-roman/ WT Morris Roman at Interrobang Type Co"
+"WT Morris Roman"
+- "https://www.bloomberg.com/news/articles/2025-01-27/x-debt-shopped-with-6-billion-sweetener-from-elon-musk-s-ai-bet Bloomberg"
+""
+- "https://www.crd.york.ac.uk/PROSPERO/view/CRD42022342845 PROSPERO"
+""
 
 Task:
 

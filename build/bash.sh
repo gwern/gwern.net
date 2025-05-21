@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-05-05 09:13:12 gwern"
+# When:  Time-stamp: "2025-05-20 17:42:42 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -169,9 +169,6 @@ pdf-cut-append () { if [ $# -ne 1 ]; then red "Wrong number of arguments argumen
 red() { tput setaf 1; echo "$@" >&2; tput sgr0; }
 yellow() { tput setaf 3; echo "$@" >&2; tput sgr0; }
 bold() { tput bold; echo "$@" >&2; tput sgr0; }
-# Example path2File using realpath (requires realpath command)
-path2File() { realpath -m "$1" 2>/dev/null || echo "$1"; } # -m allows non-existent
-
 
 # --- pdf-append Function ---
 

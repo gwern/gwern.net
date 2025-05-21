@@ -799,7 +799,7 @@ canonicalsWithInitials =
   , "Philip S. Dale", "Lee N. Robbins", "Hyman G. Rickover", "Lucia A. Hindorff"
   , "Peter P. Pramstaller", "Kent M. Pitman", "Louise S. Bicknell", "Laura Jean Bierut"
   , "Grover S. Krantz", "Kent D. Taylor", "Robyn M. Dawes", "Donna Lee Hart", "John I. Nurnberger"
-  , "John P. Beilby", "James L. Kirkland", "Jakob N. Foerster", "Harrison J. Kell", "Enda M. Byrne", "Brendan P. Zietsch", "William Bennett Bean", "James E. Cutting", "Allan H. Young", "Tim B. Bigdeli", "Tara C. Matise", "Stephen J. Chanock"]
+  , "John P. Beilby", "James L. Kirkland", "Jakob N. Foerster", "Harrison J. Kell", "Enda M. Byrne", "Brendan P. Zietsch", "William Bennett Bean", "James E. Cutting", "Allan H. Young", "Tim B. Bigdeli", "Tara C. Matise", "Stephen J. Chanock", "Martin M. Wattenberg"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1725,6 +1725,7 @@ authorLinkDB = M.fromList $
     , ("Steve Buyske", "https://statweb.rutgers.edu/buyske/index.html")
     , ("Stephen J. Chanock", "https://en.wikipedia.org/wiki/Stephen_Chanock")
     , ("Stefan Herms", "https://scholar.google.com/citations?user=zL4Fj_8AAAAJ&hl=en&oi=ao")
+    , ("Martin M. Wattenberg", "https://en.wikipedia.org/wiki/Martin_M._Wattenberg")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2984,4 +2985,4 @@ authorWpLinkDB =
     , "John Brunner", "Harlan Ellison", "A. E. Stallings", "Richard Sharpe Shaver"
     , "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist"
     , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group", "Adrian Hon"
-    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins", "Charles Baudelaire", "James E. Cutting", "American Veterinary Medical Association", "John Rosengrant", "Christopher Smart", "Rick Gibson", "Christian Bök", "David Hestenes", "Yu-Ao_Chen", "Frank Wilczek", "Pan Jianwei", "Gillian Cookson", "Thomas Hinde"]
+    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins", "Charles Baudelaire", "James E. Cutting", "American Veterinary Medical Association", "John Rosengrant", "Christopher Smart", "Rick Gibson", "Christian Bök", "David Hestenes", "Yu-Ao_Chen", "Frank Wilczek", "Pan Jianwei", "Gillian Cookson", "Thomas Hinde", "Jeff Gore", "Ann O'Leary", "Silvana Konermann", "Liang Wenfeng", "Fernanda Viégas", "Wyndham Lewis"]

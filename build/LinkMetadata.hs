@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-05-04 20:36:38 gwern"
+When:  Time-stamp: "2025-05-20 17:57:38 gwern"
 License: CC-0
 -}
 
@@ -277,7 +277,7 @@ readLinkMetadataAndCheck = do
              -- <https://www.doi.org/doi_handbook/2_Numbering.html#2.2.3> "The DOI syntax shall be made up of a DOI prefix and a DOI suffix separated by a forward slash. There is no defined limit on the length of the DOI name, or of the DOI prefix or DOI suffix. The DOI name is case-insensitive and can incorporate any printable characters from the legal graphic characters of Unicode." <https://www.doi.org/doi_handbook/2_Numbering.html#2.2.1>
              -- Thus far, I have not run into any real DOIs which omit numbers, so we'll include that as a check for accidental tags inserted into the DOI field.
              -- One of the most common errors with DOIs is swapping them for another metadata field like date or tag, so we can check for those. (DOIs may be confused with authors but authors never have a '/' in them and so checking for those handles that case.)
-             let badDois = filter (\(_,(_,_,_,_,kvs,_,_)) -> let doi = kvDOI kvs in if (doi == "") then False else doi `elem` tagsAllC || head doi `elem` ['a'..'z'] || '/' `notElem` doi || null ("0123456789" `intersect` doi) || "https" `isPrefixOf` doi) finalL
+             let badDois = filter (\(_,(_,_,_,_,kvs,_,_)) -> let doi = kvDOI kvs in if (doi == "") then False else doi `elem` tagsAllC || head doi `elem` ['a'..'z'] || '/' `notElem` doi || null ("0123456789" `intersect` doi) || "https" `isPrefixOf` doi || isDate doi) finalL
              unless (null badDois) $ error $ "GTXes: Invalid DOI (missing mandatory forward slash or a number): " ++ show badDois
 
              -- NOTE: titles can validly begin/end with a forward-slash if they are, say, a subreddit. Titles also often end in colons for Twitter, where it is about an implied attached screenshot or image or retweet. And '+' ends a number of technology-related titles ('Google+', 'DC++', 'C++').
@@ -832,7 +832,7 @@ lookupFallback m u = case M.lookup u m of
                                          in
                                                (if (".md" `isInfixOf` u') || (u == u') then (u, ("", "", "", "", [], [], "")) else
                                                   -- sometimes the fallback is useless eg, a link to a section will trigger a 'longer' hit, like
-                                                  -- '/review/cat.md' will trigger a fallback to /review/cat#fuzz-testing'; the
+                                                  -- '/review/cat.md' will trigger a fallback to /fuzz-testing'; the
                                                   -- longer hit will also be empty, usually, and so not better. We check for that case and return
                                                   -- the original path and not the longer path.
                                                   let possibleFallback = lookupFallback m u' in
