@@ -390,19 +390,34 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 					&& (   isNodeEmpty(collapseAbstract)
 						|| collapseWrapper.classList.contains("has-abstract-collapse-only")))
 					collapseWrapper.classList.add("iceberg-not");
-			} else {
-				if (collapseWrapper.classList.contains("collapse-inline")) {
-					/*	Add default abstract (just an ellipsis) to inline
-						collapses that have no abstract.
-					 */
-					collapseWrapper.insertBefore(collapseAbstract = newElement("span", {
-						class: "abstract-collapse-only"
-					}, {
-						innerHTML: " …"
-					}), collapseWrapper.firstChild);
 
-					//	Mark with a special class. Also hide iceberg indicator.
-					collapseWrapper.classList.add("collapse-inline-special", "iceberg-not");
+				//	The “collapse-small” class would be an error in this case...
+				if (collapseWrapper.classList.contains("collapse-small")) {
+					let collapseWrapperTagName = collapseWrapper.tagName.toLowerCase()
+					GWServerLogError(eventInfo.loadLocation.href + `--contradictory-collapse-class-${collapseWrapperTagName}`, 
+									 `contradictory collapse class (${collapseWrapperTagName})`);	 
+
+					return;
+				}
+			} else {
+				//	If there is no abstract...
+				if (collapseWrapper.classList.contains("collapse-inline")) {
+					/*	Inline collapses without an abstract get a default 
+						abstract (just an ellipsis)... unless they are marked
+						as .collapse-small.
+					 */
+					if (collapseWrapper.classList.contains("collapse-small") == false) {
+						collapseWrapper.insertBefore(collapseAbstract = newElement("span", {
+							class: "abstract-collapse-only"
+						}, {
+							innerHTML: " …"
+						}), collapseWrapper.firstChild);
+					}
+
+					/*	Ellipsis or not, the iceberg indicator gets hidden for
+						inline collapses without an abstract.
+					 */
+					collapseWrapper.classList.add("iceberg-not");
 				} else {
 					//	Mark those collapse blocks that have no abstracts.
 					collapseWrapper.classList.add("no-abstract");
