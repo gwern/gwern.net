@@ -236,15 +236,34 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 			}
 		});
 	} else {
-		//	Normalize to lowercase, and update URL bar, if need be.
-		let normalizedRef = ref.toLowerCase();
-		if (normalizedRef != ref)
-			relocate("/ref/" + normalizedRef);
+		let normalizedRef = ref;
+		let mappingFileBasename;
 
-		//	Retrieve id-to-URL mapping file (sliced by initial character).
-		let mappingFileBasename = /^[a-zA-Z0-9_-]$/.test(normalizedRef.slice(0, 1))
+		//	Fix problems with manual IDs; leave automatic IDs untouched.
+		if (normalizedRef.startsWith("_")) {
+			/*	Initial underscore means automatic ID (hash). ID-to-URL mapping 
+				file thus is sliced by second character, not first.
+			 */
+			mappingFileBasename = normalizedRef.slice(1, 2);
+		} else {
+			//	Normalize manual IDs to lower case.
+			normalizedRef = normalizedRef.toLowerCase();
+
+			//	Fix reversed ID, i.e. “2020-foo” instead of “foo-2020”.
+			let reversedIDPatternParts = normalizedRef.match(/^([12][0-9][0-9][0-9])-(.+)$/);
+			if (reversedIDPatternParts != null)
+				normalizedRef = `${reversedIDPatternParts[2]}-${reversedIDPatternParts[1]}`;
+
+			//	Update URL bar, if need be.
+			if (normalizedRef != ref)
+				relocate("/ref/" + normalizedRef);
+
+			//	ID-to-URL mapping file (sliced by initial character).
+			mappingFileBasename = /^[a-zA-Z0-9_-]$/.test(normalizedRef.slice(0, 1))
 								  ? normalizedRef.slice(0, 1)
 								  : "-";
+		}
+
 		doAjax({
 			location: urlForMappingFile(mappingFileBasename),
 			responseType: "json",
@@ -254,36 +273,28 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 					updatePageTitleElements("Invalid Query");
 					injectHelpfulErrorMessage(`ID <code>${normalizedRef}</code> does not exist.`);
 
-					/*	Check for reversed ID, i.e. “2020-foo” instead of
-						“foo-2020”; if found, redirect to the right form.
-					 */
-					let reversedIDPatternParts = ref.match(/^([12][0-9][0-9][0-9])-(.+)$/);
-					if (reversedIDPatternParts != null) {
-						location = URLFromString("/ref/" + `${reversedIDPatternParts[2]}-${reversedIDPatternParts[1]}`);
-					} else {
-						//	Get all prefix matches (in both directions).
-						let idPrefixMatches = Object.entries(event.target.response).filter(entry =>
-							   (   entry[0].startsWith(normalizedRef)
-								|| normalizedRef.startsWith(entry[0]))
-							&& entry[0] != normalizedRef
-						);
-						if (idPrefixMatches.length > 1) {
-							/*	If multiple matches, list them all, transcluding
-								annotations where available (attempt in all cases, and
-								those that fail will just become regular links).
-							 */
-							injectIdPrefixMatches(idPrefixMatches, "Perhaps you want one of these:");
-						} else if (idPrefixMatches.length == 1) {
-							//	If only one match, redirect to the matching /ref/ page.
-							document.head.appendChild(elementFromHTML(`<link rel="canonical" href="${URLFromString('/ref/' + idPrefixMatches.first[0]).href}">`));
-							location = URLFromString("/ref/" + idPrefixMatches.first[0]);
-						}
-						injectHelpfulSuggestion(normalizedRef.replace(/-/g, " "
-															).replace(" et al", ""
-															).split(" "
-															).filter(x => /^([0-9]{1,3}|[0-9]{5,})$/.test(x) == false
-															).join(" "));
+					//	Get all prefix matches (in both directions).
+					let idPrefixMatches = Object.entries(event.target.response).filter(entry =>
+						   (   entry[0].startsWith(normalizedRef)
+							|| normalizedRef.startsWith(entry[0]))
+						&& entry[0] != normalizedRef
+					);
+					if (idPrefixMatches.length > 1) {
+						/*	If multiple matches, list them all, transcluding
+							annotations where available (attempt in all cases, and
+							those that fail will just become regular links).
+						 */
+						injectIdPrefixMatches(idPrefixMatches, "Perhaps you want one of these:");
+					} else if (idPrefixMatches.length == 1) {
+						//	If only one match, redirect to the matching /ref/ page.
+						document.head.appendChild(elementFromHTML(`<link rel="canonical" href="${URLFromString('/ref/' + idPrefixMatches.first[0]).href}">`));
+						location = URLFromString("/ref/" + idPrefixMatches.first[0]);
 					}
+					injectHelpfulSuggestion(normalizedRef.replace(/-/g, " "
+														).replace(" et al", ""
+														).split(" "
+														).filter(x => /^([0-9]{1,3}|[0-9]{5,})$/.test(x) == false
+														).join(" "));
 				} else {
 					//	Synthesize and inject include-link.
 					let annotationIncludeLink = pageContentContainer.appendChild(synthesizeIncludeLink(event.target.response[normalizedRef], {
