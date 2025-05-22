@@ -578,7 +578,7 @@ linkIconRulesFiletypes u
  | iE u ["mp3", "flac", "ogg"] = ("audio", "svg", "") -- MP3 logo has no color, surprisingly
  | iE u ["mp4", "avi"] = ("file-video", "svg", "")
  | iE u ["webm"] = ("file-video", "svg", "#acd147") -- WebM; color: green (picked most average-looking green from <https://en.wikipedia.org/wiki/File:WebM_logo.svg>)
- | iE u ["mkv"] = ("file-video", "svg", "#0067ad") -- Matroska video format; color: green-blue (<https://en.m.wikipedia.org/wiki/File:Matroska_Logo.svg>)
+ | iE u ["mkv"] = ("file-video", "svg", "#0067ad") -- Matroska video format; color: green-blue (<https://en.m.wikipedia.org/wiki/File:Matroska_Logo.svg>); NOTE: a '.m4v' == '.mp4' but worse, so we don't support it; just rename 'm4v' → 'mp4'
  | iE u ["swf"] = ("file-video", "svg", "#490202") -- color: red-purple (<https://en.wikipedia.org/wiki/File:Flash_Player_34_SWF_icon.png>)
  | iE u ["ebt", "mdb", "mht", "ttf"] = ("misc", "svg", "")
  | iE u ["mht"] = ("misc", "svg", "") -- TODO: Microsoft

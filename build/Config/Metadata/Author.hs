@@ -761,6 +761,11 @@ canonicals = M.fromList
   , ("Sean Xiang Ren", "Xiang Ren")
   , ("Sean Ren", "Xiang Ren")
   , ("g_leech_", "Gavin Leech")
+  , ("scd31", "Stephen D.")
+  , ("Time magazine", "Time Magazine")
+  , ("Time (magazine)", "Time Magazine")
+  , ("TIME", "Time Magazine")
+  , ("Steve Buyske", "Steven Buyske")
   ]
 
 -- tests: unique
@@ -799,7 +804,7 @@ canonicalsWithInitials =
   , "Philip S. Dale", "Lee N. Robbins", "Hyman G. Rickover", "Lucia A. Hindorff"
   , "Peter P. Pramstaller", "Kent M. Pitman", "Louise S. Bicknell", "Laura Jean Bierut"
   , "Grover S. Krantz", "Kent D. Taylor", "Robyn M. Dawes", "Donna Lee Hart", "John I. Nurnberger"
-  , "John P. Beilby", "James L. Kirkland", "Jakob N. Foerster", "Harrison J. Kell", "Enda M. Byrne", "Brendan P. Zietsch", "William Bennett Bean", "James E. Cutting", "Allan H. Young", "Tim B. Bigdeli", "Tara C. Matise", "Stephen J. Chanock", "Martin M. Wattenberg"]
+  , "John P. Beilby", "James L. Kirkland", "Jakob N. Foerster", "Harrison J. Kell", "Enda M. Byrne", "Brendan P. Zietsch", "William Bennett Bean", "James E. Cutting", "Allan H. Young", "Tim B. Bigdeli", "Tara C. Matise", "Stephen J. Chanock", "Martin M. Wattenberg", "Richard Karlsson Linnér"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1722,10 +1727,19 @@ authorLinkDB = M.fromList $
     , ("Ben Shindel", "https://www.benshindel.com/about/")
     , ("Winston Rowntree", "https://en.wikipedia.org/wiki/Subnormality")
     , ("Tara C. Matise", "https://en.wikipedia.org/wiki/Tara_Matise")
-    , ("Steve Buyske", "https://statweb.rutgers.edu/buyske/index.html")
+    , ("Steven Buyske", "https://statweb.rutgers.edu/buyske/index.html")
     , ("Stephen J. Chanock", "https://en.wikipedia.org/wiki/Stephen_Chanock")
-    , ("Stefan Herms", "https://scholar.google.com/citations?user=zL4Fj_8AAAAJ&hl=en&oi=ao")
+    , ("Stefan Herms", "https://scholar.google.com/citations?user=zL4Fj_8AAAAJ")
     , ("Martin M. Wattenberg", "https://en.wikipedia.org/wiki/Martin_M._Wattenberg")
+    , ("Keach Hagey", "https://www.keachhagey.com/about/")
+    , ("Stephen D.", "https://www.scd31.com/pages/about")
+    , ("Gemini-2.5-pro", "https://blog.google/technology/google-deepmind/gemini-model-thinking-updates-march-2025/#gemini-2-5-thinking")
+    , ("Time Magazine", "https://en.wikipedia.org/wiki/Time_(magazine)")
+    , ("Martha Duffy", "https://www.nytimes.com/1997/06/17/arts/martha-duffy-61-arts-editor-and-writer-at-time-magazine.html")
+    , ("Sander Dieleman", "https://sander.ai/about/")
+    , ("Ronny Myhre", "https://scholar.google.com/citations?user=ARSOHjsAAAAJ&hl=en&oi=ao")
+    , ("Richard Karlsson Linnér", "https://www.universiteitleiden.nl/en/staffmembers/richard-karlsson-linner/publications#tab-2")
+    , ("Grant Slatton", "https://grantslatton.com/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2985,4 +2999,4 @@ authorWpLinkDB =
     , "John Brunner", "Harlan Ellison", "A. E. Stallings", "Richard Sharpe Shaver"
     , "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist"
     , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group", "Adrian Hon"
-    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins", "Charles Baudelaire", "James E. Cutting", "American Veterinary Medical Association", "John Rosengrant", "Christopher Smart", "Rick Gibson", "Christian Bök", "David Hestenes", "Yu-Ao_Chen", "Frank Wilczek", "Pan Jianwei", "Gillian Cookson", "Thomas Hinde", "Jeff Gore", "Ann O'Leary", "Silvana Konermann", "Liang Wenfeng", "Fernanda Viégas", "Wyndham Lewis"]
+    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins", "Charles Baudelaire", "James E. Cutting", "American Veterinary Medical Association", "John Rosengrant", "Christopher Smart", "Rick Gibson", "Christian Bök", "David Hestenes", "Yu-Ao_Chen", "Frank Wilczek", "Pan Jianwei", "Gillian Cookson", "Thomas Hinde", "Jeff Gore", "Ann O'Leary", "Silvana Konermann", "Liang Wenfeng", "Fernanda Viégas", "Wyndham Lewis", "Jef Raskin", "Bruce Sterling", "Pauline Grosjean", "Dilek Hakkani-Tür"]

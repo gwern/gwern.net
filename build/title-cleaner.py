@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-05-20 20:54:42 gwern"
+# When:  Time-stamp: "2025-05-21 16:30:26 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -693,6 +693,8 @@ Selection vs. Rejection"
 ""
 - "https://www.crd.york.ac.uk/PROSPERO/view/CRD42022342845 PROSPERO"
 ""
+- https://forbetterscience.com/2025/05/19/a-sting-inside-a-papermill/ A Sting Inside a Papermill - For Better"
+"A Sting Inside a Papermill"
 
 Task:
 

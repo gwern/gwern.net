@@ -5148,7 +5148,7 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
           , ("Urban_legends_and_myths", "Urban_legend")
           , ("Ursula_K._LeGuin", "Ursula_K._Le_Guin")
           , ("Ursula_Le_Guin", "Ursula_K._Le_Guin")
-          , ("Urxvt", "Rxvt#Derived_programs")
+          , ("Urxvt", "Rxvt#Forks")
           , ("Usagi_Tsukino", "Sailor_Moon_(character)")
           , ("Usemod", "UseModWiki")
           , ("User-agent", "User_agent")
