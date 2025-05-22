@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-05-20 17:57:38 gwern"
+When:  Time-stamp: "2025-05-21 21:59:50 gwern"
 License: CC-0
 -}
 
@@ -52,7 +52,7 @@ import Query (extractLinksInlines)
 import Tags (listTagsAll, tagsToLinksSpan)
 import Metadata.Format (processDOI, cleanAbstractsHTML, linkCanonicalize, balanced) -- authorsInitialize,
 import Metadata.Date (dateTruncateBad, isDate)
-import Utils (writeUpdatedFile, printGreen, printRed, anyInfix, anyPrefix, anySuffix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, hasClass, parseRawAllClean, hasExtensionS, isLocal, kvDOI, delete, safeGetFileSize, calculateSizeToPercentileMap, addKey, hasKey)
+import Utils (writeUpdatedFile, printGreen, printRed, anyInfix, anyPrefix, anySuffix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, hasClass, parseRawAllClean, hasExtensionS, isLocal, kvDOI, delete, safeGetFileSize, calculateSizeToPercentileMap, addKey, hasKey, kvLookup)
 import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
 import LinkIcon (linkIcon)
@@ -366,6 +366,9 @@ readLinkMetadataAndCheck = do
              -- 'See Also' links in annotations get put in multi-columns due to their typical length, but if I cut them down to 1–2 items, the default columns will look bad. `preprocess-markdown.hs` can't do a length check because it has no idea how I will edit the list of similar-links down, so I can't remove the .columns class *there*; only way to do it is check finished annotations for having .columns set but also too few similar-links:
              let badSeeAlsoColumnsUse = M.keys $ M.filterWithKey (\_ (_,_,_,_,_,_,abst) -> let count = length (Data.List.HT.search "data-embeddingdistance" abst) in (count == 1 || count == 2) && "<div class=\"columns\">" `isInfixOf` abst ) final
              unless (null badSeeAlsoColumnsUse) (printRed "Remove columns from skimpy See-Also annotations: " >> printGreen (show badSeeAlsoColumnsUse))
+
+             let manualIDs = M.keys $ M.filterWithKey (\_ (_,_,_,_,misc,_,_) -> let i = kvLookup "id" misc in i/="" && head i == '_') final
+             unless (null manualIDs) (printRed $ "Manual IDs start with an underscore, which is forbidden. Only hash-IDs are allowed to start with an underscore! Bad entries: " ++ show manualIDs)
 
              -- ensure that link IDs are unique, and report ambiguous ones for fixing:
              let disambigs = LinkID.getDisambiguatedPairs final

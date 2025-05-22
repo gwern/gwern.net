@@ -15,7 +15,7 @@ import Metadata.Format (printDoubleTestSuite, cleanAbstractsHTMLTest, balanced, 
                       footnoteRegex, sectionAnonymousRegex, badUrlRegex)
 import Metadata.Date (isDate, dateRangeDurationTestCasesTestsuite)
 import Utils (printGreen, printRed, isDomainT, isURL, isURLT, isURLAny, isURLAnyT, ensure)
-import LinkID (url2ID)
+import LinkID (url2ID, isValidID)
 import Unique
 
 -- module self-tests:
@@ -178,7 +178,7 @@ testAll = do Config.Misc.cd
              let linkidLength = length $ isUniqueList linkids
              printGreen ("Checked URL hash uniqueness for: " ++ show linkidLength)
 
-             let invalidIDs = filter (isDate . T.unpack) linkids
+             let invalidIDs = filter (\i -> let i' = T.unpack i in not (isValidID i' || isDate i')) linkids
              unless (null invalidIDs) $ printRed ("IDs: Some IDs are valid dates, which should never happen and indicates metadata corruption: " ++ show invalidIDs)
 
              printGreen ("Testing file-transclusions…" :: String)

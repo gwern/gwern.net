@@ -7,7 +7,7 @@ import Data.Char (isAlphaNum, isPunctuation, toLower, isDigit, isLetter, isAscii
 import Data.List (isInfixOf, isPrefixOf, sortOn, elemIndex, sort, isSuffixOf)
 import Data.Maybe (fromJust, mapMaybe)
 import Network.URI (uriFragment, parseURIReference)
-import qualified Data.Text as T (null, pack, unpack, take, Text)
+import qualified Data.Text as T (append, null, pack, unpack, take, Text)
 import qualified Data.Map.Strict as M (toList, fromListWith, (!), mapWithKey, lookup)
 import Text.Printf (printf)
 
@@ -29,15 +29,16 @@ import Utils (replace, replaceMany, deleteMany, sedMany, split, trim, delete, si
 import qualified Config.Misc as CM (currentYear, cd, authorL)
 import qualified Config.LinkID as C (linkIDOverrides)
 
--- Convert a URL/path to a 8-character URL-safe Base64 (the 64-character range [a-zA-Z0-9_-] or "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-") ID, using SHA-1.
--- This is the 'universal' fallback ID for all URLs/paths where there isn't enough metadata to create a human-readable citation-style ID like "foo-2020".
+-- Convert a URL/path to a 9-character URL-safe Base64 (the 64-character range [a-zA-Z0-9_-] or "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-") ID, using SHA-1.
+-- This ID must start with an underscore, to uniquely identify hash-IDs from manually-written or citation-inferred cites (which themselves must not start with an underscore).
+-- This is the 'universal' fallback ID for all URLs/paths where there isn't enough metadata to create a human-readable citation-style ID like "foo-2020". (Note that the two kinds of IDs are not mutually exclusive: "foo-2020" is also a possible hash value.)
 -- It ensures we can always define backlinks for URLs (eg. in link-bibliographies) as the targets of `<a>` links, as the IDs will always be safe to use as a hash like '#ID'.
 --
--- Implementation: We use a Web Crypto browser-available hash (SHA-1, like LinkArchive), encoded into URL-safe Base64 (eg. 'https://example.com' → 'Mnw_2ofO'), which we truncate to a short length (8 characters) which is readable & will not bloat the HTML *too* much, but which is long enough that it should have near-zero collision probability over the expected scale of Gwern.net for the foreseeable future (<1m metadata-less URL paths).
+-- Implementation: We use a Web Crypto browser-available hash (SHA-1, like LinkArchive), encoded into URL-safe Base64 (eg. 'https://example.com' → '_Mnw_2ofO'), which we truncate to a short length (9 characters) which is readable & will not bloat the HTML *too* much, but which is long enough that it should have near-zero collision probability over the expected scale of Gwern.net for the foreseeable future (<1m metadata-less URL paths).
 -- Collisions are not necessarily *too* harmful, but if they happen, the author is expected to resolve them by either adding metadata to offending links or manually overriding link IDs in `Config.LinkID`.
 url2ID :: T.Text -> T.Text
 url2ID "" = error "LinkID.url2ID: passed empty string as a URL/path to hash into an ID, which should never happen."
-url2ID url = T.take 8 $ TE.decodeUtf8 $ B64URL.encode $ BS.take 6 hash -- 6 bytes / 48 bits
+url2ID url = T.append "_" $ T.take 8 $ TE.decodeUtf8 $ B64URL.encode $ BS.take 6 hash -- 6 bytes / 48 bits
   where
     hash = SHA1.hash (TE.encodeUtf8 url)
 
@@ -46,8 +47,9 @@ url2ID url = T.take 8 $ TE.decodeUtf8 $ B64URL.encode $ BS.take 6 hash -- 6 byte
 -- 1. Exactly 8 URL-safe Base64 characters [a-zA-Z0-9_-]
 -- 2. Structured IDs with letters (including Unicode), digits, and hyphens; double-hyphens are permitted to encode page-sections.
 isValidID :: String -> Bool
+isValidID ""        = False
 isValidID s
-    | length s == 8 = all isBase64Char s || isStructuredID s
+    | length s == 9 = (head s == '_' && all isBase64Char s) || isStructuredID s
     | otherwise     = isStructuredID s
   where
     -- URL-safe Base64 character set [a-zA-Z0-9_-]
@@ -59,7 +61,8 @@ isValidID s
             noLeadingHyphen = not (isPrefixOf "-" str)
             noTrailingHyphen = not (isSuffixOf "-" str)
             validChars = all isValidStructuredChar str
-        in nonEmpty && validChars && noLeadingHyphen && noTrailingHyphen
+            nonHashPrefixed = head str /= '_'
+        in nonEmpty && validChars && noLeadingHyphen && noTrailingHyphen && nonHashPrefixed
 
     -- Allow any letter (including Unicode), digits, and hyphens; we accept all non-ASCII Unicode characters because it's quite difficult to define invalid Unicode characters given all the surnames floating around; we also have to permit '_' because too many usernames include it as a space separator...
     isValidStructuredChar c = isLetter c || isDigit c || c == '-' || c == '_' || ord c >= 128
@@ -170,7 +173,7 @@ getDisambiguatedPairs md = sortOn snd $ -- sort by the new IDs, to make it easie
 
 -- create a mapping of ID → URL for easier search.
 --
--- Useful for creating the JSON maps to power the client-side /ref/ annotation queries. We split them by the first character of the ID, so that we only need to query 1 small JSON file instead of the entire DB. If necessary, we can split them further, recursively, until the download size is tolerable.
+-- Useful for creating the JSON maps to power the client-side /ref/ annotation queries. We split them by the first character of the ID (minus the common underscore for hashes), so that we only need to query 1 small JSON file instead of the entire DB. If necessary, we can split them further, recursively, until the download size is tolerable.
 -- (We also provide an `all.json` which contains all of them in reversed order, (URL,ID), for the occasional rare query-by-URL rather than query-by-ID.)
 -- Then the JS can look at the current URL `/ref/$ID`, take the first character of $ID, download the relevant JSON dictionary (<100kb on the wire), look up the corresponding URL, and display its annotation the usual way. (The prefixes are limited to the URL-safe Base-64 subset; any characters not inside that, like Unicode from foreign surnames, is put into the final entry, for '-'.)
 -- This enables stable easy links to arbitrary annotations, which currently can only be awkwardly linked as unstable section anchor-links in tag-directories.
@@ -194,9 +197,14 @@ shardByCharPrefix xs = [ (alphabet !! i, group) | (i, group) <- assocs arr ]
 
     index :: String -> Int
     index []     = error "Key is empty"
+    -- hash-IDs are always prefixed with underscore, so detect those and strip '_' when looking it up:
+    index ('_':c:_) = case elemIndex c alphabet of
+                        Nothing -> 63  -- dump Unicode-prefix IDs into final fallback entry, '-'
+                        Just i  -> i
+    -- otherwise just look it up normally:
     index (c:_) = case elemIndex c alphabet of
-                     Nothing -> 63  -- dump Unicode-prefix IDs into final fallback entry, '-'
-                     Just i  -> i
+                      Nothing -> 63
+                      Just i  -> i
 
 tupleList2JSONString :: [(String, Path)] -> T.Text
 tupleList2JSONString xs =
