@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-05-21 16:30:26 gwern"
+# When:  Time-stamp: "2025-05-24 13:38:57 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -695,6 +695,10 @@ Selection vs. Rejection"
 ""
 - https://forbetterscience.com/2025/05/19/a-sting-inside-a-papermill/ A Sting Inside a Papermill - For Better"
 "A Sting Inside a Papermill"
+- "https://archive.is/sK15b archive.is"
+""
+- https://resobscura.substack.com/p/why-were-belle-epoque-cities-beautiful Why were Belle Époque cities beautiful? — by Benjamin Breen"
+"Why were Belle Époque cities beautiful?"
 
 Task:
 

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-05-21 11:49:32 gwern"
+# When:  Time-stamp: "2025-05-23 16:49:24 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -16,7 +16,7 @@
 # `npm i -g mathjax-node-page`), parallel, xargs, php-cli, php-xml, php-masterminds-html5, libreoffice, gifsicle, tidy, libxml2-utils…
 
 cd ~/wiki/
-# shellcheck source=/home/gwern/wiki/static/build/bash.sh
+# shellcheck source=~/wiki/static/build/bash.sh
 . ./static/build/bash.sh # import a bunch of Bash utilities for output formatting, checks, file IO etc: red/bold, wrap, gf/gfc/gfv/ge/gec/gev, png2JPGQualityCheck, gwmv...
 
 DEPENDENCIES=(
@@ -784,7 +784,7 @@ else
                   `### papers:` \
                   -e "A Fine is a Price" -e 'Artificial Intelligence, Scientific Discovery, and Product Innovation' | \
              ## whitelist of papers to not warn about, because not dangerous or have appropriate warnings/caveats:
-             gfv -e '/doc/economics/experience-curve/2020-kc.pdf' -e '/doc/food/2002-wansink.pdf' -e 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2244801/' -e 'https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0069258' -e '/doc/statistics/bias/2012-levelt.pdf' -e 'https://en.wikipedia.org/wiki/' -e 'https://guzey.com/books/why-we-sleep/' -e 'https://statmodeling.stat.columbia.edu/2019/11/' -e '/doc/psychiatry/schizophrenia/rosenhan/2020-01-25-andrewscull-howafraudulentexperimentsetpsychiatrybackdecades.html' -e 'https://osf.io/preprints/psyarxiv/m6s28/' -e '/doc/statistics/bias/1968-rosenthal-pygmalionintheclassroom.pdf' -e '/doc/statistics/bias/1976-rosenthal-experimenterexpectancyeffects.pdf' -e '/doc/statistics/bias/2023-amabile.pdf' -e 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7615113/' -e 'https://www.nytimes.com/2013/04/28/magazine/diederik-stapels-audacious-academic-fraud.html' -e '/doc/psychology/novelty/2017-huang.pdf' -e '/doc/psychology/cognitive-bias/2020-ruggeri.pdf' -e 'https://www.buzzfeednews.com/article/stephaniemlee/brian-wansink-cornell-p-hacking';
+             gfv -e '/doc/economics/experience-curve/2020-kc.pdf' -e '/doc/food/2002-wansink.pdf' -e 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2244801/' -e 'https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0069258' -e '/doc/statistics/bias/2012-levelt.pdf' -e 'https://en.wikipedia.org/wiki/' -e 'https://guzey.com/books/why-we-sleep/' -e 'https://statmodeling.stat.columbia.edu/2019/11/' -e '/doc/psychiatry/schizophrenia/rosenhan/2020-01-25-andrewscull-howafraudulentexperimentsetpsychiatrybackdecades.html' -e 'https://osf.io/preprints/psyarxiv/m6s28/' -e '/doc/statistics/bias/1968-rosenthal-pygmalionintheclassroom.pdf' -e '/doc/statistics/bias/1976-rosenthal-experimenterexpectancyeffects.pdf' -e '/doc/statistics/bias/2023-amabile.pdf' -e 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7615113/' -e 'https://www.nytimes.com/2013/04/28/magazine/diederik-stapels-audacious-academic-fraud.html' -e '/doc/psychology/novelty/2017-huang.pdf' -e '/doc/psychology/cognitive-bias/2020-ruggeri.pdf' -e 'https://www.buzzfeednews.com/article/stephaniemlee/brian-wansink-cornell-p-hacking' -e 'https://economics.mit.edu/news/assuring-accurate-research-record';
        }
     wrap λ "Dishonest or serial fabricators detected as authors? (If a fraudulent publication should be annotated anyway, add a warning to the annotation & whitelist it.)" &
 
@@ -883,7 +883,7 @@ else
 
     λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | \
              xargs --max-args=500 grep --fixed-strings --with-filename --color=always \
-                   -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' -e '<a href="!W"' -e '’S ' -e '<span id="#' -e ' abd ' -e '<p><span class="abstract-collapse-only">' -e '{=HTML}' -e ' 1_e_' -e '>><' -e '</>' -e '](!W “' | \
+                   -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' -e '<a href="!W"' -e '’S ' -e '<span id="#' -e ' abd ' -e '<p><span class="abstract-collapse-only">' -e '{=HTML}' -e ' 1_e_' -e '>><' -e '</>' -e '](!W “' -e '```{' | \
                    gfv -e '/design-graveyard' --; }
     wrap λ "Miscellaneous fixed string errors in compiled HTML."
 

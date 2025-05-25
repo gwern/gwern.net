@@ -766,6 +766,9 @@ canonicals = M.fromList
   , ("Time (magazine)", "Time Magazine")
   , ("TIME", "Time Magazine")
   , ("Steve Buyske", "Steven Buyske")
+  , ("Claude-4", "Claude-4-opus")
+  , ("Claude-4 Opus", "Claude-4-opus")
+  , ("Claude 4", "Claude-4-opus")
   ]
 
 -- tests: unique
@@ -1737,9 +1740,10 @@ authorLinkDB = M.fromList $
     , ("Time Magazine", "https://en.wikipedia.org/wiki/Time_(magazine)")
     , ("Martha Duffy", "https://www.nytimes.com/1997/06/17/arts/martha-duffy-61-arts-editor-and-writer-at-time-magazine.html")
     , ("Sander Dieleman", "https://sander.ai/about/")
-    , ("Ronny Myhre", "https://scholar.google.com/citations?user=ARSOHjsAAAAJ&hl=en&oi=ao")
+    , ("Ronny Myhre", "https://scholar.google.com/citations?user=ARSOHjsAAAAJ")
     , ("Richard Karlsson Linnér", "https://www.universiteitleiden.nl/en/staffmembers/richard-karlsson-linner/publications#tab-2")
     , ("Grant Slatton", "https://grantslatton.com/")
+    , ("Claude-4-opus", "https://www.anthropic.com/claude/opus")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2999,4 +3003,4 @@ authorWpLinkDB =
     , "John Brunner", "Harlan Ellison", "A. E. Stallings", "Richard Sharpe Shaver"
     , "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist"
     , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group", "Adrian Hon"
-    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins", "Charles Baudelaire", "James E. Cutting", "American Veterinary Medical Association", "John Rosengrant", "Christopher Smart", "Rick Gibson", "Christian Bök", "David Hestenes", "Yu-Ao_Chen", "Frank Wilczek", "Pan Jianwei", "Gillian Cookson", "Thomas Hinde", "Jeff Gore", "Ann O'Leary", "Silvana Konermann", "Liang Wenfeng", "Fernanda Viégas", "Wyndham Lewis", "Jef Raskin", "Bruce Sterling", "Pauline Grosjean", "Dilek Hakkani-Tür"]
+    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins", "Charles Baudelaire", "James E. Cutting", "American Veterinary Medical Association", "John Rosengrant", "Christopher Smart", "Rick Gibson", "Christian Bök", "David Hestenes", "Yu-Ao_Chen", "Frank Wilczek", "Pan Jianwei", "Gillian Cookson", "Thomas Hinde", "Jeff Gore", "Ann O'Leary", "Silvana Konermann", "Liang Wenfeng", "Fernanda Viégas", "Wyndham Lewis", "Jef Raskin", "Bruce Sterling", "Pauline Grosjean", "Dilek Hakkani-Tür", "Rick Rubin"]
