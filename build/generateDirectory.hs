@@ -163,7 +163,7 @@ generateDirectory newestp am md ldb sortDB dirs dir'' = do
                    let abstractf = "/" ++ dir'' ++ "abstract" --- construct absolute path in the final website, '/doc/cat/psychology/catnip/abstract'
                    abstractp <- doesFileExist (tail abstractf ++ ".md") -- check existence of (relative) file
                    essayp    <- doesFileExist (tagBase ++ ".md") -- ie. './catnip.md'
-                   return $ if abstractp then [Div ("manual-annotation", ["abstract", "abstract-tag-directory"], []) [Para [Link ("", ["include-content-core", "include-strict", "link-page"], [])
+                   return $ if abstractp then [Div ("manual-annotation", ["abstract", "abstract-tag-directory", "dropcap-not"], []) [Para [Link ("", ["include-content-core", "include-strict", "link-page"], [])
                                                                                                                              [Str "[page summary]"] (T.pack abstractf, T.pack ("Transclude link for " ++ dir'' ++ " tag-abstract page."))]]]
                             else if essayp then [Div ("manual-annotation", ["abstract", "abstract-tag-directory"], []) [Para [Link ("", ["include-annotation", "include-strict"], []) [Str "[essay on this tag topic]"] (T.pack ("/" ++ tagBase), T.pack ("Transclude link for " ++ dir'' ++ " annotation of essay on this topic."))]]]
                                  else []
