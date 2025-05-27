@@ -102,7 +102,7 @@ checkIdent :: String -> Bool
 checkIdent "" = False
 checkIdent ident
   | length ident < (length authorID + 1 + 4 + 1 + 1) = False -- Minimum length for 'gwern-YYYY?s'
-  | length ident > 45 = False -- Arbitrary upper limit
+  | length ident > 47 = False -- Arbitrary upper limit, set by "gwern-2025-you-could-have-invented-transformers"
   -- Check prefix and overall structure
   | authorID `isPrefixOf` ident &&
     (let rest = drop (length authorID + 1) ident -- "YYYY/slug" or "YYYY-slug"

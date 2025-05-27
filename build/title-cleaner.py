@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-05-24 13:38:57 gwern"
+# When:  Time-stamp: "2025-05-26 10:59:31 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -699,6 +699,8 @@ Selection vs. Rejection"
 ""
 - https://resobscura.substack.com/p/why-were-belle-epoque-cities-beautiful Why were Belle Époque cities beautiful? — by Benjamin Breen"
 "Why were Belle Époque cities beautiful?"
+- https://willstorr.substack.com/p/scamming-substack?open=false#%C2%A7anonymous-author Scamming Substack?—You Are a Story with Will Storr
+"Scamming Substack?"
 
 Task:
 
