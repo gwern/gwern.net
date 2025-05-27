@@ -22989,7 +22989,7 @@ ReaderMode = { ...ReaderMode,
 
 		//	Re-layout sidenotes.
 		if (window.Sidenotes)
-			Sidenotes.updateSidenotePositions();
+			Sidenotes.updateSidenotePositionsIfNeeded();
 
 		if (GW.isMobile() == false) {
 			//	Remove key down/up listeners (for the Alt key toggle).
