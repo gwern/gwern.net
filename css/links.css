@@ -1103,6 +1103,12 @@ a[data-link-icon='worldcat'] {
     }
 }
 
+a[data-link-icon='caduceus'] { /* medical snake Asclepius icon for hospitals etc */
+    --link-icon-size: 0.95em;
+    --link-icon-offset-x: -0.15em;
+    --link-icon-offset-y: 0.45em;
+}
+
 /*=------------------=*/
 /*= Wikipedia links. =*/
 /*=------------------=*/

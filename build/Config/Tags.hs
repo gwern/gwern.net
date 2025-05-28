@@ -178,7 +178,7 @@ tagsShort2LongRewrites =
    , ("40", "4o"), ("04", "4o"), ("4-o", "4o"), ("o-4", "4o"), ("o4", "4o"), ("hertaible", "heritable")
    , ("claude-4", "claude/4"), ("c4", "claude/4"), ("claude4", "claude/4")
    , ("animal-bias", "statistics/bias/animal"), ("animal/bias", "statistics/bias/animal"), ("schema", "scheme")
-   , ("wm", "dual-n-back"), ("radaince", "radiance"), ("synthetic", "synthesis"), ("nail", "nail-growth"), ("psychology/cat", "cat/psychology"), ("modecollapse", "mode-collapse"), ("hakell", "haskell")
+   , ("wm", "dual-n-back"), ("radaince", "radiance"), ("synthetic", "synthesis"), ("nail", "nail-growth"), ("psychology/cat", "cat/psychology"), ("modecollapse", "mode-collapse"), ("hakell", "haskell"), ("shortsleep", "zeo/short-sleeper")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
