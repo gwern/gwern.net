@@ -364,27 +364,19 @@ ReaderMode = { ...ReaderMode,
 	spawnObserver: () => {
 		GWLog("ReaderMode.spawnObserver", "reader-mode.js", 2);
 
-		//	Create the observer.
-		ReaderMode.deactivateOnScrollDownObserver = new IntersectionObserver((entries, observer) => {
-			entries.forEach(entry => {
-				if (entry.isIntersecting == false)
-					return;
-
-				ReaderMode.deactivate();
-				ReaderMode.updateModeSelectorState();
-				ReaderMode.despawnObserver();
-			});
-		}, { threshold: 1.0 });
-
-		//	Commence observation.
-		ReaderMode.deactivateOnScrollDownObserver.observe(document.querySelector(ReaderMode.deactivateTriggerElementSelector));
+		//	Create the observer and commence observation.
+		ReaderMode.deactivateOnScrollDownObserver = lazyLoadObserver(() => {
+			ReaderMode.deactivate();
+			ReaderMode.updateModeSelectorState();
+			ReaderMode.despawnObserver();
+		}, document.querySelector(ReaderMode.deactivateTriggerElementSelector), { threshold: 1.0 });
 	},
 
 	//	Called by: ReaderMode.setMode
 	despawnObserver: () => {
 		GWLog("ReaderMode.despawnObserver", "reader-mode.js", 2);
 
-		ReaderMode.deactivateOnScrollDownObserver.disconnect();
+		ReaderMode.deactivateOnScrollDownObserver?.disconnect();
 		ReaderMode.deactivateOnScrollDownObserver = null;
 	},
 
