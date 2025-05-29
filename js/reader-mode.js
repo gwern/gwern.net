@@ -117,7 +117,7 @@ ReaderMode = { ...ReaderMode,
 		} else if (   selectedMode == "auto"
 				   && ReaderMode.active() == true
 				   && ReaderMode.deactivateOnScrollDownObserver == null) {
-			ReaderMode.spawnObserver();
+			doWhenPageFullyLoaded(ReaderMode.spawnObserver);
 		}
 
 		//	Fire event.

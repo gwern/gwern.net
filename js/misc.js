@@ -1412,6 +1412,19 @@ function endActivity() {
         GW.activityIndicator.classList.remove("on");
 }
 
+/**************************************************************************/
+/*	Delay calling the given function until there are no ongoing activities.
+ */
+function doWhenActivitiesDone(f) {
+	let delay = () => {
+		if (GW.activities.length > 0)
+			requestIdleCallback(delay);
+		else
+			requestIdleCallback(f);
+	};
+	delay();
+}
+
 
 /********/
 /* MISC */

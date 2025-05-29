@@ -1412,6 +1412,19 @@ function endActivity() {
         GW.activityIndicator.classList.remove("on");
 }
 
+/**************************************************************************/
+/*	Delay calling the given function until there are no ongoing activities.
+ */
+function doWhenActivitiesDone(f) {
+	let delay = () => {
+		if (GW.activities.length > 0)
+			requestIdleCallback(delay);
+		else
+			requestIdleCallback(f);
+	};
+	delay();
+}
+
 
 /********/
 /* MISC */
@@ -11065,7 +11078,30 @@ Transclude.addIncludeLinkAliasClass("include-caption-not", (includeLink) => {
 		".caption-wrapper"
 	].unique().join(", ");
 });
-Transclude.templates = {
+
+/****************************************************************************/
+/*	Delay calling the given function until all “strict” include-links (i.e.,
+	those that fire unconditionally and immediately on page load) have fired.
+ */
+function doWhenStrictIncludesDone(f) {
+	let delay = () => {
+		if (document.querySelectorAll(".include-strict").length > 0)
+			requestIdleCallback(delay);
+		else
+			requestIdleCallback(f);
+	};
+	delay();
+}
+
+/*****************************************************************************/
+/*	Call the given function after the page is “fully loaded”, i.e. the initial
+	page load is done, AND all strict include-links have fired.
+ */
+function doWhenPageFullyLoaded(f) {
+	doWhenPageLoaded(() => {
+		doWhenStrictIncludesDone(f);
+	});
+}Transclude.templates = {
 	"annotation-blockquote-inside": `<div class="annotation<{annotationClassSuffix}>">
 	<p class="data-field title <[IF authorDateAux]>author-date-aux<[IFEND]>">
 		<a 
@@ -22675,7 +22711,7 @@ ReaderMode = { ...ReaderMode,
 		} else if (   selectedMode == "auto"
 				   && ReaderMode.active() == true
 				   && ReaderMode.deactivateOnScrollDownObserver == null) {
-			ReaderMode.spawnObserver();
+			doWhenPageFullyLoaded(ReaderMode.spawnObserver);
 		}
 
 		//	Fire event.
