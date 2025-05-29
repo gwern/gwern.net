@@ -774,6 +774,7 @@ canonicals = M.fromList
   , ("Peter Kovacs", "Péter Kovács")
   , ("Pamela A. Madden", "Pamela A. F. Madden")
   , ("Tang Jie", "Jie Tang")
+  , ("Zico Kolter", "J. Zico Kolter")
   ]
 
 -- tests: unique
@@ -1758,6 +1759,8 @@ authorLinkDB = M.fromList $
     , ("Olle Melander", "https://portal.research.lu.se/en/persons/olle-melander")
     , ("Nitasha Tiku", "https://www.washingtonpost.com/people/nitasha-tiku/")
     , ("Nils Reimers", "https://www.nils-reimers.de/")
+    , ("Isaac Clayton", "https://slightknack.dev/about/")
+    , ("J. Zico Kolter", "https://en.wikipedia.org/wiki/Zico_Kolter")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3017,4 +3020,4 @@ authorWpLinkDB =
     , "John Brunner", "Harlan Ellison", "A. E. Stallings", "Richard Sharpe Shaver"
     , "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist"
     , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group", "Adrian Hon"
-    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins", "Charles Baudelaire", "James E. Cutting", "American Veterinary Medical Association", "John Rosengrant", "Christopher Smart", "Rick Gibson", "Christian Bök", "David Hestenes", "Yu-Ao_Chen", "Frank Wilczek", "Pan Jianwei", "Gillian Cookson", "Thomas Hinde", "Jeff Gore", "Ann O'Leary", "Silvana Konermann", "Liang Wenfeng", "Fernanda Viégas", "Wyndham Lewis", "Jef Raskin", "Bruce Sterling", "Pauline Grosjean", "Dilek Hakkani-Tür", "Rick Rubin", "Winthrop Kellogg", "Edwin H. Land"]
+    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins", "Charles Baudelaire", "James E. Cutting", "American Veterinary Medical Association", "John Rosengrant", "Christopher Smart", "Rick Gibson", "Christian Bök", "David Hestenes", "Yu-Ao_Chen", "Frank Wilczek", "Pan Jianwei", "Gillian Cookson", "Thomas Hinde", "Jeff Gore", "Ann O'Leary", "Silvana Konermann", "Liang Wenfeng", "Fernanda Viégas", "Wyndham Lewis", "Jef Raskin", "Bruce Sterling", "Pauline Grosjean", "Dilek Hakkani-Tür", "Rick Rubin", "Winthrop Kellogg", "Edwin H. Land", "Daphna Joel", "Yael Niv"]
