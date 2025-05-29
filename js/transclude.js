@@ -2544,3 +2544,17 @@ Transclude.addIncludeLinkAliasClass("include-caption-not", (includeLink) => {
 		".caption-wrapper"
 	].unique().join(", ");
 });
+
+/****************************************************************************/
+/*	Delay calling the given function until all “strict” include-links (i.e.,
+	those that fire unconditionally and immediately on page load) have fired.
+ */
+function doWhenStrictIncludesDone(f) {
+	let delay = () => {
+		if (document.querySelectorAll(".include-strict").length > 0)
+			requestIdleCallback(delay);
+		else
+			requestIdleCallback(f);
+	};
+	delay();
+}
