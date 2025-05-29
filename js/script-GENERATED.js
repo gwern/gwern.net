@@ -11092,7 +11092,16 @@ function doWhenStrictIncludesDone(f) {
 	};
 	delay();
 }
-Transclude.templates = {
+
+/*****************************************************************************/
+/*	Call the given function after the page is “fully loaded”, i.e. the initial
+	page load is done, AND all strict include-links have fired.
+ */
+function doWhenPageFullyLoaded(f) {
+	doWhenPageLoaded(() => {
+		doWhenStrictIncludesDone(f);
+	});
+}Transclude.templates = {
 	"annotation-blockquote-inside": `<div class="annotation<{annotationClassSuffix}>">
 	<p class="data-field title <[IF authorDateAux]>author-date-aux<[IFEND]>">
 		<a 
@@ -22702,11 +22711,7 @@ ReaderMode = { ...ReaderMode,
 		} else if (   selectedMode == "auto"
 				   && ReaderMode.active() == true
 				   && ReaderMode.deactivateOnScrollDownObserver == null) {
-			doWhenDOMContentLoaded(() => {
-				doWhenStrictIncludesDone(() => {
-					ReaderMode.spawnObserver();
-				});
-			});
+			doWhenPageFullyLoaded(ReaderMode.spawnObserver);
 		}
 
 		//	Fire event.

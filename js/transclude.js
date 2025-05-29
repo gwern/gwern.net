@@ -2558,3 +2558,13 @@ function doWhenStrictIncludesDone(f) {
 	};
 	delay();
 }
+
+/*****************************************************************************/
+/*	Call the given function after the page is “fully loaded”, i.e. the initial
+	page load is done, AND all strict include-links have fired.
+ */
+function doWhenPageFullyLoaded(f) {
+	doWhenPageLoaded(() => {
+		doWhenStrictIncludesDone(f);
+	});
+}
