@@ -876,16 +876,16 @@ function stripStyles(element, options) {
 
     Available option fields:
 
-	root
+	root (optional; default is null, i.e. the viewport)
 		See IntersectionObserver documentation.
 
-	threshold
+	threshold (optional; default is 0)
 		See IntersectionObserver documentation.
 
-	rootMargin
+	rootMargin (optional; default is "0px")
 		See IntersectionObserver documentation.
 
-	checkPositionImmediately
+	checkPositionImmediately (optional)
 		Default is true. If false, skips the “short-circuit” check for whether
 		the target is already visible within the scroll container. Disabling
 		this option may improve performance.
@@ -898,6 +898,15 @@ function lazyLoadObserver(f, target, options) {
     if (target == null)
         return;
 
+	//	We declare this here, so that we can return it.
+	let observer = new IntersectionObserver((entries) => {
+		if (entries.first.isIntersecting == false)
+			return;
+
+		f(entries);
+		observer.disconnect();
+	}, options);
+
 	requestAnimationFrame(() => {
 		if (   options.checkPositionImmediately == true
 			&& (options.threshold ?? 0) == 0
@@ -907,16 +916,10 @@ function lazyLoadObserver(f, target, options) {
 			return;
 		}
 
-		let observer = new IntersectionObserver((entries) => {
-			if (entries.first.isIntersecting == false)
-				return;
-
-			f(entries);
-			observer.disconnect();
-		}, options);
-
 		observer.observe(target);
 	});
+
+	return observer;
 }
 
 /***********************************************************************/
@@ -5355,9 +5358,8 @@ function pageThumbnailAttributesFromDocument(doc) {
 
 		//  Alt text, if provided.
 		let pageThumbnailAltMetaTag = doc.querySelector("meta[property='og:image:alt']");
-		let pageThumbnailAltText = (pageThumbnailAltMetaTag
-									? pageThumbnailAltMetaTag.getAttribute("content")
-									: `Thumbnail image for “${(doc.querySelector("meta[property='og:title']").getAttribute("content"))}”`
+		let pageThumbnailAltText = (   pageThumbnailAltMetaTag?.getAttribute("content") 
+									?? `Thumbnail image for “${(doc.querySelector("meta[name='og:title']").getAttribute("content"))}”`
 									).replace(/"/g, "&quot;");
 
 		//  Image dimensions.

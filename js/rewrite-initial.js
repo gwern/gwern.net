@@ -374,9 +374,8 @@ function pageThumbnailAttributesFromDocument(doc) {
 
 		//  Alt text, if provided.
 		let pageThumbnailAltMetaTag = doc.querySelector("meta[property='og:image:alt']");
-		let pageThumbnailAltText = (pageThumbnailAltMetaTag
-									? pageThumbnailAltMetaTag.getAttribute("content")
-									: `Thumbnail image for “${(doc.querySelector("meta[property='og:title']").getAttribute("content"))}”`
+		let pageThumbnailAltText = (   pageThumbnailAltMetaTag?.getAttribute("content") 
+									?? `Thumbnail image for “${(doc.querySelector("meta[name='og:title']").getAttribute("content"))}”`
 									).replace(/"/g, "&quot;");
 
 		//  Image dimensions.

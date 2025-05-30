@@ -66,7 +66,7 @@ DarkMode = { ...DarkMode,
 		DarkMode.injectModeSelector();
 
 		//	Spawn observers for activate-on-scroll-down.
-		DarkMode.spawnObservers();
+		doWhenPageFullyLoaded(DarkMode.spawnObservers);
 
 		/*	Inject inline mode selectors in already-loaded content, and add
 			rewrite processor to inject any inline selectors in subsequently
@@ -262,22 +262,15 @@ DarkMode = { ...DarkMode,
 	spawnObservers: () => {
 		GWLog("DarkMode.spawnObserver", "dark-mode.js", 2);
 
+		let darkenIfNeeded = (entries) => {
+			if (DarkMode.currentMode() != "dark") {
+				DarkMode.defaultMode = "dark";
+				DarkMode.setMode();
+			}
+		};
+
 		document.querySelectorAll(DarkMode.activateTriggerElementsSelector).forEach(element => {
-			let observer = new IntersectionObserver((entries, observer) => {
-				entries.forEach(entry => {
-					if (entry.isIntersecting == false)
-						return;
-
-					if (DarkMode.currentMode() != "dark") {
-						DarkMode.defaultMode = "dark";
-						DarkMode.setMode();
-					}
-					observer.disconnect();
-				});
-			}, { threshold: 1.0 });
-
-			//	Commence observation.
-			observer.observe(element);
+			lazyLoadObserver(darkenIfNeeded, element, { threshold: 1.0 });
 		});
 	}
 };

@@ -22373,7 +22373,7 @@ DarkMode = { ...DarkMode,
 		DarkMode.injectModeSelector();
 
 		//	Spawn observers for activate-on-scroll-down.
-		DarkMode.spawnObservers();
+		doWhenPageFullyLoaded(DarkMode.spawnObservers);
 
 		/*	Inject inline mode selectors in already-loaded content, and add
 			rewrite processor to inject any inline selectors in subsequently
@@ -22569,22 +22569,15 @@ DarkMode = { ...DarkMode,
 	spawnObservers: () => {
 		GWLog("DarkMode.spawnObserver", "dark-mode.js", 2);
 
+		let darkenIfNeeded = (entries) => {
+			if (DarkMode.currentMode() != "dark") {
+				DarkMode.defaultMode = "dark";
+				DarkMode.setMode();
+			}
+		};
+
 		document.querySelectorAll(DarkMode.activateTriggerElementsSelector).forEach(element => {
-			let observer = new IntersectionObserver((entries, observer) => {
-				entries.forEach(entry => {
-					if (entry.isIntersecting == false)
-						return;
-
-					if (DarkMode.currentMode() != "dark") {
-						DarkMode.defaultMode = "dark";
-						DarkMode.setMode();
-					}
-					observer.disconnect();
-				});
-			}, { threshold: 1.0 });
-
-			//	Commence observation.
-			observer.observe(element);
+			lazyLoadObserver(darkenIfNeeded, element, { threshold: 1.0 });
 		});
 	}
 };
@@ -22958,27 +22951,19 @@ ReaderMode = { ...ReaderMode,
 	spawnObserver: () => {
 		GWLog("ReaderMode.spawnObserver", "reader-mode.js", 2);
 
-		//	Create the observer.
-		ReaderMode.deactivateOnScrollDownObserver = new IntersectionObserver((entries, observer) => {
-			entries.forEach(entry => {
-				if (entry.isIntersecting == false)
-					return;
-
-				ReaderMode.deactivate();
-				ReaderMode.updateModeSelectorState();
-				ReaderMode.despawnObserver();
-			});
-		}, { threshold: 1.0 });
-
-		//	Commence observation.
-		ReaderMode.deactivateOnScrollDownObserver.observe(document.querySelector(ReaderMode.deactivateTriggerElementSelector));
+		//	Create the observer and commence observation.
+		ReaderMode.deactivateOnScrollDownObserver = lazyLoadObserver(() => {
+			ReaderMode.deactivate();
+			ReaderMode.updateModeSelectorState();
+			ReaderMode.despawnObserver();
+		}, document.querySelector(ReaderMode.deactivateTriggerElementSelector), { threshold: 1.0 });
 	},
 
 	//	Called by: ReaderMode.setMode
 	despawnObserver: () => {
 		GWLog("ReaderMode.despawnObserver", "reader-mode.js", 2);
 
-		ReaderMode.deactivateOnScrollDownObserver.disconnect();
+		ReaderMode.deactivateOnScrollDownObserver?.disconnect();
 		ReaderMode.deactivateOnScrollDownObserver = null;
 	},
 
