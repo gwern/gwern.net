@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2025-05-04 17:16:45 gwern"
+When: Time-stamp: "2025-06-02 19:20:53 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -51,7 +51,7 @@ import Tags (tagsToLinksDiv)
 import Typography (linebreakingTransform, typographyTransformTemporary, titlecaseInline, completionProgressHTML)
 import Utils (printGreen, replace, deleteMany, replaceChecked, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines, delete, toHTML, getMostRecentlyModifiedDir)
 import Test (testAll)
-import qualified Config.Misc as C (cd, currentYear)
+import qualified Config.Misc as C (cd, currentYear, todayDayStringUnsafe, isOlderThan, isNewWithinNDays)
 import Metadata.Date (dateRangeDuration)
 import LinkID (writeOutID2URLdb)
 import Blog (writeOutBlogEntries)
@@ -217,6 +217,7 @@ postCtx md rts =
     boolField "similars-yes"  (check notNewsletterOrIndex getSimilarLinkCheck) <>
     boolField "linkbib-yes"   (check (const True)         getLinkBibLinkCheck) <>
     dateRangeHTMLField "date-range-HTML" <>
+    isNewField               <> -- CSS 'body.page-created-recently'
     dateField "created" "%F" <>
     -- constField "created" "N/A"  <> -- NOTE: we make 'created' a mandatory field by not setting a default, so template compilation will crash
     -- if no manually set last-modified time, fall back to checking file modification time:
@@ -306,6 +307,14 @@ progressField d d' = field d' $ \item -> do
    Nothing -> noResult ""
    Just progress -> return $ completionProgressHTML progress
 
+-- for 'page-created-recently' CSS body switch (eg. disable the recently-modified black-star link highlighting, which is a bad idea if many links on a page are 'new')
+-- $page-created-recently$ → " page-created recently" when the page is ≤ 90 d old, else ""; we always insert this into `default.html`, we just return either a space-prefixed string (so it can be concatenated) or an empty string, and we skip trying to do a conditional at all.
+isNewField :: Context String
+isNewField = field "page-created-recently" $ \item -> do
+    mCreated <- getMetadataField (itemIdentifier item) "created"
+    let today   = C.todayDayStringUnsafe
+        recent  = maybe False (\c -> not (C.isOlderThan C.isNewWithinNDays c today)) mCreated
+    pure $ if recent then " page-created-recently" else ""
 
 dateRangeHTMLField :: String -> Context String
 dateRangeHTMLField d = field d $ \item -> do

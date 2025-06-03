@@ -2,13 +2,15 @@
 module Config.Misc where
 
 import Data.Char (toLower)
-import Data.Time.Calendar (toModifiedJulianDay, toGregorian, addDays)
-import Data.Time.Clock (getCurrentTime)
-import Data.Time (utcToLocalTime, localDay, localTimeOfDay, getCurrentTimeZone, todHour)
-import Data.Time.Format (formatTime, defaultTimeLocale)
 import qualified Data.Text as T (head, takeWhile, Text)
 import System.Directory (setCurrentDirectory, getHomeDirectory)
 import System.IO.Unsafe (unsafePerformIO)
+
+import Data.Time.Calendar (toModifiedJulianDay, toGregorian, addDays)
+import Data.Time.Clock (getCurrentTime)
+import Data.Time (utcToLocalTime, localDay, localTimeOfDay, getCurrentTimeZone, todHour)
+import Data.Time.Calendar (Day, diffDays)
+import Data.Time.Format   (formatTime, defaultTimeLocale, parseTimeOrError)
 
 import Utils (anyInfixT, anyPrefixT)
 
@@ -49,9 +51,8 @@ currentMonthAgo = unsafePerformIO $ do
     tz <- getCurrentTimeZone
     let localTime = utcToLocalTime tz now
         today = localDay localTime
-        monthAgo = addDays (-daysAgo) today
+        monthAgo = addDays (-isNewWithinNDays) today
     return $ formatTime defaultTimeLocale "%Y-%m-%d" monthAgo
-    where daysAgo = 31 * 2 :: Integer
 
 -- New generic function to format a day, relative to today, as a string
 dayStringFromToday :: Integer -> IO String
@@ -71,6 +72,31 @@ todayDayStringUnsafe = unsafePerformIO $ dayStringFromToday 0
 
 yesterdayDayString :: IO String
 yesterdayDayString = dayStringFromToday (-1)
+
+-- | True when (later − earlier) > n days.
+--   Example:  isOlderThan 90 "2025-01-01" "2025-06-02"  == True
+isOlderThan :: Integer        -- ^ threshold in days
+            -> String     -- ^ earlier date (YYYY-MM-DD)
+            -> String     -- ^ later   date (YYYY-MM-DD)
+            -> Bool
+isOlderThan n earlier later =
+    diffDays (toDay later) (toDay earlier) > n
+-- | Parse YYYY-MM-DD, YYYY-MM, or YYYY into a Day.
+--   Missing parts default to the first day of the period.
+--     "1999"      -> 1999-01-01
+--     "1999-05"   -> 1999-05-01
+--     "1999-05-23"-> 1999-05-23
+toDay :: String -> Day
+toDay s = parseTimeOrError True defaultTimeLocale "%Y-%m-%d" padded
+  where
+    padded = case length s of
+        4  -> s ++ "-01-01"  -- YYYY
+        7  -> s ++ "-01"     -- YYYY-MM
+        10 -> s              -- YYYY-MM-DD
+        _  -> error $ "Config.Misc.toDay: bad date (by length) " ++ show s
+
+isNewWithinNDays :: Integer
+isNewWithinNDays = 31 * 2
 
 -- is the current time before 9AM & after midnight, suggesting a late-night operation being done after a day of work? If so, we probably want to adjust any dates
 lateNight :: IO Bool
