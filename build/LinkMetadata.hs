@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-05-21 21:59:50 gwern"
+When:  Time-stamp: "2025-06-02 17:54:34 gwern"
 License: CC-0
 -}
 
@@ -334,7 +334,7 @@ readLinkMetadataAndCheck = do
              unless (null authorsBadChars) (printRed "Mangled author list?" >> printGreen (ppShow authorsBadChars))
 
              let yearLimit = show (C.currentYear + 2) -- no entry should be published or created 2+ years in the future!
-             let datesBad = filter (\(_,(_,_,dt,dc,_,_,_)) -> not (isDate dt || null dt || isDate dc || null dc) ||
+             let datesBad = filter (\(_,(_,_,dt,dc,_,_,_)) -> (not (isDate dt || null dt)) || (not (isDate dc || null dc)) ||
                                                               (dt /= "" && (let y = take 4 dt
                                                                             in y > yearLimit || y > yearLimit))
                                    ) finalL

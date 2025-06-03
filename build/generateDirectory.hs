@@ -151,7 +151,7 @@ generateDirectory newestp am md ldb sortDB dirs dir'' = do
     error $ "generateDirectory.hs.generateDirectory.thumbnail: invalid thumbnail path: " ++ show thumbnailPath ++ "; directory was: " ++ show dir''
   let thumbnailText = delete "fig:" $ if null imageFirst then "" else "thumbnail-text: '" ++ replace "'" "''" (T.unpack (safeImageExtractCaption (head imageFirst))) ++ "'"
 
-  let header = generateYAMLHeader parentDirectory' previous next tagSelf (minimum $ getDatesModified links) (maximum $ getDatesModified links) (length (dirsChildren++dirsSeeAlsos), length titledLinks, length untitledLinks) thumbnail thumbnailText
+  let header = generateYAMLHeader parentDirectory' previous next tagSelf (minimum $ getDatesModified linksAll) (maximum $ getDatesModified linksAll) (length (dirsChildren++dirsSeeAlsos), length titledLinks, length untitledLinks) thumbnail thumbnailText
   let sectionDirectoryChildren = generateDirectoryItems (Just parentDirectory') dir'' dirsChildren
   let sectionDirectorySeeAlsos = generateDirectoryItems Nothing dir'' dirsSeeAlsos
   let sectionDirectory = Div ("see-alsos", ["directory-indexes", "columns"], []) [BulletList $ sectionDirectoryChildren ++ sectionDirectorySeeAlsos]
