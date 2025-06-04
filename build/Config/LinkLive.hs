@@ -765,6 +765,7 @@ goodDomainsSimple =
     , "www.chiark.greenend.org.uk"
     , "acoup.blog"
     , "static.googleusercontent.com"
+    , "blondihacks.com"
     ]
 
 badDomainsSub = [".plos.org", ".royalsocietypublishing.org", ".substack.com", ".stackexchange.com",

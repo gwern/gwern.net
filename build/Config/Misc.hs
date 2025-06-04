@@ -93,7 +93,7 @@ toDay s = parseTimeOrError True defaultTimeLocale "%Y-%m-%d" padded
         4  -> s ++ "-01-01"  -- YYYY
         7  -> s ++ "-01"     -- YYYY-MM
         10 -> s              -- YYYY-MM-DD
-        _  -> error $ "Config.Misc.toDay: bad date (by length) " ++ show s
+        _  -> error $ "Config.Misc.toDay: bad date (by length): '" ++ show s ++ "'"
 
 isNewWithinNDays :: Integer
 isNewWithinNDays = 31 * 2

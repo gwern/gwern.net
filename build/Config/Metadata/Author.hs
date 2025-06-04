@@ -2026,7 +2026,7 @@ authorWpLinkDB =
     ,"David T. Lykken", "David Talbot", "David Tan", "David Thissen", "David Vlahov"
     ,"David Vokrouhlick\253", "David W. Clark", "David W. Craig", "David W. Cushman", "David W. Keith"
     ,"David W. Macdonald", "David W. Tank", "David Wechsler", "David Weitz", "David Wells"
-    ,"David Whitney", "David Wisniewski", "David Wu", "David Xiao", "David de la Croix"
+    ,"David Whitney", "David Wisniewski", "David Xiao", "David de la Croix"
     ,"Davide Piffer", "Davide Scaramuzza", "Dawn Song", "Dawson R. Engler", "De Wet Swanepoel"
     ,"Dean Karlan", "Dean Keith Simonton", "Dean Rickles", "Debbie Lawlor", "Debby Herbenick"
     ,"Deborah A. Cobb-Clark", "Deborah A. Lawlor", "Deborah A. Nickerson", "Deborah H. Gruenfeld", "Deborah Jarvis"
@@ -3020,4 +3020,4 @@ authorWpLinkDB =
     , "John Brunner", "Harlan Ellison", "A. E. Stallings", "Richard Sharpe Shaver"
     , "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist"
     , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group", "Adrian Hon"
-    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins", "Charles Baudelaire", "James E. Cutting", "American Veterinary Medical Association", "John Rosengrant", "Christopher Smart", "Rick Gibson", "Christian Bök", "David Hestenes", "Yu-Ao_Chen", "Frank Wilczek", "Pan Jianwei", "Gillian Cookson", "Thomas Hinde", "Jeff Gore", "Ann O'Leary", "Silvana Konermann", "Liang Wenfeng", "Fernanda Viégas", "Wyndham Lewis", "Jef Raskin", "Bruce Sterling", "Pauline Grosjean", "Dilek Hakkani-Tür", "Rick Rubin", "Winthrop Kellogg", "Edwin H. Land", "Daphna Joel", "Yael Niv"]
+    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins", "Charles Baudelaire", "James E. Cutting", "American Veterinary Medical Association", "John Rosengrant", "Christopher Smart", "Rick Gibson", "Christian Bök", "David Hestenes", "Yu-Ao_Chen", "Frank Wilczek", "Pan Jianwei", "Gillian Cookson", "Thomas Hinde", "Jeff Gore", "Ann O'Leary", "Silvana Konermann", "Liang Wenfeng", "Fernanda Viégas", "Wyndham Lewis", "Jef Raskin", "Bruce Sterling", "Pauline Grosjean", "Dilek Hakkani-Tür", "Rick Rubin", "Winthrop Kellogg", "Edwin H. Land", "Daphna Joel", "Yael Niv", "Adam Kilgarriff", "A. Michael Noll", "Richard R. Nelson"]

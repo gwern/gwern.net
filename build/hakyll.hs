@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2025-06-02 19:20:53 gwern"
+When: Time-stamp: "2025-06-03 10:10:46 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -312,9 +312,12 @@ progressField d d' = field d' $ \item -> do
 isNewField :: Context String
 isNewField = field "page-created-recently" $ \item -> do
     mCreated <- getMetadataField (itemIdentifier item) "created"
-    let today   = C.todayDayStringUnsafe
-        recent  = maybe False (\c -> not (C.isOlderThan C.isNewWithinNDays c today)) mCreated
-    pure $ if recent then " page-created-recently" else ""
+    case mCreated of
+      Nothing -> pure ""
+      Just created ->  let today   = C.todayDayStringUnsafe
+                           recent  = if created == "N/A" || created == "\"N/A\"" || created == "'N/A'" then False else
+                             maybe False (\c -> not (C.isOlderThan C.isNewWithinNDays c today)) mCreated
+                       in pure $ if recent then " page-created-recently" else ""
 
 dateRangeHTMLField :: String -> Context String
 dateRangeHTMLField d = field d $ \item -> do

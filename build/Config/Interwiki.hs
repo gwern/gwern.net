@@ -5996,4 +5996,5 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("Manic", "Mania")
         , ("Heartbeat", "Cardiac_cycle")
         , ("Transects", "Transect")
+        , ("NDAs", "Non-disclosure_agreement")
         ]
