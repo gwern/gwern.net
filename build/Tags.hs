@@ -167,7 +167,10 @@ guessTagFromShort raw l s = fixedPoint (f l) (replace "=" "-" s)
                                     filter (\(short,_) -> t `isInfixOf` short) C.tagsShort2Long
                               in if not (null shortFallbacks) then fst $ head shortFallbacks else
                                    let longFallbacks = filter (t `isSuffixOf`) allTags ++ filter (t `isPrefixOf`) allTags ++ filter (t `isInfixOf`) allTags in
-                                     if not (null longFallbacks) then head longFallbacks else t
+                                     if not (null longFallbacks) then head longFallbacks else
+                                       -- try rewriting it in various potentially-unsafe ways: (eg. a dot/slash is a common typo, but unsafe to do upfront because it breaks any URL-style tag like 'hardtruthsfromsoftcats.tumblr.com')
+                                       let fallbackRewrite = replace "." "/" s in
+                                         if s == fallbackRewrite then s else guessTagFromShort raw l fallbackRewrite
 
 shortTagTest ::[String] -> [(String, String, String)]
 shortTagTest alltags = filter (\(_, realOutput, shouldbeOutput) -> realOutput /= shouldbeOutput) $

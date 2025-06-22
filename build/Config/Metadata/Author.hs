@@ -775,6 +775,9 @@ canonicals = M.fromList
   , ("Pamela A. Madden", "Pamela A. F. Madden")
   , ("Tang Jie", "Jie Tang")
   , ("Zico Kolter", "J. Zico Kolter")
+  , ("Nadia Eghbal", "Nadia Asparouhova")
+  , ("GPT-o3-pro", "GPT-4-o3-pro")
+  , ("o3-pro", "GPT-4-o3-pro")
   ]
 
 -- tests: unique
@@ -1761,6 +1764,13 @@ authorLinkDB = M.fromList $
     , ("Nils Reimers", "https://www.nils-reimers.de/")
     , ("Isaac Clayton", "https://slightknack.dev/about/")
     , ("J. Zico Kolter", "https://en.wikipedia.org/wiki/Zico_Kolter")
+    , ("Nadia Asparouhova", "https://nadia.xyz/")
+    , ("Neil Pendleton", "https://scholar.google.com/citations?user=sg_AibUAAAAJ&hl=en&oi=sra")
+    , ("Myriam Fornage", "https://med.uth.edu/imm/2023/07/07/myriam-fornage-phd/")
+    , ("Michael B. Miller", "https://scholar.google.com/citations?user=EV_phq4AAAAJ&hl=en&oi=ao")
+    , ("Mark Alan Fontana", "https://scholar.google.com/citations?user=Pr9CTr8AAAAJ&hl=en&oi=ao")
+    , ("GPT-4-o3-pro", "https://platform.openai.com/docs/models/o3-pro")
+    , ("Tongzhou Wang", "https://www.tongzhouwang.info")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3020,4 +3030,4 @@ authorWpLinkDB =
     , "John Brunner", "Harlan Ellison", "A. E. Stallings", "Richard Sharpe Shaver"
     , "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist"
     , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group", "Adrian Hon"
-    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins", "Charles Baudelaire", "James E. Cutting", "American Veterinary Medical Association", "John Rosengrant", "Christopher Smart", "Rick Gibson", "Christian Bök", "David Hestenes", "Yu-Ao_Chen", "Frank Wilczek", "Pan Jianwei", "Gillian Cookson", "Thomas Hinde", "Jeff Gore", "Ann O'Leary", "Silvana Konermann", "Liang Wenfeng", "Fernanda Viégas", "Wyndham Lewis", "Jef Raskin", "Bruce Sterling", "Pauline Grosjean", "Dilek Hakkani-Tür", "Rick Rubin", "Winthrop Kellogg", "Edwin H. Land", "Daphna Joel", "Yael Niv", "Adam Kilgarriff", "A. Michael Noll", "Richard R. Nelson"]
+    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins", "Charles Baudelaire", "James E. Cutting", "American Veterinary Medical Association", "John Rosengrant", "Christopher Smart", "Rick Gibson", "Christian Bök", "David Hestenes", "Yu-Ao_Chen", "Frank Wilczek", "Pan Jianwei", "Gillian Cookson", "Thomas Hinde", "Jeff Gore", "Ann O'Leary", "Silvana Konermann", "Liang Wenfeng", "Fernanda Viégas", "Wyndham Lewis", "Jef Raskin", "Bruce Sterling", "Pauline Grosjean", "Dilek Hakkani-Tür", "Rick Rubin", "Winthrop Kellogg", "Edwin H. Land", "Daphna Joel", "Yael Niv", "Adam Kilgarriff", "A. Michael Noll", "Richard R. Nelson", "Andy Greenberg", "Kathy Schick", "Nicholas Toth"]

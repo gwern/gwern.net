@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-06-02 11:55:39 gwern"
+# When:  Time-stamp: "2025-06-21 20:16:21 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -703,6 +703,10 @@ Selection vs. Rejection"
 "Scamming Substack?"
 - "https://www.isegoria.net/2025/05/his-research-started-with-sixteen-albino-mice/ His research started with 16 albino mice—Isegoria"
 "His research started with 16 albino mice"
+- "https://www.lesswrong.com/posts/9rKWm8BzTYAiCCFjx/musings-on-ai-companies-of-2025-2026-jun-2025 Musings on AI Companies of 2025–2026 (Jun 2025)
+"Musings on AI Companies of 2025–2026 (June 2025)"
+- "https://zpravy.aktualne.cz/domaci/jirikovsky-blazek-bitcoin-nucleus/r~88b8e58e421611f0bb77ac1f6b220ee8/ Největší dealer fentanylu či zbraně. Odkud přišla Blažkova “ultralegální” miliarda—Aktuálně"
+"Největší dealer fentanylu či zbraně. Odkud přišla Blažkova “ultralegální” miliarda"
 
 Task:
 

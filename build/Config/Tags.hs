@@ -958,4 +958,5 @@ shortTagTestSuite =
  , ("willpower" , "psychology/willpower")
  , ("writing" , "psychology/writing")
  , ("psych/inner-monologue", "psychology/inner-voice")
+ , ("ai.dataset", "ai/dataset")
  ]

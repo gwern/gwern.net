@@ -269,7 +269,7 @@ generateYAMLHeader parent previous next d dateCreated dateModified (directoryN,a
              , next
              , "confidence: log"
              , "importance: 0"
-             , "css-extension: dropcaps-de-zs"
+             , "css-extension: dropcap-not"
              , "index: True"
              , "backlink: False"
              , "...\n"]

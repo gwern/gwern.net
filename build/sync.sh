@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-05-27 16:06:06 gwern"
+# When:  Time-stamp: "2025-06-07 01:14:59 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -665,7 +665,7 @@ else
             "cite-author-plural" "cite-date" "date" "display" "email" "external-page-embed"
             "id-not" "inflation-adjusted" "logotype-tex" "logotype-latex" "logotype-latex-a" "logotype-latex-e"
             "link-annotated" "link-live" "link-page" "link-page-not" "link-tag" "link-tags"
-            "cite" "cite-joiner" "collapse" "columns" "directory-indexes-downwards" "directory-indexes-upwards"
+            "cite" "cite-joiner" "collapse" "collapse-small" "columns" "directory-indexes-downwards" "directory-indexes-upwards"
             "epigraph" "even" "figures" "float-right" "float-left" "logo" "footer-logo" "footnote-ref" "full-width"
             "haskell" "header" "heading" "horizontal-rule-nth-1" "horizontal-rule-nth-2" "horizontal-rule-nth-3" "icon-not" "icon-special"
             "link-modified-recently" "icon-single-white-star-on-black-circle" "icon-manicule-left" "icon-manicule-right"
@@ -887,7 +887,7 @@ else
                    gfv -e '/design-graveyard' --; }
     wrap λ "Miscellaneous fixed string errors in compiled HTML."
 
-    λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 ge --with-filename --color=always -e ' __[A-Z][a-z]' -e 'href="/[a-z0-9-]#fn[0-9]+"' -e 'href="#fn[0-9]+"' -e '"></a>' -e '</p>[^ <"]' -e '[0-9][0-9]−[0-9][0-9]' -e '[^0-9]⁄.' -e '.⁄[^0-9]' | gfv -e 'tabindex="-1"></a>'; }
+    λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 ge --with-filename --color=always -e 'href="/[a-z0-9-]#fn[0-9]+"' -e 'href="#fn[0-9]+"' -e '"></a>' -e '</p>[^ <"]' -e '[0-9][0-9]−[0-9][0-9]' -e '[^0-9]⁄.' -e '.⁄[^0-9]' | gfv -e 'tabindex="-1"></a>'; }
     wrap λ "Miscellaneous regexp errors in compiled HTML."
 
     λ(){ ge -e '^"~/' -e '\$";$' -e '$" "doc' -e '\|' -e '\.\*\.\*' -e '\.\*";' -e '"";$' -e '.\*\$ doc' -e '\$" "";' -e '""' -e '^;$' ./static/redirect/nginx*.conf | gfv -e 'default "";'; }
@@ -918,7 +918,7 @@ else
     λ(){ gf -e ' ?' ./metadata/full.gtx; }
     wrap λ "Problem with question-marks (perhaps the crossref/Emacs copy-paste problem?)." &
 
-    λ(){ gfv -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone' -e 'N,N-Dimethyltryptamine' -e 'N,N-dimethyltryptamine' -e 'h,s,v' -e ',VGG<sub>' -e 'data-link-icon-type="text,' -e 'data-link-icon-type=\"text,' -e '(R,S)' -e 'R,R-formoterol' -e '(18)F-FDG' -e '<em>N,N</em>' -e '3,n-butylphthalide' -e '3,n-butylhexahydrophthalide' -e 'AUC0-5h,para' -e '0-1h,para' -e '"text,tri' -e '"text,quad' -e '"text,sans"' -- ./metadata/full.gtx ./metadata/half.gtx | \
+    λ(){ gfv -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone' -e 'N,N-Dimethyltryptamine' -e 'N,N-dimethyltryptamine' -e 'h,s,v' -e ',VGG<sub>' -e 'data-link-icon-type="text,' -e 'data-link-icon-type=\"text,' -e '(R,S)' -e 'R,R-formoterol' -e '(18)F-FDG' -e '<em>N,N</em>' -e '3,n-butylphthalide' -e '3,n-butylhexahydrophthalide' -e 'AUC0-5h,para' -e '0-1h,para' -e '"text,tri' -e '"text,quad' -e '"text,sans"' -e '<sub>T,c</sub>' -e '<sub>T,t</sub>' -e '<sub>C,t</sub>' -- ./metadata/full.gtx ./metadata/half.gtx | \
              gec -e ',[A-Za-z]'; }
     wrap λ "Look for run-together commas (but exclude chemical names where that's correct)." &
 
@@ -928,7 +928,7 @@ else
     λ(){ ge -e '[.,:;-<]</a>' -e '\]</a>' -- ./metadata/*.gtx | gfv -e 'i.i.d.' -e 'sativum</em> L.</a>' -e 'this cloning process.</a>' -e '#' -e '[review]</a>' | gec -e '[.,:;-<]</a>'; }
     wrap λ "Look for punctuation inside links; unless it's a full sentence or a quote or a section link, generally prefer to put punctuation outside." &
 
-    λ(){ gfc -e '**' -e ' _' -e '_ ' -e '!!' -e '*' -- ./metadata/full.gtx ./metadata/half.gtx | gfv -e '_search_algorithm' -e 'Bad_Apple' -e 'Bad Apple'; } # need to exclude 'A* search'
+    λ(){ gfc -e '**' -e ' _' -e '_ ' -e '!!' -e '*' -- ./metadata/full.gtx ./metadata/half.gtx | gfv -e '_search_algorithm' -e 'Bad_Apple' -e 'Bad Apple' -e 'Sagittarius_A'; } # need to exclude 'A* search'
     wrap λ "Look for italics errors." &
 
     λ(){ gf -e 'amp#' -- ./metadata/*.gtx; }
