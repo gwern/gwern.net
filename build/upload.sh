@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2025-05-16 22:40:22 gwern"
+# When:  Time-stamp: "2025-06-28 11:47:23 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -173,9 +173,9 @@ _upload() {
           fi
       else
           if [ -a "$FILENAME" ]; then
-              ## automatically rename a file like 'benter1994.pdf' (Libgen) to '1994-benter.pdf' (gwern.net):
+              ## automatically rename a file like 'benter1994.pdf' (Libgen) or 'Deutsch-1991.pdf' to '1994-benter.pdf' (gwern.net):
               FILE="$FILENAME"
-              if [[ "$FILE" =~ ([a-zA-Z]+)([0-9][0-9][0-9][0-9])\.pdf ]];
+              if [[ "$FILE" =~ ([a-zA-Z-]+)([0-9][0-9][0-9][0-9])\.pdf ]];
               then
                   SWAP="${BASH_REMATCH[2]}-${BASH_REMATCH[1]}.pdf"
                   SWAP=$(echo "$SWAP" | tr 'A-Z' 'a-z') ## eg '1979-Svorny.pdf' → '1979-svorny.pdf'

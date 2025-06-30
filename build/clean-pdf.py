@@ -4,7 +4,7 @@
 # clean-pdf.py: fix formatting & spelling errors in malformatted text (especially PDFs)
 # Author: Gwern Branwen
 # Date: 2020-07-03
-# When:  Time-stamp: "2025-05-11 18:54:53 gwern"
+# When:  Time-stamp: "2025-06-29 20:00:24 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XYZ" xclip -o | python clean-pdf.py
@@ -201,6 +201,8 @@ relationships.</text>
 As the child matures, the emotion of fear fastens upon more and more realistic objects depending upon experience learning rather than upon instruction.
 
 The intensity of the child’s fear depends for the most part upon the family relationships.
+- <text>Brianna I Flynn 1,✉,#, Emily M Javan 1,#, Eugenia Lin 2, Zoe Trutner 2, Karl Koenig 2, Kenoma O Anighoro 2, Eucharist Kun 1, Alaukik Gupta 1,3, Tarjinder Singh 4,5,6, Prakash Jayakumar 2,✉, Vagheesh M Narasimhan 1,7,✉</text>
+Brianna I. Flynn, Emily M. Javan, Eugenia Lin, Zoe Trutner, Karl Koenig, Kenoma O. Anighoro, Eucharist Kun, Alaukik Gupta, Tarjinder Singh, Prakash Jayakumar, Vagheesh M. Narasimhan
 
 [End of examples. Reminder: your job is to clean PDF copy-pastes of cruft and garbage.]
 

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-06-07 01:14:59 gwern"
+# When:  Time-stamp: "2025-06-29 11:43:59 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -155,7 +155,7 @@ else
           s '< a href' '<a href'; s 'modifed: 20' 'modified: 20'; s 'linklive-not' 'link-live-not'; s ' n-dimensional' ' <em>n</em>-dimensional'; s 'pdf#pg=' 'pdf#page='; s 'PDF#pg=' 'PDF#page='; s '<hr />' '<hr>'; s '</hr>' '<hr>'; s 'confidence: highly-likely' 'confidence: highly likely'; s 'drop-caps-de-zs' 'dropcaps-de-zs'; s '฿' '₿'; s 'mL/kg/day' 'mL⧸kg⧸day'; s 'μg/day' 'μg⧸day'; s 'kg/day' 'kg⧸day'; s 'mg/day' 'mg⧸day'; s 'g/day' 'g⧸day'; s 'kcal/day' 'kcal⧸day';
           s 'src="doc/' 'src="/doc/'; s 'href="doc/' 'href="/doc/';
           s 'link-icon-not' 'icon-not'; s '<!--<p>' '<!-- <p>'; s '</p>-->' '</p> -->';
-          s '](W!' '](!W';
+          s '](W!' '](!W'; s '<em>𝛽</em>' '<em>β</em>'; s '𝛽' '<em>β</em>';
 
           ## TODO: duplicate HTML classes from Pandoc reported as issue #8705 & fixed; fix should be in >pandoc 3.1.1 (2023-03-05), so can remove these two rewrites once I upgrade past that:
           s 'class="odd odd' 'class="odd'; s 'class="even even' 'class="even';
@@ -705,7 +705,7 @@ else
             "test-halloween" "triptych" "logo-image" "dropcap-cheshire" "dropcap-de-zs" "dropcap-gene-wolfe"
             "dropcap-goudy" "dropcap-kanzlei" "dropcap-ninit" "dropcap-not" "dropcaps-cheshire"
             "dropcaps-de-zs" "dropcaps-dropcat" "dropcaps-gene-wolfe" "dropcaps-goudy" "dropcaps-kanzlei"
-            "dropcaps-yinit" "dropcap-yinit"
+            "dropcaps-yinit" "dropcap-yinit" "dropcap-not"
             "display-entry" "disable-the-not-chosen" "display-random-1" "display-random-2" "display-random-3" "display-random-4" "display-random-5" "display-random-6" "display-random-7" "display-random-8" "display-random-9" "display-random-10"
             "level1" "level2" "level3" "level4" "level5" "level6" "level7"
             "footnotes-end-of-document" "note" "bibtex" "Bibtex" "c" "C" "ch" "cpp" "Cpp" "cs" "CS"
@@ -918,7 +918,7 @@ else
     λ(){ gf -e ' ?' ./metadata/full.gtx; }
     wrap λ "Problem with question-marks (perhaps the crossref/Emacs copy-paste problem?)." &
 
-    λ(){ gfv -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone' -e 'N,N-Dimethyltryptamine' -e 'N,N-dimethyltryptamine' -e 'h,s,v' -e ',VGG<sub>' -e 'data-link-icon-type="text,' -e 'data-link-icon-type=\"text,' -e '(R,S)' -e 'R,R-formoterol' -e '(18)F-FDG' -e '<em>N,N</em>' -e '3,n-butylphthalide' -e '3,n-butylhexahydrophthalide' -e 'AUC0-5h,para' -e '0-1h,para' -e '"text,tri' -e '"text,quad' -e '"text,sans"' -e '<sub>T,c</sub>' -e '<sub>T,t</sub>' -e '<sub>C,t</sub>' -- ./metadata/full.gtx ./metadata/half.gtx | \
+    λ(){ gfv -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone' -e 'N,N-Dimethyltryptamine' -e 'N,N-dimethyltryptamine' -e 'h,s,v' -e ',VGG<sub>' -e 'data-link-icon-type="text,' -e 'data-link-icon-type=\"text,' -e '(R,S)' -e 'R,R-formoterol' -e '(18)F-FDG' -e '<em>N,N</em>' -e '3,n-butylphthalide' -e '3,n-butylhexahydrophthalide' -e 'AUC0-5h,para' -e '0-1h,para' -e '"text,tri' -e '"text,quad' -e '"text,sans"' -e '<sub>T,c</sub>' -e '<sub>T,t</sub>' -e '<sub>C,t</sub>' -e '<em>L<sub>ρ,n</sub></em>' -- ./metadata/full.gtx ./metadata/half.gtx | \
              gec -e ',[A-Za-z]'; }
     wrap λ "Look for run-together commas (but exclude chemical names where that's correct)." &
 
@@ -1466,7 +1466,7 @@ else
     done; ) &
 
     ## did any of the key pages mysteriously vanish from the live version?
-    linkchecker --ignore-url='https://www.googletagmanager.com' --threads=5 --check-extern --recursion-level=1 'https://gwern.net/index' &
+    linkchecker --ignore-url='https://www.googletagmanager.com' --ignore-url="https://docs.google.com/forms/d/e/1FAIpQLSd7uqL7B_l1HFIfXc8D_nZyumaOv58msK7jhl4XzQjWODWKdA/viewform" --threads=5 --check-extern --recursion-level=1 'https://gwern.net/index' &
     ## - traffic checks/alerts are done in Google Analytics: alerts on <900 pageviews/daily, <40s average session length/daily.
     ## - latency/downtime checks are done in `updown.io` (every 1h, 1s response-time for /index)
     set +e

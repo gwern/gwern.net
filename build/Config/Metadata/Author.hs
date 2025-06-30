@@ -778,6 +778,10 @@ canonicals = M.fromList
   , ("Nadia Eghbal", "Nadia Asparouhova")
   , ("GPT-o3-pro", "GPT-4-o3-pro")
   , ("o3-pro", "GPT-4-o3-pro")
+  , ("Marie Baekvad-Hansen", "Marie Bækvad-Hansen")
+  , ("Marcus R. Munafo", "Marcus R. Munafò")
+  , ("_lyraaaa_", "lyra bubbles")
+  , ("mitxela", "Tim Alex Jacobs")
   ]
 
 -- tests: unique
@@ -816,7 +820,7 @@ canonicalsWithInitials =
   , "Philip S. Dale", "Lee N. Robbins", "Hyman G. Rickover", "Lucia A. Hindorff"
   , "Peter P. Pramstaller", "Kent M. Pitman", "Louise S. Bicknell", "Laura Jean Bierut"
   , "Grover S. Krantz", "Kent D. Taylor", "Robyn M. Dawes", "Donna Lee Hart", "John I. Nurnberger"
-  , "John P. Beilby", "James L. Kirkland", "Jakob N. Foerster", "Harrison J. Kell", "Enda M. Byrne", "Brendan P. Zietsch", "William Bennett Bean", "James E. Cutting", "Allan H. Young", "Tim B. Bigdeli", "Tara C. Matise", "Stephen J. Chanock", "Martin M. Wattenberg", "Richard Karlsson Linnér", "Edwin H. Land", "Patricia A. Boyle"]
+  , "John P. Beilby", "James L. Kirkland", "Jakob N. Foerster", "Harrison J. Kell", "Enda M. Byrne", "Brendan P. Zietsch", "William Bennett Bean", "James E. Cutting", "Allan H. Young", "Tim B. Bigdeli", "Tara C. Matise", "Stephen J. Chanock", "Martin M. Wattenberg", "Richard Karlsson Linnér", "Edwin H. Land", "Patricia A. Boyle", "Marcus R. Munafò", "Lynne R. Wilkens"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1765,12 +1769,20 @@ authorLinkDB = M.fromList $
     , ("Isaac Clayton", "https://slightknack.dev/about/")
     , ("J. Zico Kolter", "https://en.wikipedia.org/wiki/Zico_Kolter")
     , ("Nadia Asparouhova", "https://nadia.xyz/")
-    , ("Neil Pendleton", "https://scholar.google.com/citations?user=sg_AibUAAAAJ&hl=en&oi=sra")
+    , ("Neil Pendleton", "https://scholar.google.com/citations?user=sg_AibUAAAAJ")
     , ("Myriam Fornage", "https://med.uth.edu/imm/2023/07/07/myriam-fornage-phd/")
-    , ("Michael B. Miller", "https://scholar.google.com/citations?user=EV_phq4AAAAJ&hl=en&oi=ao")
-    , ("Mark Alan Fontana", "https://scholar.google.com/citations?user=Pr9CTr8AAAAJ&hl=en&oi=ao")
+    , ("Michael B. Miller", "https://scholar.google.com/citations?user=EV_phq4AAAAJ")
+    , ("Mark Alan Fontana", "https://scholar.google.com/citations?user=Pr9CTr8AAAAJ")
     , ("GPT-4-o3-pro", "https://platform.openai.com/docs/models/o3-pro")
-    , ("Tongzhou Wang", "https://www.tongzhouwang.info")
+    , ("Tongzhou Wang", "https://www.tongzhouwang.info/")
+    , ("John Watrous", "https://en.wikipedia.org/wiki/John_Watrous_(computer_scientist)")
+    , ("David Wallace", "https://en.wikipedia.org/wiki/David_Wallace_(physicist)")
+    , ("Marie Bækvad-Hansen", "https://scholar.google.com/citations?user=0lqAgo0AAAAJ&hl=en&oi=ao")
+    , ("Marcus R. Munafò", "https://en.wikipedia.org/wiki/Marcus_Munafo")
+    , ("Lynne R. Wilkens", "https://scholar.google.com/citations?user=s0qUBBMAAAAJ&hl=en&oi=ao")
+    , ("Lvmin Zhang", "https://github.com/lllyasviel")
+    , ("lyra bubbles", "https://x.com/_lyraaaa_")
+    , ("Tim Alex Jacobs", "https://mitxela.com/about")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2487,7 +2499,7 @@ authorWpLinkDB =
     ,"Mara Mather", "Marc A. Suchard", "Marc Demers", "Marc H. Bornstein", "Marc Hauser"
     ,"Marc Lipsitch", "Marc N. Potenza", "Marc Sageman", "Marc Sangnier", "Marc Tischkowitz"
     ,"Marcelo O. Magnasco", "Marcia K. Johnson", "Marcia Ory", "Marcin Michalski", "Marco Avellaneda"
-    ,"Marco Fabbri", "Marcus Hutter", "Marcus Munaf\242", "Margaret A. Meyer", "Margaret A. Pericak-Vance"
+    ,"Marco Fabbri", "Marcus Hutter", "Margaret A. Meyer", "Margaret A. Pericak-Vance"
     ,"Margaret A. Tucker", "Margaret Burchinal", "Margaret Gatz", "Margaret J. Snowling", "Margaret Keyes"
     ,"Margaret Mitchell", "Margaret Rosario", "Margaret S. Livingstone", "Margarita Guerrero", "Margie E. Lachman"
     ,"Margit Osterloh", "Mari Ostendorf", "Maria Grande", "Maria Grazia Roncarolo", "Maria Katz"
@@ -3030,4 +3042,4 @@ authorWpLinkDB =
     , "John Brunner", "Harlan Ellison", "A. E. Stallings", "Richard Sharpe Shaver"
     , "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist"
     , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group", "Adrian Hon"
-    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins", "Charles Baudelaire", "James E. Cutting", "American Veterinary Medical Association", "John Rosengrant", "Christopher Smart", "Rick Gibson", "Christian Bök", "David Hestenes", "Yu-Ao_Chen", "Frank Wilczek", "Pan Jianwei", "Gillian Cookson", "Thomas Hinde", "Jeff Gore", "Ann O'Leary", "Silvana Konermann", "Liang Wenfeng", "Fernanda Viégas", "Wyndham Lewis", "Jef Raskin", "Bruce Sterling", "Pauline Grosjean", "Dilek Hakkani-Tür", "Rick Rubin", "Winthrop Kellogg", "Edwin H. Land", "Daphna Joel", "Yael Niv", "Adam Kilgarriff", "A. Michael Noll", "Richard R. Nelson", "Andy Greenberg", "Kathy Schick", "Nicholas Toth"]
+    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins", "Charles Baudelaire", "James E. Cutting", "American Veterinary Medical Association", "John Rosengrant", "Christopher Smart", "Rick Gibson", "Christian Bök", "David Hestenes", "Yu-Ao_Chen", "Frank Wilczek", "Pan Jianwei", "Gillian Cookson", "Thomas Hinde", "Jeff Gore", "Ann O'Leary", "Silvana Konermann", "Liang Wenfeng", "Fernanda Viégas", "Wyndham Lewis", "Jef Raskin", "Bruce Sterling", "Pauline Grosjean", "Dilek Hakkani-Tür", "Rick Rubin", "Winthrop Kellogg", "Edwin H. Land", "Daphna Joel", "Yael Niv", "Adam Kilgarriff", "A. Michael Noll", "Richard R. Nelson", "Andy Greenberg", "Kathy Schick", "Nicholas Toth", "Robert Gallo", "Erving Goffman", "Garrett Birkhoff"]

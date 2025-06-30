@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-05-18 21:02:36 gwern"
+;;; When:  Time-stamp: "2025-06-28 14:29:32 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -950,6 +950,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         (" <sup>" . "<sup>") ; can't auto-replace because of instances like isotopic elements with *prefixed* superscripts, eg ' <sup>60</sup>Co'
                         ("BCE" . "BC")
                         ("CE"  . "AD")
+                        (", opens new tab " . "") ; Reuters tooltip/alt for links, which copy-pastes, annoyingly
                                         ; replace all word-numbers with actual numbers:
                         (" one-hundred" . " 100")
                         (" one hundred" . " 100")
