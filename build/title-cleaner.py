@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-06-21 20:16:21 gwern"
+# When:  Time-stamp: "2025-06-30 20:13:21 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -707,6 +707,8 @@ Selection vs. Rejection"
 "Musings on AI Companies of 2025–2026 (June 2025)"
 - "https://zpravy.aktualne.cz/domaci/jirikovsky-blazek-bitcoin-nucleus/r~88b8e58e421611f0bb77ac1f6b220ee8/ Největší dealer fentanylu či zbraně. Odkud přišla Blažkova “ultralegální” miliarda—Aktuálně"
 "Největší dealer fentanylu či zbraně. Odkud přišla Blažkova “ultralegální” miliarda"
+- "https://tasvideos.org/8214S #8214: Sniq &amp; NobodyNada’s SNES <em>Super Metroid</em> “game end glitch” in 06:12.75—Submission #8214—TASVideos"
+"#8214: Sniq &amp; NobodyNada’s SNES <em>Super Metroid</em> “game end glitch” in 06:12.75—Submission #8214"
 
 Task:
 

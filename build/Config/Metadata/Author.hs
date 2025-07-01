@@ -820,7 +820,7 @@ canonicalsWithInitials =
   , "Philip S. Dale", "Lee N. Robbins", "Hyman G. Rickover", "Lucia A. Hindorff"
   , "Peter P. Pramstaller", "Kent M. Pitman", "Louise S. Bicknell", "Laura Jean Bierut"
   , "Grover S. Krantz", "Kent D. Taylor", "Robyn M. Dawes", "Donna Lee Hart", "John I. Nurnberger"
-  , "John P. Beilby", "James L. Kirkland", "Jakob N. Foerster", "Harrison J. Kell", "Enda M. Byrne", "Brendan P. Zietsch", "William Bennett Bean", "James E. Cutting", "Allan H. Young", "Tim B. Bigdeli", "Tara C. Matise", "Stephen J. Chanock", "Martin M. Wattenberg", "Richard Karlsson Linnér", "Edwin H. Land", "Patricia A. Boyle", "Marcus R. Munafò", "Lynne R. Wilkens"]
+  , "John P. Beilby", "James L. Kirkland", "Jakob N. Foerster", "Harrison J. Kell", "Enda M. Byrne", "Brendan P. Zietsch", "William Bennett Bean", "James E. Cutting", "Allan H. Young", "Tim B. Bigdeli", "Tara C. Matise", "Stephen J. Chanock", "Martin M. Wattenberg", "Richard Karlsson Linnér", "Edwin H. Land", "Patricia A. Boyle", "Marcus R. Munafò", "Lynne R. Wilkens", "Leif C. Groop"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1777,12 +1777,16 @@ authorLinkDB = M.fromList $
     , ("Tongzhou Wang", "https://www.tongzhouwang.info/")
     , ("John Watrous", "https://en.wikipedia.org/wiki/John_Watrous_(computer_scientist)")
     , ("David Wallace", "https://en.wikipedia.org/wiki/David_Wallace_(physicist)")
-    , ("Marie Bækvad-Hansen", "https://scholar.google.com/citations?user=0lqAgo0AAAAJ&hl=en&oi=ao")
+    , ("Marie Bækvad-Hansen", "https://scholar.google.com/citations?user=0lqAgo0AAAAJ")
     , ("Marcus R. Munafò", "https://en.wikipedia.org/wiki/Marcus_Munafo")
-    , ("Lynne R. Wilkens", "https://scholar.google.com/citations?user=s0qUBBMAAAAJ&hl=en&oi=ao")
+    , ("Lynne R. Wilkens", "https://scholar.google.com/citations?user=s0qUBBMAAAAJ")
     , ("Lvmin Zhang", "https://github.com/lllyasviel")
     , ("lyra bubbles", "https://x.com/_lyraaaa_")
     , ("Tim Alex Jacobs", "https://mitxela.com/about")
+    , ("Kevin Gimpel", "https://home.ttic.edu/~kgimpel/")
+    , ("Leif C. Groop", "https://scholar.google.com/scholar?q=Leif%20C.%20Groop")
+    , ("Lintang Sutawika", "https://sutawika.notion.site/")
+    , ("Louis Lello", "https://scholar.google.com/citations?user=DAaw4YMAAAAJ&hl=en&oi=ao")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
