@@ -13,7 +13,7 @@ testInfixRewriteLoops rewrites f = map (\(a,b) -> (a,b,fixedPoint f a)) $ revers
 
 isCycleLess :: (Eq a, Ord a, Show a) => [(a,a)] -> [(a,a)]
 isCycleLess xs = if not (cycleExists xs) then xs else
-  error $ "Error: Association list of rewrite-rules has cycles! Errors related to:" ++ (show $ findCycles xs)
+  error ("Error: Association list of rewrite-rules has cycles! Errors related to:" ++ show (findCycles xs))
 
 cycleExists :: Ord a => [(a, a)] -> Bool
 cycleExists tuples = any (uncurry (==)) tuples ||

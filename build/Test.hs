@@ -105,7 +105,7 @@ testConfigs = sum $ map length [isUniqueList Config.Metadata.Format.filterMetaBa
               , length $ isUniqueAll Config.LinkSuggester.whiteList
               , length $ ensure "Test.LinkSuggester.whiteList" "isURLAnyT" (isURLAnyT . fst) Config.LinkSuggester.whiteList
               , length $ ensure "Test.LinkSuggester.whiteList" "not isURLT" (not . any isURLT . snd) Config.LinkSuggester.whiteList
-              , length $ isUniqueAll Config.Tags.tagsLong2Short, length $ isUniqueKeys Config.Tags.wholeTagRewritesRegexes, length $ isUniqueKeys Config.Tags.tagsShort2LongRewrites, length $ isUniqueKeys Config.Tags.shortTagTestSuite
+              , length $ isUniqueAll Config.Tags.tagsLong2Short, length $ isUniqueKeys Config.Tags.wholeTagRewritesRegexes, length $ isUniqueKeys Config.Tags.tagsShort2LongRewrites, length $ isCycleLess Config.Tags.tagsShort2LongRewrites, length $ isUniqueKeys Config.Tags.shortTagTestSuite
               , length $ ensure "Test.Config.Tags.tagsLong2Short" "isLower" (all Data.Char.isLower . filter Data.Char.isAlpha . fst) Config.Tags.tagsLong2Short
               , length $ isUniqueKeys Config.Typography.titleCaseTestCases
               , length $ isUniqueKeys Config.Misc.tooltipToMetadataTestcases
