@@ -822,7 +822,12 @@ canonicalsWithInitials =
   , "Philip S. Dale", "Lee N. Robbins", "Hyman G. Rickover", "Lucia A. Hindorff"
   , "Peter P. Pramstaller", "Kent M. Pitman", "Louise S. Bicknell", "Laura Jean Bierut"
   , "Grover S. Krantz", "Kent D. Taylor", "Robyn M. Dawes", "Donna Lee Hart", "John I. Nurnberger"
-  , "John P. Beilby", "James L. Kirkland", "Jakob N. Foerster", "Harrison J. Kell", "Enda M. Byrne", "Brendan P. Zietsch", "William Bennett Bean", "James E. Cutting", "Allan H. Young", "Tim B. Bigdeli", "Tara C. Matise", "Stephen J. Chanock", "Martin M. Wattenberg", "Richard Karlsson Linnér", "Edwin H. Land", "Patricia A. Boyle", "Marcus R. Munafò", "Lynne R. Wilkens", "Leif C. Groop", "Neil K. Garg", "Abby F. Dernburg", "Emily B. Fox", "Patrick D. Hsu", "Shana O. Kelley", "Stephen R. Quake"]
+  , "John P. Beilby", "James L. Kirkland", "Jakob N. Foerster", "Harrison J. Kell", "Enda M. Byrne"
+  , "Brendan P. Zietsch", "William Bennett Bean", "James E. Cutting", "Allan H. Young", "Tim B. Bigdeli"
+  , "Tara C. Matise", "Stephen J. Chanock", "Martin M. Wattenberg", "Richard Karlsson Linnér"
+  , "Edwin H. Land", "Patricia A. Boyle", "Marcus R. Munafò", "Lynne R. Wilkens", "Leif C. Groop"
+  , "Neil K. Garg", "Abby F. Dernburg", "Emily B. Fox", "Patrick D. Hsu", "Shana O. Kelley"
+  , "Stephen R. Quake", "Keri L. Monda", "Jennifer E. Huffman"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1788,11 +1793,16 @@ authorLinkDB = M.fromList $
     , ("Kevin Gimpel", "https://home.ttic.edu/~kgimpel/")
     , ("Leif C. Groop", "https://scholar.google.com/scholar?q=Leif%20C.%20Groop")
     , ("Lintang Sutawika", "https://sutawika.notion.site/")
-    , ("Louis Lello", "https://scholar.google.com/citations?user=DAaw4YMAAAAJ&hl=en&oi=ao")
+    , ("Louis Lello", "https://scholar.google.com/citations?user=DAaw4YMAAAAJ")
     , ("Luca Perić", "https://lucalp.dev/bio/")
     , ("Mary Godolphin", "https://en.wikipedia.org/wiki/Lucy_Aikin")
     , ("Neil K. Garg", "https://en.wikipedia.org/wiki/Neil_Garg")
     , ("Emma Lundberg", "https://en.wikipedia.org/wiki/Emma_Lundberg_(scientist)")
+    , ("Peng Zhang", "https://sites.google.com/site/pengzhang27182/")
+    , ("Alice Gilman", "https://lifeboat.com/ex/bios.alice.gilman")
+    , ("Keri L. Monda", "https://scholar.google.com/scholar?q=Keri%20L.%20Monda")
+    , ("Jungo Kasai", "https://jungokasai.github.io/")
+    , ("Jennifer E. Huffman", "https://scholar.google.co.uk/citations?user=CQQsl7YAAAAJ&hl=en")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3052,4 +3062,4 @@ authorWpLinkDB =
     , "John Brunner", "Harlan Ellison", "A. E. Stallings", "Richard Sharpe Shaver"
     , "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist"
     , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group", "Adrian Hon"
-    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins", "Charles Baudelaire", "James E. Cutting", "American Veterinary Medical Association", "John Rosengrant", "Christopher Smart", "Rick Gibson", "Christian Bök", "David Hestenes", "Yu-Ao_Chen", "Frank Wilczek", "Pan Jianwei", "Gillian Cookson", "Thomas Hinde", "Jeff Gore", "Ann O'Leary", "Silvana Konermann", "Liang Wenfeng", "Fernanda Viégas", "Wyndham Lewis", "Jef Raskin", "Bruce Sterling", "Pauline Grosjean", "Dilek Hakkani-Tür", "Rick Rubin", "Winthrop Kellogg", "Edwin H. Land", "Daphna Joel", "Yael Niv", "Adam Kilgarriff", "A. Michael Noll", "Richard R. Nelson", "Andy Greenberg", "Kathy Schick", "Nicholas Toth", "Robert Gallo", "Erving Goffman", "Garrett Birkhoff", "Daniel M. Russell", "Andrea Califano", "Abby F. Dernburg", "Emily B. Fox", "Patrick D. Hsu", "Thomas Kalil", "Shana O. Kelley", "Anna Kreshuk", "Tim Mitchison", "Stephen R. Quake"]
+    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins", "Charles Baudelaire", "James E. Cutting", "American Veterinary Medical Association", "John Rosengrant", "Christopher Smart", "Rick Gibson", "Christian Bök", "David Hestenes", "Yu-Ao_Chen", "Frank Wilczek", "Pan Jianwei", "Gillian Cookson", "Thomas Hinde", "Jeff Gore", "Ann O'Leary", "Silvana Konermann", "Liang Wenfeng", "Fernanda Viégas", "Wyndham Lewis", "Jef Raskin", "Bruce Sterling", "Pauline Grosjean", "Dilek Hakkani-Tür", "Rick Rubin", "Winthrop Kellogg", "Edwin H. Land", "Daphna Joel", "Yael Niv", "Adam Kilgarriff", "A. Michael Noll", "Richard R. Nelson", "Andy Greenberg", "Kathy Schick", "Nicholas Toth", "Robert Gallo", "Erving Goffman", "Garrett Birkhoff", "Daniel M. Russell", "Andrea Califano", "Abby F. Dernburg", "Emily B. Fox", "Patrick D. Hsu", "Thomas Kalil", "Shana O. Kelley", "Anna Kreshuk", "Tim Mitchison", "Stephen R. Quake", "Leila Takayama"]

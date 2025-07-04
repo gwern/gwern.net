@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-06-30 13:07:08 gwern"
+# When:  Time-stamp: "2025-07-02 12:12:23 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -878,7 +878,7 @@ else
 
     λ(){ find ./ -type f -name "*.md" | gfv -e '_site' -e '/index' -e '/lorem-block' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-procs=0 --max-args=10 ./static/build/collapse-checker.py;
          find ./metadata/annotation/ -maxdepth 1 -name "*.html"  -type f | xargs --max-procs=0 --max-args=500 ./static/build/collapse-checker.py | \
-             gfv -e '1681442477994311681' -e 'inside-the-mind-of-a-sava'; }
+             gfv -e '1681442477994311681' -e 'inside-the-mind-of-a-sava' -e '/non-biblical-sentences'; }
     wrap λ "Overuse of '.collapse' class in compiled HTML?"
 
     λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | \

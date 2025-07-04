@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-07-01 10:09:27 gwern"
+# When:  Time-stamp: "2025-07-02 15:00:50 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -711,6 +711,8 @@ Selection vs. Rejection"
 "#8214: Sniq &amp; NobodyNada’s SNES <em>Super Metroid</em> “game end glitch” in 06:12.75—Submission #8214"
 - "https://www.deadlanguagesociety.com/p/dog-is-a-weird-word “Dog” is a weird word - by Colin Gorrie"
 "“Dog” is a weird word"
+- "Spegel: A Terminal Browser That Uses LLMs to Rewrite Webpages - SimEdw’s Blog"
+"Spegel: A Terminal Browser That Uses LLMs to Rewrite Webpages"
 
 Task:
 
