@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-07-02 15:00:50 gwern"
+# When:  Time-stamp: "2025-07-04 21:58:46 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -713,6 +713,10 @@ Selection vs. Rejection"
 "“Dog” is a weird word"
 - "Spegel: A Terminal Browser That Uses LLMs to Rewrite Webpages - SimEdw’s Blog"
 "Spegel: A Terminal Browser That Uses LLMs to Rewrite Webpages"
+- "https://www.yahoo.com/lifestyle/women-like-mens-hands-viral-twitter-thread-proof-170709392.html Yahoo"
+""
+- "https://www.inc.com/sam-blum/exclusive-scale-ais-spam-security-woes-while-serving-google/91205895 inc.com"
+""
 
 Task:
 

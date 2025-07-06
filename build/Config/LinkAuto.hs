@@ -342,7 +342,6 @@ custom = [
         , ("Fermi (estimate|method|problem|heuristic)", "https://en.wikipedia.org/wiki/Fermi_estimate")
         , ("Fermi [Pp]aradox", "https://en.wikipedia.org/wiki/Fermi_paradox")
         , ("(Richard Feynman|Feynman)", "https://en.wikipedia.org/wiki/Richard_Feynman")
-        , ("Flash", "https://en.wikipedia.org/wiki/Adobe_Flash")
         , ("Flickr", "https://en.wikipedia.org/wiki/Flickr")
         , ("Flowers for Algernon", "https://en.wikipedia.org/wiki/Flowers_for_Algernon")
         , ("Flynn [Ee]ffect", "https://en.wikipedia.org/wiki/Flynn_effect")

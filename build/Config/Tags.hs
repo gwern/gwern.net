@@ -106,7 +106,7 @@ tagsShort2LongRewrites =
    , ("animal", "psychology/animal"), ("code", "cs")
    , ("for", "statistics/prediction"), ("forecast", "statistics/prediction"), ("forecasting", "statistics/prediction")
    , ("genetic", "genetics"), ("genomic", "genetics"), ("genomics", "genetics"), ("graph", "design/visualization"), ("hardware" , "cs/hardware")
-   , ("human" , "genetics/selection/natural/human"), ("learning", "reinforcement-learning"), ("sf", "fiction/science-fiction")
+   , ("human" , "genetics/selection/natural/human"), ("learning", "reinforcement-learning"), ("sf", "fiction/science-fiction"), ("scifi", "sci-fi")
    , ("text" , "fiction/text-game"), ("psych", "psychology"), ("psych/inner-monologue", "psychology/inner-voice")
    , ("latex", "design/typography/tex"), ("vitamind", "vitamin-d"), ("des", "design")
    , ("attention/recurrence", "attention/recurrent"), ("human-evolution", "genetics/selection/natural/human"), ("attention/algebra", "ai/nn/transformer/attention/linear-algebra"), ("hierarchy", "ai/nn/transformer/attention/hierarchical")
@@ -178,7 +178,7 @@ tagsShort2LongRewrites =
    , ("40", "4o"), ("04", "4o"), ("4-o", "4o"), ("o-4", "4o"), ("o4", "4o"), ("hertaible", "heritable")
    , ("claude-4", "claude/4"), ("c4", "claude/4"), ("claude4", "claude/4")
    , ("animal-bias", "statistics/bias/animal"), ("animal/bias", "statistics/bias/animal"), ("schema", "scheme")
-   , ("wm", "dual-n-back"), ("radaince", "radiance"), ("synthetic", "synthesis"), ("nail", "nail-growth"), ("psychology/cat", "cat/psychology"), ("modecollapse", "mode-collapse"), ("hakell", "haskell"), ("shortsleep", "zeo/short-sleeper"), ("nuroscience", "neuroscience"), ("human-smell", "psychology/smell/human"), ("human/smell", "psychology/smell/human")
+   , ("wm", "dual-n-back"), ("radaince", "radiance"), ("synthetic", "synthesis"), ("nail", "nail-growth"), ("psychology/cat", "cat/psychology"), ("modecollapse", "mode-collapse"), ("hakell", "haskell"), ("shortsleep", "zeo/short-sleeper"), ("nuroscience", "neuroscience"), ("human-smell", "psychology/smell/human"), ("human/smell", "psychology/smell/human"), ("man-hand", "man-hands"), ("manhands", "man-hands"), ("manhand", "man-hands"), ("hand", "man-hands"), ("hands", "man-hands")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
@@ -484,6 +484,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("psychology/okcupid", "OKCupid")
   , ("psychology/nature", "psych of nature")
   , ("psychology/dark-knowledge", "dark knowledge (human)")
+  , ("psychology/man-hands", "male-hand sexiness")
   , ("psychedelic/lsd", "LSD")
   , ("psychedelic/ketamine", "ketamine")
   , ("psychedelic", "psychedelics")

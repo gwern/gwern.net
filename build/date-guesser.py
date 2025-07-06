@@ -4,7 +4,7 @@
 # date-guesser.py: extract recent dates in YYYY[[-MM]-DD] format from natural language inputs or structured text like URLs
 # Author: Gwern Branwen
 # Date: 2024-08-21
-# When:  Time-stamp: "2025-06-28 14:27:24 gwern"
+# When:  Time-stamp: "2025-07-06 20:14:16 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo 'https://erikbern.com/2016/04/04/nyc-subway-math' | python date-guesser.py
@@ -1247,6 +1247,14 @@ Task examples (with explanations in '#' comments):
 2025-06-24
 - "https://www.reuters.com/world/americas/sinaloa-cartel-hacked-phones-surveillance-cameras-find-fbi-informants-doj-says-2025-06-27/"
 2025-06-27
+- "File:Ganku 岸駒—Tiger and Bamboo—2017-196—Princeton University Art Museum.jpg" # not 2017, because that's actually the accession number: "Accession number: 2017-196 (Princeton University Art Museum) Edit this at Wikidata"
+""
+- "https://pmc.ncbi.nlm.nih.gov/articles/PMC5745404/"
+2017-12-13
+- "https://x.com/QiaochuYuan/status/1927566847739564145"
+2025-05-27
+- "https://pmc.ncbi.nlm.nih.gov/articles/PMC12089086/"
+2025-05-19
 
 Task:
 
