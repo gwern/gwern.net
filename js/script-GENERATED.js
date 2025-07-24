@@ -7616,7 +7616,7 @@ Content = {
 					});
 
 					let captionHTML = (   figureBlock.querySelector(".thumbcaption")
-									   ?? figureBlock.closest(".gallerybox").querySelector(".gallerytext")
+									   ?? figureBlock.closest(".gallerybox")?.querySelector(".gallerytext")
 									   )?.innerHTML;
 					if (captionHTML)
 						figure.appendChild(newElement("FIGCAPTION", null, { innerHTML: captionHTML }));
