@@ -21652,8 +21652,12 @@ ImageFocus = {
                 src: ImageFocus.focusedImgSrcForImage(imageToFocus),
                 loading: "eager",
                 decoding: "sync",
-                style: ("filter: " + imageToFocus.style.filter + " " + ImageFocus.dropShadowFilterForImages)
+                style: ("filter: " + imageToFocus.style.filter + " " + ImageFocus.dropShadowFilterForImages),
             });
+
+			//	Copy over aspect ratio data attribute, if set.
+			if (imageToFocus.dataset.aspectRatio > "")
+                ImageFocus.imageInFocus.dataset.aspectRatio = imageToFocus.dataset.aspectRatio;
         }
         ImageFocus.imageInFocus.classList.add("image-in-focus");
 
@@ -21699,6 +21703,9 @@ ImageFocus = {
                 let aspectRatio = parseInt(parts[1]) / parseInt(parts[2]);
                 imageWidth = window.innerHeight * aspectRatio;
                 imageHeight = window.innerHeight;
+
+				console.log(imageWidth);
+				console.log(imageHeight);
             } else {
                 imageWidth = imageHeight = Math.min(window.innerWidth, window.innerHeight);
             }
