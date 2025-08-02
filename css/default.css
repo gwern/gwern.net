@@ -6919,7 +6919,6 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 #page-toolbar .mode-selector button .label {
     text-underline-position: from-font;
-    text-underline-offset: -1px;
     text-decoration: none;
 }
 #page-toolbar .mode-selector button.selected .label {
