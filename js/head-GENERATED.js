@@ -6324,6 +6324,9 @@ ReaderMode = {
 
         //  Update document title.
         document.title += ReaderMode.readerModeTitleNote;
+
+		//	Fire event.
+		GW.notificationCenter.fireEvent("ReaderMode.didActivate");
     }
 };
 

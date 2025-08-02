@@ -22609,6 +22609,10 @@ ReaderMode = { ...ReaderMode,
 		"#footer-decoration-container"
 	].join(", "),
 
+	deactivateOnClickTriggerElementSelector: [
+		".reader-mode-disable-when-clicked"
+	],
+
 	showMaskedLinksDelay: 250,
 
 	adjustedPopupTriggerDelay: 2400,
@@ -22660,7 +22664,6 @@ ReaderMode = { ...ReaderMode,
 		 */
 		processMainContentAndAddRewriteProcessor("addInlineReaderModeSelectorsInContainer", (container) => {
 			container.querySelectorAll(".reader-mode-selector-inline").forEach(ReaderMode.injectModeSelector);
-			container.querySelectorAll(".reader-mode-selector").forEach(ReaderMode.activateModeSelector);
 		});
 	},
 
@@ -22798,12 +22801,11 @@ ReaderMode = { ...ReaderMode,
 		//	Inject the mode selector widget.
 		let modeSelector;
 		if (replacedElement) {
-			modeSelector = elementFromHTML(ReaderMode.modeSelectorHTML(true));
-			replacedElement.replaceWith(modeSelector);
+			replacedElement.replaceWith(modeSelector = elementFromHTML(ReaderMode.modeSelectorHTML(true)));
 		} else {
 			modeSelector = ReaderMode.modeSelector = GW.pageToolbar.addWidget(ReaderMode.modeSelectorHTML());
-			ReaderMode.activateModeSelector(modeSelector);
 		}
+		ReaderMode.activateModeSelector(modeSelector);
 	},
 
 	//	Called by: ReaderMode.setup
@@ -22813,10 +22815,13 @@ ReaderMode = { ...ReaderMode,
 			button.addActivateEvent(ReaderMode.modeSelectButtonClicked);
 		});
 
-		//	Register event handler to update mode selector state.
-		GW.notificationCenter.addHandlerForEvent("ReaderMode.didSetMode", (info) => {
+		//	Register event handlers to update mode selector state.
+		let updateModeSelectorStateHandler = (info) => {
 			ReaderMode.updateModeSelectorState(modeSelector);
-		});
+		};
+		GW.notificationCenter.addHandlerForEvent("ReaderMode.didSetMode", updateModeSelectorStateHandler);
+		GW.notificationCenter.addHandlerForEvent("ReaderMode.didActivate", updateModeSelectorStateHandler);
+		GW.notificationCenter.addHandlerForEvent("ReaderMode.didDeactivate", updateModeSelectorStateHandler);
 
 		//	Update state now.
 		ReaderMode.updateModeSelectorState(modeSelector);
@@ -22946,12 +22951,25 @@ ReaderMode = { ...ReaderMode,
 			document.addEventListener("keyup", ReaderMode.altKeyDownOrUp);
 		}
 
+		//	Enable click-to-disable.
+		document.querySelectorAll(ReaderMode.deactivateOnClickTriggerElementSelector).forEach(clickableToDisableElement => {
+			if (clickableToDisableElement.clickToDisableReaderModeListener != null)
+				return;
+
+			clickableToDisableElement.addActivateEvent(clickableToDisableElement.clickToDisableReaderModeListener = (event) => {
+				ReaderMode.deactivate();
+			});
+		});
+
 		//	Update visual state.
 		ReaderMode.updateVisibility({ maskedLinksVisible: false, maskedLinksKeyToggleInfoAlertVisible: false });
 
 		//	Update document title.
 		if (document.title.endsWith(ReaderMode.readerModeTitleNote) == false)
 			document.title += ReaderMode.readerModeTitleNote;
+
+		//	Fire event.
+		GW.notificationCenter.fireEvent("ReaderMode.didActivate");
 	},
 
 	//	Called by: ReaderMode.setMode
@@ -22961,7 +22979,6 @@ ReaderMode = { ...ReaderMode,
 		//	Create the observer and commence observation.
 		ReaderMode.deactivateOnScrollDownObserver = lazyLoadObserver(() => {
 			ReaderMode.deactivate();
-			ReaderMode.updateModeSelectorState();
 			ReaderMode.despawnObserver();
 		}, document.querySelector(ReaderMode.deactivateTriggerElementSelector), { threshold: 1.0 });
 	},
@@ -23015,15 +23032,18 @@ ReaderMode = { ...ReaderMode,
 			link.savedOnClick = null;
 		});
 
-		//	Re-layout sidenotes.
-		if (window.Sidenotes)
-			Sidenotes.updateSidenotePositionsIfNeeded();
-
 		if (GW.isMobile() == false) {
 			//	Remove key down/up listeners (for the Alt key toggle).
 			document.removeEventListener("keydown", ReaderMode.altKeyDownOrUp);
 			document.removeEventListener("keyup", ReaderMode.altKeyDownOrUp);
 			ReaderMode.altKeyDownOrUp = null;
+
+		//	Fire event.
+		GW.notificationCenter.fireEvent("ReaderMode.didDeactivate");
+
+		//	Re-layout sidenotes.
+		if (window.Sidenotes)
+			Sidenotes.updateSidenotePositionsIfNeeded();
 		}
 	},
 

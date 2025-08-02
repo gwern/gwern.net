@@ -3146,6 +3146,10 @@ body.reader-mode-active .date-range .subsup {
     margin: -0.5em 0 0 0;
 }
 
+body.reader-mode-active .reader-mode-disable-when-clicked {
+	cursor: pointer;
+}
+
 /*  Anti-style zone.
  */
 body.reader-mode-active .reader-mode-style-not * {
