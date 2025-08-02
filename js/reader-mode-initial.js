@@ -1,7 +1,7 @@
 ReaderMode = {
     active: false,
 
-    readerModeTitleNote: " (reader mode)",
+    readerModeTitleNote: " [reader mode]",
 
 	/*	Overridable default mode.
 	 */

@@ -6290,7 +6290,7 @@ doWhenMatchMedia(GW.mediaQueries.systemDarkModeActive, {
 ReaderMode = {
     active: false,
 
-    readerModeTitleNote: " (reader mode)",
+    readerModeTitleNote: " [reader mode]",
 
 	/*	Overridable default mode.
 	 */
