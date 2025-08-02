@@ -1090,16 +1090,17 @@ function paragraphizeTextNodesOfElement(element, options) {
 
 	let nodes = Array.from(element.childNodes);
 	let nodeSequence = [ ];
-	let shouldOmitNode = (node) => isNodeEmpty(node, options.nodeOmissionOptions);
+	let shouldOmitNode = (node) => (   isNodeEmpty(node, options.nodeOmissionOptions)
+									&& node.nodeType == Node.ELEMENT_NODE);
 	let node;
 	do {
 		node = nodes.shift();
 		let omitNode = shouldOmitNode(node);
-		if (   (   node?.nodeType == Node.TEXT_NODE
-				|| (   node?.nodeType == Node.ELEMENT_NODE
-					&& node.matches(options.includeSelector) == true
-					&& node.matches(options.excludeSelector) == false))
-			&& omitNode == false) {
+		if (   node?.nodeType == Node.TEXT_NODE
+			|| (   node?.nodeType == Node.ELEMENT_NODE
+				&& node.matches(options.includeSelector) == true
+				&& node.matches(options.excludeSelector) == false
+				&& omitNode == false)) {
 			nodeSequence.push(node);
 		} else if (omitNode) {
 			node?.remove();
@@ -1123,6 +1124,9 @@ function paragraphizeTextNodesOfElement(element, options) {
 				node.remove();
 		}
 	} while (node);
+
+	//	Trim whitespace.
+	element.trimWhitespace();
 }
 
 /***************************************************/
@@ -1147,18 +1151,29 @@ function getSelectionAsDocument(doc = document) {
     let docFrag = new DocumentFragment();
     docFrag.append(selection.getRangeAt(0).cloneContents());
 
-	//	Trim whitespace (remove top-level empty nodes at start and end).
+	//	Trim whitespace (remove empty nodes at start and end).
+	docFrag.trimWhitespace();
+
+    return docFrag;
+}
+
+/****************************************************************************/
+/*	Removes empty nodes at start and end. If `true` is passed (the default), 
+	also removes terminal whitespace nodes of terminal children, recursively.
+ */
+Element.prototype.trimWhitespace = function (descend = true) {
+	this.trimWhitespaceFromStart(descend);
+	this.trimWhitespaceFromEnd(descend);
+};
+
+/************************************************************************/
+/*	Removes empty nodes at start. If `true` is passed (the default), also 
+	removes terminal whitespace nodes of first children, recursively.
+ */
+Element.prototype.trimWhitespaceFromStart = function (descend = true) {
 	let nodesToRemove = [ ];
-	for (let i = 0; i < docFrag.childNodes.length; i++) {
-		let node = docFrag.childNodes[i];
-		if (isNodeEmpty(node)) {
-			nodesToRemove.push(node);
-		} else {
-			break;
-		}
-	}
-	for (let j = 0; j < docFrag.childNodes.length; j++) {
-		let node = docFrag.childNodes[docFrag.childNodes.length - (1 + j)];
+	for (let i = 0; i < this.childNodes.length; i++) {
+		let node = this.childNodes[i];
 		if (isNodeEmpty(node)) {
 			nodesToRemove.push(node);
 		} else {
@@ -1166,11 +1181,44 @@ function getSelectionAsDocument(doc = document) {
 		}
 	}
 	nodesToRemove.forEach(node => {
-		docFrag.removeChild(node);
+		this.removeChild(node);
 	});
 
-    return docFrag;
-}
+	if (   descend
+		&& this.firstChild.nodeType == Node.ELEMENT_NODE)
+		this.firstChild.trimWhitespaceFromStart(true);
+};
+
+/**********************************************************************/
+/*	Removes empty nodes at end. If `true` is passed (the default), also 
+	removes terminal whitespace nodes of last children, recursively.
+ */
+Element.prototype.trimWhitespaceFromEnd = function (descend = true) {
+	let nodesToRemove = [ ];
+	for (let j = 0; j < this.childNodes.length; j++) {
+		let node = this.childNodes[this.childNodes.length - (1 + j)];
+		if (isNodeEmpty(node)) {
+			nodesToRemove.push(node);
+		} else {
+			break;
+		}
+	}
+	nodesToRemove.forEach(node => {
+		this.removeChild(node);
+	});
+
+	if (   descend
+		&& this.lastChild.nodeType == Node.ELEMENT_NODE)
+		this.lastChild.trimWhitespaceFromEnd(true);
+};
+
+/*********************************/
+/*	As the same method of Element.
+ */
+DocumentFragment.prototype.trimWhitespace = function (descend = true) {
+	this.firstElementChild.trimWhitespaceFromStart(descend);
+	this.lastElementChild.trimWhitespaceFromEnd(descend);
+};
 
 /*********************************************************************/
 /*	Workaround for Firefox weirdness, based on more Firefox weirdness.
