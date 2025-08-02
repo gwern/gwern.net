@@ -5829,7 +5829,24 @@ Popins = {
 
 			containingDocument.popin.parentElement.insertBefore(popin, containingDocument.popin);
 		} else {
-			target.parentElement.insertBefore(popin, target.nextSibling);
+			/*	Locate insertion point. (There are certain elements within which 
+				we ought not insert a popin, such as tables, or anything else
+				which might scroll horizontally; or other things, perhaps. We
+				therefore find the nearest ancestor which is *not* contained in
+				one of these “shouldn’t insert popin within this” containers,
+				and insert the popin directly after that element.)
+			 */
+			let insertionTarget, insertWhere;
+			let cannotInsertIntoTheseThingsSelector = [
+				".table-wrapper"
+			].join(", ");
+			do {
+				insertionTarget = insertWhere ?? target;
+				insertWhere = insertionTarget.parentElement;
+			} while (insertWhere.closest(cannotInsertIntoTheseThingsSelector));
+
+			//	Inject.
+			insertWhere.insertBefore(popin, insertionTarget.nextSibling);
 		}
 
 		//	Push popin onto spawned popins stack.
