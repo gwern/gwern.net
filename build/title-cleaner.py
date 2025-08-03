@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-07-04 21:58:46 gwern"
+# When:  Time-stamp: "2025-07-23 14:36:03 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -717,6 +717,15 @@ Selection vs. Rejection"
 ""
 - "https://www.inc.com/sam-blum/exclusive-scale-ais-spam-security-woes-while-serving-google/91205895 inc.com"
 ""
+- "https://www.theintrinsicperspective.com/p/they-die-every-day “They Die Every Day”—by Erik Hoel"
+"“They Die Every Day”"
+- "hypercapitalism and the AI talent wars—by John Luttig"
+"Hypercapitalism and the AI talent wars"
+- "DIYPC and server bifurcation @ osmarks’ website"
+"DIYPC and server bifurcation"
+- "https://www.mrob.com/pub/ries/index.html <code>ries</code>: Find Algebraic Equations, Given Their Solution at MROB"
+"<code>ries</code>: Find Algebraic Equations, Given Their Solution"
+- "https://emilkirkegaard.dk/en/2025/07/iq-is-the-most-predictive-variable-in-social-science/ IQ is the most predictive variable in social science*—Clear Language, Clear Mind"
 
 Task:
 

@@ -472,6 +472,7 @@ linkIconRulesQuad u
  | u'' u "nces.ed.gov" = ("NCES", "text,quad", "#fbb03b") -- 'NCES' orange-yellow
  | u'' u "linuxmafia.com" = ("LNUX", "text,mono,quad", "#7a7a99") -- 'LINUX' monospace light blue
  | u'' u "caniuse.com" = ("CanI", "text,sans,quad", "#c75000") -- 'CanI' red
+ | u'' u "yuxi.ml" = ("Yuxi", "text,mono,quad", "#2c3e50") -- dark blue-grey
  | otherwise = ("", "", "")
 
 -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
@@ -1377,6 +1378,7 @@ linkIconTestUnitsText =
          , ("https://caniuse.com/?search=hyphenate", "CanI", "text,sans,quad", "#c75000")
          , ("https://oll.libertyfund.org/titles/hazlett-essays-of-montaigne-vol-9", "OLL", "text,sans,tri", "#0095fb")
          , ("/static/build/clean-pdf.py", "code", "svg", "#2f6592")
+         , ("https://yuxi.ml/essays/posts/cyc/", "Yuxi", "text,mono,quad", "#2c3e50")
   ]
 -- TODO: more complex link-icon testing: suppression of redundant link-icons
 -- linkIcon $ Link nullAttr [Str "WSJ"] ("https://www.wsj.com/articles/world-chess-championship-magnus-carlsen-ian-nepomniachtchi-seconds-11638167905", "", "") →

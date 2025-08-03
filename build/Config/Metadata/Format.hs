@@ -319,6 +319,7 @@ htmlRewriteRegexpAfter = [ -- sedMany
          , ("<br> *</p>", "</p>")
          , ("<p> *", "<p>")
          , (" *</p>", "</p>")
+         , (" ,$", "")
          ]
 
 -- simple string substitutions:

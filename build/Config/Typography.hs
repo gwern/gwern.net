@@ -92,7 +92,7 @@ surnameFalsePositivesWhiteList = ["Et", "et", "Al", "al", "Accurate", "Aesthetic
                                   "Between", "Caseness", "Goodbye", "By", "Around", "Christmas", "One", "Wars", "Michigan", "Act", "Circa",
                                   "Horizon", "Study", "Alamos", "Dover", "War", "London", "York", "Paris", "Berlin", "Francisco", "As", "Why",
                                   "Indicators", "China", "China’s", "Books", "During", "Halloween", "Sweden", "Norway", "Finland", "Suicides",
-                                  "Camps", "Tamala", "Math", "States", "Uniqueness", "On", "LessWrong", "Lesswrong", "Chemistry", "Physics", "Literature", "Biology", "Medicine", "Peace", "Economics", "Japan", "Building", "Papers", "It’s", "It's", "s", "Republicans’", "Republicans", "Democrats’", "Democrats", "About"]
+                                  "Camps", "Tamala", "Math", "States", "Uniqueness", "On", "LessWrong", "Lesswrong", "Chemistry", "Physics", "Literature", "Biology", "Medicine", "Peace", "Economics", "Japan", "Building", "Papers", "It’s", "It's", "s", "Republicans’", "Republicans", "Democrats’", "Democrats", "About", "Rendering"]
 
 
 minRange, minDuration, maxDateSecond, minDateFirst :: Int
