@@ -10902,7 +10902,7 @@ Transclude = {
 		//	Disable link icon, if loading spinner present.
         if (   link.classList.contains("include-spinner")
         	&& link.textContent > "")
-            link.classList.add("icon-not");
+            link.classList.add("icon-disable");
 
 		//	Designate dark mode inversion.
 		if (link.classList.contains("include-spinner"))
@@ -10958,7 +10958,7 @@ Transclude = {
 	resetLinkBehavior: (link) => {
 		//	Re-enable link icon.
         if (link.textContent > "")
-            link.classList.remove("icon-not");
+            link.classList.remove("icon-disable");
 
 		//	Re-enable normal link behavior.
         link.onclick = null;
@@ -17795,11 +17795,11 @@ function enableLinkIcon(link) {
 		}
     }
 
-    //  Add hook.
-    link.appendChild(newElement("SPAN", { class: "link-icon-hook dark-mode-invert" })).append("\u{2060}");
-
     //  Set class.
     link.classList.add("has-icon");
+
+    //  Add hook.
+    link.appendChild(newElement("SPAN", { class: "link-icon-hook dark-mode-invert" })).append("\u{2060}");
 }
 
 /*****************************************************************************/
@@ -17810,7 +17810,7 @@ function disableLinkIcon(link) {
         return;
 
     //  Remove hook.
-    link.querySelector(".link-icon-hook").remove();
+    link.querySelector(".link-icon-hook")?.remove();
 
     //  Clear CSS variables.
     link.style.removeProperty("--link-icon");

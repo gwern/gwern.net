@@ -136,6 +136,10 @@ a[data-link-icon-color]:hover {
     margin-right: 0.1em;
 }
 
+.markdownBody a.has-icon.icon-disable .link-icon-hook {
+	display: none;
+}
+
 /*******************/
 /*  Graphical icons.
     */
