@@ -1145,11 +1145,10 @@ function selectElementContents(element) {
  */
 function getSelectionAsDocument(doc = document) {
 	let selection = doc.getSelection();
-	if (selection.rangeCount == 0)
-		return newDocument();
+    let docFrag = newDocument();
 
-    let docFrag = new DocumentFragment();
-    docFrag.append(selection.getRangeAt(0).cloneContents());
+    for (let i = 0; i < selection.rangeCount; i++)
+	    docFrag.append(selection.getRangeAt(i).cloneContents());
 
 	//	Trim whitespace (remove empty nodes at start and end).
 	docFrag.trimWhitespace();
@@ -1219,9 +1218,9 @@ DocumentFragment.prototype.trimWhitespace = function (descend = true) {
 	this.firstElementChild?.trimWhitespaceFromStart(descend);
 	this.lastElementChild?.trimWhitespaceFromEnd(descend);
 
-	if (this.firstChild.nodeType == Node.TEXT_NODE)
+	if (this.firstChild?.nodeType == Node.TEXT_NODE)
 		this.firstChild.textContent = this.firstChild.textContent.trimStart();
-	if (this.lastChild.nodeType == Node.TEXT_NODE)
+	if (this.lastChild?.nodeType == Node.TEXT_NODE)
 		this.lastChild.textContent = this.lastChild.textContent.trimEnd();
 };
 
