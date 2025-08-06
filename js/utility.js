@@ -1184,7 +1184,7 @@ Element.prototype.trimWhitespaceFromStart = function (descend = true) {
 	});
 
 	if (   descend
-		&& this.firstChild.nodeType == Node.ELEMENT_NODE)
+		&& this.firstChild?.nodeType == Node.ELEMENT_NODE)
 		this.firstChild.trimWhitespaceFromStart(true);
 };
 
@@ -1207,7 +1207,7 @@ Element.prototype.trimWhitespaceFromEnd = function (descend = true) {
 	});
 
 	if (   descend
-		&& this.lastChild.nodeType == Node.ELEMENT_NODE)
+		&& this.lastChild?.nodeType == Node.ELEMENT_NODE)
 		this.lastChild.trimWhitespaceFromEnd(true);
 };
 
