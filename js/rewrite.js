@@ -3173,11 +3173,11 @@ function enableLinkIcon(link) {
 		}
     }
 
-    //  Add hook.
-    link.appendChild(newElement("SPAN", { class: "link-icon-hook dark-mode-invert" })).append("\u{2060}");
-
     //  Set class.
     link.classList.add("has-icon");
+
+    //  Add hook.
+    link.appendChild(newElement("SPAN", { class: "link-icon-hook dark-mode-invert" })).append("\u{2060}");
 }
 
 /*****************************************************************************/
@@ -3188,7 +3188,7 @@ function disableLinkIcon(link) {
         return;
 
     //  Remove hook.
-    link.querySelector(".link-icon-hook").remove();
+    link.querySelector(".link-icon-hook")?.remove();
 
     //  Clear CSS variables.
     link.style.removeProperty("--link-icon");

@@ -2351,7 +2351,7 @@ Transclude = {
 		//	Disable link icon, if loading spinner present.
         if (   link.classList.contains("include-spinner")
         	&& link.textContent > "")
-            link.classList.add("icon-not");
+            link.classList.add("icon-disable");
 
 		//	Designate dark mode inversion.
 		if (link.classList.contains("include-spinner"))
@@ -2407,7 +2407,7 @@ Transclude = {
 	resetLinkBehavior: (link) => {
 		//	Re-enable link icon.
         if (link.textContent > "")
-            link.classList.remove("icon-not");
+            link.classList.remove("icon-disable");
 
 		//	Re-enable normal link behavior.
         link.onclick = null;
