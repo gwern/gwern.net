@@ -2658,7 +2658,7 @@ GW.keyCommands = {
 			keyUpEvent: event
 		});
 
-		GW.keyCommands.keysPressed[event.keyCode] = null;
+		delete GW.keyCommands.keysPressed[event.keyCode];
 	}
 };
 
