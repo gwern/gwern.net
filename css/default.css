@@ -2355,6 +2355,12 @@ del {
     pointer-events: none;
 }
 
+/*	Script tags.
+ */
+script {
+	user-select: none;
+}
+
 
 /*************/
 /* AUX-LINKS */
@@ -5662,6 +5668,10 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /****************/
 /* PAGE TOOLBAR */
 /****************/
+
+#page-toolbar {
+	user-select: none;
+}
 
 /*  Show no toolbar if no items in it.
  */
