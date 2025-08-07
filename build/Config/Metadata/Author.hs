@@ -831,7 +831,7 @@ canonicalsWithInitials =
   , "Tara C. Matise", "Stephen J. Chanock", "Martin M. Wattenberg", "Richard Karlsson Linnér"
   , "Edwin H. Land", "Patricia A. Boyle", "Marcus R. Munafò", "Lynne R. Wilkens", "Leif C. Groop"
   , "Neil K. Garg", "Abby F. Dernburg", "Emily B. Fox", "Patrick D. Hsu", "Shana O. Kelley"
-  , "Stephen R. Quake", "Keri L. Monda", "Jennifer E. Huffman", "Robert L. Williams", "Charles M. Dollar", "Aniruddh D. Patel"]
+  , "Stephen R. Quake", "Keri L. Monda", "Jennifer E. Huffman", "Robert L. Williams", "Charles M. Dollar", "Aniruddh D. Patel", "James Y. Zou", "Ida L. Surakka"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1818,6 +1818,11 @@ authorLinkDB = M.fromList $
     , ("Kat Zhang", "https://x.com/poetengineer__")
     , ("InvisibleUp", "https://invisibleup.com/about/")
     , ("Rochelle Shen", "https://x.com/neuro_morphic")
+    , ("Sam Learner", "https://www.samlearner.com/work")
+    , ("James Y. Zou", "https://www.james-zou.com/")
+    , ("Ida L. Surakka", "https://experts.umich.edu/8949-ida-surakka")
+    , ("Neel Nanda", "https://www.neelnanda.io/about")
+    , ("Jeffrey R. O'Connell", "https://www.medschool.umaryland.edu/profiles/oconnell-jeffrey/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

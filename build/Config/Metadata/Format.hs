@@ -183,10 +183,11 @@ htmlRewriteTestCases = [("when moving from 8 to 256 GPUs", "when moving 8 → 25
                        , ("or strokes (n = 7). Both presurgical and", "or strokes (<em>n</em> = 7). Both presurgical and")
                        ]
 
--- testing: unique keys, valid regex keys
+-- testing: unique keys, valid regex keys; used with `sedMany`
 htmlRewriteRegexpAfter, htmlRewriteRegexpBefore, htmlRewriteFixed :: [(String, String)]
-htmlRewriteRegexpAfter = [ -- sedMany
+htmlRewriteRegexpAfter = [
          ("from ([0-9\\.]+) to ([0-9\\.]+)", "\\1 → \\2") -- "when moving from 8 to 256 GPUs" → "when moving 8 → 256 GPUs"
+         , ("\\(-([0-9])", "(−\\1") -- "5.5 (-10 to +10)" → "5.5 (−10 to +10)"
          , ("^(<p>\\[<strong>Keywords</strong>: .+\\]</p>)$", "<!--  \\1  -->\n")
          -- NOTE: we do *not* do `("<span>(.*)</span.","\\1")` to strip attribute-less Spans (which are useless) because they often denote some sort of missing formatting or error, and suppressing them would mask problems & make debugging much harder. We leave them in for manual examination.
          , ("<li>([a-zA-Z0-9].*[^>])</li>", "<li><p>\\1</p></li>") -- work around Pandoc generating naked-text list items, which causes perennial downstream errors in the JS
@@ -859,12 +860,14 @@ htmlRewriteFixed =
          , ("<strong>Conclusions</strong>\n<p>", "<p><strong>Conclusion</strong>: ")
          , ("<p>Conclusions: ", "<p><strong>Conclusion</strong>: ")
          , ("\n <strong>Conclusion</strong>\n<p>", "<p><strong>Conclusion</strong>: ")
+         , ("<strong>CONCLUSIONS</strong>", "<strong>Conclusion</strong>")
          , ("<p>RESULTS. ", "<p><strong>Results</strong>: ")
          , (". <strong>Results</strong>: ", ".</p> <p><strong>Results</strong>: ")
          , ("\n <strong>Results</strong>\n<p>", "<p><strong>Results</strong>: ")
          , ("<p>Results: ", "<p><strong>Results</strong>: ")
          , ("<p>Aims: ", "<p><strong>Aims</strong>: ")
          , ("<p>BACKGROUND. ", "<p><strong>Background</strong>: ")
+         , ("<strong>BACKGROUND</strong>", "<strong>Background</strong>")
          , ("<p><strong>AbstractBackground &amp; Aims</strong>:</p>\n<p>", "<p><strong>Background</strong>: ")
          , ("AbstractBackground and Aim", "Background & Aim")
          , ("<p>Background. ", "<p><strong>Background</strong>: ")

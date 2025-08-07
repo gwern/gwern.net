@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-07-23 14:36:03 gwern"
+# When:  Time-stamp: "2025-08-06 19:27:07 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -726,6 +726,10 @@ Selection vs. Rejection"
 - "https://www.mrob.com/pub/ries/index.html <code>ries</code>: Find Algebraic Equations, Given Their Solution at MROB"
 "<code>ries</code>: Find Algebraic Equations, Given Their Solution"
 - "https://emilkirkegaard.dk/en/2025/07/iq-is-the-most-predictive-variable-in-social-science/ IQ is the most predictive variable in social science*—Clear Language, Clear Mind"
+- "https://www.ipr.northwestern.edu/news/2024/an-existential-crisis-for-science.html ‘An Existential Crisis’ for Science: Institute for Policy Research - Northwestern University"
+"‘An Existential Crisis’ for Science"
+- "https://www.fosskers.ca/en/blog/contributing-to-emacs Colin Woodbury"
+""
 
 Task:
 
