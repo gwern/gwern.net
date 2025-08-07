@@ -3895,14 +3895,14 @@ function paragraphizeTextNodesOfElementRetainingMetadata(element) {
 	});
 }
 
-/****************************************************************************/
+/*****************************************************************************/
 /*	Given a set of nodes all of which are children of the same parent node, 
 	and conditional on the node before the first node of the set being a text
 	node that ends in a left parenthesis and the node after the last node of 
 	the set being a text node that begins with a right parenthesis, wraps the
-	nodes in the set, plus the preceding and following nodes, in a <span>
-	with the class `parenthesized-set` plus any other classes given by an 
-	optional class string.
+	nodes in the set, plus the enclosing parentheses (in new text nodes), in a 
+	<span> with the class `parenthesized-set` plus any other classes given by 
+	an optional class string.
 
 	If the conditions are not met, does nothing.
  */
@@ -6394,7 +6394,7 @@ GW.notificationCenter.addHandlerForEvent("ReaderMode.didLoad", (eventInfo) => {
 	ReaderMode.setMode();
 }, { once: true });
 GW.assetVersions = {
-	"/static/img/icon/icons.svg": "1753400024",
+	"/static/img/icon/icons.svg": "1754601902",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-1x.png": "1734481578",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-2x.png": "1734481578",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-3x.png": "1734481578",

@@ -1152,6 +1152,7 @@
     --GW-popins-popin-title-bar-height: calc(1rem * 16/9);
     --GW-popins-popin-footer-bar-height: calc(1rem * 16/9);
 
+	--GW-page-toolbar-minimum-width: 46px;
     --GW-page-toolbar-collapse-duration: 0.25s;
     --GW-page-toolbar-slow-collapse-duration: 1s;
     --GW-page-toolbar-fade-after-collapse-duration: 0.25s;
@@ -6874,6 +6875,12 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     background-color: var(--background-color);
 }
 
+#page-toolbar .widget .widget-button {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    height: auto;
+}
+
 #page-toolbar .widget a.widget-button {
     font-family: var(--GW-sans-serif-font-stack);
 }
@@ -6922,10 +6929,9 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Vertical toolbar layout.
  */
 #page-toolbar.vertical {
-    --toolbar-button-size: 4vmin;
-
     flex-flow: column;
-    width: var(--toolbar-button-size);
+    width: 4vmin;
+    min-width: var(--GW-page-toolbar-minimum-width);
     top: 5px;
     right: 4px;
 }
@@ -6966,10 +6972,6 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
         background-color var(--GW-page-toolbar-widget-flash-fall-duration) ease-out;
 }
 
-#page-toolbar.vertical .widget .widget-button {
-    position: relative;
-    height: var(--toolbar-button-size);
-}
 #page-toolbar.vertical .widget .widget-button .icon {
     padding: 4px;
 }
@@ -7009,13 +7011,11 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*  Mobile toolbar layout (reverse vertical).
  */
 #page-toolbar.mobile {
-    --toolbar-button-size: 46px;
-
     --toolbar-offset-x: 0px;
     --toolbar-offset-y: 0px;
 
     flex-flow: column-reverse;
-    width: var(--toolbar-button-size);
+    width: var(--GW-page-toolbar-minimum-width);
     bottom: calc(0.5em - var(--toolbar-offset-y));
     right:  calc(0.5em - var(--toolbar-offset-x));
 	transition:
@@ -7052,10 +7052,6 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
         box-shadow var(--GW-page-toolbar-widget-flash-fall-duration) ease-in;
 }
 
-#page-toolbar.mobile .widget .widget-button {
-    position: relative;
-    height: var(--toolbar-button-size);
-}
 #page-toolbar.mobile .widget .widget-button .icon {
     padding: 7px;
 }
@@ -8264,6 +8260,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 #page-toolbar .link-widget a svg {
     display: block;
+    aspect-ratio: 1 / 1;
 }
 
 
