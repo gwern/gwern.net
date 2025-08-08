@@ -73,6 +73,18 @@ Transclude.templates = {
 	<div class="data-field file-includes"><{fileIncludes}></div>
 	<[IFEND]>
 </blockquote>`,
+	"annotation-partial-inline": `<span class="annotation<{annotationClassSuffix}>">
+	<span class="data-field title <[IF authorDateAux]>author-date-aux<[IFEND]>">
+		<a 
+		   class="<{titleLinkClass}>"
+		   title="Open <<{titleLinkHref}>> in <{whichTab}> <{tabOrWindow}>"
+		   href="<{titleLinkHref}>"
+		   target="<{linkTarget}>"
+		   <{titleLinkDataAttributes}>
+			   ><{title}></a>\\
+		<[IF authorDateAux]><[IF2 author]>,\\ <[IF2END]><{authorDateAux}><[IFEND]>
+	</span>
+</span>`,
 	"github-issue-blockquote-not": `<div class="content-transform <{contentTypeClass}>">
 	<div class="data-field issue-content"><{issueContent}></div>
 </div>`,

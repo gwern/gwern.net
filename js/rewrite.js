@@ -122,7 +122,7 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 				  `<li><p>`
 				+ `<a href="/ref/${entry[0]}">${entry[0]}</a>: `
 				+ synthesizeIncludeLink(entry[1], {
-					"class": "link-annotated include-annotation-partial",
+					"class": "link-annotated include-annotation-partial-inline",
 					"data-include-selector-not": ".data-field.date, .aux-links-field-container"
 				  }, {
 					innerHTML: `<code>${entry[1]}</code>`
@@ -268,11 +268,10 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 			location: urlForMappingFile(mappingFileBasename),
 			responseType: "json",
 			onSuccess: (event) => {
-				let urlString = event.target.response[normalizedRef];
-				if (urlString == null) {
-					updatePageTitleElements("Invalid Query");
-					injectHelpfulErrorMessage(`ID <code>${normalizedRef}</code> does not exist.`);
-
+				/*	Called when there’s no match in the mapping file, or when 
+					the match exists but fails to load.
+				 */
+				let displayRelevantContentAfterMatchNotFound = () => {
 					//	Get all prefix matches (in both directions).
 					let idPrefixMatches = Object.entries(event.target.response).filter(entry =>
 						   (   entry[0].startsWith(normalizedRef)
@@ -295,6 +294,13 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 														).split(" "
 														).filter(x => /^([0-9]{1,3}|[0-9]{5,})$/.test(x) == false
 														).join(" "));
+				};
+
+				let urlString = event.target.response[normalizedRef];
+				if (urlString == null) {
+					updatePageTitleElements("Invalid Query");
+					injectHelpfulErrorMessage(`ID <code>${normalizedRef}</code> does not exist.`);
+					displayRelevantContentAfterMatchNotFound();
 				} else {
 					//	Synthesize and inject include-link.
 					let annotationIncludeLink = pageContentContainer.appendChild(synthesizeIncludeLink(event.target.response[normalizedRef], {
@@ -307,9 +313,7 @@ addContentLoadHandler(GW.contentLoadHandlers.loadReferencedIdentifier = (eventIn
 						updatePageTitleElements("Invalid Query");
 						injectHelpfulErrorMessage(  `No annotation exists for ID <code>${normalizedRef}</code>`
 												  + ` (<a href="${urlString}"><code>${URLFromString(urlString).href}</code></a>).`);
-
-						injectIdPrefixMatches([ "Perhaps you want this instead:", "Perhaps you want one of these instead:" ], event.target.response, normalizedRef);
-						injectHelpfulSuggestion(urlString);
+						displayRelevantContentAfterMatchNotFound();
 					}, {
 						condition: (info) => (   info.source == "transclude.loadingFailed"
 											  && info.includeLink == annotationIncludeLink),

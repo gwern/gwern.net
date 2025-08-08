@@ -2458,6 +2458,16 @@ Transclude.addIncludeLinkAliasClass("include-block-context-expanded", (includeLi
 });
 
 /*========================================================*/
+/*	.include-annotation-partial-inline
+		`class="include-annotation-partial"`
+		`data-include-template="annotation-partial-inline"`
+ */
+Transclude.addIncludeLinkAliasClass("include-annotation-partial-inline", (includeLink) => {
+	includeLink.classList.add("include-annotation-partial");
+	includeLink.dataset.includeTemplate = includeLink.dataset.includeTemplate ?? "annotation-partial-inline";
+});
+
+/*========================================================*/
 /*	.include-annotation-partial
 		`class="include-annotation"`
 		`data-include-selector-not=".annotation-abstract, .file-includes, figure, .data-field-separator"`
