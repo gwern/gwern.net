@@ -175,31 +175,26 @@ main {
      */
     #sidebar .sidebar-links a {
         font-variant-caps: small-caps;
+        flex: 1 1 20%;
     }
 
-    #sidebar .sidebar-links a[href="/about"],
     #sidebar .sidebar-links a.site {
         order: -3;
-        flex: 1 1 20%;
     }
-    #sidebar .sidebar-links a[href="/me"],
     #sidebar .sidebar-links a.me {
-        order: -1;
-        flex: 1 1 20%;
-    }
-    #sidebar .sidebar-links a[href="/changelog"],
-    #sidebar .sidebar-links a.new-essays {
-        order: 1;
-        flex: 1 1 35%;
-    }
-    #sidebar .sidebar-links a[href="/doc-newest-index"],
-    #sidebar .sidebar-links a.new-links {
-        order: 2;
-        flex: 1 1 35%;
+        order: -2;
     }
     #sidebar .sidebar-links a.patreon {
-        order: -2;
-        flex: 1 1 20%;
+        order: -1;
+    }
+    #sidebar .sidebar-links a.new {
+        order: 1;
+    }
+    #sidebar .sidebar-links a.blog {
+        order: 2;
+    }
+    #sidebar .sidebar-links a.links {
+        order: 3;
     }
 }
 
