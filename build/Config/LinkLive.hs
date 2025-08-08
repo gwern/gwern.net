@@ -2644,7 +2644,7 @@ goodLinks =
             , "https://parti.research.google/"
             , "https://paulfchristiano.com/ea/"
             , "https://penelope.uchicago.edu/hydrionoframes/hydrion.html"
-            , "https://people.com/movies/frankie-muniz-memory-loss-doesnt-bother-him//"
+            , "https://people.com/movies/frankie-muniz-memory-loss-doesnt-bother-him/"
             , "https://people.csail.mit.edu/mrub/VisualMic/"
             , "https://people.idsia.ch/~juergen/creativity.html"
             , "https://personalitytest.net/ipip/index.html"

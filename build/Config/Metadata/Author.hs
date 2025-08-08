@@ -788,6 +788,13 @@ canonicals = M.fromList
   , ("primalpoly", "Geoffrey Miller")
   , ("xai", "X.ai")
   , ("poetengineer__", "Kat Zhang")
+  , ("Jeffrey R. O’Connell", "Jeffrey R. O'Connell")
+  , ("JE Savage", "Jeanne E. Savage")
+  , ("Jean Ferrieres", "Jean Ferrières")
+  , ("abramdemski", "Abram Demski")
+  , ("GPT-5 pro", "GPT-5 Pro")
+  , ("GPT-5-pro", "GPT-5 Pro")
+  , ("GPT-5-Pro", "GPT-5 Pro")
   ]
 
 -- tests: unique
@@ -831,7 +838,8 @@ canonicalsWithInitials =
   , "Tara C. Matise", "Stephen J. Chanock", "Martin M. Wattenberg", "Richard Karlsson Linnér"
   , "Edwin H. Land", "Patricia A. Boyle", "Marcus R. Munafò", "Lynne R. Wilkens", "Leif C. Groop"
   , "Neil K. Garg", "Abby F. Dernburg", "Emily B. Fox", "Patrick D. Hsu", "Shana O. Kelley"
-  , "Stephen R. Quake", "Keri L. Monda", "Jennifer E. Huffman", "Robert L. Williams", "Charles M. Dollar", "Aniruddh D. Patel", "James Y. Zou", "Ida L. Surakka"]
+  , "Stephen R. Quake", "Keri L. Monda", "Jennifer E. Huffman", "Robert L. Williams", "Charles M. Dollar"
+  , "Aniruddh D. Patel", "James Y. Zou", "Ida L. Surakka", "Jeanne E. Savage", "James B. Potash"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1823,6 +1831,11 @@ authorLinkDB = M.fromList $
     , ("Ida L. Surakka", "https://experts.umich.edu/8949-ida-surakka")
     , ("Neel Nanda", "https://www.neelnanda.io/about")
     , ("Jeffrey R. O'Connell", "https://www.medschool.umaryland.edu/profiles/oconnell-jeffrey/")
+    , ("Jeanne E. Savage", "https://cncr.nl/people/jeanne_savage/")
+    , ("Jean Ferrières", "https://cerpop.inserm.fr/jean-ferrieres-publications-1")
+    , ("GPT-5", "https://openai.com/gpt-5/")
+    , ("GPT-5 Pro", "https://openai.com/index/introducing-gpt-5/#gpt-5-pro")
+    , ("Jerry Green", "https://en.wikipedia.org/wiki/Jerry_Green_(economist)")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3082,4 +3095,4 @@ authorWpLinkDB =
     , "John Brunner", "Harlan Ellison", "A. E. Stallings", "Richard Sharpe Shaver"
     , "Karl Sims", "C. S. Lewis", "Reed Albergotti", "Hyman G. Rickover", "Alain de Benoist"
     , "Ken Perlin", "Martin J. Lercher", "Richard Fateman", "World Bank Group", "Adrian Hon"
-    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins", "Charles Baudelaire", "James E. Cutting", "American Veterinary Medical Association", "John Rosengrant", "Christopher Smart", "Rick Gibson", "Christian Bök", "David Hestenes", "Yu-Ao_Chen", "Frank Wilczek", "Pan Jianwei", "Gillian Cookson", "Thomas Hinde", "Jeff Gore", "Ann O'Leary", "Silvana Konermann", "Liang Wenfeng", "Fernanda Viégas", "Wyndham Lewis", "Jef Raskin", "Bruce Sterling", "Pauline Grosjean", "Dilek Hakkani-Tür", "Rick Rubin", "Winthrop Kellogg", "Edwin H. Land", "Daphna Joel", "Yael Niv", "Adam Kilgarriff", "A. Michael Noll", "Richard R. Nelson", "Andy Greenberg", "Kathy Schick", "Nicholas Toth", "Robert Gallo", "Erving Goffman", "Garrett Birkhoff", "Daniel M. Russell", "Andrea Califano", "Abby F. Dernburg", "Emily B. Fox", "Patrick D. Hsu", "Thomas Kalil", "Shana O. Kelley", "Anna Kreshuk", "Tim Mitchison", "Stephen R. Quake", "Leila Takayama", "Anthony Atala", "Alfred Hitchcock", "Cary Grant", "Eva Marie Saint", "Wilse B. Webb", "Kawase Hasui", "Charles M. Dollar", "Emil Wolf", "Parth Shah", "Meghan O'Rourke", "David Seetapun", "Aniruddh D. Patel"]
+    , "Aslak Tveito", "A. A. Markov", "Greg Lynn", "Fred Cohen", "Sam Harris", "J. Michael Straczynski", "John Clute", "D. Graham Burnett", "Edward Johnston", "Jacob Glanville", "F. Wesley Schneider", "Aaron Swartz", "Edwin Leuven", "Pliny the Elder", "Mark Wallinger", "Dave Winer", "Don Hopkins", "Charles Baudelaire", "James E. Cutting", "American Veterinary Medical Association", "John Rosengrant", "Christopher Smart", "Rick Gibson", "Christian Bök", "David Hestenes", "Yu-Ao_Chen", "Frank Wilczek", "Pan Jianwei", "Gillian Cookson", "Thomas Hinde", "Jeff Gore", "Ann O'Leary", "Silvana Konermann", "Liang Wenfeng", "Fernanda Viégas", "Wyndham Lewis", "Jef Raskin", "Bruce Sterling", "Pauline Grosjean", "Dilek Hakkani-Tür", "Rick Rubin", "Winthrop Kellogg", "Edwin H. Land", "Daphna Joel", "Yael Niv", "Adam Kilgarriff", "A. Michael Noll", "Richard R. Nelson", "Andy Greenberg", "Kathy Schick", "Nicholas Toth", "Robert Gallo", "Erving Goffman", "Garrett Birkhoff", "Daniel M. Russell", "Andrea Califano", "Abby F. Dernburg", "Emily B. Fox", "Patrick D. Hsu", "Thomas Kalil", "Shana O. Kelley", "Anna Kreshuk", "Tim Mitchison", "Stephen R. Quake", "Leila Takayama", "Anthony Atala", "Alfred Hitchcock", "Cary Grant", "Eva Marie Saint", "Wilse B. Webb", "Kawase Hasui", "Charles M. Dollar", "Emil Wolf", "Parth Shah", "Meghan O'Rourke", "David Seetapun", "Aniruddh D. Patel", "James B. Potash", "Jean-Jacques Laffont", "Robert D. Hare"]

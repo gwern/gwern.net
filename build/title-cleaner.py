@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-08-06 19:27:07 gwern"
+# When:  Time-stamp: "2025-08-07 13:15:07 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -730,6 +730,10 @@ Selection vs. Rejection"
 "‘An Existential Crisis’ for Science"
 - "https://www.fosskers.ca/en/blog/contributing-to-emacs Colin Woodbury"
 ""
+- "https://www.james-zou.com/ Machine Learning"
+""
+- "https://snarkmarket.com/blog/snarkives/briefly_noted/the_name_is_shrdlu_etaoin_shrdlu/#067911 Snarkmarket: The Name is Shrdlu… Etaoin Shrdlu"
+"The Name is Shrdlu… Etaoin Shrdlu"
 
 Task:
 
