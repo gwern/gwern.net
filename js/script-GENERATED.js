@@ -8874,6 +8874,18 @@ Content = {
 		“Expanded block context” typically means “broaden the block context
 		beyond a single paragraph”.
 
+	class="include-annotation-partial-inline"
+
+		class="include-annotation-partial"
+		data-include-template="annotation-partial-inline"
+
+		Does the same thing as .include-annotation-partial (see below), with the
+		additional effect that the transcluded annotation will use the 
+		`annotation-partial-inline` template (unless a `data-include-template`
+		attribute is set on the link to override this), which uses no block
+		elements, and thus allows the transcluded partial annotation to be used
+		in an inline context.
+
 	class="include-annotation-partial"
 
 		class="include-annotation"
