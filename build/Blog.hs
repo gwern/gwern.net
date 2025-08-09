@@ -34,6 +34,7 @@ import Metadata.Date (isYear)
 import LinkID (metadataItem2ID)
 import LinkMetadata (sortByDatePublished)
 import LinkMetadataTypes (Metadata, MetadataList, MetadataItem, Path)
+import Typography (titlecase')
 import Unique (isUniqueList)
 import Utils (writeUpdatedFile, printRed, replace, delete, printGreen, truncateString)
 import qualified Config.Misc as C (cd, currentYear, author, authorL, currentYearS, lastYearS)
@@ -144,7 +145,7 @@ annotation2Markdown url (title, author, dateCreated, dateModified, kvs, _, _) =
       thumbnailT  = get "thumbnail-text" ""
   in unlines $
        [ "---"
-       , "title: '"              ++ replace "'" "’" title ++ "'"
+       , "title: '"              ++ replace "'" "’" (titlecase' title) ++ "'"
        , "author: "              ++ author
        , "description: "         ++ ("\"" ++ replace "'" "’" description ++ "\"")
        ] ++
@@ -182,10 +183,16 @@ generateDirectoryBlog targets = do
 
   let header = unlines ["---", "title: Blog Posts"
                        , "description: 'Index of my longer off-site writings, presented as annotations. (Sorted in reverse chronological order.)'"
-                       , "created: 2009-01-27", "modified: " ++ lastEntryDate
-                       , "status: log", "importance: 0", "css-extension: dropcaps-de-zs"
-                       , "backlink: False", "placeholder: True", "index: True"
-                       , "...\n"]
+                       , "created: 2009-01-27"
+                       , "modified: " ++ lastEntryDate
+                       , "status: log"
+                       , "importance: 0"
+                       , "css-extension: dropcap-not"
+                       , "backlink: False"
+                       , "placeholder: True"
+                       , "index: True"
+                       , "...\n"
+                       , "Reverse-chronological index of my short-form writings (including off-site):\n"]
 
   let blogSectionTransclude = Header 1 ("", [], []) [Str "View Full Posts"]
   let document = Pandoc nullMeta [listLinksByYear, blogSectionTransclude, listTranscludesByYear]
@@ -210,7 +217,7 @@ generateBlogLinksByYears sortedPosts = let years = nubOrd $ map (\(_, (_,_,dc,_,
 generateBlogLink :: (FilePath, MetadataItem, Path) -> [Block]
 generateBlogLink (urlPath, (tle,_,dc,_,_,_,_), _) =
   let link = Link (T.pack dc, ["link-annotated-not", "icon-not"], [("data-include-selector-not", "#return-to-blog-index-link")])
-                                      [RawInline (Format "html") (T.pack $ truncateString 70 tle)] (T.pack urlPath,"")
+                                      [RawInline (Format "html") (T.pack $ truncateString 70 $ titlecase' tle)] (T.pack urlPath,"")
   in [Para [Str (T.pack (drop 5 dc ++ ": ")), Strong [link]]]
 
 generateBlogTranscludes :: [(Bool, (FilePath, MetadataItem, Path))] -> [[Block]]
@@ -226,7 +233,7 @@ generateBlogTransclude (firstp, (urlPath, (tle,_,_,_,_,_,_), _)) =
   let link = Link (""
                   , ["id-not", "link-annotated-not", "icon-not", "include-content"]++ (if firstp then ["include-even-when-collapsed"] else [])
                   , [("data-include-selector-not", "#return-to-blog-index-link")])
-                                      [RawInline (Format "html") (T.pack tle)] (T.pack urlPath,"")
+                                      [RawInline (Format "html") (T.pack $ titlecase' tle)] (T.pack urlPath,"")
   in [Para [Strong [link]]]
 
 generateDirectoryBlogSimplified :: [(FilePath, Path, MetadataItem)] -> IO ()
@@ -246,7 +253,7 @@ generateDirectoryBlogSimplified items =
            BulletList (
                map (\(f, (tle, _, _, _, _, _, _), u) ->
                    [Para [Link ("",["link-modified-recently-not", "link-annotated-not", "icon-not"],[])
-                        [RawInline (Format "html") (T.pack tle)]
+                        [RawInline (Format "html") (T.pack $ titlecase' tle)]
                         (T.pack ("/" ++ delete ".md" f), if head u == '/' then "" else T.pack $ "Original URL: <" ++ u ++ ">")]]) items' ++
                 [ [Para [Link ("",["link-modified-recently-not", "link-annotated-not", "icon-not"],[]) [Str "[…]"] ("/blog/index", "Full index of blog entries.")]] ]
                )
