@@ -697,7 +697,6 @@ goodDomainsSimple =
     , "www.vesta.earth"
     , "www.vetta.org"
     , "www.vocativ.com"
-    , "www.w3.org"
     , "www.wakapoetry.net"
     , "www.washingtontimes.com"
     , "www.webmd.com"
@@ -2982,7 +2981,6 @@ goodLinks =
             , "https://www.vanityfair.com/culture/2010/02/exile-201002"
             , "https://www.vesta.earth/"
             , "https://www.vocativ.com/interactive/underworld/drugs/darknet-arrests-map/"
-            , "https://www.w3.org/International/wiki/Case_folding"
             , "https://www.wakapoetry.net/mys-viii-1426/"
             -- , "https://www.washingtontimes.com/news/2018/jun/2/minnesota-girl-who-cant-feel-pain-battles-insuranc/" -- spoofing fake 403 errors
             , "https://www.webmd.com/prostate-cancer/news/20090324/fatty-fish-may-cut-prostate-cancer-risk"
@@ -4616,5 +4614,6 @@ badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
             , "https://docs.midjourney.com/hc/en-us/articles/32099348346765-Chaos-Variety"
             , "https://reactormag.com/day-of-the-kraken/"
             , "https://drive.google.com/file/d/0B4wY8oEgAUnjX3NzSUJCNVZHbmc/view" -- NOTE: deliberately dead link used, as it will never need to be search-and-replaced
+            , "https://www.w3.org/International/wiki/Case_folding"
             ]
 

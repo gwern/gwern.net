@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2025-03-10 10:22:58 gwern"
+When:  Time-stamp: "2025-08-08 19:42:22 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -143,7 +143,7 @@ linkLiveTestHeaders = forM_ C.goodLinks
             case status of
                 ExitFailure _ -> printRed "Error: curl download failed on URL " >> print (T.unpack u ++ " : " ++ show status ++ " : " ++ show bs)
                 _ -> do let s = map toLower $ U.toString bs
-                        when ("x-frame" `isInfixOf` s && not ("x-archive-orig-x-frame-options" `isInfixOf` s)) $ -- IA preserves the original FRAME for completeness, but it doesn't count for breaking live links, so we need to avoid false positives from string-matching on it
+                        when ("x-frame" `isInfixOf` s && not ("x-archive-orig-x-frame-options" `isInfixOf` s) || "frame-ancestors" `isInfixOf` s) $ -- IA preserves the original FRAME for completeness, but it doesn't count for breaking live links, so we need to avoid false positives from string-matching on it
                           printRed (T.unpack u) >> print (" : X-FRAME option detected on URL : " ++ show bs)
   )
 
