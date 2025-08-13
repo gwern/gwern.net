@@ -1395,18 +1395,32 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapFigures = (eventInfo) => {
         //  Create a wrapper for the figure contents (media plus caption).
         let outerWrapper = figure.appendChild(newElement("SPAN", { "class": "figure-outer-wrapper" }));
 
-        //  Re-insert the (possibly wrapped) media into the figure.
+        //  Re-insert the (possibly inner-wrapped) media into the figure.
         figure.querySelectorAll(mediaSelector).forEach(mediaElement => {
             let mediaBlock = (   mediaElement.closest(".image-row-wrapper")
                               ?? mediaElement.closest(".image-wrapper")
                               ?? mediaElement);
+
+			//	Allow for hyperlinked images.
+			if (   mediaBlock == mediaElement
+				&& mediaBlock.parentElement.tagName == "A")
+				mediaBlock = mediaBlock.parentElement;
+
+			//	Move to outer wrapper.
             outerWrapper.appendChild(mediaBlock);
 
 			//	Ensure proper wrapping.
             if (   mediaBlock == mediaElement
             	|| (   mediaBlock.matches(".image-wrapper") == false
-            		&& mediaElement.closest(".image-wrapper") == null))
-            	mediaBlock = wrapElement(mediaElement, "span.image-wrapper." + mediaElement.tagName.toLowerCase());
+            		&& mediaElement.closest(".image-wrapper") == null)) {
+				//	Allow for hyperlinked images.
+				let elementToWrap = mediaElement.parentElement.tagName == "A"
+									? mediaElement.parentElement
+									: mediaElement;
+
+				//	Wrap in inner wrapper.
+            	mediaBlock = wrapElement(elementToWrap, "span.image-wrapper." + mediaElement.tagName.toLowerCase());
+            }
         });
 
         //  Wrap the caption (if any) in a caption wrapper.
@@ -2984,7 +2998,8 @@ addContentInjectHandler(GW.contentInjectHandlers.designateLocalNavigationLinkIco
 		"#sidebar",
 		"#page-metadata",
 		"#footer",
-		".aux-links"
+		".aux-links",
+		".image-wrapper"
 	].join(", ");
 
     //  Self-links (anchorlinks to the current page).

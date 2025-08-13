@@ -39,7 +39,7 @@ Extracts.config = {
 		"#floating-header",
     	"#page-toolbar",
     	".link-widget"
-	].join(", ")
+    ].join(", ")
 };
 
 GW.notificationCenter.fireEvent("Extracts.didLoad");
