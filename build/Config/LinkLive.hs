@@ -2364,6 +2364,7 @@ badDomainsSimple = [ "2chan.us"
    , "www.dhammawiki.com"
    , "docs.midjourney.com"
    , "reactormag.com"
+   , "www.w3.org"
    ]
 
 -- tested using `isURL` in `LinkLive` & are unique lists:

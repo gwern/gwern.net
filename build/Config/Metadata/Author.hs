@@ -799,6 +799,9 @@ canonicals = M.fromList
   , ("khoomeik", "Rohan Pandey")
   , ("jvoisin", "Julien Voisin")
   , ("JustineTunney", "Justine Tunney")
+  , ("arithmoquine", "Henry")
+  , ("Guillaume Letter", "Guillaume Lettre")
+  , ("ibab", "Igor Babuschkin")
   ]
 
 -- tests: unique
@@ -1841,11 +1844,21 @@ authorLinkDB = M.fromList $
     , ("GPT-5 Pro", "https://openai.com/index/introducing-gpt-5/#gpt-5-pro")
     , ("Jerry Green", "https://en.wikipedia.org/wiki/Jerry_Green_(economist)")
     , ("Inger Njølstad", "https://no.wikipedia.org/wiki/Inger_Nj%C3%B8lstad")
-    , ("Ingrid Agartz", "https://scholar.google.com/citations?user=NlZOhHMAAAAJ&hl=en&oi=ao")
-    , ("Ioannis Antonoglou", "https://scholar.google.com/citations?user=3ka3LZAAAAAJ&hl=en&oi=ao")
+    , ("Ingrid Agartz", "https://scholar.google.com/citations?user=NlZOhHMAAAAJ")
+    , ("Ioannis Antonoglou", "https://scholar.google.com/citations?user=3ka3LZAAAAAJ")
     , ("Ishan Misra", "https://imisra.github.io/")
     , ("Rohan Pandey", "https://rpandey.tech/")
     , ("Julien Voisin", "https://dustri.org/")
+    , ("Ray Zhu", "https://substack.com/@rayzhudev")
+    , ("Synced", "https://syncedreview.com/")
+    , ("Mike Hearn", "https://plan99.net/~mike/index.html")
+    , ("Heribert Schunkert", "https://www.professoren.tum.de/en/schunkert-heribert")
+    , ("Gunnar Morken", "https://scholar.google.com/citations?user=5QggreIAAAAJ")
+    , ("Guillaume Lettre", "http://www.mhi-humangenetics.org/en/members/")
+    , ("Gabriel Ilharco", "https://gabrielilharco.com/")
+    , ("Nina Panickssery", "https://ninapanickssery.com/research")
+    , ("Yonatan Cale", "https://www.lesswrong.com/users/yonatan-cale-1")
+    , ("Christopher Priest", "https://en.wikipedia.org/wiki/Christopher_Priest_(novelist)")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3118,4 +3131,4 @@ authorWpLinkDB =
     , "Anthony Atala", "Alfred Hitchcock", "Cary Grant", "Eva Marie Saint", "Wilse B. Webb", "Kawase Hasui"
     , "Charles M. Dollar", "Emil Wolf", "Parth Shah", "Meghan O'Rourke", "David Seetapun", "Aniruddh D. Patel"
     , "James B. Potash", "Jean-Jacques Laffont", "Robert D. Hare", "Anthony Bourdain", "Ross J. Anderson"
-    , "Primo Levi", "Stuart Woolf", "Arnold B. Bakker", "Justine Tunney"]
+    , "Primo Levi", "Stuart Woolf", "Arnold B. Bakker", "Justine Tunney", "Jens Hoffmann", "Stanislav Drobyshevsky"]

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-07-07 21:17:25 gwern"
+# When:  Time-stamp: "2025-08-16 10:25:01 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -152,10 +152,10 @@ else
           s '</p></p>' '</p>'; s '’ ”' '’ ”'; s ' ”' ' “';
           s '[("doi","")]' ''; s '>/a>' '</a>'; s 'href="W!"' 'href="!W"'; s 'class="Logotype-Tex"' 'class="logotype-tex"'; s 'Class="Logotype-Tex"' 'class="logotype-tex"'; s '<span Class="' '<span class="';
           s '_n_th' '<em>n</em>th'; s 'thumbnailText: ' 'thumbnail-text: '; s ' — ' '—'; s '_n_=' '_n_ = ';
-          s '< a href' '<a href'; s 'modifed: 20' 'modified: 20'; s 'linklive-not' 'link-live-not'; s ' n-dimensional' ' <em>n</em>-dimensional'; s 'pdf#pg=' 'pdf#page='; s 'PDF#pg=' 'PDF#page='; s '<hr />' '<hr>'; s '</hr>' '<hr>'; s 'confidence: highly-likely' 'confidence: highly likely'; s 'drop-caps-de-zs' 'dropcaps-de-zs'; s '฿' '₿'; s 'mL/kg/day' 'mL⧸kg⧸day'; s 'μg/day' 'μg⧸day'; s 'kg/day' 'kg⧸day'; s 'mg/day' 'mg⧸day'; s 'g/day' 'g⧸day'; s 'kcal/day' 'kcal⧸day'; s 'tokens/sec' 'tokens⧸sec';
+          s '< a href' '<a href'; s 'modifed: 20' 'modified: 20'; s 'linklive-not' 'link-live-not'; s ' n-dimensional' ' <em>n</em>-dimensional'; s 'pdf#pg=' 'pdf#page='; s 'PDF#pg=' 'PDF#page='; s '<hr />' '<hr>'; s '</hr>' '<hr>'; s 'confidence: highly-likely' 'confidence: highly likely'; s 'drop-caps-de-zs' 'dropcaps-de-zs'; s '฿' '₿'; s 'mL/kg/day' 'mL⧸kg⧸day'; s 'μg/day' 'μg⧸day'; s 'kg/day' 'kg⧸day'; s 'mg/day' 'mg⧸day'; s 'g/day' 'g⧸day'; s 'kcal/day' 'kcal⧸day'; s 'tokens/sec' 'tokens⧸sec'; s 'kg/m<sup>2</sup>' 'kg⧸m<sup>2</sup>';
           s 'src="doc/' 'src="/doc/'; s 'href="doc/' 'href="/doc/';
           s 'link-icon-not' 'icon-not'; s '<!--<p>' '<!-- <p>'; s '</p>-->' '</p> -->';
-          s '](W!' '](!W'; s '<em>𝛽</em>' '<em>β</em>'; s '𝛽' '<em>β</em>';
+          s '](W!' '](!W'; s '<em>𝛽</em>' '<em>β</em>'; s '𝛽' '<em>β</em>'; s 'class="table-simple' 'class="table-small'
 
           ## TODO: duplicate HTML classes from Pandoc reported as issue #8705 & fixed; fix should be in >pandoc 3.1.1 (2023-03-05), so can remove these two rewrites once I upgrade past that:
           s 'class="odd odd' 'class="odd'; s 'class="even even' 'class="even';
@@ -608,7 +608,7 @@ else
                                 -e '/nootropic/magnesium' -e '/selection' -e 'doc/statistics/bayes/1994-falk' -e '/zeo/zeo' \
                                 -e '/mail-delivery' -e '/rock-paper-scissors' \
                                 -e '/variable' -e '1400861560180858880' \
-                                -e 'w28340%2Fw28340.pdf';
+                                -e 'w28340%2Fw28340.pdf' -e 'conference-size';
        }
     wrap λ "Warning: unauthorized LaTeX users somewhere"
 
@@ -677,7 +677,7 @@ else
             "TOC" "uri" "at" "bu" "c1" "c2"
             "c3" "c4" "c5" "c6" "c7" "c8"
             "c9" "c10" "cf" "co" "dv" "fu"
-            "kw" "op" "s1" "st" "reader-mode" "reader-mode-style-not" "reader-mode-not" "reader-mode-note" "reader-mode-disable-when-here"
+            "kw" "op" "s1" "st" "reader-mode" "reader-mode-style-not" "reader-mode-not" "reader-mode-note" "reader-mode-disable-when-here" "reader-mode-disable-when-clicked"
             "scrape-abstract-not" "abstract" "abstract-collapse" "abstract-collapse-only" "admonition" "admonition-title"
             "book-review-meta" "book-review-review" "tip" "xml" "yaml" "warning" "al" "an"
             "bn" "cn" "cv" "do" "dt" "er"
@@ -1725,7 +1725,7 @@ else
     λ() { everyNDays 7 && ghci -istatic/build/ ./static/build/LinkIcon.hs  -e 'linkIconPrioritize' | gfv -e ' secs,' -e 'it :: [(Int, T.Text)]' -e '[]'; }
     wrap λ "Need link icons?" &
     λ() { gf '>{.archive-not .link-annotated-not .link-live}' ./lorem-link.md; }
-    wrap λ "Sites needing link live whitelist/blacklisting?"
+    wrap λ "Sites needing link live whitelist/blacklisting? (see <https://gwern.net/lorem-link#live-link-testcases>)"
 
     λ() { ghci -istatic/build/ ./static/build/LinkBacklink.hs  -e 'suggestAnchorsToSplitOut' | gfv -e ' secs,' -e 'it :: [(Int, T.Text)]' -e '[]' -e '/me#contact'; }
     wrap λ "Refactor out pages?" &

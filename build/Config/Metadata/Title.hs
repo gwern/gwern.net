@@ -177,4 +177,4 @@ stringDelete = [" - The Public Domain Review"
             , " - by Benjamin Breen", " - You Are a Story with Will Storr", " - Isegoria", " - TASVideos"
             , " - by Colin Gorrie", " - SimEdw’s Blog", "nfdn: ", " - by Erik Hoel", " - John Luttig"
             , " @ osmarks' website", " at MROB", " - Clear Language, Clear Mind"
-            , " : Institute for Policy Research - Northwestern University", "Snarkmarket: "]
+            , " : Institute for Policy Research - Northwestern University", "Snarkmarket: ", " - Google Developers Blog"]

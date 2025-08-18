@@ -227,6 +227,7 @@ whiteList = [ ( "/crop#hands"
       , "PALM: The PALM Anime Location Model And Dataset"
       ]
     )
+  , ("https://openai.com/gpt-5/", ["GPT-5"])
   , ("https://en.wikipedia.org/wiki/Metropolitan_Opera_Live_in_HD", ["Met HD"])
   , ("https://openai.com/index/introducing-gpt-4-5/", ["GPT-4.5"])
   , ("https://en.wikipedia.org/wiki/Facet_(psychology)", ["facet", "facets", "facet-level"])
