@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2025-06-28 11:47:23 gwern"
+# When:  Time-stamp: "2025-08-22 19:18:42 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -58,16 +58,18 @@ _upload() {
     NEW_FILENAME="${FILENAME%.md}.txt"
     mv "$FILENAME" "$NEW_FILENAME"
     echo "Renamed: $FILENAME to $NEW_FILENAME"
+    FILENAME="$NEW_FILENAME"
   fi
-  if [[ $FILENAME == *.jpeg ]]; then
-    FILENAME="${FILENAME%.jpeg}.jpg"
-    mv "$FILENAME" "$FILENAME"
+  if [[ $FILENAME == *.jpeg ]]; then # '.jpeg' is common (eg. Twitter, Signal), but forbidden for consistency in favor of '.jpg'
+    NEW_FILENAME="${FILENAME%.jpeg}.jpg"
+    mv "$FILENAME" "$NEW_FILENAME"
+    FILENAME="$NEW_FILENAME"
     # we avoid WebP as still too exotic; a WebP could be converted to PNG or JPG, depending on what it encoded, but since we check elsewhere for PNGs that should be JPG, we can just default to converting it to PNG to be safe:
   elif [[ $FILENAME == *.webp ]]; then
     PNG_FILENAME="${FILENAME%.webp}.png"
     if convert "$FILENAME" "$PNG_FILENAME"; then
+      rm "$FILENAME"  # remove the original WebP file
       FILENAME="$PNG_FILENAME"
-      rm "$FILENAME"  # successful, so remove the original WebP file
       bold "Converted WebP to PNG: $PNG_FILENAME"
     else
       red "Failed to convert WebP to PNG. Proceeding with original WebP file."
@@ -86,7 +88,7 @@ _upload() {
     base_name="${filename%.*}"
     extension="${filename##*.}"
 
-    new_file_path=$(find ~/wiki/ -type f -name "$(basename $filename)" -print -quit)
+    new_file_path=$(find ~/wiki/ -type f -name "$(basename "$filename")" -print -quit)
 
     # if filename already exists, try to rename it
     if [[ -n "$new_file_path" ]]; then
@@ -98,7 +100,7 @@ _upload() {
 
         new_filename="$(echo ${base_name}-${i}.${extension})"
         # avoid spurious collisions with temporary/working files in the infrastructure repo or the scratch directory:
-        new_file_path=$(find ~/wiki/ -type f ! -path "~/wiki/static/*" ! -path "~/wiki/doc/www/*" -name "$new_filename" -print -quit)
+        new_file_path=$(find ~/wiki/ -type f ! -path "$HOME/wiki/static/*" ! -path "$HOME/wiki/doc/www/*" -name "$new_filename" -print -quit)
 
         if [[ -z "$new_file_path" ]]; then
           mv "$filename" "$new_filename"
@@ -145,7 +147,7 @@ _upload() {
       # format Markdown/text files for more readability
       TEMPFILE=$(mktemp /tmp/text.XXXXX)
       # 'prettier' is not installed and I don't like Pandoc's default formatting choices for text or Markdown, so we'll just do a simple 'fold' to avoid unreadably-long newlines:
-      if [[ "$TARGET" =~ .*\.md || "$TARGET" =~ .*\.txt ]]; then fold --spaces --width=80 "$TARGET" >> "$TEMPFILE" && mv "$TEMPFILE" "$TARGET"; fi
+      if [[ "$FILENAME" =~ .*\.md || "$FILENAME" =~ .*\.txt ]]; then fold --spaces --width=80 "$FILENAME" >> "$TEMPFILE" && mv "$TEMPFILE" "$FILENAME"; fi
 
       mv "$FILENAME" ~/wiki/doc/www/misc/
       cd ~/wiki/ || exit
