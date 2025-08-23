@@ -22,7 +22,7 @@ import Unique
 import Annotation (tooltipToMetadata, testGuessAuthorDate)
 import qualified Cycle (testCycleDetection)
 import Inflation (inflationDollarTestSuite)
-import Interwiki (interwikiTestSuite, interwikiCycleTestSuite)
+import Interwiki (interwikiTestSuite, interwikiCycleTestSuite, isWPArticle, isWPDisambig)
 import LinkArchive (readArchiveMetadataAndCheck, testLinkRewrites)
 import LinkAuto (linkAutoTest)
 import LinkIcon (linkIconTest)
@@ -219,5 +219,16 @@ testAll = do Config.Misc.cd
 
              printGreen ("Testing LinkAuto rewrites…" :: String)
              unless (null linkAutoTest) $ printRed ("LinkAuto test-cases have errors in: " ++ show linkAutoTest)
+
+             interwikiUnitTests <- do
+               a <- Interwiki.isWPArticle False "https://en.wikipedia.org/wiki/George_Washington_XYZ"
+               b <- Interwiki.isWPArticle False "https://en.wikipedia.org/wiki/George_Washington"
+               c <- Interwiki.isWPDisambig "Mercury"
+               d <- Interwiki.isWPDisambig "George_Washington"
+               pure (not a && b && c == Just True && d == Just False)
+
+             unless interwikiUnitTests $
+               printRed "Interwiki disambig or non-existence checks failed?"
+
 
              printGreen ("Testing finished." :: String)

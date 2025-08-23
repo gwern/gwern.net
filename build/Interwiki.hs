@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Interwiki (convertInterwikiLinks, convertInterwikiLinksInline, wpPopupClasses, isWPLive, isWPAPI, interwikiTestSuite, interwikiCycleTestSuite, isWPDisambig, isWPArticle, escapeWikiArticleTitle, toWikipediaEnURL, toWikipediaEnURLSearch) where
 
+import Control.Monad (when)
 import Data.List (isInfixOf, intersect)
 import Data.Containers.ListUtils (nubOrd)
 import qualified Data.Map as M (fromList, lookup, Map)
@@ -16,7 +17,8 @@ import Inflation (isInflationURL)
 import Utils (replaceManyT, anyPrefixT, fixedPoint, inlinesToText, deleteT)
 import qualified Config.Interwiki as C (redirectDB, quoteOverrides, testCases)
 
-import Network.HTTP.Simple (parseRequest, httpLBS, getResponseBody, Response, getResponseStatusCode) -- http-conduit
+import Network.HTTP.Simple (parseRequest, httpLBS, getResponseBody, Response, getResponseStatusCode, addRequestHeader) -- http-conduit
+import Network.HTTP.Types.Header (hUserAgent, hAccept)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString, ByteString)
 import Control.Exception (catch, SomeException)
 
@@ -28,16 +30,20 @@ isWPDisambig :: T.Text -> IO (Maybe Bool)
 isWPDisambig ""          = error "Interwiki.isWPDisambig: called with an empty string! This should never happen."
 isWPDisambig articleName = do
   let encodedArticleName = escapeWikiArticleTitle articleName
-  let url = "https://en.wikipedia.org/api/rest_v1/page/summary/" `T.append` encodedArticleName
-  request <- parseRequest (T.unpack url)
+  let url = "https://en.wikipedia.org/api/rest_v1/page/summary/" `T.append` encodedArticleName `T.append` "?redirect=true"
+  request0 <- parseRequest (T.unpack url)
+  let request = addRequestHeader hUserAgent "gwern.net interwiki checker (+https://gwern.net/; mailto:gwern@gwern.net)"
+              $ addRequestHeader hAccept     "application/json"
+              $ request0
   result <- catch (Right <$> httpLBS request) handleException :: IO (Either String (Response U.ByteString))
   case result of
     Left _ -> return Nothing  -- On any exception, ignore error message & return Nothing
     Right response -> return $
-      let responseBody = U.toString $ getResponseBody response
-      in if "Not found" `isInfixOf` responseBody
-         then Nothing
-         else Just ("\"type\":\"disambiguation\"" `isInfixOf` responseBody)
+      let code = getResponseStatusCode response
+          responseBody = U.toString $ getResponseBody response
+      in if code == 404
+           then Nothing
+           else Just ("\"type\":\"disambiguation\"" `isInfixOf` responseBody)
 
 -- verify that a WP article exists at the argument URL (not name/title), by checking for a 404 error.
 -- This print outs a warning message about bad WP articles and the response code.
@@ -53,17 +59,18 @@ isWPDisambig articleName = do
 -- As opposed to:
 -- $ curl 'https://en.wikipedia.org/api/rest_v1/page/summary/George_Washington'
 -- {"type":"standard","title":"George Washington", ... }
-isWPArticle :: T.Text -> IO Bool
-isWPArticle ""  = error "Interwiki.isWPArticle: called with an empty string! This should never happen."
-isWPArticle url = do
-    request <- parseRequest ("HEAD " ++ T.unpack url)
+isWPArticle :: Bool -> T.Text -> IO Bool
+isWPArticle _ ""  = error "Interwiki.isWPArticle: called with an empty string! This should never happen."
+isWPArticle verbosep url = do
+    request0 <- parseRequest ("HEAD " ++ T.unpack url)
+    let request = addRequestHeader hUserAgent "gwern.net interwiki checker (+https://gwern.net/; mailto:gwern@gwern.net)" request0
     result  <- catch (Right <$> httpLBS request) handleExceptionIO :: IO (Either String (Response U.ByteString))
     case result of
-        Left err       -> putStrLn ("Warning (Interwiki.isWPArticle): HTTP error when checking Wikipedia article URL: " ++ err) >> return False
-        Right response ->
-            if getResponseStatusCode response == 404
-                then putStrLn ("Warning (Interwiki.isWPArticle): Wikipedia article does not exist (404 error): " ++ T.unpack url) >> return False
-                else return True
+        Left err       -> when verbosep (putStrLn ("Warning (Interwiki.isWPArticle): HTTP error when checking Wikipedia article URL: " ++ err)) >> return False
+        Right response -> case getResponseStatusCode response of
+              code | code >= 200 && code < 300 -> return True
+              404 -> when verbosep (putStrLn ("Warning (Interwiki.isWPArticle): Wikipedia article does not exist (404 error): " ++ T.unpack url)) >> return False
+              code -> when verbosep (putStrLn ("Warning (Interwiki.isWPArticle): unexpected HTTP status " ++ show code ++ " for " ++ T.unpack url)) >> return False
   where
     handleExceptionIO :: SomeException -> IO (Either String a)
     handleExceptionIO e = return $ Left $ show e
