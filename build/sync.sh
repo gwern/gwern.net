@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-08-16 10:25:01 gwern"
+# When:  Time-stamp: "2025-08-23 15:50:36 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -1178,11 +1178,7 @@ else
     wrap λ "Markdown→HTML pages don't validate as HTML5" &
 
     ## anchor-checker.php doesn't work on HTML fragments, like the metadata annotations, and those rarely ever have within-fragment anchor links anyway, so skip those:
-    λ() { for PAGE in $PAGES_ALL; do
-              ANCHOR=$(./static/build/anchor-checker.php "$PAGE")
-              if [[ -n $ANCHOR ]]; then echo -e "\n\e[31m$PAGE\e[0m:\n$ANCHOR" | gfv -e '/lorem'; fi
-          done;
-          }
+    λ() { echo "$PAGES_ALL" | xargs --max-procs=0 --max-args=50 ./static/build/anchor-checker.php; } #  | gfv -e '/lorem'
     wrap λ "Anchors linked but not defined inside page?" &
 
     λ(){ find . -not -name "*#*" -xtype l -printf 'Broken symbolic link: %p\n'; }

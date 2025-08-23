@@ -866,7 +866,7 @@ linkIconTestUnitsText =
          , ("https://tvtropes.org/pmwiki/pmwiki.php/Anime/MobileSuitGundamCharscounterattack",  "TV","text", "#1c6486")
          , ("/batman/2022-04-15-manasuka-artdecobatmantriptych-batman.psd",  "image","svg", "#01c3f6")
          , ("https://www.quora.com/", "Q", "text", "#b92b27")
-         , ("/doc/tea/gwern-tea-mineralwaters-bestarm-sequential.mp4",  "file-video","svg", "#acd147")
+         , ("/doc/statistics/order/2022-07-25-gwern-activelearningvsrandomsearch-200simulationruns.webm",  "file-video","svg", "#acd147")
          , ("https://www.teds.ac.uk/about-teds", "TEDS", "text,quad,sans", "#45c1a7")
          , ("https://scottaaronson.blog/?p=1438", "SA", "text,sans", "#4181b7")
          , ("https://www.scottaaronson.com/democritus/", "SA", "text,sans", "#4181b7")

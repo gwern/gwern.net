@@ -45,5 +45,5 @@ main = do originalMarkdown <- TIO.getContents
 -- Quickly validate Wikipedia links in a newly-processed annotation, to avoid finding out much later that an assumed article or redirect didn't exist:
 checkWP :: Pandoc -> IO ()
 checkWP p = do let links = filter ("wikipedia.org"`T.isInfixOf`) $ extractURLs p
-               mapM_ isWPArticle links
+               mapM_ (isWPArticle True) links
                mapM_ isWPDisambig links

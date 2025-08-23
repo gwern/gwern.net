@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-05-20 17:42:42 gwern"
+# When:  Time-stamp: "2025-08-22 19:22:14 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -504,9 +504,11 @@ alias invert="mogrify -negate"
 
 # report to InvertOrNot.com one image URL that incorrectly inverts/invert-nots for dark-mode: <https://invertornot.com/docs#/default/correction_api_correction_post>
 # `$ invert-error-report https://gwern.net/doc/math/2024-zhang-figure1-overfittingofmodelfamiliestogsm8k.png`
-invert-error-report () { curl --request 'POST' 'https://invertornot.com/api/correction' \
+invert-error-report () { for URL in "$@"; do
+                             curl --request 'POST' 'https://invertornot.com/api/correction' \
                               --header 'accept: application/json' --header 'Content-Type: application/json' \
-                              --data '["'"$1"'"]'; }
+                              --data '["'"$URL"'"]';
+                       done; }
 
 # add white pixels to an image which has been cropped too tightly to look good:
 pad () {

@@ -802,6 +802,8 @@ canonicals = M.fromList
   , ("arithmoquine", "Henry")
   , ("Guillaume Letter", "Guillaume Lettre")
   , ("ibab", "Igor Babuschkin")
+  , ("Paul Meehl", "Paul E. Meehl")
+  , ("__ghostfail", "bool")
   ]
 
 -- tests: unique
@@ -1859,6 +1861,10 @@ authorLinkDB = M.fromList $
     , ("Nina Panickssery", "https://ninapanickssery.com/research")
     , ("Yonatan Cale", "https://www.lesswrong.com/users/yonatan-cale-1")
     , ("Christopher Priest", "https://en.wikipedia.org/wiki/Christopher_Priest_(novelist)")
+    , ("bool", "https://ghost.fail/")
+    , ("Robert L. King", "https://archive.seattletimes.com/archive/19961012/2353831/dr-robert-l-king-sr-92-lived-and-preached-a-healthy-lifestyle")
+    , ("vivek", "https://x.com/nuwandavek")
+    , ("Karin Brulliard", "https://www.washingtonpost.com/people/karin-brulliard/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3131,4 +3137,4 @@ authorWpLinkDB =
     , "Anthony Atala", "Alfred Hitchcock", "Cary Grant", "Eva Marie Saint", "Wilse B. Webb", "Kawase Hasui"
     , "Charles M. Dollar", "Emil Wolf", "Parth Shah", "Meghan O'Rourke", "David Seetapun", "Aniruddh D. Patel"
     , "James B. Potash", "Jean-Jacques Laffont", "Robert D. Hare", "Anthony Bourdain", "Ross J. Anderson"
-    , "Primo Levi", "Stuart Woolf", "Arnold B. Bakker", "Justine Tunney", "Jens Hoffmann", "Stanislav Drobyshevsky"]
+    , "Primo Levi", "Stuart Woolf", "Arnold B. Bakker", "Justine Tunney", "Jens Hoffmann", "Stanislav Drobyshevsky", "Galit Shmueli", "Robert Mitchell Lindner"]
