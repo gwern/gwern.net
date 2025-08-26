@@ -1665,6 +1665,16 @@ figure.width-full {
     color: inherit;
     font-variant-caps: initial;
 }
+
+/*	On viewports wide enough to display margin notes, enable relative-to-graf
+	margin note positioning.
+ */
+@media all and (min-width: 1497px) {
+	#markdownBody p.has-margin-note {
+		position: relative;
+	}
+}
+
 #markdownBody .marginnote.sidenote {
     --text-hyphenation: none;
     --background-color: transparent;
@@ -1675,6 +1685,7 @@ figure.width-full {
     max-width: var(--GW-sidenotes-max-width);
     right: calc(100% + 64px);
     left: unset;
+    top: 0;
 
     /*  We inherit left and right padding from .sidenote class. */
     padding-top: 0.2em;

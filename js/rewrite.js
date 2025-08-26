@@ -1873,6 +1873,10 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapMarginNotes = (eventInfo) => {
 		 */
 		if (innerWrapper.textContent.trim().length <= 1)
 			marginnote.classList.add("only-icon");
+
+		/*	Mark paragraph as containing a margin note.
+		 */
+		marginnote.closest("p")?.classList.add("has-margin-note");
     });
 }, "rewrite");
 

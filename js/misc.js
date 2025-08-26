@@ -1087,6 +1087,11 @@ function aggregateMarginNotesInDocument(doc) {
     });
 }
 
+
+/**************/
+/* PARAGRAPHS */
+/**************/
+
 /***************************************************************************/
 /*  Child nodes of a paragraph, excluding any margin notes in sidenote mode.
  */
