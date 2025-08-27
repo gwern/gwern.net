@@ -1704,7 +1704,7 @@ figure.width-full {
     max-width: var(--GW-sidenotes-max-width);
     right: calc(100% + 64px);
     left: unset;
-    top: 0;
+    top: max(var(--marginnote-vertical-position) - 1.35em, 0px);
 
     /*  We inherit left and right padding from .sidenote class. */
     padding-top: 0.2em;

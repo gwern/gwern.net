@@ -16536,9 +16536,31 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapMarginNotes = (eventInfo) => {
 		if (innerWrapper.textContent.trim().length <= 1)
 			marginnote.classList.add("only-icon");
 
+		/*	Get containing paragraph.
+		 */
+		let graf = marginnote.closest("p");
+		if (graf == null)
+			return;
+
 		/*	Mark paragraph as containing a margin note.
 		 */
-		marginnote.closest("p")?.classList.add("has-margin-note");
+		graf.classList.add("has-margin-note");
+
+		/*	Calculate position within paragraph.
+		 */
+		let nodesBefore = [ ];
+		for (let i = 0; i < graf.childNodes.length; i++) {
+			if (marginnote.compareDocumentPosition(graf.childNodes[i]) & Node.DOCUMENT_POSITION_PRECEDING) {
+				if (   graf.childNodes[i].nodeType == Node.ELEMENT_NODE
+					|| graf.childNodes[i].nodeType == Node.TEXT_NODE) {
+					nodesBefore.push(graf.childNodes[i])
+				}
+			} else {
+				break;
+			}
+		}
+		let fractionalPosition = nodesBefore.map(node => node.textContent).join("").length / graf.textContent.length;
+		marginnote.style.setProperty("--marginnote-vertical-position", Math.round(100 * fractionalPosition) + "%");
     });
 }, "rewrite");
 
