@@ -818,6 +818,7 @@ addContentLoadHandler(GW.contentLoadHandlers.paragraphizeListTextNodes = (eventI
     });
 }, "rewrite");
 
+
 /**********************************************/
 /*  Rectify styling/structure of list headings.
  */

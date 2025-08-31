@@ -1126,7 +1126,7 @@ function paragraphizeTextNodesOfElement(element, options) {
 	} while (node);
 
 	//	Trim whitespace.
-	element.trimWhitespace();
+	element.trimWhitespace({ nodeOmissionOptions: options.nodeOmissionOptions });
 }
 
 /***************************************************/
@@ -1156,24 +1156,40 @@ function getSelectionAsDocument(doc = document) {
     return docFrag;
 }
 
-/****************************************************************************/
-/*	Removes empty nodes at start and end. If `true` is passed (the default), 
-	also removes terminal whitespace nodes of terminal children, recursively.
+/************************************************************************/
+/*	Removes empty nodes at start and end.
+
+	See Element.prototype.trimWhitespaceFromStart() for info on available
+	option fields.
  */
-Element.prototype.trimWhitespace = function (descend = true) {
-	this.trimWhitespaceFromStart(descend);
-	this.trimWhitespaceFromEnd(descend);
+Element.prototype.trimWhitespace = function (options) {
+	this.trimWhitespaceFromStart(options);
+	this.trimWhitespaceFromEnd(options);
 };
 
 /************************************************************************/
-/*	Removes empty nodes at start. If `true` is passed (the default), also 
-	removes terminal whitespace nodes of first children, recursively.
+/*	Removes empty nodes at start.
+
+	Available option fields:
+
+	descend (boolean)
+		If `true` is passed (the default), also removes terminal whitespace 
+		nodes of first children, recursively.
+
+	nodeOmissionOptions (object)
+		Options to pass to the isNodeEmpty() call that determines whether a 
+		node should be dropped when trimming.
  */
-Element.prototype.trimWhitespaceFromStart = function (descend = true) {
+Element.prototype.trimWhitespaceFromStart = function (options) {
+	options = Object.assign({
+		descend: true,
+		nodeOmissionOptions: null
+	}, options);
+
 	let nodesToRemove = [ ];
 	for (let i = 0; i < this.childNodes.length; i++) {
 		let node = this.childNodes[i];
-		if (isNodeEmpty(node)) {
+		if (isNodeEmpty(node, options.nodeOmissionOptions)) {
 			nodesToRemove.push(node);
 		} else {
 			break;
@@ -1183,20 +1199,27 @@ Element.prototype.trimWhitespaceFromStart = function (descend = true) {
 		this.removeChild(node);
 	});
 
-	if (   descend
+	if (   options.descend == true
 		&& this.firstChild?.nodeType == Node.ELEMENT_NODE)
-		this.firstChild.trimWhitespaceFromStart(true);
+		this.firstChild.trimWhitespaceFromStart(options);
 };
 
-/**********************************************************************/
-/*	Removes empty nodes at end. If `true` is passed (the default), also 
-	removes terminal whitespace nodes of last children, recursively.
+/************************************************************************/
+/*	Removes empty nodes at end.
+
+	See Element.prototype.trimWhitespaceFromStart() for info on available
+	option fields.
  */
-Element.prototype.trimWhitespaceFromEnd = function (descend = true) {
+Element.prototype.trimWhitespaceFromEnd = function (options) {
+	options = Object.assign({
+		descend: true,
+		nodeOmissionOptions: null
+	}, options);
+
 	let nodesToRemove = [ ];
 	for (let j = 0; j < this.childNodes.length; j++) {
 		let node = this.childNodes[this.childNodes.length - (1 + j)];
-		if (isNodeEmpty(node)) {
+		if (isNodeEmpty(node, options.nodeOmissionOptions)) {
 			nodesToRemove.push(node);
 		} else {
 			break;
@@ -1206,17 +1229,17 @@ Element.prototype.trimWhitespaceFromEnd = function (descend = true) {
 		this.removeChild(node);
 	});
 
-	if (   descend
+	if (   options.descend == true
 		&& this.lastChild?.nodeType == Node.ELEMENT_NODE)
-		this.lastChild.trimWhitespaceFromEnd(true);
+		this.lastChild.trimWhitespaceFromEnd(options);
 };
 
 /*********************************/
 /*	As the same method of Element.
  */
-DocumentFragment.prototype.trimWhitespace = function (descend = true) {
-	this.firstElementChild?.trimWhitespaceFromStart(descend);
-	this.lastElementChild?.trimWhitespaceFromEnd(descend);
+DocumentFragment.prototype.trimWhitespace = function (options) {
+	this.firstElementChild?.trimWhitespaceFromStart(descend, options);
+	this.lastElementChild?.trimWhitespaceFromEnd(descend, options);
 
 	if (this.firstChild?.nodeType == Node.TEXT_NODE)
 		this.firstChild.textContent = this.firstChild.textContent.trimStart();
