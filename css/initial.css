@@ -1767,6 +1767,14 @@ figure.width-full {
 [class*='display-random-'].visible > .visible {
     display: initial;
 }
+div[class*='display-random-'].visible,
+div[class*='display-random-'].visible > .visible {
+    display: block;
+}
+span[class*='display-random-'].visible,
+span[class*='display-random-'].visible > .visible {
+    display: inline;
+}
 
 
 /****************/

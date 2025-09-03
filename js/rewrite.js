@@ -1498,7 +1498,14 @@ addContentInjectHandler(GW.contentInjectHandlers.deFloatSolitaryFigures = (event
 
     let floatClasses = [ "float-left", "float-right" ];
     eventInfo.container.querySelectorAll(floatClasses.map(x => `figure.${x}:only-child`).join(", ")).forEach(figure => {
-        if (isOnlyChild(figure))
+		//	Compensate for figures wrapped in, e.g., display-random blocks.
+		let outermostWrapper = figure;
+    	while (   outermostWrapper.parentElement != null
+    		   && isBlock(outermostWrapper.parentElement) == false
+    		   && isOnlyChild(outermostWrapper))
+    		   outermostWrapper = outermostWrapper.parentElement;
+
+        if (isOnlyChild(outermostWrapper))
             figure.classList.remove(...floatClasses);
     });
 }, "rewrite");
