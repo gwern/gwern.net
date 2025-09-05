@@ -1238,8 +1238,8 @@ Element.prototype.trimWhitespaceFromEnd = function (options) {
 /*	As the same method of Element.
  */
 DocumentFragment.prototype.trimWhitespace = function (options) {
-	this.firstElementChild?.trimWhitespaceFromStart(descend, options);
-	this.lastElementChild?.trimWhitespaceFromEnd(descend, options);
+	this.firstElementChild?.trimWhitespaceFromStart(options);
+	this.lastElementChild?.trimWhitespaceFromEnd(options);
 
 	if (this.firstChild?.nodeType == Node.TEXT_NODE)
 		this.firstChild.textContent = this.firstChild.textContent.trimStart();
