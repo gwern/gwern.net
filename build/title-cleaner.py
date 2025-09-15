@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-08-23 14:22:31 gwern"
+# When:  Time-stamp: "2025-09-13 12:49:54 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -743,6 +743,12 @@ Selection vs. Rejection"
 - https://developers.googleblog.com/en/announcing-imagen-4-fast-and-imagen-4-family-generally-available-in-the-gemini-api/ Announcing Imagen 4 Fast and the generally availability of the Imagen 4 family in the Gemini API - Google Developers Blog"
 "Announcing Imagen 4 Fast and the generally availability of the Imagen 4 family in the Gemini API"
 - "https://minusx.ai/blog/decoding-claude-code/ Minusx"
+""
+- "https://marianogappa.github.io/software/2025/08/24/i-made-two-card-games-in-go/ Mariano Gappa’s Blog"
+""
+- "https://dmitrybrant.com/2025/09/07/using-claude-code-to-modernize-a-25-year-old-kernel-driver Using Claude Code to modernize a 25-year-old kernel driver - Dmitry Brant"
+"Using Claude Code to modernize a 25-year-old kernel driver"
+- "https://www.hamidi.us/products/arabian-safari-cpo-10ml HAMIDI USA"
 ""
 
 Task:

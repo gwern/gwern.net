@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2025-08-06 21:00:16 gwern"
+# When:  Time-stamp: "2025-09-03 20:07:11 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -645,9 +645,13 @@ Artists face choices between the pecuniary benefits of selling to the market and
 We examine how changes in wages, lump-sum income, and capital-labor ratios affect the artist’s pursuit of self-satisfaction versus market sales.
 Using our model of labor supply, we consider the economic forces behind the high/low culture split, why some artistic media offer greater scope for the avant-garde than others, why so many artists dislike the market, and how economic growth and taxation affect the quantity and form of different kinds of art.
 - <abstract>We construct a dataset of firms’ discount rates (ie., required returns to capital) and perceived cost of capital using corporate conference calls. The relation between discount rates and the cost of capital is far below the one-to-one mapping assumed in standard theory, as it takes many years for changes in the cost of capital to be incorporated into discount rates. This pattern leads to large and time-varying discount rate wedges that affect firm investment. Moreover, increasing discount rate wedges can account for the recent puzzle of “missing investment.” Cross-firm variation in market power and riskiness explains the evolution of wedges.</abstract>
-We construct a dataset of firms’ discount rates (ie., required returns to capital) and perceived cost of capital using corporate conference calls.
+We construct a dataset of firms’ discount rates (ie. required returns to capital) and perceived cost of capital using corporate conference calls.
 The relation between discount rates and the cost of capital is far below the one-to-one mapping assumed in standard theory, as it takes many years for changes in the cost of capital to be incorporated into discount rates. This pattern leads to large and time-varying discount rate wedges that affect firm investment. Moreover, increasing discount rate wedges can account for the recent puzzle of “missing investment.”
 Cross-firm variation in market power and riskiness explains the evolution of wedges.
+- <abstract>In the theory of cellular automata, an oscillator is a pattern that repeats itself after a fixed number of generations; that number is called its period. A cellular automaton is called omniperiodic if there exist oscillators of all periods. At the turn of the millennium, only 12 oscillator periods remained to be found in Conway’s Game of Life. The search has finally ended, with the discovery of oscillators having the final two periods, 19 and 41, proving that Life is omniperiodic. Besides filling in the missing periods, we give a detailed history of the omniperiodicity problem and the strategies used to solve it, summarising the work of a large number of people in the decades since the creation of Life.</abstract>
+In the theory of cellular automata, an <strong>oscillator</strong> is a pattern that repeats itself after a fixed number of generations; that number is called its period. A cellular automaton is called <strong>omniperiodic</strong> if there exist oscillators of all periods. At the turn of the millennium, only 12 oscillator periods remained to be found in Conway’s Game of Life.
+The search has finally ended, with the discovery of oscillators having the final two periods, 19 and 41, proving that Life is omniperiodic.
+Besides filling in the missing periods, we give a detailed history of the omniperiodicity problem and the strategies used to solve it, summarizing the work of a large number of people in the decades since the creation of Life.
 
 [End of examples. Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 

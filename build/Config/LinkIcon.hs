@@ -1092,7 +1092,7 @@ linkIconTestUnitsText =
          , ("/doc/ai/anime/2020-06-08-gwern-palm-yolov3-handdetector126.weights",  "archive","svg", "")
          , ("https://www.telegraph.co.uk/culture/books/3601644/Adultery-was-his-thing.html", "the-telegraph", "svg", "")
          , ("https://chatgpt.com/share/261034ff-f5d5-404c-b354-c9d58e3af509", "openai","svg", "")
-         , ("https://gptprompts.wikidot.com/context-stuffing",                "openai","svg", "")
+         , ("http://gptprompts.wikidot.com/context-stuffing",                "openai","svg", "")
          , ("https://arxiv.org/abs/1611.02779#openai",                        "openai","svg", "")
          , ("/doc/ai/nn/transformer/gpt/dall-e/1/2020-chen-2.pdf#openai",     "openai","svg", "")
          , ("https://openai.com/index/better-language-models/",               "openai","svg", "")

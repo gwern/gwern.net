@@ -804,6 +804,7 @@ canonicals = M.fromList
   , ("ibab", "Igor Babuschkin")
   , ("Paul Meehl", "Paul E. Meehl")
   , ("__ghostfail", "bool")
+  , ("David CM Liewald", "David C. Liewald")
   ]
 
 -- tests: unique
@@ -848,7 +849,9 @@ canonicalsWithInitials =
   , "Edwin H. Land", "Patricia A. Boyle", "Marcus R. Munafò", "Lynne R. Wilkens", "Leif C. Groop"
   , "Neil K. Garg", "Abby F. Dernburg", "Emily B. Fox", "Patrick D. Hsu", "Shana O. Kelley"
   , "Stephen R. Quake", "Keri L. Monda", "Jennifer E. Huffman", "Robert L. Williams", "Charles M. Dollar"
-  , "Aniruddh D. Patel", "James Y. Zou", "Ida L. Surakka", "Jeanne E. Savage", "James B. Potash", "Ross J. Anderson", "Arnold B. Bakker"]
+  , "Aniruddh D. Patel", "James Y. Zou", "Ida L. Surakka", "Jeanne E. Savage", "James B. Potash"
+  , "Ross J. Anderson", "Arnold B. Bakker", "Dwayne Richard Hipp", "David C. Liewald", "Elizabeth K. Speliotes"
+  , "Douglas F. Levinson"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1865,6 +1868,15 @@ authorLinkDB = M.fromList $
     , ("Robert L. King", "https://archive.seattletimes.com/archive/19961012/2353831/dr-robert-l-king-sr-92-lived-and-preached-a-healthy-lifestyle")
     , ("vivek", "https://x.com/nuwandavek")
     , ("Karin Brulliard", "https://www.washingtonpost.com/people/karin-brulliard/")
+    , ("Mariano Gappa", "https://marianogappa.github.io/about/")
+    , ("2swap", "https://www.youtube.com/@twoswap")
+    , ("Dwayne Richard Hipp", "https://en.wikipedia.org/wiki/D._Richard_Hipp")
+    , ("Étienne Fortier-Dubois", "https://etiennefd.com/")
+    , ("Ozy Brennan", "https://x.com/ozyfrantz")
+    , ("David C. Liewald", "https://scholar.google.com/citations?user=ahaYiFMAAAAJ&hl=en")
+    , ("Donald Metzler", "https://www.don-metzler.net/")
+    , ("Elizabeth K. Speliotes", "https://scholar.google.com/citations?user=g1cnODoAAAAJ&hl=en&oi=ao")
+    , ("Douglas F. Levinson", "https://med.stanford.edu/profiles/douglas-levinson")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3137,4 +3149,5 @@ authorWpLinkDB =
     , "Anthony Atala", "Alfred Hitchcock", "Cary Grant", "Eva Marie Saint", "Wilse B. Webb", "Kawase Hasui"
     , "Charles M. Dollar", "Emil Wolf", "Parth Shah", "Meghan O'Rourke", "David Seetapun", "Aniruddh D. Patel"
     , "James B. Potash", "Jean-Jacques Laffont", "Robert D. Hare", "Anthony Bourdain", "Ross J. Anderson"
-    , "Primo Levi", "Stuart Woolf", "Arnold B. Bakker", "Justine Tunney", "Jens Hoffmann", "Stanislav Drobyshevsky", "Galit Shmueli", "Robert Mitchell Lindner"]
+    , "Primo Levi", "Stuart Woolf", "Arnold B. Bakker", "Justine Tunney", "Jens Hoffmann", "Stanislav Drobyshevsky"
+    , "Galit Shmueli", "Robert Mitchell Lindner", "The Daily Telegraph", "Max More", "David Roundy"]

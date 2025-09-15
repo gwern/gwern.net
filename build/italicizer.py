@@ -4,7 +4,7 @@
 # italicizer.py: reformat a string to add italics as semantically appropriate (eg. book titles) using LLMs
 # Author: Gwern Branwen
 # Date: 2025-01-17
-# When:  Time-stamp: "2025-08-23 16:45:12 gwern"
+# When:  Time-stamp: "2025-09-14 12:02:24 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python italicizer.py
@@ -1130,6 +1130,16 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - "/doc/design/typography/2025-04-07-tanakosiyabong-experimospecimen.pdf Experimo Specimen"
 ""
+- "Effect of Semaglutide on Physical Function, Body Composition, and Biomarkers of Aging in Older Adults With Overweight and Insulin Resistance: Protocol for an Open-Labeled Randomized Controlled Trial"
+""
+- "https://arxiv.org/abs/2505.24867 Time Blindness: Why Video-Language Models Can’t See What Humans Can?"
+""
+- "Codebreaker: A deeply personal quest made Matthew Might a leader in precision medicine and brought him to UAB"
+""
+- "The Color of the Future"
+""
+- "https://en.wikipedia.org/wiki/Tamagoyaki Tamagoyaki" # unusual Japanese word familiar only to sushi aficionados
+"<em>Tamagoyaki</em>"
 
 [End of examples. Reminder: your only task is to add missing italics you are sure of.]
 

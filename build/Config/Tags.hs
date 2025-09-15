@@ -178,7 +178,7 @@ tagsShort2LongRewrites =
    , ("40", "4o"), ("04", "4o"), ("4-o", "4o"), ("o-4", "4o"), ("o4", "4o"), ("hertaible", "heritable")
    , ("claude-4", "claude/4"), ("c4", "claude/4"), ("claude4", "claude/4")
    , ("animal-bias", "statistics/bias/animal"), ("animal/bias", "statistics/bias/animal"), ("schema", "scheme")
-   , ("wm", "dual-n-back"), ("radaince", "radiance"), ("synthetic", "synthesis"), ("nail", "nail-growth"), ("psychology/cat", "cat/psychology"), ("modecollapse", "mode-collapse"), ("hakell", "haskell"), ("shortsleep", "zeo/short-sleeper"), ("nuroscience", "neuroscience"), ("human-smell", "psychology/smell/human"), ("human/smell", "psychology/smell/human"), ("man-hand", "man-hands"), ("manhands", "man-hands"), ("manhand", "man-hands"), ("hand", "man-hands"), ("hands", "man-hands"), ("presonal", "personal"), ("spider", "biology/portia"), ("humor/math", "math/humor"), ("innermonologue", "inner-monologue"), ("palm2", "palm/2")
+   , ("wm", "dual-n-back"), ("radaince", "radiance"), ("synthetic", "synthesis"), ("nail", "nail-growth"), ("psychology/cat", "cat/psychology"), ("modecollapse", "mode-collapse"), ("hakell", "haskell"), ("shortsleep", "zeo/short-sleeper"), ("nuroscience", "neuroscience"), ("human-smell", "psychology/smell/human"), ("human/smell", "psychology/smell/human"), ("man-hand", "man-hands"), ("manhands", "man-hands"), ("manhand", "man-hands"), ("hand", "man-hands"), ("hands", "man-hands"), ("presonal", "personal"), ("spider", "biology/portia"), ("humor/math", "math/humor"), ("innermonologue", "inner-monologue"), ("palm2", "palm/2"), ("dnd", "text-game")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
@@ -546,6 +546,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("philosophy/frank-ramsey", "Frank Ramsey")
   , ("cs/end-to-end-principle", "end-to-end")
   , ("cs/python", "Python")
+  , ("cs/haskell/darcs", "darcs (VCS)")
   , ("cs/haskell", "Haskell")
   , ("cs/js", "JS")
   , ("cs/cryptography/time-lock", "time-lock crypto")

@@ -1721,6 +1721,7 @@ htmlRewriteFixed =
          , (" utilizing", " using")
          , (" utilisation", " usage")
          , (" utilization", " usage")
+         , (" summarising", " summarizing")
          , ("factorisation", "factorization")
          , ("synthesising", "synthesizing")
          , (" rivall", " rival")
