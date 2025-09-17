@@ -804,7 +804,8 @@ canonicals = M.fromList
   , ("ibab", "Igor Babuschkin")
   , ("Paul Meehl", "Paul E. Meehl")
   , ("__ghostfail", "bool")
-  , ("David CM Liewald", "David C. Liewald")
+  , ("David C. Liewald", "David C. M. Liewald")
+  , ("David CM Liewald", "David C. M. Liewald")
   ]
 
 -- tests: unique
@@ -1873,10 +1874,13 @@ authorLinkDB = M.fromList $
     , ("Dwayne Richard Hipp", "https://en.wikipedia.org/wiki/D._Richard_Hipp")
     , ("Étienne Fortier-Dubois", "https://etiennefd.com/")
     , ("Ozy Brennan", "https://x.com/ozyfrantz")
-    , ("David C. Liewald", "https://scholar.google.com/citations?user=ahaYiFMAAAAJ&hl=en")
     , ("Donald Metzler", "https://www.don-metzler.net/")
-    , ("Elizabeth K. Speliotes", "https://scholar.google.com/citations?user=g1cnODoAAAAJ&hl=en&oi=ao")
+    , ("Elizabeth K. Speliotes", "https://scholar.google.com/citations?user=g1cnODoAAAAJ")
     , ("Douglas F. Levinson", "https://med.stanford.edu/profiles/douglas-levinson")
+    , ("Dani Yogatama", "https://dyogatama.github.io/")
+    , ("Cristina Menni", "https://www.kcl.ac.uk/people/cristina-menni")
+    , ("Christina M. Hultman", "https://ki.se/en/people/christina-hultman")
+    , ("Matt Sarnoff", "https://www.msarnoff.org/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3150,4 +3154,4 @@ authorWpLinkDB =
     , "Charles M. Dollar", "Emil Wolf", "Parth Shah", "Meghan O'Rourke", "David Seetapun", "Aniruddh D. Patel"
     , "James B. Potash", "Jean-Jacques Laffont", "Robert D. Hare", "Anthony Bourdain", "Ross J. Anderson"
     , "Primo Levi", "Stuart Woolf", "Arnold B. Bakker", "Justine Tunney", "Jens Hoffmann", "Stanislav Drobyshevsky"
-    , "Galit Shmueli", "Robert Mitchell Lindner", "The Daily Telegraph", "Max More", "David Roundy"]
+    , "Galit Shmueli", "Robert Mitchell Lindner", "The Daily Telegraph", "Max More", "David Roundy", "Chris Callison-Burch", "Wes McKinney"]

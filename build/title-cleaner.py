@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-09-13 12:49:54 gwern"
+# When:  Time-stamp: "2025-09-16 18:37:55 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -750,6 +750,12 @@ Selection vs. Rejection"
 "Using Claude Code to modernize a 25-year-old kernel driver"
 - "https://www.hamidi.us/products/arabian-safari-cpo-10ml HAMIDI USA"
 ""
+- "”The Smell of Space” Fragrance, 100ml"
+"“The Smell of Space” Fragrance, 100ml"
+- "https://geoff.greer.fm/2024/07/07/making-my-own-wedding-rings/ Geoff Greer’s site: Making My Own Wedding Rings"
+"Making My Own Wedding Rings"
+- https://wesmckinney.com/blog/apache-arrow-pandas-internals/ Wes McKinney—Apache Arrow and the “10 Things I Hate About pandas”
+"Apache Arrow and the “10 Things I Hate About pandas”"
 
 Task:
 

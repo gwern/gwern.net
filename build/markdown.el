@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-06-28 14:29:32 gwern"
+;;; When:  Time-stamp: "2025-09-16 22:17:34 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -615,6 +615,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         (" percent " . "% ")
                         (" per cent " . "% ")
                         ("95 %CI" . "95% CI")
+                        ("(95% CI, " . "(95% CI: ")
                         ("95 % confidence interval" . "95% confidence interval")
                         (" , " . ", ")
                         ("http://reddit.com"   . "https://www.reddit.com")
