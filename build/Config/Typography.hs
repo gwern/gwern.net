@@ -229,4 +229,5 @@ dateRangeDurationTestCases = [
     , Span ("",[],[]) [Str "The date-range ",Span ("",["date-range"],[("title","The date range 1995-10-04\8211\&1996-03-27 lasted 176 days, ending 37 years ago.")]) [Str "1995-10-04",Str "\8211",Str "1996-03-27",Subscript [Span ("",[],[("title","1995-10-04 was 37 years ago.")]) [Str "37ya"]]],Str " was NGE."]
     )
   , (2025, Str "2020-09-27–2022-11-10", Str "2020-09-27–2022-11-10")
+--  , (2025, Str "when they were captured and learned of the successful bombing of Hiroshima on 1945-08 ", Str "when they were captured and learned of the successful bombing of Hiroshima on 1945-08 ") -- TODO: should be fully date-adjusted
   ]
