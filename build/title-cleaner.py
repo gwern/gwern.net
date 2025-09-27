@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-09-16 18:37:55 gwern"
+# When:  Time-stamp: "2025-09-26 23:41:34 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -590,7 +590,7 @@ Katri Räikkönen
 ""
 - "https://deviantabstraction.com/2024/05/02/analyzing-poems-with-llm/ Analyzing poems with LLMs - Deviant/Abstraction"
 "Analyzing poems with LLMs"
-- "https://archive.org/details/Computer_Games_Vol_3_No_2_1984-06_Carnegie_Publications_US/page/n34/mode/1up Computer Games\8212Vol 3 No 2 (1984-06)(Carnegie Publications)(US)"
+- "https://archive.org/details/Computer_Games_Vol_3_No_2_1984-06_Carnegie_Publications_US/page/n34/mode/1up Computer Games\\8212Vol 3 No 2 (1984-06)(Carnegie Publications)(US)"
 "Computer Games: Vol 3 No 2 (1984-06) (Carnegie Publications) (US)"
 - "http://news.bbc.co.uk/2/hi/uk_news/7954876.stm UK"
 ""
@@ -756,6 +756,12 @@ Selection vs. Rejection"
 "Making My Own Wedding Rings"
 - https://wesmckinney.com/blog/apache-arrow-pandas-internals/ Wes McKinney—Apache Arrow and the “10 Things I Hate About pandas”
 "Apache Arrow and the “10 Things I Hate About pandas”"
+- "https://chrismorgan.info/blog/2019-website/ A new website - an article by Chris Morgan"
+"A new website"
+- "https://firstknownwhenlost.blogspot.com/2011/07/there-is-door-i-have-shut-until-end-of.html First Known When Lost: “There Is A Door I Have Shut Until The End Of The World”"
+"“There Is A Door I Have Shut Until The End Of The World”"
+- "https://mjg59.dreamwidth.org/73317.html mjg59"
+""
 
 Task:
 

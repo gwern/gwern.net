@@ -806,6 +806,8 @@ canonicals = M.fromList
   , ("__ghostfail", "bool")
   , ("David C. Liewald", "David C. M. Liewald")
   , ("David CM Liewald", "David C. M. Liewald")
+  , ("Chen Gang", "Gang Chen")
+  , ("mjg59", "Matthew Garrett")
   ]
 
 -- tests: unique
@@ -1881,6 +1883,8 @@ authorLinkDB = M.fromList $
     , ("Cristina Menni", "https://www.kcl.ac.uk/people/cristina-menni")
     , ("Christina M. Hultman", "https://ki.se/en/people/christina-hultman")
     , ("Matt Sarnoff", "https://www.msarnoff.org/")
+    , ("Chris Morgan", "https://chrismorgan.info/")
+    , ("Gang Chen", "https://en.wikipedia.org/wiki/Gang_Chen_(engineer)")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3154,4 +3158,5 @@ authorWpLinkDB =
     , "Charles M. Dollar", "Emil Wolf", "Parth Shah", "Meghan O'Rourke", "David Seetapun", "Aniruddh D. Patel"
     , "James B. Potash", "Jean-Jacques Laffont", "Robert D. Hare", "Anthony Bourdain", "Ross J. Anderson"
     , "Primo Levi", "Stuart Woolf", "Arnold B. Bakker", "Justine Tunney", "Jens Hoffmann", "Stanislav Drobyshevsky"
-    , "Galit Shmueli", "Robert Mitchell Lindner", "The Daily Telegraph", "Max More", "David Roundy", "Chris Callison-Burch", "Wes McKinney"]
+    , "Galit Shmueli", "Robert Mitchell Lindner", "The Daily Telegraph", "Max More", "David Roundy", "Chris Callison-Burch"
+    , "Wes McKinney", "Zoltán Kodály", "Jacob Koranyi", "Matthew Garrett"]
