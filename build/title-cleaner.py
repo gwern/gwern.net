@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-09-26 23:41:34 gwern"
+# When:  Time-stamp: "2025-09-28 20:33:18 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -762,6 +762,10 @@ Selection vs. Rejection"
 "“There Is A Door I Have Shut Until The End Of The World”"
 - "https://mjg59.dreamwidth.org/73317.html mjg59"
 ""
+- "https://scottaaronson.blog/?p=9183 Shtetl-Optimized"
+""
+- "https://www.betonit.ai/p/aging-out-of-drug-addiction-is-the “Aging Out” of Drug Addiction is the Norm—by Bryan Caplan"
+"“Aging Out” of Drug Addiction is the Norm"
 
 Task:
 

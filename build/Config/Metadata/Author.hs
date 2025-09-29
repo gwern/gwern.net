@@ -854,7 +854,7 @@ canonicalsWithInitials =
   , "Stephen R. Quake", "Keri L. Monda", "Jennifer E. Huffman", "Robert L. Williams", "Charles M. Dollar"
   , "Aniruddh D. Patel", "James Y. Zou", "Ida L. Surakka", "Jeanne E. Savage", "James B. Potash"
   , "Ross J. Anderson", "Arnold B. Bakker", "Dwayne Richard Hipp", "David C. Liewald", "Elizabeth K. Speliotes"
-  , "Douglas F. Levinson"]
+  , "Douglas F. Levinson", "Blair H. Smith"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1885,6 +1885,12 @@ authorLinkDB = M.fromList $
     , ("Matt Sarnoff", "https://www.msarnoff.org/")
     , ("Chris Morgan", "https://chrismorgan.info/")
     , ("Gang Chen", "https://en.wikipedia.org/wiki/Gang_Chen_(engineer)")
+    , ("Chen Change Loy", "https://www.mmlab-ntu.com/person/ccloy/")
+    , ("Blair H. Smith", "https://www.dundee.ac.uk/people/blair-smith")
+    , ("Bettina Konte", "https://scholar.google.com/scholar?q=Bettina%20Konte")
+    , ("Antti Latvala", "https://scholar.google.com/citations?user=YtNmQyoAAAAJ&hl=en&oi=ao")
+    , ("Nicholas Gurewitch", "https://en.wikipedia.org/wiki/The_Perry_Bible_Fellowship")
+    , ("Mathew Duggan", "https://matduggan.com/author/mathew/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3159,4 +3165,4 @@ authorWpLinkDB =
     , "James B. Potash", "Jean-Jacques Laffont", "Robert D. Hare", "Anthony Bourdain", "Ross J. Anderson"
     , "Primo Levi", "Stuart Woolf", "Arnold B. Bakker", "Justine Tunney", "Jens Hoffmann", "Stanislav Drobyshevsky"
     , "Galit Shmueli", "Robert Mitchell Lindner", "The Daily Telegraph", "Max More", "David Roundy", "Chris Callison-Burch"
-    , "Wes McKinney", "Zoltán Kodály", "Jacob Koranyi", "Matthew Garrett"]
+    , "Wes McKinney", "Zoltán Kodály", "Jacob Koranyi", "Matthew Garrett", "Peter Medawar"]
