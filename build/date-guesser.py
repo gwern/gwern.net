@@ -4,7 +4,7 @@
 # date-guesser.py: extract recent dates in YYYY[[-MM]-DD] format from natural language inputs or structured text like URLs
 # Author: Gwern Branwen
 # Date: 2024-08-21
-# When:  Time-stamp: "2025-09-28 19:23:58 gwern"
+# When:  Time-stamp: "2025-09-30 19:12:51 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo 'https://erikbern.com/2016/04/04/nyc-subway-math' | python date-guesser.py
@@ -42,17 +42,17 @@ def validate_date_not_future(date_str):
     today = datetime.now()
 
     try:
-        # Parse the date string based on its format
-        if len(date_str) == 4:  # YYYY
-            date = datetime.strptime(date_str, '%Y')
-            return date.year <= today.year
+        if len(s)==4 and int(s)<1000: return False
+        elif len(date_str) == 4:  # YYYY; # Parse the date string based on its format
+                 date = datetime.strptime(date_str, '%Y')
+                 return date.year <= today.year
         elif len(date_str) == 7:  # YYYY-MM
-            date = datetime.strptime(date_str, '%Y-%m')
-            return date.year < today.year or (date.year == today.year and date.month <= today.month)
+                 date = datetime.strptime(date_str, '%Y-%m')
+                 return date.year < today.year or (date.year == today.year and date.month <= today.month)
         elif len(date_str) == 10:  # YYYY-MM-DD
-            date = datetime.strptime(date_str, '%Y-%m-%d')
-            return date <= today
-        return False
+                 date = datetime.strptime(date_str, '%Y-%m-%d')
+                 return date <= today
+        else: return False
     except ValueError:
         return False
 
@@ -71,18 +71,20 @@ Task: Guess the date mentioned in the input.
 The date should be formatted like 'YYYY[-MM[-DD]]' format, with the most available precision; if only the year is available, print the year like '2023' (do not print '2023-01-01' or '2023-01'); if only year+month, then '2023-12'; otherwise, a full date like '2023-12-09'.
 Dates are valid only between 1000AD and """ + current_date + """; any dates outside that date range are probably mistakes, and do not print those.
 (Note also that the World Wide Web was invented in 1989, so web pages cannot predate 1990AD. Web page dates before 2000AD are rare, and dates before 2010AD should be treated with extra scrutiny unless from an archival source.)
-If there is more than one valid date, print only the first one.
+If there is more than one valid date, print only the first one; for ranges, return the earliest endpoint; otherwise, return the first valid date token left-to-right.
 Do not make up dates; if you are unsure, print only the empty string "".
 Do not add any commentary or explanations.
 For Arxiv URLs, only the first 4 numbers are meaningful, in the form: `YYMM`; the numbers after the period are an ID and the date *cannot* be guessed from them!
-For archived URLs such as Internet Archive URLs, the date of the snapshot is *not* the date of publication.
+For archived URLs such as Internet Archive URLs, the date of the snapshot is *not necessarily* the date of publication.
+(It may be, if the IA scraped it quickly, but may not be.)
 Wikipedia articles have no date due to complicated editing histories and 'created' having no particular meaning for them. Do not return dates for any Wikipedia articles.
 
 Task examples (with explanations in '#' comments):
 
-"Published: 02-29-2024 | https://example.com/leap-year-article"
-""
-# Invalid: 2024 is not a leap year
+- "Published: 02-29-2024 | https://example.com/leap-year-article"
+"2024-02-29"
+- "Published: 02-29-2023 | https://example.com/another-leap-year-article"
+"" # Invalid: 2023 is not a leap year
 - "Date: 04/31/2024: Article about calendars"
 ""
 # Invalid: April has 30 days
@@ -147,8 +149,8 @@ Task examples (with explanations in '#' comments):
 # NOTE: ArXiv IDs are in the form YYMM.NNNNN (since 2015), representing the year, month, and submission index that month​. For example, 1907.07174 = July 2019, 7174th submission. A version suffix (v1, v2, …) may follow for revisions
 - "A paper from arXiv:2401.12345"
 2024-01  # Extract date from arXiv ID
-- "DOI: 10.1234/journal.2024.01.0123"
-2024-01  # Extract date from DOI when unambiguous
+- "DOI: 10.48550/arXiv.2408.08459
+2024-08  # Extract date from DOI when unambiguous; but be careful... This is valid for BioRxiv/MedRxiv/Arxiv, but not necessarily anywhere else.
 - "Posted on 29/02/2023 about leap years"
 ""
 # Invalid: 2023 wasn't a leap year
@@ -225,8 +227,8 @@ Task examples (with explanations in '#' comments):
 2024-02-01
 - "https://arxiv.org/abs/2408.08459"
 2024-08
-- "https://www.biorxiv.org/content/10.1101/2024.08.13.607810.full"
-2024-08-16
+- "https://www.biorxiv.org/content/10.1101/2024.08.13.607810.full" # 2024-08-16
+""
 - "Yesterday’s Pixels, Today"
 ""
 - "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10066154/"
@@ -263,10 +265,10 @@ Task examples (with explanations in '#' comments):
 ""
 - "https://academic.oup.com/biomedgerontology/article/70/9/1097/2949096"
 ""
-- "https://ctlj.colorado.edu/wp-content/uploads/2015/08/Meyer-final.pdf"
-2015-07-05
+- "https://ctlj.colorado.edu/wp-content/uploads/2015/08/Meyer-final.pdf" # 2015-07-05
+"2015-08"
 - "http://www.synthesis.cc/synthesis/2016/15/on_dna_and_transistors"
-2016
+"2016"
 - "http://mbio.asm.org/content/7/4/e01018-16.full"
 ""
 - "https://rstb.royalsocietypublishing.org/content/363/1503/2519"
@@ -317,8 +319,8 @@ Task examples (with explanations in '#' comments):
 ""
 - "https://nymag.com/news/features/synthetic-drugs-2013-4/"
 2013-04-05
-- "https://www.reddit.com/r/thisisthewayitwillbe/comments/e02gtg/ai_and_neuroscience_main2019_patrick_mineaults/"
-2019-11-22
+- "https://www.reddit.com/r/thisisthewayitwillbe/comments/e02gtg/ai_and_neuroscience_main2019_patrick_mineaults/" # 2019-11-22
+""
 - "https://onlinelibrary.wiley.com/doi/10.1111/acel.13294"
 ""
 - "https://onlinelibrary.wiley.com/doi/10.1111/acel.13296"
@@ -337,10 +339,10 @@ Task examples (with explanations in '#' comments):
 ""
 - "https://onlinelibrary.wiley.com/doi/pdf/10.1002/ajmg.b.32419"
 ""
-- "https://openai.com/index/the-international-2018-results/"
-2018-08-23
-- "https://phys.org/news/2016-02-animals-tb-cancer-landmines.html"
-2016-02-16
+- "https://openai.com/index/the-international-2018-results/" # 2018-08-23 [results could be announced well afterwards, like in 2019]
+""
+- "https://phys.org/news/2016-02-animals-tb-cancer-landmines.html" # 2016-02-16
+"2016-02"
 - "https://proceedings.mlr.press/v80/guez18a.html"
 ""
 - "https://osf.io/preprints/psyarxiv/4q9gv/"
@@ -519,40 +521,40 @@ Task examples (with explanations in '#' comments):
 ""
 - "https://www.lesswrong.com/posts/e8BNKGEgmCeowtRWS/how-different-llms-answered-philpapers-2020-survey How different LLMs answered PhilPapers 2020 survey"
 ""
-- "https://arxiv.org/abs/2308.04445"
-2023-07-31
-- "https://arxiv.org/abs/1809.00946"
-2018-08-26
-- "https://arxiv.org/abs/1907.07174"
-2020-01-08
-- "https://arxiv.org/abs/2009.03300"
-2020-09-07
-- "https://arxiv.org/abs/2010.14571#google"
-2020-10-27
-- "https://arxiv.org/abs/2205.04596#google"
-2022-05-09
-- "https://arxiv.org/abs/2205.09073#google"
-2022-05-18
-- "https://arxiv.org/abs/1808.03715#google"
-2018-08-10
-- "https://arxiv.org/abs/2206.04658#nvidia"
-2022-06-09
-- "https://arxiv.org/abs/1710.05941#google"
-2017-10-16
-- "https://arxiv.org/abs/1805.08974#google"
-2018-05-23
-- "https://arxiv.org/abs/1808.08866"
-2018-08-27
-- "https://arxiv.org/abs/1809.01694"
-2018-09-05
-- "https://arxiv.org/abs/1909.07528#openai"
-2019-09-17
+- "https://arxiv.org/abs/2308.04445" # 2023-07-31
+""
+- "https://arxiv.org/abs/1809.00946" # 2018-08-26
+""
+- "https://arxiv.org/abs/1907.07174" # 2020-01-08
+""
+- "https://arxiv.org/abs/2009.03300" # 2020-09-07
+""
+- "https://arxiv.org/abs/2010.14571#google" # 2020-10-27
+""
+- "https://arxiv.org/abs/2205.04596#google" # 2022-05-09
+""
+- "https://arxiv.org/abs/2205.09073#google" # 2022-05-18
+""
+- "https://arxiv.org/abs/1808.03715#google" # 2018-08-10
+""
+- "https://arxiv.org/abs/2206.04658#nvidia" # 2022-06-09
+""
+- "https://arxiv.org/abs/1710.05941#google" # 2017-10-16
+""
+- "https://arxiv.org/abs/1805.08974#google" # 2018-05-23
+""
+- "https://arxiv.org/abs/1808.08866" # 2018-08-27
+""
+- "https://arxiv.org/abs/1809.01694" # 2018-09-05
+""
+- "https://arxiv.org/abs/1909.07528#openai" # 2019-09-17
+""
 - "https://colah.github.io/posts/2014-03-NN-Manifolds-Topology/"
 2014-04-06
-- "https://arxiv.org/abs/2006.07733#deepmind"
-2020-06-13
-- "https://arxiv.org/abs/2012.13349#deepmind"
-2020-12-23
+- "https://arxiv.org/abs/2006.07733#deepmind" # 2020-06-13
+""
+- "https://arxiv.org/abs/2012.13349#deepmind" # 2020-12-23
+""
 - "https://www.nature.com/articles/s41598-020-79310-1"
 2021-01-11
 - "https://arxiv.org/abs/2103.04689"
@@ -569,8 +571,8 @@ Task examples (with explanations in '#' comments):
 2019-11-07
 - "https://arxiv.org/abs/2003.02139"
 2020-03-04
-- "https://arxiv.org/abs/2003.10580#google"
-2021-01-05
+- "https://arxiv.org/abs/2003.10580#google" # 2021-01-05
+""
 - "https://arxiv.org/abs/2004.10802"
 2020-04-22
 - "https://arxiv.org/abs/2006.10029#google"
@@ -661,8 +663,8 @@ Task examples (with explanations in '#' comments):
 2021-07-30
 - "https://arxiv.org/abs/2108.07732#google"
 2021-08-16
-- "https://arxiv.org/abs/2203.08913#google"
-2021-10-05
+- "https://arxiv.org/abs/2203.08913#google" # 2021-10-05
+""
 - "https://arxiv.org/abs/2207.10551#google"
 2022-07-21
 - "https://arxiv.org/pdf/1606.03498#page=3&org=openai"
@@ -689,8 +691,8 @@ Task examples (with explanations in '#' comments):
 2019-08-27
 - "https://arxiv.org/abs/1910.01055#google"
 2019-10-02
-- "https://arxiv.org/abs/2002.05645#microsoft"
-2020-10-16
+- "https://arxiv.org/abs/2002.05645#microsoft" # 2020-10-16
+""
 - "https://arxiv.org/abs/2101.03961#google"
 2021-01-11
 - "https://arxiv.org/abs/2104.05158#facebook"
@@ -823,8 +825,8 @@ Task examples (with explanations in '#' comments):
 2020-01-08
 - "https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2022.941163/full"
 2022-08-05
-- "https://arxiv.org/abs/2308.04445"
-2023-07-31
+- "https://arxiv.org/abs/2308.04445" # 2023-07-31
+""
 - "/doc/ai/anime/danbooru/2018-zhang-2.pdf"
 2018
 - "/doc/ai/anime/danbooru/2019-lee-2.pdf"
@@ -855,8 +857,8 @@ Task examples (with explanations in '#' comments):
 2020-01-22
 - "https://distill.pub/2020/growing-ca/#google"
 2020-02-11
-- "https://arxiv.org/abs/2003.10580#google"
-2021-01-05
+- "https://arxiv.org/abs/2003.10580#google" # 2021-01-05
+""
 - "/doc/ai/nn/fully-connected/2020-bao.pdf"
 2020-06-03
 - "https://arxiv.org/abs/1703.06676"
@@ -977,16 +979,16 @@ Task examples (with explanations in '#' comments):
 2021-05-30
 - "https://www.liebertpub.com/doi/full/10.1089/rej.2014.1636"
 2015-10-19
-- "https://www.nature.com/articles/s41586-024-08502-w"
-2025-02-05
+- "https://www.nature.com/articles/s41586-024-08502-w" # 2025-02-05
+""
 - "https://link.springer.com/article/10.1007/s10508-019-01624-7 How Large Are Gender Differences in Toy Preferences? A Systematic Review and Meta-Analysis of Toy Preference Research"
 2020-01-27
 - "https://www.nature.com/articles/s41598-023-39304-1"
 2023-07-26
 - "/doc/cs/2014-deoliveira.pdf"
 2014
-- "https://www.nature.com/articles/s44220-025-00390-x"
-2025-02-13
+- "https://www.nature.com/articles/s44220-025-00390-x" # 2025-02-13
+""
 - "/doc/dual-n-back/2016-foroughi.pdf"
 2016-07-05
 - "https://iclr-blogposts.github.io/2024/blog/what-exactly-has-tabpfn-learned-to-do/ What exactly has TabPFN learned to do?"
@@ -1047,8 +1049,8 @@ Task examples (with explanations in '#' comments):
 2021-03-15
 - "https://www.bbc.com/news/articles/c78jd517z87o"
 2025-04-07
-- "https://www.wired.com/story/beijing-half-marathon-humanoid-robots/"
-2025-04-19
+- "https://www.wired.com/story/beijing-half-marathon-humanoid-robots/" # 2025-04-19
+""
 - "https://www.lesswrong.com/posts/KRKnFdECZMu3Ej3z6/can-llms-learn-steganographic-reasoning-via-rl"
 2025-04-11
 - "https://apnews.com/article/wisconsin-supreme-court-elon-musk-81f71cdda271827ae281a77072a26bad"
@@ -1299,6 +1301,16 @@ Task examples (with explanations in '#' comments):
 2025-09-27
 - "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Accept"
 ""
+- "https://www.lesswrong.com/posts/Bt53XFaMYTseq7oMH/i-have-decided-to-stop-lying-to-americans-about-9-11"
+2025-09-29
+- "https://www.anthropic.com/news/claude-sonnet-4-5"
+2025-09-30
+- "https://webkit.org/blog/17285/rolling-the-dice-with-css-random/"
+2025-08-21
+- "today is 2025-09-30; posted 8 days ago"
+2025-09-22
+- "https://www.nature.com/articles/s41467-025-63454-7" # 2025-09-30
+""
 
 Task:
 
@@ -1309,7 +1321,11 @@ Task:
         messages=[
             {"role": "system", "content": "You are a researcher and web developer, compiling a bibliography."},
             {"role": "user", "content": prompt}
-        ]
+        ],
+        temperature=0,          # deterministic extraction of dates
+        top_p=1,
+        max_tokens=16,          # you only need one short token sequence: YYYY-MM-DD
+        stop=["\n"]             # stop at first newline; discourages rambles
     )
 
     date_str = completion.choices[0].message.content.strip()
