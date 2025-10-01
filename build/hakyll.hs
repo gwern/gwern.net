@@ -168,7 +168,7 @@ main =
                                          "static/build/gwa",
                                          "static/build/crossref",
                                          "static/build/compressPdf",
-                                         "static/build/compressJPG2",
+                                         "static/build/compressJPG",
                                          "test-include",
                                          "atom.xml"] -- copy stub of deprecated RSS feed
 

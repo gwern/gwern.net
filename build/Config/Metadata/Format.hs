@@ -1495,6 +1495,7 @@ htmlRewriteFixed =
          , ("<small></small>", "")
          , ("Hazard Ratio", "hazard ratio")
          , ("tertile", "third")
+         , ("Prof. ", "Professor ")
          , (" et al ", " et al ") -- et al: try to ensure no linebreaking of citations
          , (" et al. ", " et al ")
          , (" et al., ", " et al ")

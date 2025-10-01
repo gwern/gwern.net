@@ -808,6 +808,7 @@ canonicals = M.fromList
   , ("David CM Liewald", "David C. M. Liewald")
   , ("Chen Gang", "Gang Chen")
   , ("mjg59", "Matthew Garrett")
+  , ("Wang Hao", "Hao Wang")
   ]
 
 -- tests: unique
@@ -1891,6 +1892,9 @@ authorLinkDB = M.fromList $
     , ("Antti Latvala", "https://scholar.google.com/citations?user=YtNmQyoAAAAJ&hl=en&oi=ao")
     , ("Nicholas Gurewitch", "https://en.wikipedia.org/wiki/The_Perry_Bible_Fellowship")
     , ("Mathew Duggan", "https://matduggan.com/author/mathew/")
+    , ("Hao Wang", "https://en.wikipedia.org/wiki/Hao_Wang_(academic)")
+    , ("Colin Leroy-Mira", "https://www.colino.net/wordpress/en/system-devops-engineer/")
+    , ("Claude-Sonnet-4.5", "https://www.anthropic.com/news/claude-sonnet-4-5")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3165,4 +3169,4 @@ authorWpLinkDB =
     , "James B. Potash", "Jean-Jacques Laffont", "Robert D. Hare", "Anthony Bourdain", "Ross J. Anderson"
     , "Primo Levi", "Stuart Woolf", "Arnold B. Bakker", "Justine Tunney", "Jens Hoffmann", "Stanislav Drobyshevsky"
     , "Galit Shmueli", "Robert Mitchell Lindner", "The Daily Telegraph", "Max More", "David Roundy", "Chris Callison-Burch"
-    , "Wes McKinney", "Zoltán Kodály", "Jacob Koranyi", "Matthew Garrett", "Peter Medawar"]
+    , "Wes McKinney", "Zoltán Kodály", "Jacob Koranyi", "Matthew Garrett", "Peter Medawar", "David M. Berry"]

@@ -470,7 +470,7 @@ fixedPoint = fixedPoint' 5000 S.empty
   fixedPoint' :: (Show a, Eq a, Ord a) => Int -> S.Set a -> (a -> a) -> a -> a
   fixedPoint' 0 _ _ i = error $ "Hit recursion limit: still changing after 5,000 iterations! Infinite loop? Last result: " ++ show i
   fixedPoint' n seen f i
-    | i `S.member` seen = error $ "Cycle detected! Last result: " ++ show i
+    | i `S.member` seen = error $ "Cycle detected! Last result: " ++ show i ++ " with iterations left = " ++ show n ++ "; full history: " ++ show seen
     | otherwise =
         let i' = f i
         in if i' == i

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-08-22 19:22:14 gwern"
+# When:  Time-stamp: "2025-09-30 17:34:03 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -708,7 +708,7 @@ else
             # preserve the git history by stashing the converted JPG, doing a `git mv` to tell git about the file renaming, and then overwriting the 'JPG' (actually the original PNG) with an actual JPG
             TMP="$(mktemp /tmp/XXXXX.jpg)"
             convert "$HOME/wiki$OLD" "$TMP"
-            compressJPG2 "$TMP"
+            compressJPG "$TMP"
             git mv "$HOME/wiki$OLD" "$HOME/wiki${NEW%.jpg}.jpg"
             mv "$TMP" "$HOME/wiki${NEW%.jpg}.jpg"
         elif [[ -a ~/wiki$OLD ]]; then

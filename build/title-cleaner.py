@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-09-28 20:33:18 gwern"
+# When:  Time-stamp: "2025-09-30 17:20:46 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -766,6 +766,8 @@ Selection vs. Rejection"
 ""
 - "https://www.betonit.ai/p/aging-out-of-drug-addiction-is-the “Aging Out” of Drug Addiction is the Norm—by Bryan Caplan"
 "“Aging Out” of Drug Addiction is the Norm"
+- "Rolling the Dice with CSS random()"
+"Rolling the Dice with CSS <code>random()</code>"
 
 Task:
 

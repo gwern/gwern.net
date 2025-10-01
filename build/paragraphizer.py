@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2025-09-03 20:07:11 gwern"
+# When:  Time-stamp: "2025-09-30 11:34:51 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -652,6 +652,10 @@ Cross-firm variation in market power and riskiness explains the evolution of wed
 In the theory of cellular automata, an <strong>oscillator</strong> is a pattern that repeats itself after a fixed number of generations; that number is called its period. A cellular automaton is called <strong>omniperiodic</strong> if there exist oscillators of all periods. At the turn of the millennium, only 12 oscillator periods remained to be found in Conway’s Game of Life.
 The search has finally ended, with the discovery of oscillators having the final two periods, 19 and 41, proving that Life is omniperiodic.
 Besides filling in the missing periods, we give a detailed history of the omniperiodicity problem and the strategies used to solve it, summarizing the work of a large number of people in the decades since the creation of Life.
+- <abstract>ELIZA, created by Joseph Weizenbaum at MIT in the early 1960s, is usually considered the world’s first chatbot. It was developed in MAD-SLIP on MIT’s CTSS, the world’s first time-sharing system, on an IBM 7094. We discovered an original ELIZA printout in Prof. Weizenbaum’s archives at MIT, including an early version of the famous DOCTOR script, a nearly complete version of the MAD-SLIP code, and various support functions in MAD and FAP. Here we describe the reanimation of this original ELIZA on a restored CTSS, itself running on an emulated IBM 7094. The entire stack is open source, so that any user of a unix-like OS can run the world’s first chatbot on the world’s first time-sharing system.</abstract>
+ELIZA, created by Joseph Weizenbaum at MIT in the early 1960s, is usually considered the world’s first chatbot. It was developed in MAD-SLIP on MIT’s CTSS, the world’s first time-sharing system, on an IBM 7094.
+We discovered an original ELIZA printout in Prof. Weizenbaum’s archives at MIT, including an early version of the famous DOCTOR script, a nearly complete version of the MAD-SLIP code, and various support functions in MAD and FAP.
+Here we describe the reanimation of this original ELIZA on a restored CTSS, itself running on an emulated IBM 7094. The entire stack is open source, so that any user of a unix-like OS can run the world’s first chatbot on the world’s first time-sharing system.
 
 [End of examples. Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 

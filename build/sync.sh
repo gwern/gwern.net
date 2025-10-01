@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-09-28 17:15:02 gwern"
+# When:  Time-stamp: "2025-09-30 17:34:05 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -26,7 +26,7 @@ DEPENDENCIES=(
   optipng rm rsync sed tidy urlencode x-www-browser xargs xmllint xprintidle
   anchor-checker.php generateBacklinks.hs generateDirectory.hs
   generateLinkBibliography.hs generateSimilarLinks.hs link-extractor.hs
-  compressJPG2 openai chromium inkscape node pngnq advpng docker
+  compressJPG openai chromium inkscape node pngnq advpng docker
   should_image_have_outline.php mp3val
 ) # ~/src/node_modules/mathjax-node-page/bin/mjpage, beautifulsoup-4
 declare -A ERROR_OUTPUTS
@@ -1657,7 +1657,7 @@ else
                           parallel --max-args=500 "identify -ping -format '%Q %F\n'" {} | sort --numeric-sort | \
                           ge -e '^[7-9][0-9] ' -e '^6[6-9]' -e '^100')"
          echo "$JPGS_BIG"
-         compressJPG2 $(echo "$JPGS_BIG" | cut --delimiter=' ' --field=2); }
+         compressJPG $(echo "$JPGS_BIG" | cut --delimiter=' ' --field=2); }
     wrap λ "Compressing high-quality JPGs to ≤65% quality…" &
 
     bold "Compressing new PNGs…"
