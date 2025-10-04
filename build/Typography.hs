@@ -216,6 +216,10 @@ breakEquals = id
 rulersCycle :: Int -> Pandoc -> Pandoc
 rulersCycle modulus doc = evalState (walkM addHrNth doc) 0
  where addHrNth :: Block -> State Int Block
+       addHrNth (Div (_, ["horizontal-rule-nth-1"], _) [Div _ [x]]) = return x
+       addHrNth x@(Div (_, ["horizontal-rule-nth-1"], _) _) = return x
+       addHrNth x@(Div (_, ["horizontal-rule-nth-2"], _) _) = return x
+       addHrNth x@(Div (_, ["horizontal-rule-nth-3"], _) _) = return x
        addHrNth HorizontalRule = do
          modify (+1)
          count <- get
