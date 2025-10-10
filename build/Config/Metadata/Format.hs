@@ -1716,6 +1716,7 @@ htmlRewriteFixed =
          , (" neighbour", " neighbor")
          , (" practise", " practice")
          , (" aesthetic", " esthetic")
+         , (" Utilisation", " Utilization")
          , (" utilise", "use")
          , (" utilize", "use")
          , (" utilising", " using")

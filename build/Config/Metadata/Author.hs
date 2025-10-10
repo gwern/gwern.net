@@ -809,6 +809,8 @@ canonicals = M.fromList
   , ("Chen Gang", "Gang Chen")
   , ("mjg59", "Matthew Garrett")
   , ("Wang Hao", "Hao Wang")
+  , ("capstellium", "Kat Slota")
+  , ("micahulrich", "Micah Ulrich")
   ]
 
 -- tests: unique
@@ -1889,12 +1891,16 @@ authorLinkDB = M.fromList $
     , ("Chen Change Loy", "https://www.mmlab-ntu.com/person/ccloy/")
     , ("Blair H. Smith", "https://www.dundee.ac.uk/people/blair-smith")
     , ("Bettina Konte", "https://scholar.google.com/scholar?q=Bettina%20Konte")
-    , ("Antti Latvala", "https://scholar.google.com/citations?user=YtNmQyoAAAAJ&hl=en&oi=ao")
+    , ("Antti Latvala", "https://scholar.google.com/citations?user=YtNmQyoAAAAJ")
     , ("Nicholas Gurewitch", "https://en.wikipedia.org/wiki/The_Perry_Bible_Fellowship")
     , ("Mathew Duggan", "https://matduggan.com/author/mathew/")
     , ("Hao Wang", "https://en.wikipedia.org/wiki/Hao_Wang_(academic)")
     , ("Colin Leroy-Mira", "https://www.colino.net/wordpress/en/system-devops-engineer/")
     , ("Claude-Sonnet-4.5", "https://www.anthropic.com/news/claude-sonnet-4-5")
+    , ("Kat Slota", "https://www.katslota.com/")
+    , ("Micah Ulrich", "https://www.micahulrichart.com/")
+    , ("Zane Fix", "https://www.zanefix.com/biography.html")
+    , ("Marc Brooker", "https://brooker.co.za/blog/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3169,4 +3175,4 @@ authorWpLinkDB =
     , "James B. Potash", "Jean-Jacques Laffont", "Robert D. Hare", "Anthony Bourdain", "Ross J. Anderson"
     , "Primo Levi", "Stuart Woolf", "Arnold B. Bakker", "Justine Tunney", "Jens Hoffmann", "Stanislav Drobyshevsky"
     , "Galit Shmueli", "Robert Mitchell Lindner", "The Daily Telegraph", "Max More", "David Roundy", "Chris Callison-Burch"
-    , "Wes McKinney", "Zoltán Kodály", "Jacob Koranyi", "Matthew Garrett", "Peter Medawar", "David M. Berry"]
+    , "Wes McKinney", "Zoltán Kodály", "Jacob Koranyi", "Matthew Garrett", "Peter Medawar", "David M. Berry", "CTAN"]
