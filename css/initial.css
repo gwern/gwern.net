@@ -1253,6 +1253,12 @@ p.empty-graf {
     text-indent: 0;
 }
 
+/*	POEMS
+ */
+.poem {
+	--text-indent: 0;
+}
+
 
 /***************/
 /* BLOCKQUOTES */
