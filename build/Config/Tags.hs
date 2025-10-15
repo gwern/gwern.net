@@ -181,6 +181,7 @@ tagsShort2LongRewrites =
    , ("wm", "dual-n-back"), ("radaince", "radiance"), ("synthetic", "synthesis"), ("nail", "nail-growth"), ("psychology/cat", "cat/psychology"), ("modecollapse", "mode-collapse"), ("hakell", "haskell"), ("shortsleep", "zeo/short-sleeper"), ("nuroscience", "neuroscience"), ("human-smell", "psychology/smell/human"), ("human/smell", "psychology/smell/human"), ("man-hand", "man-hands"), ("manhands", "man-hands"), ("manhand", "man-hands"), ("hand", "man-hands"), ("hands", "man-hands"), ("presonal", "personal"), ("spider", "biology/portia"), ("humor/math", "math/humor"), ("innermonologue", "inner-monologue"), ("palm2", "palm/2"), ("dnd", "text-game"), ("cty", "smpy")
    , ("qeueing", "queuing"), ("qeuing", "queuing"), ("queing", "queuing"), ("queing-theory", "queuing"), ("queing_theory", "queuing"), ("queingtheory", "queuing")
    , ("queueing-theory", "queuing"), ("queueing_theory", "queuing"), ("queueingtheory", "queuing"), ("queue", "queuing"), ("queues", "queuing"), ("queue-theory", "queuing"), ("queue_theory", "queuing"), ("queuetheory", "queuing"), ("queuingtheory", "queuing"), ("queuing-theory", "queuing"), ("queuing_theory", "queuing"), ("quing", "queuing")   -- there are just way too many ways to spell 'queue'...
+   , ("japanese/art", "japan/art"), ("rlhf", "preference-learning"), ("evoluton", "evolution"), ("epigentics", "epigenetics")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
@@ -320,7 +321,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("biology/ant", "ants")
   , ("anime/my-little-pony", "<em>My Little Pony</em>")
   , ("anime/hafu", "<em>hafu</em> (anime)")
-  , ("anime/eva/nadia", "<em>Nadia</em> (anime)")
+  , ("anime/nadia", "<em>Nadia</em> (anime)")
   , ("anime/eva/rebuild/2/2010-crc", "<em>Rebuild 2.0</em> book")
   , ("anime/eva/rebuild/2", "<em>Rebuild 2.0</em>")
   , ("anime/eva/rebuild", "<em>Rebuild</em> (NGE)")

@@ -215,6 +215,7 @@ linkIconRulesSingle u
  | u'' u "www.dafont.com" = ("d", "text", "#c20000") -- 'd' red
  | u'' u "cs.stanford.edu" = ("S", "text,mono", "#8c1515") -- 'S' red
  | u'' u "www.marxists.org" = ("☭", "text", "#c40303")  -- '☭' red
+ | u'' u "3quarksdaily.com" = ("3", "text", "#e80004") -- 3 Quarks Daily; red; black right border but that would be invisible so not worth supporting
  | otherwise = ("", "", "")
 
 linkIconRulesDouble "" = error "Config.LinkIcon.linkIconRulesDouble: passed empty string as the URL; this should never happen!"
@@ -1379,6 +1380,7 @@ linkIconTestUnitsText =
          , ("https://oll.libertyfund.org/titles/hazlett-essays-of-montaigne-vol-9", "OLL", "text,sans,tri", "#0095fb")
          , ("/static/build/clean-pdf.py", "code", "svg", "#2f6592")
          , ("https://yuxi.ml/essays/posts/cyc/", "Yuxi", "text,mono,quad", "#2c3e50")
+         , ("https://3quarksdaily.com/3quarksdaily/2020/03/freeman-dyson-the-last-great-contrarian.html", "3", "text", "#e80004")
   ]
 -- TODO: more complex link-icon testing: suppression of redundant link-icons
 -- linkIcon $ Link nullAttr [Str "WSJ"] ("https://www.wsj.com/articles/world-chess-championship-magnus-carlsen-ian-nepomniachtchi-seconds-11638167905", "", "") →

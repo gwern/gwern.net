@@ -811,6 +811,8 @@ canonicals = M.fromList
   , ("Wang Hao", "Hao Wang")
   , ("capstellium", "Kat Slota")
   , ("micahulrich", "Micah Ulrich")
+  , ("eli_nathan", "Eli Nathan")
+  , ("Eli_nathan", "Eli Nathan")
   ]
 
 -- tests: unique
@@ -1675,7 +1677,7 @@ authorLinkDB = M.fromList $
     , ("Pierre Fontanillas", "https://scholar.google.com/citations?user=J0PyHOkAAAAJ")
     , ("Phillip Isola", "https://web.mit.edu/phillipi/")
     , ("Philip S. Dale", "https://shs.unm.edu/people/faculty/docs/cv-dale-philip-2016-12.pdf")
-    , ("Yuxi Liu", "https://yuxi-liu-wired.github.io/")
+    , ("Yuxi Liu", "https://yuxi.ml/")
     , ("Lee N. Robbins", "https://en.wikipedia.org/wiki/Lee_Robins")
     , ("Eli Dourado", "https://www.thecgo.org/people/eli-dourado/")
     , ("Tom Szilagyi", "https://tomscii.sig7.se/id/")
@@ -1901,6 +1903,15 @@ authorLinkDB = M.fromList $
     , ("Micah Ulrich", "https://www.micahulrichart.com/")
     , ("Zane Fix", "https://www.zanefix.com/biography.html")
     , ("Marc Brooker", "https://brooker.co.za/blog/")
+    , ("Eli Nathan", "https://forum.effectivealtruism.org/users/eli_nathan")
+    , ("larry-dial", "https://www.lesswrong.com/users/larry-dial")
+    , ("Kimi K2", "https://arxiv.org/abs/2507.20534#moonshot")
+    , ("Peter Seibel", "https://gigamonkeys.com/resume/")
+    , ("Zvi Mowshowitz", "https://en.wikipedia.org/wiki/Zvi_Mowshowitz")
+    , ("Anthropic", "https://en.wikipedia.org/wiki/Anthropic")
+    , ("Antony Payton", "https://scholar.google.com/citations?user=f8wBfoUAAAAJ&hl=en&oi=ao")
+    , ("Andrew A. Hicks", "https://scholar.google.com/citations?user=2lcHjOsAAAAJ&hl=en&oi=ao")
+    , ("Fred Keijzer","https://research.rug.nl/en/persons/fred-keijzer")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3175,4 +3186,4 @@ authorWpLinkDB =
     , "James B. Potash", "Jean-Jacques Laffont", "Robert D. Hare", "Anthony Bourdain", "Ross J. Anderson"
     , "Primo Levi", "Stuart Woolf", "Arnold B. Bakker", "Justine Tunney", "Jens Hoffmann", "Stanislav Drobyshevsky"
     , "Galit Shmueli", "Robert Mitchell Lindner", "The Daily Telegraph", "Max More", "David Roundy", "Chris Callison-Burch"
-    , "Wes McKinney", "Zoltán Kodály", "Jacob Koranyi", "Matthew Garrett", "Peter Medawar", "David M. Berry", "CTAN"]
+    , "Wes McKinney", "Zoltán Kodály", "Jacob Koranyi", "Matthew Garrett", "Peter Medawar", "David M. Berry", "CTAN", "James Blish", "Motoo Kimura"]
