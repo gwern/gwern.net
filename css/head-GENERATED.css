@@ -1276,6 +1276,7 @@ p.empty-graf {
  */
 .poem {
 	--text-indent: 0;
+	--text-alignment: left;
 }
 
 

@@ -1469,7 +1469,6 @@ ul.interview .speaker {
     margin: 0 0 0 0.125em;
 }
 .epigraph blockquote p:last-child:not(:only-child) {
-    margin: 0.5em 0 0 0;
     text-align: right;
     font-size: 0.875em;
     font-style: normal;
@@ -1525,14 +1524,6 @@ ul.interview .speaker {
 .epigraph.narrow > blockquote::after {
 	right: -0.3em;
 	bottom: -1.4em;
-}
-
-/*	“Poem”-style epigraphs.
- */
-.epigraph.poem p {
-	text-align: left;
-	text-indent: -2.5em;
-	padding-left: 2.5em;
 }
 
 
