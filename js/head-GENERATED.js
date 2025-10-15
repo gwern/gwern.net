@@ -3168,6 +3168,7 @@ GW.layout = {
 		[ "p.in-list + p.data-field",	10 ],
 		[ "p.first-graf",				10 ],
 		[ "p.list-heading",				10 ],
+		[ ".poem p",					10 ],
 		[ "p",							 0 ],
 
 		[ ".TOC",						10 ],
