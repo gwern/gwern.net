@@ -15547,12 +15547,13 @@ addContentInjectHandler(GW.contentInjectHandlers.designateBlockquoteLevels = (ev
 
 /*************************************************************************/
 /*	Epigraphs are sometimes a single big <p> broken by <br>. Unacceptable.
-	But no problem, we fix.
+	But no problem, we fix. (If the epigraph is already marked as a poem,
+	via the .poem class, then we leave it alone.)
  */
 addContentLoadHandler(GW.contentLoadHandlers.paragraphizeLineBrokenEpigraphs = (eventInfo) => {
     GWLog("paragraphizeLineBrokenEpigraphs", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll(".epigraph br").forEach(br => {
+	eventInfo.container.querySelectorAll(".epigraph:not(.poem) br").forEach(br => {
 		if (br.parentElement == null)
 			return;
 
