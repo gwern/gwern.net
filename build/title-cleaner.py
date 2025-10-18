@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-10-10 10:57:54 gwern"
+# When:  Time-stamp: "2025-10-16 12:48:13 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -770,6 +770,8 @@ Selection vs. Rejection"
 "Rolling the Dice with CSS <code>random()</code>"
 - "https://genius.com/Tom-lehman-money-trees-rap-genius-response-to-heroku-annotated Tom Lehman—Money Trees (Rap Genius Response to Heroku)"
 "Money Trees (Rap Genius Response to Heroku)"
+- "https://verygoods.co/smallness Very Goods"
+""
 
 Task:
 

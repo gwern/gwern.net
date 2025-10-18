@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-10-02 15:01:27 gwern"
+# When:  Time-stamp: "2025-10-18 15:30:43 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -351,7 +351,7 @@ else
     ## Pandoc Markdown doesn't let you write stuff 'in between' sections, either. So… a hack.
     sed -i -e 's/section id=\"newest-blog\"/hr class="horizontal-rule-nth-1"> <section id="newest-blog"/' ./_site/index
     sed -i -e 's/section id=\"statistics\"/hr class="horizontal-rule-nth-1"> <section id="statistics"/' ./_site/index
-    gwsed "<hr />" "<hr>" &>/dev/null;
+    gwsed "<hr />" "<hr>" &>/dev/null; gwsed "<hr><hr>" "<hr>" &>/dev/null;
 
     bold "Building sitemap.xml…"
     ## generate a sitemap file for search engines:

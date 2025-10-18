@@ -813,6 +813,7 @@ canonicals = M.fromList
   , ("micahulrich", "Micah Ulrich")
   , ("eli_nathan", "Eli Nathan")
   , ("Eli_nathan", "Eli Nathan")
+  , ("Anthony John Grenville Hey", "Tony Hey")
   ]
 
 -- tests: unique
@@ -1909,9 +1910,12 @@ authorLinkDB = M.fromList $
     , ("Peter Seibel", "https://gigamonkeys.com/resume/")
     , ("Zvi Mowshowitz", "https://en.wikipedia.org/wiki/Zvi_Mowshowitz")
     , ("Anthropic", "https://en.wikipedia.org/wiki/Anthropic")
-    , ("Antony Payton", "https://scholar.google.com/citations?user=f8wBfoUAAAAJ&hl=en&oi=ao")
-    , ("Andrew A. Hicks", "https://scholar.google.com/citations?user=2lcHjOsAAAAJ&hl=en&oi=ao")
+    , ("Antony Payton", "https://scholar.google.com/citations?user=f8wBfoUAAAAJ")
+    , ("Andrew A. Hicks", "https://scholar.google.com/citations?user=2lcHjOsAAAAJ")
     , ("Fred Keijzer","https://research.rug.nl/en/persons/fred-keijzer")
+    , ("Paul James Lloyd", "http://www.identifont.com/show?ORE")
+    , ("Nathan Delisle", "https://www.lesswrong.com/users/nathan-delisle")
+    , ("Jimmy Maher", "https://www.filfre.net/about-me/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2443,7 +2447,7 @@ authorWpLinkDB =
     ,"Jiawei Han", "Jiawei Shen", "Jiaya Jia", "Jie Fang", "Jie Lu"
     ,"Jie Tang", "Jie Wu", "Jie Yang", "Jie Yao", "Jie Zheng"
     ,"Jiebo Luo", "Jiewen Zhang", "Jill M. Hooley", "Jillian F. Banfield", "Jillian Fisher"
-    ,"Jim Hoge", "Jim van Os", "Jimmy Maher", "Jimmy Wei", "Jin Li"
+    ,"Jim Hoge", "Jim van Os", "Jimmy Wei", "Jin Li"
     ,"Jin Yang", "Jin Yuan", "Jinchao Xu", "Jing Chang", "Jing He"
     ,"Jing Luo", "Jing Ma", "Jing Sun", "Jing Wen", "Jingjing Wang"
     ,"Jinyu Li", "Jiong Zhu", "Jitendra Malik", "Jiwei Zhao", "JoAnn E. Manson"
@@ -3186,4 +3190,5 @@ authorWpLinkDB =
     , "James B. Potash", "Jean-Jacques Laffont", "Robert D. Hare", "Anthony Bourdain", "Ross J. Anderson"
     , "Primo Levi", "Stuart Woolf", "Arnold B. Bakker", "Justine Tunney", "Jens Hoffmann", "Stanislav Drobyshevsky"
     , "Galit Shmueli", "Robert Mitchell Lindner", "The Daily Telegraph", "Max More", "David Roundy", "Chris Callison-Burch"
-    , "Wes McKinney", "Zoltán Kodály", "Jacob Koranyi", "Matthew Garrett", "Peter Medawar", "David M. Berry", "CTAN", "James Blish", "Motoo Kimura"]
+    , "Wes McKinney", "Zoltán Kodály", "Jacob Koranyi", "Matthew Garrett", "Peter Medawar", "David M. Berry", "CTAN", "James Blish", "Motoo Kimura", "M. John Harrison",
+    "Anne Trefethen", "Tony Hey", "Robert Ghrist"]
