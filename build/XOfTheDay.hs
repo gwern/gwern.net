@@ -26,7 +26,7 @@ import System.Directory (doesFileExist)
 import Text.Show.Pretty (ppShow)
 import qualified Data.Text as T (isInfixOf, pack, unpack, Text)
 import qualified Data.Map.Strict as M (toList, filterWithKey, map, fromListWith)
-import Data.List (isSuffixOf, sortOn, sort)
+import Data.List (isPrefixOf, isSuffixOf, sortOn, sort)
 import Text.Pandoc (Inline(Link,Str), runPure, writeHtml5String, Pandoc(..), nullMeta, Block(Div,Para))
 import System.IO.Unsafe as Unsafe (unsafePerformIO)
 
@@ -42,9 +42,15 @@ type TTDB = [Snippet]
 type Snippet = (String, String, Bool)
 
 quoted :: Snippet -> String
-quoted (quote,attribution,_) = "<div class=\"epigraph quote-of-the-day\">\n<blockquote><p>" ++ typesetHtmlField quote ++ "</p>" ++
-                               (if null attribution then "" else "\n<p>" ++ typesetHtmlField attribution ++ "</p>") ++
-                               "</blockquote>\n</div>"
+quoted (quote,attribution,_) =
+  let quote' = typesetHtmlField quote
+      attribution' = typesetHtmlField attribution
+  in
+    "<div class=\"epigraph quote-of-the-day\">\n<blockquote>" ++
+    -- allow the quote snippet to override the default <p>-wrapper, eg. to add in a `div.poem` wrapper:
+      (if head quote == '<' then quote' else "<p>" ++ quote'          ++ "</p>") ++
+      (if null attribution  then ""     else "\n<p>" ++ attribution'  ++ "</p>") ++
+    "</blockquote>\n</div>"
 
 sited :: Snippet -> String
 sited (site,name,_) = "<div class=\"site-of-the-day\">\n<blockquote><p><a href=\"" ++ site ++ "\">" ++ typesetHtmlField name ++ "</a></p></blockquote>\n</div>"
@@ -115,7 +121,8 @@ generateAnnotationOfTheDay md dbpath annotpath formatter =
   do db <- readAnnotDayDB dbpath
      let md' = M.toList $ M.filterWithKey (\k (_,author,_,_,_,_,abstract1) ->
                                               length abstract1 > C.minAnnotationAbstractLength &&
-                                              author /= "Gwern Branwen" && author /= "gwern" && author /= "Gwern" && -- we exclude my writings as vanity to recommend, but we'll allow jointly-authored work to be an AotD
+                                              -- we exclude my writings as vanity to recommend, but we'll allow jointly-authored work to be an AotD:
+                                              author /= "Gwern Branwen" && author /= "gwern" && author /= "Gwern" && not ("/blog/"`isPrefixOf`k) &&
                                               k `notElem` db &&
                                               not ("/index" `isSuffixOf` k)) md
      let lengthList = sortOn (\(_, (_,_,_,_,_,_,abstract2)) -> length abstract2) md' -- ascending order (ie. largest last)
