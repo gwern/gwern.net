@@ -769,6 +769,11 @@ canonicals = M.fromList
   , ("Claude-4", "Claude-4-opus")
   , ("Claude-4 Opus", "Claude-4-opus")
   , ("Claude 4", "Claude-4-opus")
+  , ("Claude-4.5", "Claude-Sonnet-4.5")
+  , ("Claude Sonnet-4.5", "Claude-Sonnet-4.5")
+  , ("Claude-Sonnet 4.5", "Claude-Sonnet-4.5")
+  , ("Claude Sonnet 4.5", "Claude-Sonnet-4.5")
+  , ("Claude 4.5", "Claude-Sonnet-4.5")
   , ("JeffLadish", "Jeffrey Ladish")
   , ("Winthrop Niles Kellogg", "Winthrop Kellogg")
   , ("Peter Kovacs", "Péter Kovács")
@@ -814,6 +819,8 @@ canonicals = M.fromList
   , ("eli_nathan", "Eli Nathan")
   , ("Eli_nathan", "Eli Nathan")
   , ("Anthony John Grenville Hey", "Tony Hey")
+  , ("SebastienBubeck", "Sebastien Bubeck")
+  , ("polynoamial", "Noam Brown")
   ]
 
 -- tests: unique
@@ -860,7 +867,7 @@ canonicalsWithInitials =
   , "Stephen R. Quake", "Keri L. Monda", "Jennifer E. Huffman", "Robert L. Williams", "Charles M. Dollar"
   , "Aniruddh D. Patel", "James Y. Zou", "Ida L. Surakka", "Jeanne E. Savage", "James B. Potash"
   , "Ross J. Anderson", "Arnold B. Bakker", "Dwayne Richard Hipp", "David C. Liewald", "Elizabeth K. Speliotes"
-  , "Douglas F. Levinson", "Blair H. Smith"]
+  , "Douglas F. Levinson", "Blair H. Smith", "Michael J. Wreen", "Andreas J. Forstner"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1916,6 +1923,12 @@ authorLinkDB = M.fromList $
     , ("Paul James Lloyd", "http://www.identifont.com/show?ORE")
     , ("Nathan Delisle", "https://www.lesswrong.com/users/nathan-delisle")
     , ("Jimmy Maher", "https://www.filfre.net/about-me/")
+    , ("1a3orn", "https://1a3orn.com/sub/meta-about.html")
+    , ("Michael J. Wreen", "https://www.marquette.edu/philosophy/directory/documents/michael-wreen-cv.pdf")
+    , ("Andreas J. Forstner", "https://www.fz-juelich.de/profile/forstner_a")
+    , ("Alex Warstadt", "https://alexwarstadt.github.io/")
+    , ("Ziyu Wang", "https://ziyuw.github.io/")
+    , ("Yu Zhang", "https://cse.sustech.edu.cn/faculty/~zhangy/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
