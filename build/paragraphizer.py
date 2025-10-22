@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# paragraphizer.py: reformat a single paragraph into multiple paragraphs using OpenAI API neural nets
+# paragraphizer.py: reformat a single paragraph into multiple paragraphs using LLM API
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2025-09-30 11:34:51 gwern"
+# When:  Time-stamp: "2025-10-22 17:43:05 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -14,60 +14,83 @@
 # usually written in a sequential fashion (along the lines of 'Background / Question / Data /
 # Methods / Results / Conclusion') but not always formatted in topic-separated paragraphs. A
 # jargon-heavy run-on abstract can be near-impossible to skim.
+# The input is required to be at least 100 characters.
+# If the input is invalid; or if the output is not line-broken, is weirdly long, or appears to have mangled numbers; then we return the empty string "".
 #
 # Paragraphizer does this by a call to the OA API; I have found that a simple 'rewrite this as'
-# zero-shot prompt works well with davinci-instruct models (and is unreliable with smaller models or
-# plain davinci). The main failure mode is that it will not copy the abstract exactly, and may
+# zero-shot prompt works well with davinci-instruct models & higher
+# (but is unreliable with smaller models or plain davinci).
+#
+# NOTE: The main failure mode is that it will not copy the abstract exactly, and may
 # reword or expand on parts, which is highly undesirable, and would mean that it cannot be used to
 # automatically reformat abstracts. (And if you aren't going to use Paragraphizer automatically, why
-# bother? It doesn't take long to add linebreaks by hand.) That failure mode can be removed by
+# bother? It doesn't take long to add linebreaks by hand.)
+# That failure mode can be removed by
 # simply checking that after removing the new newlines, it equals the original input (ie. the *only*
 # difference is the inserted newlines). The result can still be bad but it's probably at least
 # better.
+# This check has been removed as of April 2023 as with more few-shots & better instruction-following, it is no longer an issue at abstract-scale. (It does remain an issue with transforming much longer texts, such as podcast transcripts.)
 #
 # Example:
 #
 # $ xclip -o
-# Most deep reinforcement learning (RL) algorithms distill experience into parametric behavior
-# policies or value functions via gradient updates. While effective, this approach has several
-# disadvantages: (1) it is computationally expensive, (2) it can take many updates to integrate
-# experiences into the parametric model, (3) experiences that are not fully integrated do not
-# appropriately influence the agent's behavior, and (4) behavior is limited by the capacity of the
-# model. In this paper we explore an alternative paradigm in which we train a network to map a
-# dataset of past experiences to optimal behavior. Specifically, we augment an RL agent with a
-# retrieval process (parameterized as a neural network) that has direct access to a dataset of
-# experiences. This dataset can come from the agent's past experiences, expert demonstrations, or
-# any other relevant source. The retrieval process is trained to retrieve information from the
-# dataset that may be useful in the current context, to help the agent achieve its goal faster and
-# more efficiently. We integrate our method into two different RL agents: an offline DQN agent and
-# an online R2D2 agent. In offline multi-task problems, we show that the retrieval-augmented DQN
-# agent avoids task interference and learns faster than the baseline DQN agent. On Atari, we show
-# that retrieval-augmented R2D2 learns significantly faster than the baseline R2D2 agent and
-# achieves higher scores. We run extensive ablations to measure the contributions of the components
-# of our proposed method.
+# Most deep reinforcement learning (RL) algorithms distill experience into parametric behavior policies or value functions via gradient updates. While effective, this approach has several disadvantages: (1) it is computationally expensive, (2) it can take many updates to integrate experiences into the parametric model, (3) experiences that are not fully integrated do not appropriately influence the agent’s behavior, and (4) behavior is limited by the capacity of the model. In this paper we explore an alternative paradigm in which we train a network to map a dataset of past experiences to optimal behavior. Specifically, we augment an RL agent with a retrieval process (parameterized as a neural network) that has direct access to a dataset of experiences. This dataset can come from the agent’s past experiences, expert demonstrations, or any other relevant source. The retrieval process is trained to retrieve information from the dataset that may be useful in the current context, to help the agent achieve its goal faster and more efficiently. We integrate our method into two different RL agents: an offline DQN agent and an online R2D2 agent. In offline multi-task problems, we show that the retrieval-augmented DQN agent avoids task interference and learns faster than the baseline DQN agent. On Atari, we show that retrieval-augmented R2D2 learns significantly faster than the baseline R2D2 agent and achieves higher scores. We run extensive ablations to measure the contributions of the components of our proposed method.
 #
 # $ OPENAI_API_KEY="sk-XYZ" xclip -o | python paragraphizer.py
-# Most deep [reinforcement learning](https://en.wikipedia.org/wiki/Reinforcement_learning) (RL) algorithms distill experience into parametric behavior policies or value functions via gradient updates. While effective, this approach has several disadvantages: (1) it is computationally expensive, (2) it can take many updates to integrate experiences into the parametric model, (3) experiences that are not fully integrated do not appropriately influence the agent's behavior, and (4) behavior is limited by the capacity of the model.
+# Most deep [reinforcement learning](https://en.wikipedia.org/wiki/Reinforcement_learning) (RL) algorithms distill experience into parametric behavior policies or value functions via gradient updates. While effective, this approach has several disadvantages: (1) it is computationally expensive, (2) it can take many updates to integrate experiences into the parametric model, (3) experiences that are not fully integrated do not appropriately influence the agent’s behavior, and (4) behavior is limited by the capacity of the model.
 #
-# In this paper, we explore an alternative paradigm in which we train a network to map a dataset of past experiences to optimal behavior. Specifically, we augment an RL agent with a retrieval process (parameterized as a neural network) that has direct access to a dataset of experiences. This dataset can come from the agent's past experiences, expert demonstrations, or any other relevant source. The retrieval process is trained to retrieve information from the dataset that may be useful in the current context, to help the agent achieve its goal faster and more efficiently.
+# In this paper, we explore an alternative paradigm in which we train a network to map a dataset of past experiences to optimal behavior. Specifically, we augment an RL agent with a retrieval process (parameterized as a neural network) that has direct access to a dataset of experiences. This dataset can come from the agent’s past experiences, expert demonstrations, or any other relevant source. The retrieval process is trained to retrieve information from the dataset that may be useful in the current context, to help the agent achieve its goal faster and more efficiently.
 #
 # We integrate our method into two different RL agents: an offline [DQN](https://en.wikipedia.org/wiki/Q-learning#Deep_Q-learning) agent and an online [R2D2](https://openreview.net/forum?id=r1lyTjAqYX) agent. In offline multi-task problems, we show that the retrieval-augmented DQN agent avoids task interference and learns faster than the baseline DQN agent. On [Atari](https://en.wikipedia.org/wiki/Atari), we show that retrieval-augmented R2D2 learns significantly faster than the baseline R2D2 agent and achieves higher scores.
 #
 # We run extensive ablations to measure the contributions of the components of our proposed method.
 #
 # $ OPENAI_API_KEY="sk-XYZ" echo "We run extensive ablations to measure the contributions of the components of our proposed method." | paragraphizer.py
+# ""
 
-import sys
+import sys, re
 from openai import OpenAI
 client = OpenAI()
 
 if len(sys.argv) == 1:
-    target = sys.stdin.read().strip()
+    target = sys.stdin.read().strip().replace('  ', ' ')
 else:
     target = sys.argv[1]
 
-completion = client.chat.completions.create(
-  model="gpt-4.1-mini",
+# Enforce the contract up front: input must be at least 100 chars. (There are some 3-sentences abstracts worth splitting, but below ~100 characters, you might as well just have one paragraph for compactness.)
+if len(target) < 100:
+    sys.stdout.write("\"\"")
+    sys.exit(0)
+
+# Preserve numbers: the multiset of decimal numbers in the input must be a subset of the numbers in the output. (Prevents silent rewriting of quantities while allowing punctuation fixes and links.)
+def _numbers(s: str):
+    # keep simple: decimal/percent-like tokens
+    return re.findall(r"\d+(?:\.\d+)?", s)
+# def test_validation():
+#     assert _looks_ok("test 123", "test 123\n\nmore")
+#     assert not _looks_ok("test 123", "test 456")
+#     assert not _looks_ok("short", "x" * 10000)
+# ensure that the output isn't weirdly long: (2× chosen as a worst case assuming a lot of hyperlinks get added to a short abstract)
+MAX_GROWTH = 2
+def _looks_ok(original: str, candidate: str) -> bool:
+    cand = candidate.strip()
+    # must add at least one paragraph break
+    if "\n\n" not in cand:
+        return False
+    # length blow-up guard (allow for inserted HTML)
+    if len(cand) > int(len(original) * MAX_GROWTH) + 1000:
+        return False
+    # Numeric invariants: do not silently change numbers
+    o_nums = _numbers(original)
+    if not all(o in _numbers(cand) for o in o_nums):
+        return False
+    return True
+
+try:
+    completion = client.chat.completions.create(
+  model="gpt-4o-mini",
+  temperature=0,          # deterministic line-breaking
+  top_p=1,
   messages=[
     {"role": "system", "content": "You are a helpful research assistant."},
       {"role": "user", "content":
@@ -77,7 +100,7 @@ Summary: Add linebreaks to a large runon paragraph. As well, add relevant HTML h
 
 Task description: Please process the following abstract (between the '<abstract>' and '</abstract>' tags), by adding double-newlines to split it into paragraphs (one topic per paragraph.) The order of topics should be: 1. background/introduction; 2. methods/data/approach; 3. results/benchmarks/outputs; 4. conclusion/discussion/implications; 5. supplementary information (eg. URLs, code, websites, datasets).
 
-Additional formatting instructions: convert to American spelling & conventions. Do not add unnecessary italics; but italicize species names as appropriate. If a new term, concept, or system is introduced by this research paper, bold the first appearance using '<strong>NAME</strong>' formatting (and ONLY the first use), and bold only the most important new term. Please also add useful hyperlinks (such as Wikipedia articles) in HTML format to technical terminology or names (but do not hyperlink obvious familiar terms like "University" or "psychology").
+Additional formatting instructions: convert to American spelling & conventions. Do not add unnecessary italics; but italicize formal species names as proper. If a new term, concept, or system is introduced by this research paper, bold the first appearance using '<strong>NAME</strong>' formatting (and ONLY the first use), and bold only the most important new term. Please also add useful hyperlinks (such as Wikipedia articles) in HTML format to technical terminology or names (but do not hyperlink obvious familiar terms like "University" or "psychology").
 
 Do not duplicate links: include each link ONLY once; include only URLs you are sure of. Please include ONLY the resulting text with hyperlinks in your output, include ALL the original text, and include NO other conversation or comments.
 
@@ -85,6 +108,12 @@ If you cannot make any changes, return the empty string.
 
 Examples:
 
+- <abstract>Foo bar.</abstract>
+""
+- <abstract>""</abstract>
+""
+- <abstract></abstract>
+""
 - <abstract>In this paper, we explore an alternative paradigm in which we train a network to map a dataset of past experiences to optimal behavior.</abstract>
 ""
 - <abstract>Previous theoretical results pertaining to meta-learning on sequences build on contrived assumptions and are somewhat convoluted. We introduce new information-theoretic tools that lead to an elegant and very general decomposition of error into 3 components: irreducible error, meta-learning error, and intra-task error. These tools unify analyses across many meta-learning challenges. To illustrate, we apply them to establish new results about in-context learning with transformers. Our theoretical results characterizes how error decays in both the number of training sequences and sequence lengths. Our results are very general; for example, they avoid contrived mixing time assumptions made by all prior results that establish decay of error with sequence length.</abstract>
@@ -656,6 +685,8 @@ Besides filling in the missing periods, we give a detailed history of the omnipe
 ELIZA, created by Joseph Weizenbaum at MIT in the early 1960s, is usually considered the world’s first chatbot. It was developed in MAD-SLIP on MIT’s CTSS, the world’s first time-sharing system, on an IBM 7094.
 We discovered an original ELIZA printout in Prof. Weizenbaum’s archives at MIT, including an early version of the famous DOCTOR script, a nearly complete version of the MAD-SLIP code, and various support functions in MAD and FAP.
 Here we describe the reanimation of this original ELIZA on a restored CTSS, itself running on an emulated IBM 7094. The entire stack is open source, so that any user of a unix-like OS can run the world’s first chatbot on the world’s first time-sharing system.
+- <abstract>We run extensive ablations to measure the contributions of the components of our proposed method.</abstract>
+""
 
 [End of examples. Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 
@@ -663,5 +694,10 @@ Here we describe the reanimation of this original ELIZA on a restored CTSS, itse
 """}
   ]
 )
+except Exception as e:
+       print(f"API error: {e}", file=sys.stderr)
+       sys.exit(1)
 
-print(completion.choices[0].message.content)
+# clean any excess whitespace before/after, which is useless
+out = (completion.choices[0].message.content or "").strip()
+print(out if _looks_ok(target, out) else "")
