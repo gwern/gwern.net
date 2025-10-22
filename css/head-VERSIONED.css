@@ -3051,6 +3051,8 @@ body.reader-mode-active #sidenote-column-left,
 body.reader-mode-active #sidenote-column-right,
 body.reader-mode-active #navigation,
 body.reader-mode-active #footer,
+body.reader-mode-active .annotation.blog-post .data-field.aux-links,
+body.reader-mode-active .annotation.blog-post .aux-links-field-container .separator,
 body.reader-mode-active .inflation-adjusted .subsup,
 body.reader-mode-active .has-recently-modified-icon .recently-modified-icon-hook
 body.reader-mode-active .date-range sub,
