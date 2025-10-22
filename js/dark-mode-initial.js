@@ -89,6 +89,14 @@ DarkMode = {
 //	Activate saved mode.
 DarkMode.setMode();
 
+//  Once the <body> element is loaded (and classes known), set specified mode.
+doWhenBodyExists(() => {
+	if (document.body.classList.contains("dark-mode")) {
+		DarkMode.defaultMode = "dark";
+		DarkMode.setMode();
+	}
+});
+
 //	Set up mode change events.
 GW.notificationCenter.addHandlerForEvent("DarkMode.didSetMode", (info) => {
 	let previousComputedMode = DarkMode.computedMode(info.previousMode, GW.mediaQueries.systemDarkModeActive.matches)
