@@ -1929,6 +1929,12 @@ authorLinkDB = M.fromList $
     , ("Alex Warstadt", "https://alexwarstadt.github.io/")
     , ("Ziyu Wang", "https://ziyuw.github.io/")
     , ("Yu Zhang", "https://cse.sustech.edu.cn/faculty/~zhangy/")
+    , ("Jeffrey Ding", "https://jeffreyjding.github.io/")
+    , ("Daniel Mallery Ortberg", "https://en.wikipedia.org/wiki/Daniel_M._Lavery")
+    , ("James Heathers", "https://sites.google.com/view/jamesheathers/home")
+    , ("iamronen", "https://about.iamronen.com/")
+    , ("Ian Henry", "https://ianthehenry.com/")
+    , ("DeepSeek-V3.1", "https://huggingface.co/deepseek-ai/DeepSeek-V3.1")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
