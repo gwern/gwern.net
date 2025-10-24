@@ -2730,7 +2730,7 @@ goodLinks =
             , "https://thelastpsychiatrist.com/2011/09/how_to_be_mean_to_your_kids.html"
             , "https://the-liliquarium.livejournal.com/1482.html"
             , "https://thenewstatistics.com/itns/2018/04/03/weve-been-here-before-the-replication-crisis-over-the-pygmalion-effect/"
-            , "https://the-toast.net/2013/09/03/another-lifeless-planet-found/"
+            , "https://gwern.net/doc/fiction/humor/2013-09-03-danielmalleryortberg-thetoast-anotheremptylifelessplanetfound.html"
             , "https://thisanimedoesnotexist.ai/"
             , "https://thisrentaldoesnotexist.com/"
             , "https://thoughtcrime.crummy.com/2009/Error.html"
