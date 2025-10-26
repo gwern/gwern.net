@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-10-22 15:59:08 gwern"
+# When:  Time-stamp: "2025-10-24 21:57:28 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -773,6 +773,16 @@ Selection vs. Rejection"
 - "https://verygoods.co/smallness Very Goods"
 ""
 - "https://signalsandthreads.com/building-tools-for-traders/ Signals and Threads"
+""
+- "https://funcall.blogspot.com/2025/10/a-self-actualized-llm-ai-content.html Abstract Heresies: A Self-actualized LLM (AI content) (A blog about computers, functional languages, Lisp, and Scheme.)"
+"A Self-actualized LLM (AI content)"
+- "Abstract Heresies: Why LLMs Suck at Lisp (A blog about computers, functional languages, Lisp, and Scheme.)"
+"Why LLMs Suck at Lisp"
+- "https://funcall.blogspot.com/2025/08/llm-in-debugger.html Abstract Heresies: LLM in the Debugger (A blog about computers, functional languages, Lisp, and Scheme.)"
+"LLM in the Debugger"
+- "https://funcall.blogspot.com/2025/08/challenges-of-pseudocode-expansion.html Abstract Heresies: Challenges of Pseudocode Expansion (A blog about computers, functional languages, Lisp, and Scheme.)"
+"Challenges of Pseudocode Expansion"
+- "https://yalereview.org/article/working-for-patricia-highsmith The Yale Review"
 ""
 
 Task:

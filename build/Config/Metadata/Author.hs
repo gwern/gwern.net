@@ -1935,6 +1935,12 @@ authorLinkDB = M.fromList $
     , ("iamronen", "https://about.iamronen.com/")
     , ("Ian Henry", "https://ianthehenry.com/")
     , ("DeepSeek-V3.1", "https://huggingface.co/deepseek-ai/DeepSeek-V3.1")
+    , ("DeepSeek-V3.2", "https://huggingface.co/deepseek-ai/DeepSeek-V3.2-Exp")
+    , ("Ravid Shwartz-Ziv", "https://www.ravid-shwartz-ziv.com/")
+    , ("Nikita Prokopov", "https://tonsky.me/")
+    , ("Suno", "https://en.wikipedia.org/wiki/Suno_(platform)")
+    , ("Udio", "https://en.wikipedia.org/wiki/Udio")
+    , ("Matthew Winkler", "https://en.wikipedia.org/wiki/Matthew_Winkler_(journalist)")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3210,4 +3216,4 @@ authorWpLinkDB =
     , "Primo Levi", "Stuart Woolf", "Arnold B. Bakker", "Justine Tunney", "Jens Hoffmann", "Stanislav Drobyshevsky"
     , "Galit Shmueli", "Robert Mitchell Lindner", "The Daily Telegraph", "Max More", "David Roundy", "Chris Callison-Burch"
     , "Wes McKinney", "Zoltán Kodály", "Jacob Koranyi", "Matthew Garrett", "Peter Medawar", "David M. Berry", "CTAN", "James Blish", "Motoo Kimura", "M. John Harrison",
-    "Anne Trefethen", "Tony Hey", "Robert Ghrist"]
+    "Anne Trefethen", "Tony Hey", "Robert Ghrist", "Michael Bloomberg", "Gloria Origgi", "Diego Gambetta"]

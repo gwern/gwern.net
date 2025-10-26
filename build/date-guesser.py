@@ -4,7 +4,7 @@
 # date-guesser.py: extract recent dates in YYYY[[-MM]-DD] format from natural language inputs or structured text like URLs
 # Author: Gwern Branwen
 # Date: 2024-08-21
-# When:  Time-stamp: "2025-10-23 18:12:19 gwern"
+# When:  Time-stamp: "2025-10-24 13:43:35 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo 'https://erikbern.com/2016/04/04/nyc-subway-math' | python date-guesser.py
@@ -1319,6 +1319,12 @@ Task examples (with explanations in '#' comments):
 ""
 - "https://every.to/vibe-check/vibe-check-we-tested-claude-sonnet-4-5-for-writing-and-editing" # 2025-10-23; Sonnet-4.5 was released September 2025, so given the speed of AI model turnover we can infer that it was benchmarked sometime in late 2025 (and probably not in 2026, having almost certainly been superseded)... but nothing more precise than that.
 2025
+- "https://pmc.ncbi.nlm.nih.gov/articles/PMC4724474/" # 2015-11-06
+""
+- "https://tonsky.me/blog/syntax-highlighting/" # 2025-10-15
+""
+- "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0269544" # 2022-07-14
+"2022"
 
 Task:
 

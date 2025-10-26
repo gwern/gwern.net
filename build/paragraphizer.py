@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using LLM API
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2025-10-22 20:28:11 gwern"
+# When:  Time-stamp: "2025-10-24 11:04:04 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -702,6 +702,11 @@ Methods: Patients aged at least 45 years, with a BMI of at least 27 kg/m2 were e
 Findings: Semaglutide significantly reduced MACE incidence compared with placebo among 17 604 patients enrolled in SELECT, with consistent benefits across all baseline weight and waist circumference categories. In the semaglutide group, analyses for linear trends showed lower baseline bodyweight and waist circumference were associated with lower incidence of MACE—an average 4% reduction in risk per 5 kg lower bodyweight (hazard ratio [HR] 0·96 [95% CI 0·94–0·99]; p=0·001) and per 5 cm smaller waist circumference (0·96 [0·93–0·99]; p=0·004). In the placebo group, lower baseline waist circumference (0·96 [0·94–0·99]; p=0·007), but not bodyweight (0·99 [0·97–1·01]; p=0·28), was associated with a lower MACE risk and weight loss was paradoxically associated with increased MACE risk. In those receiving semaglutide there was no linear trend linking weight loss at week 20 to subsequent MACE risk, but greater waist circumference reduction at week 20 was associated with lower subsequent MACE risk, and waist circumference reduction by week 104 was associated with lower in-trial risk of MACE. An estimated 33% of the observed benefit on MACE was mediated through waist circumference reduction (HR 0·86 [95% CI 0·77–0·97] after adjustment for time-varying changes in waist circumference).
 Interpretation: The cardioprotective effects of semaglutide were independent of baseline adiposity and weight loss and had only a small association with waist circumference, suggesting some mechanisms for benefit beyond adiposity reduction.
 Funding: Novo Nordisk.
+- <abstract>Recent advancements have brought generated music closer to human-created compositions, yet evaluating these models remains challenging. While human preference is the gold standard for assessing quality, translating these subjective judgments into objective metrics, particularly for text-audio alignment and music quality, has proven difficult. In this work, we generate 6k songs using 12 state-of-the-art models and conduct a survey of 15k pairwise audio comparisons with 2.5k human participants to evaluate the correlation between human preferences and widely used metrics. To the best of our knowledge, this work is the first to rank current state-of-the-art music generation models and metrics based on human preference. To further the field of subjective metric evaluation, we provide open access to our dataset of generated music and human evaluations.</abstract>
+Recent advancements have brought generated music closer to human-created compositions, yet evaluating these models remains challenging. While human preference is the gold standard for assessing quality, translating these subjective judgments into objective metrics, particularly for text-audio alignment and music quality, has proven difficult.
+In this work, we generate 6k songs using 12 state-of-the-art models and conduct a survey of 15k pairwise audio comparisons with 2.5k human participants to evaluate the correlation between human preferences and widely used metrics.
+To the best of our knowledge, this work is the first to rank current state-of-the-art music generation models and metrics based on human preference.
+To further the field of subjective metric evaluation, we provide open access to our dataset of generated music and human evaluations.
 
 [End of examples. Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 
@@ -714,6 +719,5 @@ except Exception as e:
        sys.exit(1)
 
 # clean any excess whitespace before/after, which is useless
-out = (completion.choices[0].message.content or "").strip()
-print(out)
-print(out.replace("\n", "\n\n") if _looks_ok(target, out) else "")
+out = (completion.choices[0].message.content or "").replace(" \n", "\n").strip()
+print(out if _looks_ok(target, out) else "")

@@ -4,7 +4,7 @@
 # italicizer.py: reformat a string to add italics as semantically appropriate (eg. book titles) using LLMs
 # Author: Gwern Branwen
 # Date: 2025-01-17
-# When:  Time-stamp: "2025-10-23 20:49:36 gwern"
+# When:  Time-stamp: "2025-10-25 22:23:17 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python italicizer.py
@@ -1163,6 +1163,14 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 - "My Antichrist Lecture"
 ""
 - "https://harpers.org/archive/2025/11/the-goon-squad-daniel-kolitz-porn-masturbation-loneliness/ The Goon Squad, by Daniel Kolitz"
+""
+- "29. Kasina Practice"
+"29. <em>Kasina</em> Practice"
+- "Suno (platform)" # while 'suno' is a Japanese term, Suno AI is a proper English noun and so not italicized.
+""
+- "Night of the Moon Suits: The Shulgins, the DEA, and Their Ally, “Tulsa”"
+""
+- "The LL game: The curious preference for low quality and its norms"
 ""
 
 [End of examples. Reminder: your only task is to add missing italics you are sure of.]
