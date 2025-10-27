@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using LLM API
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2025-10-24 11:04:04 gwern"
+# When:  Time-stamp: "2025-10-26 21:20:15 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -707,6 +707,11 @@ Recent advancements have brought generated music closer to human-created composi
 In this work, we generate 6k songs using 12 state-of-the-art models and conduct a survey of 15k pairwise audio comparisons with 2.5k human participants to evaluate the correlation between human preferences and widely used metrics.
 To the best of our knowledge, this work is the first to rank current state-of-the-art music generation models and metrics based on human preference.
 To further the field of subjective metric evaluation, we provide open access to our dataset of generated music and human evaluations.
+- <abstract>With the increasing proportion of elderly individuals, understanding biological mechanisms of aging is critical. Retinal vascular complexity, measured as fractal dimension (Df) from fundus photographs, has emerged as a vascular aging indicator. We conducted a genome-wide association study of Df on 74,434 participants from the Canadian Longitudinal Study on Aging, Genetics of Diabetes Audit and Research in Tayside Scotland, and UK Biobank cohorts. We identified a novel locus near DAAM1. We found negative genetic correlations between Df and cardiovascular disease, stroke, and inflammation but a positive correlation with life span. By combining the genetic determinants of 1,159 circulating proteins from the Prospective Urban and Rural Epidemiological cohort with those of Df using Mendelian randomization, we identified 8 causal mediators, including MMP12 and IgG–Fc receptor IIb, which link higher inflammation to lower Df, increased cardiovascular disease risk, and shorter life span. These results extend our understanding of the biological pathways underlying aging processes and inform targets to prevention and treatment.</abstract>
+With the increasing proportion of elderly individuals, understanding biological mechanisms of aging is critical. Retinal vascular complexity, measured as fractal dimension (Df) from fundus photographs, has emerged as a vascular aging indicator.
+We conducted a genome-wide association study of Df on 74,434 participants from the Canadian Longitudinal Study on Aging, Genetics of Diabetes Audit and Research in Tayside Scotland, and UK Biobank cohorts.
+We identified a novel locus near DAAM1. We found negative genetic correlations between Df and cardiovascular disease, stroke, and inflammation but a positive correlation with life span. By combining the genetic determinants of 1,159 circulating proteins from the Prospective Urban and Rural Epidemiological cohort with those of Df using Mendelian randomization, we identified 8 causal mediators, including MMP12 and IgG–Fc receptor IIb, which link higher inflammation to lower Df, increased cardiovascular disease risk, and shorter life span.
+These results extend our understanding of the biological pathways underlying aging processes and inform targets to prevention and treatment.
 
 [End of examples. Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 
@@ -717,7 +722,13 @@ To further the field of subjective metric evaluation, we provide open access to 
 except Exception as e:
        print(f"API error: {e}", file=sys.stderr)
        sys.exit(1)
-
 # clean any excess whitespace before/after, which is useless
 out = (completion.choices[0].message.content or "").replace(" \n", "\n").strip()
-print(out if _looks_ok(target, out) else "")
+out2 = ""
+if _looks_ok(target, out):
+    out2 = out
+else:
+    print(f"Fatal error: check error from '_looks_ok'! Response:\n{completion.choices[0]}", file=sys.stderr)
+    sys.exit(2)
+print(out2)
+

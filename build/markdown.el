@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-09-16 22:17:34 gwern"
+;;; When:  Time-stamp: "2025-10-26 21:22:17 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1349,6 +1349,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
          (replace-all "Conclusion\n" "\n**Conclusion**: ")
          (replace-all "\nConclusions " "\n**Conclusion**: ")
          (replace-all "\n\nConclusion " "\n\n**Conclusion**: ")
+         (replace-all "Materials and Method\n" "\n**Materials & Method**: ")
          (replace-all "Method\n" "\n**Method**: ")
          (replace-all "Objective\n" "**Objective**: ")
          (replace-all "^Objective " "**Objective**: ")
@@ -1720,9 +1721,21 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp "\\$\\([[:alnum:]]\\)^\\([[:alnum:]]\\)\\$" "_\\1^\\2^_" nil begin end)
        (query-replace-regexp "\\$\\([[:alnum:]]\\)_\\([[:alnum:]]\\)\\$" "_\\1~\\2~_" nil begin end)
        (query-replace-regexp "\\$\\\\sqrt{\\([[:digit:]]+\\)}\\$" "√\\1" nil begin end)
-       ; fancy inline fractions using special Unicode slash:
-       (query-replace-regexp " \\([[:digit:]]\\)/\\([[:digit:]]+\\)" " \\1⁄\\2" nil begin end)
-       (query-replace-regexp "(\\([[:digit:]]+\\)/\\([[:digit:]]+\\)" "(\\1⁄\\2" nil begin end)
+       ; comma formatting: eg. '100000000000' -> '100,000,000,000' - but we need to skip URLs where such numbers are ubiquitous & time-wasting. Avoid possible years which start with 1/2.
+       (my-markdown-or-html-query-replace-regexp "\\([[:digit:]][[:digit:]][[:digit:]][[:digit:]][[:digit:]]+\\)" #'comma-format-number begin end) ; 5+ digit numbers
+       (my-markdown-or-html-query-replace-regexp "\\([1-9][[:digit:]][[:digit:]][[:digit:]]\\)" #'comma-format-number begin end) ; 4-digit numbers, which might be years/dates, like '5000', but skipping ones starting in 0, which might be a year or number; we need to enforce comma-separation even on numbers like '1000', for the date-range adjuster
+       (my-markdown-or-html-query-replace-regexp "[[:punct:]] \\([3-9][[:digit:]][[:digit:]][[:digit:]]\\)" #'comma-format-number begin end) ; 4-digit numbers, which might be years/dates: if preceded by punctuation, this is *usually* a number, because it'd be odd to write the year at the stard of a phrase. No one says 'Foo bar. 2023 is the date, June the month.' It'd always be 'Foo bar. In June 2023' etc.
+
+       ; fancy inline fractions using special Unicode slash. Runs after comma formatting because we don't want to waste time suggesting '1/1000' when it will be turned into '1/1,000' etc.
+       ;; BIG SOLIDUS for 4-digit+:
+       (query-replace-regexp " \\([[:digit:]]\\)/\\([[:digit:]][[:digit:]][[:digit:]][[:digit:]]\\)" " \\1⧸\\2" nil begin end)
+       (query-replace-regexp "(\\([[:digit:]]+\\)/\\([[:digit:]][[:digit:]][[:digit:]][[:digit:]]\\)" "(\\1⧸\\2" nil begin end)
+       (query-replace-regexp " \\([[:digit:]][[:digit:]]?\\)/\\([[:digit:]][[:digit:]][[:digit:]][[:digit:]]+\\)" " \\1⧸\\2" nil begin end)
+       (query-replace-regexp "\\$\\\\frac{\\([[:digit:]]\\)}{\\([[:digit:]][[:digit:]][[:digit:]][[:digit:]]+\\)}\\$" "\\1⧸\\2" nil begin end)
+       (query-replace-regexp "\\$\\\\frac{\\([[:digit:]]+\\)}{\\([[:digit:]][[:digit:]][[:digit:]][[:digit:]]+\\)}\\$" "\\1⧸\\2" nil begin end)
+       ;; FRACTION SLASH versions, for 3-digit or less:
+       (query-replace-regexp " \\([[:digit:]]\\)/\\([[:digit:]][[:digit:]]?[[:digit:]]?\\)" " \\1⁄\\2" nil begin end)
+       (query-replace-regexp "(\\([[:digit:]]+\\)/\\([[:digit:]][[:digit:]]?[[:digit:]]?\\)" "(\\1⁄\\2" nil begin end)
        (query-replace-regexp " \\([[:digit:]][[:digit:]]?\\)/\\([[:digit:]][[:digit:]]?\\)" " \\1⁄\\2" nil begin end)
        (query-replace-regexp "\\$\\\\frac{\\([[:digit:]]\\)}{\\([[:digit:]]\\)}\\$" "\\1⁄\\2" nil begin end)
        (query-replace-regexp "\\$\\\\frac{\\([[:digit:]]+\\)}{\\([[:digit:]]+\\)}\\$" "\\1/\\2" nil begin end)
@@ -1733,10 +1746,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp "\\([[:digit:]]+\\) times" "\\1×" nil begin end)
        (query-replace-regexp "\\([[:digit:]]+\\) x \\([[:digit:]]+\\)" "\\1 × \\2" nil begin end)
        (query-replace-regexp "\\([[:digit:]]+\\) \\* \\([[:digit:]]+\\)" "\\1 × \\2" nil begin end)
-       ; comma formatting: eg. '100000000000' -> '100,000,000,000' - but we need to skip URLs where such numbers are ubiquitous & time-wasting. Avoid possible years which start with 1/2.
-       (my-markdown-or-html-query-replace-regexp "\\([[:digit:]][[:digit:]][[:digit:]][[:digit:]][[:digit:]]+\\)" #'comma-format-number begin end) ; 5+ digit numbers
-       (my-markdown-or-html-query-replace-regexp "\\([1-9][[:digit:]][[:digit:]][[:digit:]]\\)" #'comma-format-number begin end) ; 4-digit numbers, which might be years/dates, like '5000', but skipping ones starting in 0, which might be a year or number; we need to enforce comma-separation even on numbers like '1000', for the date-range adjuster
-       (my-markdown-or-html-query-replace-regexp "[[:punct:]] \\([3-9][[:digit:]][[:digit:]][[:digit:]]\\)" #'comma-format-number begin end) ; 4-digit numbers, which might be years/dates: if preceded by punctuation, this is *usually* a number, because it'd be odd to write the year at the stard of a phrase. No one says 'Foo bar. 2023 is the date, June the month.' It'd always be 'Foo bar. In June 2023' etc.
+
        ; special currencies:
        (query-replace-regexp "\\([.0-9]*[[:space:]]\\)?btc" "₿\\1" nil begin end)
        ; fancy punctuation:
@@ -2230,7 +2240,6 @@ suitable for using as a GTX string inside annotated gwern.net links (see `full.g
             (define-key html-mode-map "\C-c\ w" 'markdown-annotation-compile)))
 
 ; for the `foo` buffer I do most of my annotation work in, on the first copy-paste of a block of text, detect if it has any paragraph breaks (ie. double newlines), and if it does not, then automatically run paragraphizer.py on it to try to break it up into logical paragraphs.
-; (Note/warning: written by GPT-3.5. Curiously, GPT-4 failed when I tried to repeat this exercise in it using the same starting prompt & kind of feedback: because it tries to implement solutions using advice, buffer-local variables, and `:properties`—which are subtly buggy in their handling of state, and so wind up running `paragraphizer.py` on every paste.)
 (defun markdown-paragraphize ()
   "Automatically paragraphize single-paragraph abstracts.
 Intended for Markdown mode with double-newlines for newlines;
@@ -2239,18 +2248,34 @@ may malfunction if run on other formats like HTML
   (interactive)
   (delete-trailing-whitespace)
   (let ((double-newline-found nil))
-          (save-excursion
-        (goto-char (point-min))
-        (unless (search-forward-regexp "\n\n" nil t)
-          (message "Paragraphizing abstract…")
-          (let ((paragraphizer-path (executable-find "paragraphizer.py")))
-            (if paragraphizer-path
-                (call-process-region (point-min) (point-max) paragraphizer-path t t nil)
-              (error "Error: Python `paragraphizer.py` script not found in path")))
-          (setq double-newline-found t)))
+    (save-excursion
+      (goto-char (point-min))
+      (unless (search-forward-regexp "\n\n" nil t)
+        (message "Paragraphizing abstract…")
+        (let* ((paragraphizer-path (executable-find "paragraphizer.py"))
+               (original-text (buffer-substring-no-properties (point-min) (point-max)))
+               (original-length (length original-text)))
+          (if paragraphizer-path
+              (progn
+                ; NOTE: we do *not* want to capture stderr output
+                (call-process-region (point-min) (point-max) paragraphizer-path t (list t nil) nil)
+                (let* ((new-length (- (point-max) (point-min)))
+                       (has-double-newline (save-excursion
+                                             (goto-char (point-min))
+                                             (search-forward-regexp "\n\n" nil t))))
+                  (if (and (>= new-length original-length)
+                           has-double-newline)
+                      (progn
+                        (setq double-newline-found t)
+                        (message "Paragraphizing abstract done. New text is valid (%d chars, has paragraphs)." new-length))
+                    (progn
+                      (delete-region (point-min) (point-max))
+                      (insert original-text)
+                      (message "Paragraphizing skipped: new text invalid (character length: %d → %d, has \\n\\n: %s)."
+                               original-length new-length (if has-double-newline "yes" "no"))))))
+            (error "Error: Python `paragraphizer.py` script not found in path")))))
     (when double-newline-found
-      (goto-char (point-max))
-      (message "Paragraphizing abstract done."))))
+      (goto-char (point-max)))))
 (defun markdown-paragraphize-hook ()
   "Hook function for `markdown-paragraphize`."
   (when (and (equal (buffer-name) "foo")
