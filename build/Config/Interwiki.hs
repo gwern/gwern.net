@@ -5999,4 +5999,6 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("NDAs", "Non-disclosure_agreement")
         , ("Verlaine", "Paul_Verlaine")
         , ("Salem", "Salem,_Massachusetts")
+        , ("Adam", "Stochastic_gradient_descent#Adam")
+        , ("Transformer", "Transformer_(deep_learning_architecture)")
         ]

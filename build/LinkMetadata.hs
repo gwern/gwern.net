@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-10-21 09:53:34 gwern"
+When:  Time-stamp: "2025-10-27 11:44:02 gwern"
 License: CC-0
 -}
 
@@ -627,7 +627,7 @@ generateAnnotationBlock md am (f, ann) blp slp lb =
                                            [Str (T.pack $ take 4 dt')]]
            tags = if ts==[] then [] else [tagsToLinksSpan $ map T.pack ts]
            backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-page", "id-not", "backlinks"],[]) [Str "backlinks"] (T.pack blp, "Reverse citations for this page.")]]
-           similarlinkPadding = if blp=="" && tags==[] then [] else [Str ";", Space]
+           similarlinkPadding = if (blp=="" && tags==[]) || lb=="" then [] else [Str ";", Space]
            similarlink =  if slp=="" then [] else
                             [Span ("", ["similars"], []) (similarlinkPadding ++ [Link ("",["aux-links", "link-page", "id-not", "similars"],[]) [Str "similar"] (T.pack slp, "Similar links for this link (by text embedding).")])]
            linkBibliography = if lb=="" then [] else (if blp=="" && slp=="" && tags==[] then []

@@ -4,7 +4,7 @@
 # date-guesser.py: extract recent dates in YYYY[[-MM]-DD] format from natural language inputs or structured text like URLs
 # Author: Gwern Branwen
 # Date: 2024-08-21
-# When:  Time-stamp: "2025-10-24 13:43:35 gwern"
+# When:  Time-stamp: "2025-10-27 20:02:58 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo 'https://erikbern.com/2016/04/04/nyc-subway-math' | python date-guesser.py
@@ -1325,6 +1325,20 @@ Task examples (with explanations in '#' comments):
 ""
 - "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0269544" # 2022-07-14
 "2022"
+- "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1002894" # 2013-01-31
+"2013"
+- "https://www.lesswrong.com/posts/EKhTrhrCz2rNg7FmG/learning-to-interpret-weight-differences-in-language-models-1" # 2025-10-06
+""
+- "https://www.cremieux.xyz/p/ozempic-and-muscle-mass" # 2025-05-08
+""
+- "https://www.lesswrong.com/w/writing-communication-method"
+""
+- "https://www.lesswrong.com/w/good-explanations-advice"
+""
+- "https://www.stafforini.com/blog/summary-of-clear-and-simple-as-the-truth/ Summary of <em>Clear and Simple as the Truth</em>, by Francis-Noël Thomas & Mark Turner" # 2013-06-26
+""
+- "https://cacm.acm.org/opinion/retrospective-an-axiomatic-basis-for-computer-programming/" # 2009-10-01
+2009
 
 Task:
 

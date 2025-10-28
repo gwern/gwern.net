@@ -821,6 +821,9 @@ canonicals = M.fromList
   , ("Anthony John Grenville Hey", "Tony Hey")
   , ("SebastienBubeck", "Sebastien Bubeck")
   , ("polynoamial", "Noam Brown")
+  , ("Crémieux", "Cremieux")
+  , ("cremieuxrecueil", "Cremieux")
+  , ("AHomelyHouse", "Joel Trumbo")
   ]
 
 -- tests: unique
@@ -867,7 +870,7 @@ canonicalsWithInitials =
   , "Stephen R. Quake", "Keri L. Monda", "Jennifer E. Huffman", "Robert L. Williams", "Charles M. Dollar"
   , "Aniruddh D. Patel", "James Y. Zou", "Ida L. Surakka", "Jeanne E. Savage", "James B. Potash"
   , "Ross J. Anderson", "Arnold B. Bakker", "Dwayne Richard Hipp", "David C. Liewald", "Elizabeth K. Speliotes"
-  , "Douglas F. Levinson", "Blair H. Smith", "Michael J. Wreen", "Andreas J. Forstner"]
+  , "Douglas F. Levinson", "Blair H. Smith", "Michael J. Wreen", "Andreas J. Forstner", "Clair L. Stong"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1941,6 +1944,10 @@ authorLinkDB = M.fromList $
     , ("Suno", "https://en.wikipedia.org/wiki/Suno_(platform)")
     , ("Udio", "https://en.wikipedia.org/wiki/Udio")
     , ("Matthew Winkler", "https://en.wikipedia.org/wiki/Matthew_Winkler_(journalist)")
+    , ("Kirill Кhrylchenko", "https://scholar.google.com/citations?user=y4AAsIIAAAAJ")
+    , ("Cremieux", "https://x.com/cremieuxrecueil")
+    , ("Joel Trumbo", "https://x.com/AHomelyHouse")
+    , ("Clair L. Stong", "https://en.wikipedia.org/wiki/The_Amateur_Scientist")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3216,4 +3223,4 @@ authorWpLinkDB =
     , "Primo Levi", "Stuart Woolf", "Arnold B. Bakker", "Justine Tunney", "Jens Hoffmann", "Stanislav Drobyshevsky"
     , "Galit Shmueli", "Robert Mitchell Lindner", "The Daily Telegraph", "Max More", "David Roundy", "Chris Callison-Burch"
     , "Wes McKinney", "Zoltán Kodály", "Jacob Koranyi", "Matthew Garrett", "Peter Medawar", "David M. Berry", "CTAN", "James Blish", "Motoo Kimura", "M. John Harrison",
-    "Anne Trefethen", "Tony Hey", "Robert Ghrist", "Michael Bloomberg", "Gloria Origgi", "Diego Gambetta"]
+    "Anne Trefethen", "Tony Hey", "Robert Ghrist", "Michael Bloomberg", "Gloria Origgi", "Diego Gambetta", "Ann Shulgin", "Alexander Shulgin"]

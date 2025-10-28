@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using LLM API
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2025-10-26 21:20:15 gwern"
+# When:  Time-stamp: "2025-10-27 12:54:19 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -712,6 +712,21 @@ With the increasing proportion of elderly individuals, understanding biological 
 We conducted a genome-wide association study of Df on 74,434 participants from the Canadian Longitudinal Study on Aging, Genetics of Diabetes Audit and Research in Tayside Scotland, and UK Biobank cohorts.
 We identified a novel locus near DAAM1. We found negative genetic correlations between Df and cardiovascular disease, stroke, and inflammation but a positive correlation with life span. By combining the genetic determinants of 1,159 circulating proteins from the Prospective Urban and Rural Epidemiological cohort with those of Df using Mendelian randomization, we identified 8 causal mediators, including MMP12 and IgG–Fc receptor IIb, which link higher inflammation to lower Df, increased cardiovascular disease risk, and shorter life span.
 These results extend our understanding of the biological pathways underlying aging processes and inform targets to prevention and treatment.
+- <abstract>Background:
+While research on novel therapeutic applications of ketamine is expanding, particularly in controlled settings, there is limited exploration of its consumption related to self-treatment of psychiatric conditions. This study investigated the characteristics of people who use ketamine and psychedelics for self-treatment of psychiatric conditions, providing insight into patterns of use within this population.
+Methods:
+Utilising the 2020 Global Drug Survey, the analysis incorporates data from 5831 respondents who reported self-treating with unregulated drugs to treat diagnosed psychiatric conditions. We compare three groups: those self-treating with only ketamine (n = 242), ketamine and other psychedelics (n = 1072), and non-ketamine psychedelic only substances (n = 4517). Negative binomial regression was conducted to assess the impact of self-treating psychiatric conditions with ketamine and other psychedelics on the volume of recreational ketamine use.
+Results:
+A high proportion (>60%) had prior psychiatric diagnoses, with depression and anxiety being the most common. People who used both ketamine and other substances reported higher festival and clubbing attendance than the other two groups. People who used ketamine and combined it with other psychedelics used it more frequently (incidence rate ratio (IRR): 0.729, 95% confidence interval (CI): 0.336–1.581), while those using non-ketamine psychedelics only showed a significant reduction in ketamine usage volume (IRR: 0.160, 95% CI: 0.079–0.322) compared to other groups. Almost half of the respondents sought online advice before starting ketamine self-treatment.
+Conclusion:
+This study extends knowledge about various populations using ketamine for self-treatment purposes, proposes areas for future research and suggests online platforms as the most effective place for harm reduction resources relating to ketamine use.</abstract>
+Background: While research on novel therapeutic applications of ketamine is expanding, particularly in controlled settings, there is limited exploration of its consumption related to self-treatment of psychiatric conditions. This study investigated the characteristics of people who use ketamine and psychedelics for self-treatment of psychiatric conditions, providing insight into patterns of use within this population.
+Methods: Utilising the 2020 Global Drug Survey, the analysis incorporates data from 5831 respondents who reported self-treating with unregulated drugs to treat diagnosed psychiatric conditions.
+We compare three groups: those self-treating with only ketamine (n = 242), ketamine and other psychedelics (n = 1072), and non-ketamine psychedelic only substances (n = 4517). Negative binomial regression was conducted to assess the impact of self-treating psychiatric conditions with ketamine and other psychedelics on the volume of recreational ketamine use.
+Results: A high proportion (>60%) had prior psychiatric diagnoses, with depression and anxiety being the most common.
+People who used both ketamine and other substances reported higher festival and clubbing attendance than the other two groups. People who used ketamine and combined it with other psychedelics used it more frequently (incidence rate ratio (IRR): 0.729, 95% confidence interval (CI): 0.336–1.581), while those using non-ketamine psychedelics only showed a significant reduction in ketamine usage volume (IRR: 0.160, 95% CI: 0.079–0.322) compared to other groups.
+Almost half of the respondents sought online advice before starting ketamine self-treatment.
+Conclusion: This study extends knowledge about various populations using ketamine for self-treatment purposes, proposes areas for future research and suggests online platforms as the most effective place for harm reduction resources relating to ketamine use.
 
 [End of examples. Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 
