@@ -10,7 +10,7 @@ function rollDie(size) {
 }
 
 /**************************************************************************/
-/*	Returns array, of given size, of consecutive integers, with given start 
+/*	Returns array, of given size, of consecutive integers, with given start
 	value.
  */
 function range(start, size) {
@@ -101,9 +101,10 @@ Array.prototype.insertBefore = function (item, test) {
 };
 
 /*********************************************************/
-/*	Polyfill for findLastIndex, for older browser versions 
+/*	Polyfill for findLastIndex, for older browser versions
 	(Firefox 103 and lower, Chrome 96 and lower).
 	https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findLastIndex
+    NOTE: `findLastIndex` still has, as of 2025-10-27, <95% native support: <https://caniuse.com/?search=findLastIndex> and this polyfill cannot be removed.
 	NOTE: Does not support the `thisArg` parameter.
  */
 if (Array.prototype.findLastIndex === undefined) {
@@ -248,8 +249,8 @@ function URLFromString(urlString, baseURL = location) {
 	the specified modifications in key-value form.
  */
 function modifiedURL(url, mods) {
-	let modURL = typeof url == "string" 
-				 ? URLFromString(url) 
+	let modURL = typeof url == "string"
+				 ? URLFromString(url)
 				 : URLFromString(url.href);
 	for (let [ key, value ] of Object.entries(mods))
 		modURL[key] = value;
@@ -276,7 +277,7 @@ HTMLAnchorElement.prototype.setQueryVariable = function (key, value) {
 };
 
 /******************************************************************/
-/*	Delete a URL search parameter with the given key from the given 
+/*	Delete a URL search parameter with the given key from the given
 	HTMLAnchorElement.
  */
 HTMLAnchorElement.prototype.deleteQueryVariable = function (key) {
@@ -292,7 +293,7 @@ HTMLAnchorElement.prototype.deleteQueryVariable = function (key) {
 	Available option fields:
 
 	includeMouseDown (boolean)
-		Also attach the listener to the ‘mousedown’ event, making the element 
+		Also attach the listener to the ‘mousedown’ event, making the element
 		activate on mouse down (rather than only mouse up, as normal).
  */
 Element.prototype.addActivateEvent = function(fn, options) {
@@ -333,7 +334,7 @@ Element.prototype.swapClasses = function (classes, whichToAdd) {
 };
 
 /***********************************************************************/
-/*  Trims opening/closing quotes from the element’s contents (preserving 
+/*  Trims opening/closing quotes from the element’s contents (preserving
 	internal HTML structure).
 
 	Returns the now-modified element.
@@ -462,6 +463,7 @@ Selection.prototype.selectNode = function (node) {
 /*	Polyfill for crypto.randomUUID, for older browser versions
 	(Mainly Safari < 15.4)
 	https://developer.mozilla.org/en-US/docs/Web/API/Crypto/randomUUID
+    NOTE: `crypto.randomUUID` has, as of 2025-10-27, <95% native support and this polyfill cannot be removed: <https://caniuse.com/?search=crypto.randomUUID>
  */
 if (crypto.randomUUID === undefined) {
 	crypto.randomUUID = function () {
@@ -594,7 +596,7 @@ function copyAttributes(source, target, attributes) {
 /****************************************/
 /*  Wrap an element in a wrapper element.
 
-	The value of the `wrapperSpec` argument should be in the form "tagName" or 
+	The value of the `wrapperSpec` argument should be in the form "tagName" or
 	"tagName.class-name-1.class-name-2" (etc.) or ".class-name-1.class-name-2"
 	(in which case the tag name will default to "div").
 
@@ -604,16 +606,16 @@ function copyAttributes(source, target, attributes) {
 	Available option fields:
 
 	useExistingWrapper (boolean)
-		If the value of `useExistingWrapper` is `true`, then, if the given 
-		element is already the only element child of an element with the same 
-		tag name as the specified wrapper, then do not inject any additional 
-		wrapper. If wrapper classes are specified, apply them to this existing 
+		If the value of `useExistingWrapper` is `true`, then, if the given
+		element is already the only element child of an element with the same
+		tag name as the specified wrapper, then do not inject any additional
+		wrapper. If wrapper classes are specified, apply them to this existing
 		wrapper.
 
 	moveClasses (boolean|Array)
 		If the value of `moveClasses` is `true`, then all classes are moved
-		(not copied!) from the given element to the wrapper. If, instead, the 
-		value of `moveClasses` is an array, then all classes which are in the 
+		(not copied!) from the given element to the wrapper. If, instead, the
+		value of `moveClasses` is an array, then all classes which are in the
 		array are moved (not copied!) from the given element to the wrapper.
  */
 function wrapElement(element, wrapperSpec = "", options) {
@@ -652,11 +654,11 @@ function wrapElement(element, wrapperSpec = "", options) {
 /****************************************************************************/
 /*  Wrap all elements specified by the given selector.
 
-	See the wrapElement() function for details on the `wrapperSpec` and 
+	See the wrapElement() function for details on the `wrapperSpec` and
 	`options` arguments.
 
-	NOTE: The `wrapperSpec` argument may be a wrap function, in which case all 
-	option fields that pertain to the wrapElement() function are ignored (as 
+	NOTE: The `wrapperSpec` argument may be a wrap function, in which case all
+	option fields that pertain to the wrapElement() function are ignored (as
 	that function is not called in such a case).
 
 	Available option fields:
@@ -689,14 +691,14 @@ function wrapAll(selector, wrapperSpec, options) {
 	moveClasses (boolean|Array)
 		If the value of this option field is `true`, then all classes are moved
 		from the wrapper to each unwrapped child element. If, instead, the value
-		of this option field is an array, then all classes which are in the 
+		of this option field is an array, then all classes which are in the
 		array are moved from the wrapper to each element child.
 
 	moveAttributes (Array)
 		Like the `moveClasses` option, but *only* takes an array, not a boolean.
 
 	preserveBlockSpacing (boolean)
-		If the value of this option field is `true`, then the value of the 
+		If the value of this option field is `true`, then the value of the
 		`--bsm` CSS property of the wrapper (if any) is assigned to the first
 		child element of the wrapper.
  */
@@ -838,8 +840,8 @@ function restoreStyles(element) {
 		then all properties are removed.
 
 	saveProperties (Array)
-		Save the value of these properties; after removing some or all 
-		properties (depending on the value of the `removeProperties` option), 
+		Save the value of these properties; after removing some or all
+		properties (depending on the value of the `removeProperties` option),
 		restore these properties to their saved values.
  */
 function stripStyles(element, options) {
@@ -976,33 +978,33 @@ function isOnlyChild(node) {
 
 	excludePredicate (Node => boolean)
 		If *and only if* the predicate returns true when called with the node
-		as argument, always consider it to be non-empty (and thus always 
-		return false, no matter what the node may contain). (NOTE: If this 
+		as argument, always consider it to be non-empty (and thus always
+		return false, no matter what the node may contain). (NOTE: If this
 		option is set, all other options are ignored.)
 
 	alsoExcludePredicate (Node => boolean)
-		If the predicate returns true when called with the node as argument, 
-		always consider it to be non-empty (and thus always return false, 
-		no matter what the node may contain). (NOTE: If this option is set, 
+		If the predicate returns true when called with the node as argument,
+		always consider it to be non-empty (and thus always return false,
+		no matter what the node may contain). (NOTE: If this option is set,
 		the options below will still take effect.)
 
 	excludeSelector (string)
-		If the node is an element node, then if *and only if* it matches the 
-		given selector, always consider it to be non-empty (and thus always 
-		return false, no matter what the node may contain). (Note the difference 
+		If the node is an element node, then if *and only if* it matches the
+		given selector, always consider it to be non-empty (and thus always
+		return false, no matter what the node may contain). (Note the difference
 		between this option and `alsoExcludeSelector`, below.)
 
 	alsoExcludeSelector (string)
-		If the node is an element node, then if the node matches the given 
+		If the node is an element node, then if the node matches the given
 		selector OR is one of several always-considered-nonempty tag types
 		(IMG, SVG, VIDEO, AUDIO, IFRAME, OBJECT), always consider the node to be
 		non-empty (and thus always return false, no matter what the node may
-		contain). (Note the difference between this option and 
+		contain). (Note the difference between this option and
 		`excludeSelector`, above.)
 
 	excludeIdentifiedElements (boolean)
 		If the node is an element node, and has a non-empty value for the `id`
-		attribute, then always consider the node to be non-empty (and thus 
+		attribute, then always consider the node to be non-empty (and thus
 		always return false, no matter what the node may contain).
  */
 function isNodeEmpty(node, options) {
@@ -1058,11 +1060,11 @@ function isNodeEmpty(node, options) {
 
 	excludeSelector (string)
 		Selector for elements which should *not* be considered as content to be
-		wrapped in <p> tags. Note that this option takes priority over the 
+		wrapped in <p> tags. Note that this option takes priority over the
 		previous one (`includeSelector`).
 
 	nodeOmissionOptions (object)
-		Options to pass to the isNodeEmpty() call that determines whether a 
+		Options to pass to the isNodeEmpty() call that determines whether a
 		node should be dropped when aggregating nodes into paragraphs.
 
  */
@@ -1083,7 +1085,7 @@ function paragraphizeTextNodesOfElement(element, options) {
 		includeSelector: inlineElementSelector,
 		excludeSelector: null,
 		nodeOmissionOptions: {
-			alsoExcludeSelector: "a, br", 
+			alsoExcludeSelector: "a, br",
 			excludeIdentifiedElements: true
 		}
 	}, options);
@@ -1173,11 +1175,11 @@ Element.prototype.trimWhitespace = function (options) {
 	Available option fields:
 
 	descend (boolean)
-		If `true` is passed (the default), also removes terminal whitespace 
+		If `true` is passed (the default), also removes terminal whitespace
 		nodes of first children, recursively.
 
 	nodeOmissionOptions (object)
-		Options to pass to the isNodeEmpty() call that determines whether a 
+		Options to pass to the isNodeEmpty() call that determines whether a
 		node should be dropped when trimming.
  */
 Element.prototype.trimWhitespaceFromStart = function (options) {
@@ -1266,7 +1268,7 @@ function pointWithinRect(point, rect) {
 
 /**************************************************************/
 /*  Returns true if the given rects intersect, false otherwise.
-	(If `margin` is nonzero, then the two rects are considered to be 
+	(If `margin` is nonzero, then the two rects are considered to be
 	 intersecting if the distance between them is less than the margin.
 	 Must be given in pixel values only, either as number or as string.)
  */
@@ -1294,7 +1296,7 @@ function isWithinRect(element, rect, margin) {
 	(See doRectsIntersect() for meaning of `margin` argument.)
  */
 function isWithinRectOf(firstElement, secondElement, margin) {
-	let secondElementRect = secondElement 
+	let secondElementRect = secondElement
 							? secondElement.getBoundingClientRect()
 							: new DOMRect(0, 0, window.innerWidth, window.innerHeight);
 	return isWithinRect(firstElement, secondElementRect, margin);
@@ -1423,7 +1425,7 @@ function doAjax(options) {
         			&& the404URLString == URLFromString(event.target.responseURL).href) {
 					options.onFailure?.(event);
         		} else {
-					options.onSuccess?.(event);        		
+					options.onSuccess?.(event);
         		}
         	} else {
 				options.onSuccess?.(event);
@@ -1438,7 +1440,7 @@ function doAjax(options) {
 
     let url = options.location
     		  + ((   options.params != null
-    		  	  && options.method == "GET") 
+    		  	  && options.method == "GET")
     		  	 ? "?" + urlEncodeQuery(options.params)
     		  	 : "");
     req.open(options.method, url);
@@ -1531,7 +1533,7 @@ function doIfAllowed(f, passHolder, passName, options) {
 		the triggering event occurs but prior to the delay elapsing, the timer
 		will be canceled and the handler function will not be called.
 
-		NOTE: If `delay` is 0 or less, then `cancelOnEvents` is ignored, and 
+		NOTE: If `delay` is 0 or less, then `cancelOnEvents` is ignored, and
 		`func` is added as an event handler for `triggerEventName` directly.
  */
 function onEventAfterDelayDo(target, triggerEventName, delay, func, options) {
@@ -6428,7 +6430,7 @@ GW.notificationCenter.addHandlerForEvent("ReaderMode.didLoad", (eventInfo) => {
 	ReaderMode.setMode();
 }, { once: true });
 GW.assetVersions = {
-	"/static/img/icon/icons.svg": "1754601902",
+	"/static/img/icon/icons.svg": "1761617795",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-1x.png": "1734481578",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-2x.png": "1734481578",
 	"/static/img/logo/christmas/dark/logo-christmas-dark-1-small-3x.png": "1734481578",
