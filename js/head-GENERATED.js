@@ -2864,15 +2864,21 @@ function doWhenDOMContentLoaded(f) {
 	is passed as an argument to the called function.
  */
 function doWhenElementExists(f, selector) {
-	if (document.querySelector(selector) != null) {
-		f();
+	let element = document.querySelector(selector);
+	if (element != null) {
+		f(element);
 	} else {
         let observer = new MutationObserver((mutationsList, observer) => {
-        	let element = document.querySelector(selector);
-            if (element != null) {
-                observer.disconnect();
-                f(element);
-            }
+			for (let mutationRecord of mutationsList) {
+				if (mutationRecord.type == "childList") {
+					element = mutationRecord.target.querySelector(selector);
+					if (element != null) {
+						observer.disconnect();
+						f(element);
+						break;
+					}
+				}
+			}
         });
 
         observer.observe(document.documentElement, { childList: true, subtree: true });
