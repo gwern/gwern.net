@@ -2741,3 +2741,38 @@ doWhenPageLayoutComplete(GW.pageLayoutCompleteHashHandlingSetup = (info) => {
 
     GW.notificationCenter.fireEvent("GW.hashHandlingSetupDidComplete");
 });
+
+
+/********************/
+/* REDIRECT-FROM-ID */
+/********************/
+
+if (location.hash > "") {
+	/*	This implements the `data-redirect-from-id` link attribute, which 
+		indicates that the client should be redirected to the target of the link
+		if the URL hash is matches the value of the attribute (e.g., is `#foo`
+		if the attribute value is `foo`).
+	 */
+	doWhenElementExists((element) => {
+		let newLocation = element.href;
+		if (   newLocation != null
+			&& newLocation != location)
+			location = newLocation;
+	}, `[data-redirect-from-id="${selectorFromHash(location.hash).slice(1)}"]`);
+
+	/*	This implements the special empty-string / null case of the 
+		`data-redirect-from-id` link attribute, which indicates that the client 
+		should be redirected to the target of the link if the URL hash matches 
+		the ID of immediately containing section of the link (i.e., is `#foo`
+		if the containing section id is `foo`).
+	 */
+	doWhenElementExists((hashTarget) => {
+		let redirectIndicatorLink = hashTarget.querySelector(`[data-redirect-from-id=""]`);
+		if (redirectIndicatorLink?.closest("section") == hashTarget) {
+			let newLocation = redirectIndicatorLink.href;
+			if (   newLocation != null
+				&& newLocation != location)
+				location = newLocation;
+		}
+	}, selectorFromHash(location.hash));
+}
