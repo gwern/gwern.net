@@ -15,6 +15,10 @@ ReaderMode = { ...ReaderMode,
 		"#footer-decoration-container"
 	].join(", "),
 
+	deactivateBackupTriggerElementSelector: [
+		"#footer-decoration-container"
+	].join(", "),
+
 	deactivateOnClickTriggerElementSelector: [
 		".reader-mode-disable-when-clicked"
 	],
@@ -42,6 +46,7 @@ ReaderMode = { ...ReaderMode,
 	modeSelectorInteractable: true,
 
 	deactivateOnScrollDownObserver: null,
+	deactivateOnScrollDownBackupObserver: null,
 
 	state: {
 		hoveringOverLink: false,
@@ -233,8 +238,10 @@ ReaderMode = { ...ReaderMode,
 		ReaderMode.updateModeSelectorState(modeSelector);
 	},
 
+	//	Called by: ReaderMode.activateModeSelector
 	//	Called by: ReaderMode.didSetMode event handler
-	//	Called by: ReaderMode.deactivateOnScrollDownObserver callback
+	//	Called by: ReaderMode.didActivate event handler
+	//	Called by: ReaderMode.didDeactivate event handler
 	updateModeSelectorState: (modeSelector = ReaderMode.modeSelector) => {
 		GWLog("ReaderMode.updateModeSelectorState", "reader-mode.js", 2);
 
@@ -387,6 +394,12 @@ ReaderMode = { ...ReaderMode,
 			ReaderMode.deactivate();
 			ReaderMode.despawnObserver();
 		}, document.querySelector(ReaderMode.deactivateTriggerElementSelector), { threshold: 1.0 });
+
+		//	Create the backup observer and commence observation.
+		ReaderMode.deactivateOnScrollDownBackupObserver = lazyLoadObserver(() => {
+			ReaderMode.deactivate();
+			ReaderMode.despawnObserver();
+		}, document.querySelector(ReaderMode.deactivateBackupTriggerElementSelector), { threshold: 1.0 });
 	},
 
 	//	Called by: ReaderMode.setMode
@@ -395,6 +408,9 @@ ReaderMode = { ...ReaderMode,
 
 		ReaderMode.deactivateOnScrollDownObserver?.disconnect();
 		ReaderMode.deactivateOnScrollDownObserver = null;
+
+		ReaderMode.deactivateOnScrollDownBackupObserver?.disconnect();
+		ReaderMode.deactivateOnScrollDownBackupObserver = null;
 	},
 
 	/*	Unmasks links and reveal other elements, as appropriate. (This will 
