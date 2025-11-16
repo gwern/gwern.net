@@ -2765,9 +2765,13 @@ if (location.hash > "") {
 		should be redirected to the target of the link if the URL hash matches 
 		the ID of immediately containing section of the link (i.e., is `#foo`
 		if the containing section id is `foo`).
+
+		As a convenience, a link with the *class* `redirect-from-id` will have
+		the same effect as one with an empty/null `data-redirect-from-id` link
+		attribute.
 	 */
 	doWhenElementExists((hashTarget) => {
-		let redirectIndicatorLink = hashTarget.querySelector(`[data-redirect-from-id=""]`);
+		let redirectIndicatorLink = hashTarget.querySelector(`[data-redirect-from-id=""], a.redirect-from-id`);
 		if (redirectIndicatorLink?.closest("section") == hashTarget) {
 			let newLocation = redirectIndicatorLink.href;
 			if (   newLocation != null
