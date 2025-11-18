@@ -2752,11 +2752,15 @@ if (location.hash > "") {
 		indicates that the client should be redirected to the target of the link
 		if the URL hash is matches the value of the attribute (e.g., is `#foo`
 		if the attribute value is `foo`).
+
+		Note that we do *not* allow within-page redirect-from-id. If such a link
+		is encountered, no redirect will take place.
 	 */
 	doWhenElementExists((element) => {
-		let newLocation = element.href;
-		if (   newLocation != null
-			&& newLocation != location)
+		let newLocation = URLFromString(element.href);
+		if (   newLocation          != null
+			&& newLocation          != location
+			&& newLocation.pathname != location.pathname)
 			location = newLocation;
 	}, `[data-redirect-from-id="${selectorFromHash(location.hash).slice(1)}"]`);
 
@@ -2771,11 +2775,16 @@ if (location.hash > "") {
 		attribute.
 	 */
 	doWhenElementExists((hashTarget) => {
-		let redirectIndicatorLink = hashTarget.querySelector(`[data-redirect-from-id=""], a.redirect-from-id`);
+		let redirectIndicatorLink = hashTarget.querySelector([
+			`[data-redirect-from-id=""]`,
+			`[data-redirect-from-id]`,
+			`a.redirect-from-id`
+		].join(", "));
 		if (redirectIndicatorLink?.closest("section") == hashTarget) {
-			let newLocation = redirectIndicatorLink.href;
-			if (   newLocation != null
-				&& newLocation != location)
+			let newLocation = URLFromString(redirectIndicatorLink.href);
+			if (   newLocation          != null
+				&& newLocation          != location
+				&& newLocation.pathname != location.pathname)
 				location = newLocation;
 		}
 	}, selectorFromHash(location.hash));
