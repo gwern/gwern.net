@@ -870,7 +870,7 @@ canonicalsWithInitials =
   , "Stephen R. Quake", "Keri L. Monda", "Jennifer E. Huffman", "Robert L. Williams", "Charles M. Dollar"
   , "Aniruddh D. Patel", "James Y. Zou", "Ida L. Surakka", "Jeanne E. Savage", "James B. Potash"
   , "Ross J. Anderson", "Arnold B. Bakker", "Dwayne Richard Hipp", "David C. Liewald", "Elizabeth K. Speliotes"
-  , "Douglas F. Levinson", "Blair H. Smith", "Michael J. Wreen", "Andreas J. Forstner", "Clair L. Stong"]
+  , "Douglas F. Levinson", "Blair H. Smith", "Michael J. Wreen", "Andreas J. Forstner", "Clair L. Stong", "Charles Allen Moser", "John A. Leslie"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1800,6 +1800,7 @@ authorLinkDB = M.fromList $
     , ("Keach Hagey", "https://www.keachhagey.com/about/")
     , ("Stephen D.", "https://www.scd31.com/pages/about")
     , ("Gemini-2.5-pro", "https://blog.google/technology/google-deepmind/gemini-model-thinking-updates-march-2025/#gemini-2-5-thinking")
+    , ("Gemini-3-pro-preview", "https://blog.google/products/gemini/gemini-3/")
     , ("Time Magazine", "https://en.wikipedia.org/wiki/Time_(magazine)")
     , ("Martha Duffy", "https://www.nytimes.com/1997/06/17/arts/martha-duffy-61-arts-editor-and-writer-at-time-magazine.html")
     , ("Sander Dieleman", "https://sander.ai/about/")
@@ -1917,6 +1918,7 @@ authorLinkDB = M.fromList $
     , ("Eli Nathan", "https://forum.effectivealtruism.org/users/eli_nathan")
     , ("larry-dial", "https://www.lesswrong.com/users/larry-dial")
     , ("Kimi K2", "https://arxiv.org/abs/2507.20534#moonshot")
+    , ("Kimi K2 Thinking", "https://moonshotai.github.io/Kimi-K2/thinking.html")
     , ("Peter Seibel", "https://gigamonkeys.com/resume/")
     , ("Zvi Mowshowitz", "https://en.wikipedia.org/wiki/Zvi_Mowshowitz")
     , ("Anthropic", "https://en.wikipedia.org/wiki/Anthropic")
@@ -1948,6 +1950,10 @@ authorLinkDB = M.fromList $
     , ("Cremieux", "https://x.com/cremieuxrecueil")
     , ("Joel Trumbo", "https://x.com/AHomelyHouse")
     , ("Clair L. Stong", "https://en.wikipedia.org/wiki/The_Amateur_Scientist")
+    , ("Camille B.", "https://substack.com/@lampido")
+    , ("m4rM2oFnYTW", "https://www.reddit.com/user/m4rM2oFnYTW/")
+    , ("Robert Griffiths", "https://en.wikipedia.org/wiki/Robert_Griffiths_(mathematician)")
+    , ("John A. Leslie", "https://en.wikipedia.org/wiki/John_A._Leslie")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3223,4 +3229,4 @@ authorWpLinkDB =
     , "Primo Levi", "Stuart Woolf", "Arnold B. Bakker", "Justine Tunney", "Jens Hoffmann", "Stanislav Drobyshevsky"
     , "Galit Shmueli", "Robert Mitchell Lindner", "The Daily Telegraph", "Max More", "David Roundy", "Chris Callison-Burch"
     , "Wes McKinney", "Zoltán Kodály", "Jacob Koranyi", "Matthew Garrett", "Peter Medawar", "David M. Berry", "CTAN", "James Blish", "Motoo Kimura", "M. John Harrison",
-    "Anne Trefethen", "Tony Hey", "Robert Ghrist", "Michael Bloomberg", "Gloria Origgi", "Diego Gambetta", "Ann Shulgin", "Alexander Shulgin"]
+    "Anne Trefethen", "Tony Hey", "Robert Ghrist", "Michael Bloomberg", "Gloria Origgi", "Diego Gambetta", "Ann Shulgin", "Alexander Shulgin", "Craig Packer", "Charles Allen Moser", "Ruriko Yoshida", "Michael Stillman"]

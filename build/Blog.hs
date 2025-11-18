@@ -182,7 +182,7 @@ generateDirectoryBlog targets = do
   let listTranscludesByYear = BulletList $ generateBlogTranscludes (zip (True : repeat False) sortedPosts)
 
   let header = unlines ["---", "title: Blog Posts"
-                       , "description: 'Index of my longer off-site writings, presented as annotations. (Sorted in reverse chronological order.)'"
+                       , "description: 'Index of my shorter or off-site writings, presented as annotations. (Sorted in reverse chronological order.)'"
                        , "created: 2009-01-27"
                        , "modified: " ++ lastEntryDate
                        , "status: log"

@@ -106,6 +106,7 @@ localizeLinktestCases = [
     , ("https://forum.effectivealtruism.org/posts/dCjz5mgQdiv57wWGz/ingredients-for-creating-disruptive-research-teams", ("", "", "https://ea.greaterwrong.com/posts/dCjz5mgQdiv57wWGz/ingredients-for-creating-disruptive-research-teams?format=preview&theme=classic", []))
     , ("https://arbital.com/p/edge_instantiation/", ("/doc/www/arbital.com/f3415bb9b168d3fcb051b458a48994ec1e8c4611.html", "", "https://arbital.greaterwrong.com/p/edge_instantiation/?format=preview&theme=classic", []))
     , ("https://www.lesswrong.com/posts/thePw6qdyabD8XR4y/interpreting-openai-s-whisper#3_1__Whisper_learns_language_modelling_bigrams", ("", "", "https://www.greaterwrong.com/posts/thePw6qdyabD8XR4y/interpreting-openai-s-whisper?format=preview&theme=classic#3_1__Whisper_learns_language_modelling_bigrams", []))
+    , ("https://www.lesswrong.com/wikitags", ("", "", "https://www.lesswrong.com/wikitags", []))
     ]
 
 localizeLinkTestDB :: ArchiveMetadata
@@ -194,7 +195,18 @@ transformURItoGW uri = fromMaybe uri $ do
                     Nothing -> uri'
 
     shouldTransform :: String -> String -> Bool
-    shouldTransform hostname uri'' = isJust (findMirrorPrefix hostname) && not ("view=alignment-forum" `isInfixOf` uri'' && "www" `isPrefixOf` hostname)
+    shouldTransform hostname uri'' = uri'' `notElem` gwBlacklist && isJust (findMirrorPrefix hostname) && not ("view=alignment-forum" `isInfixOf` uri'' && "www" `isPrefixOf` hostname)
+
+  -- special LW pages that GW doesn't try to replicate and so do not exist
+    gwBlacklist :: [String]
+    gwBlacklist = ["https://www.lesswrong.com/books"
+     , "https://www.lesswrong.com/bestoflesswrong"
+     , "https://www.lesswrong.com/community"
+     , "https://www.lesswrong.com/faq"
+     , "https://www.lesswrong.com/highlights"
+     , "https://www.lesswrong.com/leaderboard"
+     , "https://www.lesswrong.com/moderation"
+     ]
 
 -- redirect every WP to the mobile version, and if the top-level page is linked, append the ID of the top of the content to cut out the clutter:
 -- > transformWPtoMobileWP "https://en.wikipedia.org/wiki/George_Washington"

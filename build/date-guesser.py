@@ -4,7 +4,7 @@
 # date-guesser.py: extract recent dates in YYYY[[-MM]-DD] format from natural language inputs or structured text like URLs
 # Author: Gwern Branwen
 # Date: 2024-08-21
-# When:  Time-stamp: "2025-10-27 20:02:58 gwern"
+# When:  Time-stamp: "2025-11-18 18:11:30 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo 'https://erikbern.com/2016/04/04/nyc-subway-math' | python date-guesser.py
@@ -1339,6 +1339,22 @@ Task examples (with explanations in '#' comments):
 ""
 - "https://cacm.acm.org/opinion/retrospective-an-axiomatic-basis-for-computer-programming/" # 2009-10-01
 2009
+- "https://www.lesswrong.com/posts/eQvNBwaxyqQ5GAdyx/some-data-from-leelapieceodds" # 2025-10-28
+""
+- https://www.lesswrong.com/posts/qvWP3aBDBaqXvPNhS/gpt-2-s-positional-embedding-matrix-is-a-helix # 2023-07-20; GPT-2 was announced in 2019-02, so references to it cannot predate 2019
+""
+- "https://camilleberger.substack.com/p/your-movielike-ai-assistant-will" # 2025-11-04
+""
+- "https://moonshotai.github.io/Kimi-K2/thinking.html" # 2025-11-06
+"2025"
+- "https://psychotechnology.substack.com/p/a-love-song-to-nicotine-630" # 2025-11-06
+""
+- "https://pmc.ncbi.nlm.nih.gov/articles/PMC12129667/" # 2025-06-03
+"2025"
+- "https://www.rferl.org/a/kremlin-trickery-putin-offices-secrecy-investigation/33586451.html" # 2025-11-11
+""
+- "https://blog.google/products/gemini/gemini-3/" # 2025-11-18; but you should know Google Gemini-2.5 was 2024–2025, and Gemini-4 would be ~2026, so Gemini-3 must be 2025
+"2025"
 
 Task:
 

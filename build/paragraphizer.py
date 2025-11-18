@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using LLM API
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2025-10-27 12:54:19 gwern"
+# When:  Time-stamp: "2025-11-13 18:06:58 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -727,6 +727,11 @@ Results: A high proportion (>60%) had prior psychiatric diagnoses, with depressi
 People who used both ketamine and other substances reported higher festival and clubbing attendance than the other two groups. People who used ketamine and combined it with other psychedelics used it more frequently (incidence rate ratio (IRR): 0.729, 95% confidence interval (CI): 0.336–1.581), while those using non-ketamine psychedelics only showed a significant reduction in ketamine usage volume (IRR: 0.160, 95% CI: 0.079–0.322) compared to other groups.
 Almost half of the respondents sought online advice before starting ketamine self-treatment.
 Conclusion: This study extends knowledge about various populations using ketamine for self-treatment purposes, proposes areas for future research and suggests online platforms as the most effective place for harm reduction resources relating to ketamine use.
+- <abstract>The analysis of character appearance frequency is essential for understanding narrative structure, character prominence, and story progression in anime. In this work, we introduce OregairuChar, a benchmark dataset designed for appearance frequency analysis in the anime series My Teen Romantic Comedy SNAFU. The dataset comprises 1600 manually selected frames from the third season, annotated with 2860 <a href="https://en.wikipedia.org/wiki/Minimum_bounding_box">bounding boxes</a> across 11 main characters. OregairuChar captures diverse visual challenges, including occlusion, pose variation, and inter-character similarity, providing a realistic basis for appearance-based studies. To enable quantitative research, we benchmark several <a href="https://en.wikipedia.org/wiki/Object_detection">object detection</a> models on the dataset and leverage their predictions for fine-grained, episode-level analysis of character presence over time. This approach reveals patterns of character prominence and their evolution within the narrative. By emphasizing appearance frequency, OregairuChar serves as a valuable resource for exploring computational narrative dynamics and character-centric storytelling in stylized media.</abstract>
+The analysis of character appearance frequency is essential for understanding narrative structure, character prominence, and story progression in anime.
+In this work, we introduce OregairuChar, a benchmark dataset designed for appearance frequency analysis in the anime series <em>My Teen Romantic Comedy SNAFU</em>. The dataset comprises 1,600 manually selected frames from the third season, annotated with 2,860 <a href="https://en.wikipedia.org/wiki/Minimum_bounding_box">bounding boxes</a> across 11 main characters. OregairuChar captures diverse visual challenges, including occlusion, pose variation, and inter-character similarity, providing a realistic basis for appearance-based studies.
+To enable quantitative research, we benchmark several <a href="https://en.wikipedia.org/wiki/Object_detection">object detection</a> models on the dataset and leverage their predictions for fine-grained, episode-level analysis of character presence over time. This approach reveals patterns of character prominence and their evolution within the narrative.
+By emphasizing appearance frequency, OregairuChar serves as a valuable resource for exploring computational narrative dynamics and character-centric storytelling in stylized media.
 
 [End of examples. Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 

@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# htmlClassesExtract.py: extract all CSS classes and data-attribute keys from HTML files
+# htmlAttributesExtract.py: extract all CSS classes and data-attribute keys from HTML files
 # Author: Gwern Branwen
 # Date: 2022-09-10
-# When:  Time-stamp: "2025-11-02 17:08:12 gwern"
+# When:  Time-stamp: "2025-11-16 19:59:17 gwern"
 # License: CC-0
 #
 # BeautifulSoup utility to parse HTML & print all HTML classes and the data-attribute keys.
 # The usecase is to run over compiled corpus to extract all HTML classes and filter through a grep whitelist of known classes; this frequently catchs typos and unnecessary classes.
 # We check both classes & data-attribute keys for 'unknown' entries; we skip the data-attribute values because by design they will vary far too much to easily check.
-# (We use htmlClassesExtract.py in `sync.sh`; the whitelist serves as additional documentation for Gwern.net features.)
+# (We use htmlAttributesExtract.py in `sync.sh`; the whitelist serves as additional documentation for Gwern.net features.)
 #
-# Usage: $ python htmlClassesExtract.py file1.html file2.html ...
+# Usage: $ python htmlAttributesExtract.py file1.html file2.html ...
 #
 # Examples:
 #
-# $ python htmlClassesExtract.py index.html
+# $ python htmlAttributesExtract.py index.html
 # TOC
 # abstract smallcaps-not dropcap-not
 # ...

@@ -182,7 +182,7 @@ tagsShort2LongRewrites =
    , ("qeueing", "queuing"), ("qeuing", "queuing"), ("queing", "queuing"), ("queing-theory", "queuing"), ("queing_theory", "queuing"), ("queingtheory", "queuing")
    , ("queueing-theory", "queuing"), ("queueing_theory", "queuing"), ("queueingtheory", "queuing"), ("queue", "queuing"), ("queues", "queuing"), ("queue-theory", "queuing"), ("queue_theory", "queuing"), ("queuetheory", "queuing"), ("queuingtheory", "queuing"), ("queuing-theory", "queuing"), ("queuing_theory", "queuing"), ("quing", "queuing")   -- there are just way too many ways to spell 'queue'...
    , ("japanese/art", "japan/art"), ("rlhf", "preference-learning"), ("evoluton", "evolution"), ("epigentics", "epigenetics")
-   , ("kufic", "design/typography/square"), ("square-kufic", "design/typography/square"), ("kufic-square", "design/typography/square"), ("textgame", "text-game"), ("got", "gpt"), ("high-iq", "iq/high")
+   , ("kufic", "design/typography/square"), ("square-kufic", "design/typography/square"), ("kufic-square", "design/typography/square"), ("textgame", "text-game"), ("got", "gpt"), ("high-iq", "iq/high"), ("nootropics", "nootropic"), ("bac", "abc"), ("cab", "abc"), ("acb", "abc")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
@@ -451,6 +451,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("statistics/order/capture", "mark-and-recapture")
   , ("statistics/order/comparison", "statistical comparison")
   , ("statistics/order", "order statistics")
+  , ("statistics/bayes/abc", "ABC Bayes")
   , ("statistics/bayes", "Bayes")
   , ("statistics/power-analysis", "power analysis")
   , ("statistics/meta-analysis", "meta-analysis")

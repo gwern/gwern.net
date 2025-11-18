@@ -1383,6 +1383,7 @@ htmlRewriteFixed =
          , (" n&lt;", " <em>n</em> &lt; ")
          , ("(n = ", "(<em>n</em> = ")
          , ("(n = ", "(<em>n</em> = ")
+         , (" k=2", " <em>k</em> = 2")
          , ("(p &lt; .", "(<em>p</em> &lt; 0.")
          , (" r ≥ 0.", " <em>r</em> ≥ 0.")
          , (" P(t) ", " <em>P(t)</em> ")

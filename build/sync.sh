@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-10-22 21:11:38 gwern"
+# When:  Time-stamp: "2025-11-17 23:36:21 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -109,7 +109,7 @@ else
           stringReplace '&oi=ao' '' ./static/build/Config/Metadata/Author.hs; stringReplace '&hl=en' '' ./static/build/Config/Metadata/Author.hs; stringReplace '&oi=sra' '' ./static/build/Config/Metadata/Author.hs; stringReplace '?hl=en&' '?' ./static/build/Config/Metadata/Author.hs
 
           ## name/entity consistency & fixing common spelling errors:
-          s 'EMBASE' 'Embase'; s 'Medline' 'MEDLINE'; s 'PsychINFO' 'PsycINFO'; s 'MSCOCO' 'MS COCO'; s 'Yann Le Cun' 'Yann LeCun'; s ' VQVAE' ' VQ-VAE'; s 'CIFAR 10' 'CIFAR-10'; s 'Jorges Luis Borges' 'Jorge Luis Borges'; s 'Rene Girard' 'René Girard'; s 'Anno Hideaki' 'Hideaki Anno'; s ' GPT2' ' GPT-2'; s ' Clinicaltrials.gov' ' ClinicalTrials.gov'; s ' clinicaltrials.gov' ' ClinicalTrials.gov'; s 'Dario Amodai' 'Dario Amodei'; s 'single nucleotide polymorph' 'single-nucleotide polymorph'; s 'Single Nucleotide Polymorph' 'Single-Nucleotide Polymorph'; s 'single nucleotide variant' 'single-nucleotide variant'; s ' CIFAR10' 'CIFAR-10'; s 'TyDi QA' 'TyDiQA'; s 'Türkiye' 'Turkey'; s ' Poincare' ' Poincaré'; s 'Francois de La Rochefoucauld' 'François de La Rochefoucauld'; s 'Moliere' 'Molière'; s 'behavioural genetic' 'behavioral genetic'; s ' gwern.net' ' Gwern.net'; s 'chain of thought' 'chain-of-thought'; s 'Chain Of Thought' 'Chain-Of-Thought'; s 'Chain of Thought' 'Chain-of-Thought'; s 'Chain of thought' 'Chain-of-thought'; s 'MS Marco' 'MS MARCO'; s 'MS-MARCO' 'MS MARCO'; s 'NLSY-79' 'NLSY79'; s 'NLSY-97' 'NLSY97'; s 'state of the art' 'state-of-the-art'; s 'State of the Art' 'State-of-the-Art'; s 'State of the art' 'State-of-the-art'; s 'State Of The Art' 'State-of-the-Art'; s 'Enwik8' 'enwik8'; s 'enwiki8' 'enwik8'; s 'G. M. Fahy' 'Gregory M. Fahy'; s 'Greg M. Fahy' 'Gregory M. Fahy'; s 'Gary Kasparov' 'Garry Kasparov'; s 'Fel D1' 'Fel D 1'; s 'Fel d1' 'Fel d 1'; s 'CIFAR10' 'CIFAR-10'; s 'ImageNet1k' 'ImageNet-1k'; s 'ImageNet21k' 'ImageNet-21k'; s ' Imagenet' ' ImageNet'; s ' LeGuin' ' Le Guin'; s 'DALL-E 1' 'DALL·E 1'; s 'DALL-E 2' 'DALL·E 2'; s 'DALLE-2 ' 'DALL·E 2 '; s 'DALL-E 3' 'DALL·E 3'; s 'FLAN-PALM' 'Flan-PaLM'; s 'GPT-4V' 'GPT-4-V'; s 'GPT-4 V' 'GPT-4-V'; s ' GPT4' ' GPT-4'; s 'drop cap' 'dropcap'; s 'Drop cap' 'Dropcap'; s 'Drop Cap' 'Dropcap'; s 'R.A. Fisher' 'R. A. Fisher'; s 'Larry Sumners' 'Larry Summers'; s ' auto-encoder' ' autoencoder'; s 'Auto-Encoder' 'Autoencoder'; s ' GPT3' ' GPT-3' ; s ' GPT4' ' GPT-4'; s 'J.R.R. Tolkien' 'J. R. R. Tolkien'; s 'F.D.A.' 'FDA'; s 'C.D.C.' 'CDC'; s 'F.B.I.' 'FBI'; s 'C.I.A.' 'CIA'; s ' Onlyfans' ' OnlyFans'; s ' A.I.' ' AI'; s ' Juergen' ' Jürgen'; s ' Godel' ' Gödel'; s ' Goedel' ' Gödel'; s 'Bryne Hobart' 'Byrne Hobart'; s 'Saigyo' 'Saigyō'; s 'John Wentsworth' 'John Wentworth';
+          s 'EMBASE' 'Embase'; s 'Medline' 'MEDLINE'; s 'PsychINFO' 'PsycINFO'; s 'MSCOCO' 'MS COCO'; s 'Yann Le Cun' 'Yann LeCun'; s ' VQVAE' ' VQ-VAE'; s 'CIFAR 10' 'CIFAR-10'; s 'Jorges Luis Borges' 'Jorge Luis Borges'; s 'Rene Girard' 'René Girard'; s 'Anno Hideaki' 'Hideaki Anno'; s ' GPT2' ' GPT-2'; s ' Clinicaltrials.gov' ' ClinicalTrials.gov'; s ' clinicaltrials.gov' ' ClinicalTrials.gov'; s 'Dario Amodai' 'Dario Amodei'; s 'single nucleotide polymorph' 'single-nucleotide polymorph'; s 'Single Nucleotide Polymorph' 'Single-Nucleotide Polymorph'; s 'single nucleotide variant' 'single-nucleotide variant'; s ' CIFAR10' 'CIFAR-10'; s 'TyDi QA' 'TyDiQA'; s 'Türkiye' 'Turkey'; s ' Poincare' ' Poincaré'; s 'Francois de La Rochefoucauld' 'François de La Rochefoucauld'; s 'Moliere' 'Molière'; s 'behavioural genetic' 'behavioral genetic'; s ' gwern.net' ' Gwern.net'; s 'chain of thought' 'chain-of-thought'; s 'Chain Of Thought' 'Chain-Of-Thought'; s 'Chain of Thought' 'Chain-of-Thought'; s 'Chain of thought' 'Chain-of-thought'; s 'MS Marco' 'MS MARCO'; s 'MS-MARCO' 'MS MARCO'; s 'NLSY-79' 'NLSY79'; s 'NLSY-97' 'NLSY97'; s 'state of the art' 'state-of-the-art'; s 'State of the Art' 'State-of-the-Art'; s 'State of the art' 'State-of-the-art'; s 'State Of The Art' 'State-of-the-Art'; s 'Enwik8' 'enwik8'; s 'enwiki8' 'enwik8'; s 'G. M. Fahy' 'Gregory M. Fahy'; s 'Greg M. Fahy' 'Gregory M. Fahy'; s 'Gary Kasparov' 'Garry Kasparov'; s 'Fel D1' 'Fel D 1'; s 'Fel d1' 'Fel d 1'; s 'CIFAR10' 'CIFAR-10'; s 'ImageNet1k' 'ImageNet-1k'; s 'ImageNet21k' 'ImageNet-21k'; s ' Imagenet' ' ImageNet'; s ' LeGuin' ' Le Guin'; s 'DALL-E 1' 'DALL·E 1'; s 'DALL-E 2' 'DALL·E 2'; s 'DALLE-2 ' 'DALL·E 2 '; s 'DALL-E 3' 'DALL·E 3'; s 'FLAN-PALM' 'Flan-PaLM'; s 'GPT-4V' 'GPT-4-V'; s 'GPT-4 V' 'GPT-4-V'; s ' GPT4' ' GPT-4'; s 'drop cap' 'dropcap'; s 'Drop cap' 'Dropcap'; s 'Drop Cap' 'Dropcap'; s 'R.A. Fisher' 'R. A. Fisher'; s 'Larry Sumners' 'Larry Summers'; s ' auto-encoder' ' autoencoder'; s 'Auto-Encoder' 'Autoencoder'; s ' GPT3' ' GPT-3' ; s ' GPT4' ' GPT-4'; s 'J.R.R. Tolkien' 'J. R. R. Tolkien'; s 'F.D.A.' 'FDA'; s 'C.D.C.' 'CDC'; s 'F.B.I.' 'FBI'; s 'C.I.A.' 'CIA'; s ' Onlyfans' ' OnlyFans'; s ' A.I.' ' AI'; s ' Juergen' ' Jürgen'; s ' Godel' ' Gödel'; s ' Goedel' ' Gödel'; s 'Bryne Hobart' 'Byrne Hobart'; s 'Saigyo' 'Saigyō'; s 'John Wentsworth' 'John Wentworth'; s ' othre' ' other'
 
           ## abbreviation consistency:
           s '(ie,' '(ie.'; s '(ie ' '(ie. '; s 'i.e.,' 'ie.'; s 'ie., ' 'ie. '; s '(i.e.' '(ie.'; s '(eg, ' '(eg. '; s ' eg ' ' eg. '; s '(eg ' '(eg. '; s '[eg ' '[eg. '; s '[Eg ' '[eg. '; s 'e.g. ' 'eg. '; s ' e.g. ' ' eg. '; s 'e.g.,' 'eg.'; s 'eg.,' 'eg.'; s 'E.g.,' 'Eg.'; s '(cf ' '(cf. '; s ' cf ' ' cf. '; s 'c.f., ' 'cf. '; s 'v.s.' 'versus'; s ' Feb ' ' February '; s ' Aug ' ' August '; s ', Jr.' ' Junior'; s ' Jr.' ' Junior'; s ', Junior' ' Junior';
@@ -152,7 +152,7 @@ else
           s '</p></p>' '</p>'; s '’ ”' '’ ”'; s ' ”' ' “';
           s '[("doi","")]' ''; s '>/a>' '</a>'; s 'href="W!"' 'href="!W"'; s 'class="Logotype-Tex"' 'class="logotype-tex"'; s 'Class="Logotype-Tex"' 'class="logotype-tex"'; s '<span Class="' '<span class="';
           s '_n_th' '<em>n</em>th'; s 'thumbnailText: ' 'thumbnail-text: '; s ' — ' '—'; s '_n_=' '_n_ = ';
-          s '< a href' '<a href'; s 'modifed: 20' 'modified: 20'; s 'linklive-not' 'link-live-not'; s ' n-dimensional' ' <em>n</em>-dimensional'; s 'pdf#pg=' 'pdf#page='; s 'PDF#pg=' 'PDF#page='; s '<hr />' '<hr>'; s '</hr>' '<hr>'; s 'confidence: highly-likely' 'confidence: highly likely'; s 'drop-caps-de-zs' 'dropcaps-de-zs'; s '฿' '₿'; s 'mL/kg/day' 'mL⧸kg⧸day'; s 'μg/day' 'μg⧸day'; s 'kg/day' 'kg⧸day'; s 'mg/day' 'mg⧸day'; s 'g/day' 'g⧸day'; s 'kcal/day' 'kcal⧸day'; s 'tokens/sec' 'tokens⧸sec'; s 'kg/m<sup>2</sup>' 'kg⧸m<sup>2</sup>'; s 'kg/m(2)' 'kg⧸m<sup>2</sup>'; s 'ng/mL' 'ng⧸mL'; s ' g/L' ' g⧸L'; s ' mg/L' ' mg⧸L';s ' mg/L' ' mg⧸L'; s 'μg/L' 'μg⧸L'; s 'g/cm2' 'g⧸cm<sup>2</sup>'; s ' g/d' ' g⧸d';
+          s '< a href' '<a href'; s 'modifed: 20' 'modified: 20'; s 'linklive-not' 'link-live-not'; s ' n-dimensional' ' <em>n</em>-dimensional'; s 'pdf#pg=' 'pdf#page='; s 'PDF#pg=' 'PDF#page='; s '<hr />' '<hr>'; s '</hr>' '<hr>'; s 'confidence: highly-likely' 'confidence: highly likely'; s 'drop-caps-de-zs' 'dropcaps-de-zs'; s 'drop-caps-kanzlei' 'dropcaps-kanzlei'; s '฿' '₿'; s 'mL/kg/day' 'mL⧸kg⧸day'; s 'μg/day' 'μg⧸day'; s 'kg/day' 'kg⧸day'; s 'mg/day' 'mg⧸day'; s 'g/day' 'g⧸day'; s 'kcal/day' 'kcal⧸day'; s 'tokens/sec' 'tokens⧸sec'; s 'kg/m<sup>2</sup>' 'kg⧸m<sup>2</sup>'; s 'kg/m(2)' 'kg⧸m<sup>2</sup>'; s 'ng/mL' 'ng⧸mL'; s ' g/L' ' g⧸L'; s ' mg/L' ' mg⧸L';s ' mg/L' ' mg⧸L'; s 'μg/L' 'μg⧸L'; s 'g/cm2' 'g⧸cm<sup>2</sup>'; s ' g/d' ' g⧸d';
           s 'src="doc/' 'src="/doc/'; s 'href="doc/' 'href="/doc/';
           s 'link-icon-not' 'icon-not'; s '<!--<p>' '<!-- <p>'; s '</p>-->' '</p> -->';
           s '](W!' '](!W'; s '<em>𝛽</em>' '<em>β</em>'; s '𝛽' '<em>β</em>'; s 'class="table-simple' 'class="table-small'
@@ -612,7 +612,7 @@ else
        }
     wrap λ "Warning: unauthorized LaTeX users somewhere"
 
-    λ(){ VISIBLE_N=$(cat ./_site/sitemap.xml | wc --lines); [ "$VISIBLE_N" -le 36000 ] && echo "$VISIBLE_N" && exit 6; }
+    λ(){ VISIBLE_N=$(cat ./_site/sitemap.xml | wc --lines); [ "$VISIBLE_N" -le 20000 ] && echo "$VISIBLE_N" && exit 6; }
     wrap λ "Sanity-check number-of-public-site-files in sitemap.xml failed"
 
     λ(){ COMPILED_N="$(find -L ./_site/ -type f | wc --lines)"
@@ -621,7 +621,7 @@ else
          [ "$COMPILED_BYTES" -le 100000000000 ] && echo "Total filesize: $COMPILED_BYTES" && exit 8; }
     wrap λ "Sanity-check: number of files & file-size too small?"
 
-    λ(){ SUGGESTIONS_N=$(cat ./metadata/linkSuggestions.el | wc --lines); [ "$SUGGESTIONS_N" -le 22000 ] && echo "$SUGGESTIONS_N"; }
+    λ(){ SUGGESTIONS_N=$(cat ./metadata/linkSuggestions.el | wc --lines); [ "$SUGGESTIONS_N" -le 6000 ] && echo "$SUGGESTIONS_N"; }
     wrap λ "Link-suggestion database broken?"
     λ(){ BACKLINKS_N=$(cat ./metadata/backlinks.hs | wc --lines);         [ "$BACKLINKS_N"   -le 180000 ] && echo "$BACKLINKS_N"; }
     wrap λ "Backlinks database broken?"
@@ -655,7 +655,7 @@ else
        }
     wrap λ "Stray or bad URL links in Markdown-sourced HTML."
 
-    ## Whitelist of HTML classes which are authorized for use. Any new classes should be added here.
+    ## Whitelist of HTML classes & data-attributes which are authorized for use. Any new classes/attributes should be added here.
     λ(){
         # parse all HTML files, print out classes to a unique newline-delimited list, and return classes not in the whitelist, for detailed examination as either bugs or new classes to whitelist:
         declare -a html_classes_whitelist=(
@@ -714,10 +714,11 @@ else
             "completion-status" "collapsible" "me" "new-essays" "new-links" "site" "accesskey"
             "dark-mode-selector-inline" "extracts-mode-selector-inline" "help-mode-selector-inline" "search-mode-selector-inline" "toolbar-mode-selector-inline"
             "link-bibliography-context" "extract-not" "fraction" "separator-inline" "dark-mode-invert" "dark-mode-enable-when-here" "dark-mode"
-            "prefetch" "prefetch-not" "filesize-not" "poem"
+            "prefetch" "prefetch-not" "filesize-not" "poem" "redirect-from-id"
         )
-        html_classes_regexpattern=$(IFS='|'; echo "${html_classes_whitelist[*]}")
-        html_classes=$(echo "$PAGES_ALL" | xargs --max-procs=0 --max-args=500 ./static/build/htmlClassesExtract.py | tr ' ' '\n' | sort --unique)
+        html_dataattributes_whitelist=("data-filesize-bytes" "data-link-icon" "data-amount-current" "data-amount-original" "data-aspect-ratio" "data-filesize-bytes" "data-filesize-percentage" "data-href-mobile" "data-image-height" "data-image-width" "data-include-selector-not" "data-include-template" "data-inflation" "data-link-content-type" "data-link-icon" "data-link-icon-color" "data-link-icon-type" "data-progress-percentage" "data-redirect-from-id" "data-target-id" "data-url-archive" "data-url-iframe" "data-url-original" "data-year-current" "data-year-original")
+        html_classes_regexpattern=$(IFS='|'; echo "${html_classes_whitelist[*]}" "${html_dataatributes_whitelist[*]}")
+        html_classes=$(echo "$PAGES_ALL" | xargs --max-procs=0 --max-args=500 ./static/build/htmlAttributesExtract.py | tr ' ' '\n' | sort --unique)
 
         echo "$html_classes" | gev --line-regexp "$html_classes_regexpattern" --
 
@@ -726,7 +727,20 @@ else
             if ! grep --extended-regexp --invert-match --line-regexp --quiet "$class" <<< "$html_classes"; then
                 echo "'""$class""' is not in HTML classes"
             fi
-        done | less
+        done
+
+        # Check for collisions: detect if any class/data-attribute appears multiple times in extracted HTML
+        # eg. like '.link-live turning into 'data-link-live' (for class → data) or 'data-filesize-bytes' turning into '.data-filesize-bytes', (data → class).
+        collision_check=$(echo "$PAGES_ALL" | xargs --max-procs=0 --max-args=500 ./static/build/htmlAttributesExtract.py | \
+                              while read -r line; do
+                                  # Split each line into individual classes/attributes
+                                  echo "$line" | tr ' ' '\n'
+                              done | sort | uniq --count | sort --reverse --numeric | awk '$1 > 1 {print $1 " occurrences: " $2}')
+
+        if [ -n "$collision_check" ]; then
+            red "⚠ Potential collisions detected:"
+            echo "$collision_check"
+        fi
     }
     wrap λ "Mysterious HTML classes in compiled HTML? (Add to whitelist or fix.)"
 
@@ -886,7 +900,7 @@ else
 
     λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | \
              xargs --max-args=500 grep --fixed-strings --with-filename --color=always \
-                   -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' -e '<a href="!W"' -e '’S ' -e '<span id="#' -e ' abd ' -e '<p><span class="abstract-collapse-only">' -e '{=HTML}' -e ' 1_e_' -e '>><' -e '</>' -e '](!W “' -e '```{' -e '.- ' | \
+                   -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' -e '<a href="!W"' -e '’S ' -e '<span id="#' -e ' abd ' -e '<p><span class="abstract-collapse-only">' -e '{=HTML}' -e ' 1_e_' -e '>><' -e '</>' -e '](!W “' -e '```{' -e '.- ' -e '<div class="cite' | \
                    gfv -e '/design-graveyard' --; }
     wrap λ "Miscellaneous fixed string errors in compiled HTML."
 
