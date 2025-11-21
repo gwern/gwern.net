@@ -824,6 +824,9 @@ canonicals = M.fromList
   , ("Crémieux", "Cremieux")
   , ("cremieuxrecueil", "Cremieux")
   , ("AHomelyHouse", "Joel Trumbo")
+  , ("GPT-5.1-pro", "GPT-5.1 Pro")
+  , ("GPT-5.1-Pro", "GPT-5.1 Pro")
+  , ("GPT-5.1 pro", "GPT-5.1 Pro")
   ]
 
 -- tests: unique
@@ -1867,6 +1870,7 @@ authorLinkDB = M.fromList $
     , ("Jean Ferrières", "https://cerpop.inserm.fr/jean-ferrieres-publications-1")
     , ("GPT-5", "https://openai.com/gpt-5/")
     , ("GPT-5 Pro", "https://openai.com/index/introducing-gpt-5/#gpt-5-pro")
+    , ("GPT-5.1 Pro", "https://openai.com/index/gpt-5-1/#gpt-51-thinking")
     , ("Jerry Green", "https://en.wikipedia.org/wiki/Jerry_Green_(economist)")
     , ("Inger Njølstad", "https://no.wikipedia.org/wiki/Inger_Nj%C3%B8lstad")
     , ("Ingrid Agartz", "https://scholar.google.com/citations?user=NlZOhHMAAAAJ")
@@ -3229,4 +3233,4 @@ authorWpLinkDB =
     , "Primo Levi", "Stuart Woolf", "Arnold B. Bakker", "Justine Tunney", "Jens Hoffmann", "Stanislav Drobyshevsky"
     , "Galit Shmueli", "Robert Mitchell Lindner", "The Daily Telegraph", "Max More", "David Roundy", "Chris Callison-Burch"
     , "Wes McKinney", "Zoltán Kodály", "Jacob Koranyi", "Matthew Garrett", "Peter Medawar", "David M. Berry", "CTAN", "James Blish", "Motoo Kimura", "M. John Harrison",
-    "Anne Trefethen", "Tony Hey", "Robert Ghrist", "Michael Bloomberg", "Gloria Origgi", "Diego Gambetta", "Ann Shulgin", "Alexander Shulgin", "Craig Packer", "Charles Allen Moser", "Ruriko Yoshida", "Michael Stillman"]
+    "Anne Trefethen", "Tony Hey", "Robert Ghrist", "Michael Bloomberg", "Gloria Origgi", "Diego Gambetta", "Ann Shulgin", "Alexander Shulgin", "Craig Packer", "Charles Allen Moser", "Ruriko Yoshida", "Michael Stillman", "William Empson"]
