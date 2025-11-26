@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-10-24 21:57:28 gwern"
+# When:  Time-stamp: "2025-11-26 18:45:52 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -783,6 +783,10 @@ Selection vs. Rejection"
 - "https://funcall.blogspot.com/2025/08/challenges-of-pseudocode-expansion.html Abstract Heresies: Challenges of Pseudocode Expansion (A blog about computers, functional languages, Lisp, and Scheme.)"
 "Challenges of Pseudocode Expansion"
 - "https://yalereview.org/article/working-for-patricia-highsmith The Yale Review"
+""
+- "https://www.michaeleisen.org/blog/?p=1217 Michael Eisen | Published: November 29, 2012"
+""
+- "https://archive.ph/9no3M archive.ph"
 ""
 
 Task:

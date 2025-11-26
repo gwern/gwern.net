@@ -827,6 +827,8 @@ canonicals = M.fromList
   , ("GPT-5.1-pro", "GPT-5.1 Pro")
   , ("GPT-5.1-Pro", "GPT-5.1 Pro")
   , ("GPT-5.1 pro", "GPT-5.1 Pro")
+  , ("Dril", "dril")
+  , ("Thomas H. Benton", "William Pannapacker")
   ]
 
 -- tests: unique
@@ -1811,6 +1813,7 @@ authorLinkDB = M.fromList $
     , ("Richard Karlsson Linnér", "https://www.universiteitleiden.nl/en/staffmembers/richard-karlsson-linner/publications#tab-2")
     , ("Grant Slatton", "https://grantslatton.com/")
     , ("Claude-4-opus", "https://www.anthropic.com/claude/opus")
+    , ("Claude-4.5-opus", "https://www.anthropic.com/news/claude-opus-4-5")
     , ("Sergei Smagin", "https://smagin.fyi/posts/hello-world/")
     , ("Christopher Fleetwood", "https://fleetwood.dev/")
     , ("Ralf Kuja-Halkola", "https://ki.se/en/people/ralf-kuja-halkola")
@@ -1958,6 +1961,7 @@ authorLinkDB = M.fromList $
     , ("m4rM2oFnYTW", "https://www.reddit.com/user/m4rM2oFnYTW/")
     , ("Robert Griffiths", "https://en.wikipedia.org/wiki/Robert_Griffiths_(mathematician)")
     , ("John A. Leslie", "https://en.wikipedia.org/wiki/John_A._Leslie")
+    , ("Alexander Wales", "https://alexanderwales.com/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3233,4 +3237,4 @@ authorWpLinkDB =
     , "Primo Levi", "Stuart Woolf", "Arnold B. Bakker", "Justine Tunney", "Jens Hoffmann", "Stanislav Drobyshevsky"
     , "Galit Shmueli", "Robert Mitchell Lindner", "The Daily Telegraph", "Max More", "David Roundy", "Chris Callison-Burch"
     , "Wes McKinney", "Zoltán Kodály", "Jacob Koranyi", "Matthew Garrett", "Peter Medawar", "David M. Berry", "CTAN", "James Blish", "Motoo Kimura", "M. John Harrison",
-    "Anne Trefethen", "Tony Hey", "Robert Ghrist", "Michael Bloomberg", "Gloria Origgi", "Diego Gambetta", "Ann Shulgin", "Alexander Shulgin", "Craig Packer", "Charles Allen Moser", "Ruriko Yoshida", "Michael Stillman", "William Empson"]
+    "Anne Trefethen", "Tony Hey", "Robert Ghrist", "Michael Bloomberg", "Gloria Origgi", "Diego Gambetta", "Ann Shulgin", "Alexander Shulgin", "Craig Packer", "Charles Allen Moser", "Ruriko Yoshida", "Michael Stillman", "William Empson", "Michael Eisen", "dril", "William Pannapacker"]
