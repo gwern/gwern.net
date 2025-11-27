@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-11-17 23:36:21 gwern"
+# When:  Time-stamp: "2025-11-27 22:55:48 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -741,6 +741,29 @@ else
             red "⚠ Potential collisions detected:"
             echo "$collision_check"
         fi
+
+        # Check for HTML IDs that match whitelisted classes/data-attributes (likely typos where
+        # someone wrote id="foo" instead of class="foo"):
+        html_ids=$(echo "$PAGES_ALL" | xargs --max-procs=0 --max-args=500 ./static/build/htmlAttributesExtract.py | \
+                       grep '^id:' | sed 's/^id://' | sort --unique)
+
+        # Build a plain-string-only pattern (exclude regex entries like "^page-[a-z0-9-]+")
+        id_collision_whitelist=()
+        for entry in "${html_classes_whitelist[@]}" "${html_dataattributes_whitelist[@]}"; do
+            # Skip entries containing regex metacharacters
+            if [[ ! "$entry" =~ [\^\$\[\]\*\+\?] ]]; then
+                id_collision_whitelist+=("$entry")
+            fi
+        done
+
+        if [ -n "$html_ids" ]; then
+            id_collision_pattern=$(IFS='|'; echo "${id_collision_whitelist[*]}")
+            suspicious_ids=$(echo "$html_ids" | grep --extended-regexp --line-regexp "$id_collision_pattern" || true)
+            if [ -n "$suspicious_ids" ]; then
+                red "⚠ HTML IDs matching whitelisted classes/data-attributes (possible typos - should be class/data-attr instead of id?):"
+                echo "$suspicious_ids"
+            fi
+        fi
     }
     wrap λ "Mysterious HTML classes in compiled HTML? (Add to whitelist or fix.)"
 
@@ -871,6 +894,9 @@ else
 
      # λ(){ gf -e '' -- $PAGES; }
      # wrap λ "Markdown: miscellaneous fixed string errors."
+
+     λ(){ echo $PAGES | tr ' ' '\n' | gfv '/lorem' | xargs --max-procs=0 --max-args=20 pandoc --from=Markdown --to=plain | gf -e "redirect-from-id"; }
+     wrap λ "Plain text: miscellaneous fixed-string errors (eg. HTML/Markdown fragments leaking through)."
 
     λ(){ find -L . -type f -size 0  -printf 'Empty file: %p %s\n' | gfv -e '.git/FETCH_HEAD' -e './.git/modules/static/logs/refs/remotes/'; }
     wrap λ "Empty files somewhere."
