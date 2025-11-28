@@ -10,6 +10,7 @@ import System.FilePath (takeDirectory, (</>))
 import Text.Pandoc (Inline(Str, RawInline, Link, Span), Format(..), Block(Para, Div), nullAttr)
 import qualified Data.Map.Strict as M (elems, map, toList )
 import qualified Data.Text as T (append, pack, unpack, Text)
+import Text.EditDistance (levenshteinDistance, defaultEditCosts)
 
 import Cycle (isCycleLess)
 import LinkMetadataTypes (Metadata)
@@ -146,7 +147,16 @@ listTagDirectories allp direntries' = do
 listTagDirectoriesAll :: [FilePath] -> IO [FilePath]
 listTagDirectoriesAll = listTagDirectories True
 
--- try to infer a long tag from a short tag, first by exact match, then by suffix, then by prefix, then by infix, then give up.
+-- Find the closest tag by Levenshtein edit distance, if within the max distance threshold
+findClosestTagByDistance :: Int -> [String] -> String -> Maybe String
+findClosestTagByDistance maxDist allTags s =
+  let distances = [(levenshteinDistance defaultEditCosts s tag, tag) | tag <- allTags]
+      withinThreshold = filter (\(d, _) -> d > 0 && d <= maxDist) distances
+  in case withinThreshold of
+       [] -> Nothing
+       xs -> Just $ snd $ minimum xs
+
+-- try to infer a long tag from a short tag, first by exact match, then by suffix, then by prefix, then by infix, then edit-distance, then give up.
 -- so eg. 'sr1' → 'SR1' → 'darknet-markets/silk-road/1', 'road/1' → 'darknet-markets/silk-road/1', 'darknet-markets/silk' → 'darknet-markets/silk-road', 'silk-road' → 'darknet-markets/silk-road'
 guessTagFromShort :: [String] -> [String] -> String -> String
 guessTagFromShort _ _ "" = ""
@@ -170,7 +180,12 @@ guessTagFromShort raw l s = fixedPoint (f l) (replace "=" "-" s)
                                      if not (null longFallbacks) then head longFallbacks else
                                        -- try rewriting it in various potentially-unsafe ways: (eg. a dot/slash is a common typo, but unsafe to do upfront because it breaks any URL-style tag like 'hardtruthsfromsoftcats.tumblr.com')
                                        let fallbackRewrite = replace "." "/" s in
-                                         if s == fallbackRewrite then s else guessTagFromShort raw l fallbackRewrite
+                                         if s == fallbackRewrite then
+                                           -- final fallback: try edit distance matching for typos
+                                           case findClosestTagByDistance C.tagTypoMaxDistance allTags t of
+                                             Just closestTag -> closestTag
+                                             Nothing -> s
+                                         else guessTagFromShort raw l fallbackRewrite
 
 shortTagTest ::[String] -> [(String, String, String)]
 shortTagTest alltags = filter (\(_, realOutput, shouldbeOutput) -> realOutput /= shouldbeOutput) $

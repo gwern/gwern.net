@@ -5,6 +5,10 @@ import Data.List (isInfixOf, isPrefixOf)
 
 import Utils (anyInfix, anyPrefix)
 
+-- Maximum edit distance for typo correction in tag guessing using Levenshtein edit-distance (eg. 'sunkcost' → 'sunk-cost'):
+tagTypoMaxDistance :: Int
+tagTypoMaxDistance = 2
+
 -- sub-directories where directory ≠ tag; this is usually the case in projects or archives/mirrors/dumps. We don't consider them to be tags.
 tagGuessBlacklist :: String -> Bool
 tagGuessBlacklist path = anyPrefix path ["/doc/biology/2000-iapac-norvir", "/doc/personal/2011-gwern-yourmorals.org", "/doc/rotten.com/",
@@ -183,6 +187,7 @@ tagsShort2LongRewrites =
    , ("queueing-theory", "queuing"), ("queueing_theory", "queuing"), ("queueingtheory", "queuing"), ("queue", "queuing"), ("queues", "queuing"), ("queue-theory", "queuing"), ("queue_theory", "queuing"), ("queuetheory", "queuing"), ("queuingtheory", "queuing"), ("queuing-theory", "queuing"), ("queuing_theory", "queuing"), ("quing", "queuing")   -- there are just way too many ways to spell 'queue'...
    , ("japanese/art", "japan/art"), ("rlhf", "preference-learning"), ("evoluton", "evolution"), ("epigentics", "epigenetics")
    , ("kufic", "design/typography/square"), ("square-kufic", "design/typography/square"), ("kufic-square", "design/typography/square"), ("textgame", "text-game"), ("got", "gpt"), ("high-iq", "iq/high"), ("nootropics", "nootropic"), ("bac", "abc"), ("cab", "abc"), ("acb", "abc"), ("hardware/scaling", "scaling/hardware")
+   , ("sunkcosts", "sunk-cost")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
@@ -967,5 +972,14 @@ shortTagTestSuite =
  , ("willpower" , "psychology/willpower")
  , ("writing" , "psychology/writing")
  , ("psych/inner-monologue", "psychology/inner-voice")
+ -- some edit-distance test cases:
+ , ("psychology/writingg" , "psychology/writing")
  , ("ai.dataset", "ai/dataset")
+ , ("aidataset", "ai/dataset")
+ , ("ai/datase", "ai/dataset")
+ , ("i/dataset", "ai/dataset")
+ , ("economicss", "economics") -- Doubled letter (distance 1)
+ , ("econmics", "economics") -- Missing letter (distance 1)
+ , ("psycholoyg", "psychology") -- Transposition (distance 2)
+ , ("ecenomics", "economics") -- Wrong letter (distance 1)
  ]
