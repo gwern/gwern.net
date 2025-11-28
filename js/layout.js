@@ -1291,9 +1291,9 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 							&& previousBlockOf(block, options) == null);
 				}
 				let options = {
-					alsoSkipElements: [ ".epigraph", ".margin-notes-block" ],
+					alsoSkipElements: [ ".epigraph", ".margin-notes-block", ".text-center" ],
 					alsoBlockContainers: [ "li" ],
-					cacheKey: "alsoSkip_epigraphs_alsoBlockContainers_listItems"
+					cacheKey: "alsoSkip_centered_blocks_alsoBlockContainers_listItems"
 				};
 
 				let previousBlock = previousBlockOf(block, options);
@@ -1302,6 +1302,12 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 						&& isFirstWithin(blockContainerOf(block), "#markdownBody"))
 					|| previousBlock?.matches(".abstract blockquote, #page-metadata"))
 					introGraf = true;
+
+				/*	Mostly relevant for later-to-be-unwrapped classes, such as
+					.text-center.
+				 */
+				if (block.closest(options.alsoSkipElements.join(", ")) != null)
+					introGraf = false;
 
 				//	The .intro-graf class also implies .first-graf.
 				if (introGraf)
