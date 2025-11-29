@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-11-27 22:55:48 gwern"
+# When:  Time-stamp: "2025-11-29 19:59:05 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -714,7 +714,7 @@ else
             "completion-status" "collapsible" "me" "new-essays" "new-links" "site" "accesskey"
             "dark-mode-selector-inline" "extracts-mode-selector-inline" "help-mode-selector-inline" "search-mode-selector-inline" "toolbar-mode-selector-inline"
             "link-bibliography-context" "extract-not" "fraction" "separator-inline" "dark-mode-invert" "dark-mode-enable-when-here" "dark-mode"
-            "prefetch" "prefetch-not" "filesize-not" "poem" "redirect-from-id"
+            "prefetch" "prefetch-not" "filesize-not" "poem" "poem-html" "redirect-from-id" "toc-not"
         )
         html_dataattributes_whitelist=("data-filesize-bytes" "data-link-icon" "data-amount-current" "data-amount-original" "data-aspect-ratio" "data-filesize-bytes" "data-filesize-percentage" "data-href-mobile" "data-image-height" "data-image-width" "data-include-selector-not" "data-include-template" "data-inflation" "data-link-content-type" "data-link-icon" "data-link-icon-color" "data-link-icon-type" "data-progress-percentage" "data-redirect-from-id" "data-target-id" "data-url-archive" "data-url-iframe" "data-url-original" "data-year-current" "data-year-original")
         html_classes_regexpattern=$(IFS='|'; echo "${html_classes_whitelist[*]}" "${html_dataatributes_whitelist[*]}")
@@ -731,21 +731,22 @@ else
 
         # Check for collisions: detect if any class/data-attribute appears multiple times in extracted HTML
         # eg. like '.link-live turning into 'data-link-live' (for class → data) or 'data-filesize-bytes' turning into '.data-filesize-bytes', (data → class).
-        collision_check=$(echo "$PAGES_ALL" | xargs --max-procs=0 --max-args=500 ./static/build/htmlAttributesExtract.py | \
-                              while read -r line; do
-                                  # Split each line into individual classes/attributes
-                                  echo "$line" | tr ' ' '\n'
-                              done | sort | uniq --count | sort --reverse --numeric | awk '$1 > 1 {print $1 " occurrences: " $2}')
+        # TODO: this is wrong and incomplete
+        # collision_check=$(echo "$PAGES_ALL" | xargs --max-procs=0 --max-args=500 ./static/build/htmlAttributesExtract.py | \
+        #                       while read -r line; do
+        #                           # Split each line into individual classes/attributes
+        #                           echo "$line" | tr ' ' '\n'
+        #                       done | sort | uniq --count | sort --reverse --numeric | awk '$1 > 1 {print $1 " occurrences: " $2}')
 
-        if [ -n "$collision_check" ]; then
-            red "⚠ Potential collisions detected:"
-            echo "$collision_check"
-        fi
+        # if [ -n "$collision_check" ]; then
+        #     red "⚠ Potential collisions detected:"
+        #     echo "$collision_check"
+        # fi
 
         # Check for HTML IDs that match whitelisted classes/data-attributes (likely typos where
         # someone wrote id="foo" instead of class="foo"):
-        html_ids=$(echo "$PAGES_ALL" | xargs --max-procs=0 --max-args=500 ./static/build/htmlAttributesExtract.py | \
-                       grep '^id:' | sed 's/^id://' | sort --unique)
+        html_ids=$(echo "$PAGES_ALL" | gfv -e '/lorem' | xargs --max-procs=0 --max-args=500 ./static/build/htmlAttributesExtract.py | \
+                       grep '^id:' | sed 's/^id://' | sort --unique | gev -e '^link-bibliography$' -e '^similars$' -e '^TOC$' )
 
         # Build a plain-string-only pattern (exclude regex entries like "^page-[a-z0-9-]+")
         id_collision_whitelist=()
@@ -926,7 +927,7 @@ else
 
     λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | \
              xargs --max-args=500 grep --fixed-strings --with-filename --color=always \
-                   -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' -e '<a href="!W"' -e '’S ' -e '<span id="#' -e ' abd ' -e '<p><span class="abstract-collapse-only">' -e '{=HTML}' -e ' 1_e_' -e '>><' -e '</>' -e '](!W “' -e '```{' -e '.- ' -e '<div class="cite' | \
+                   -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' -e '<a href="!W"' -e '’S ' -e '<span id="#' -e ' abd ' -e '<p><span class="abstract-collapse-only">' -e '{=HTML}' -e ' 1_e_' -e '>><' -e '</>' -e '](!W “' -e '```{' -e '.- ' -e '<div class="cite' -e 'id="reader-mode-disable-when-here' | \
                    gfv -e '/design-graveyard' --; }
     wrap λ "Miscellaneous fixed string errors in compiled HTML."
 
@@ -1191,7 +1192,8 @@ else
         IFS=$(echo -en "\n\b");
         OTHERS="$(find metadata/annotation/ -name "*.html"; echo index)"
         for PAGE in $PAGES $OTHERS ./404; do
-            HTML="${PAGE%.md}"
+            HTML="./_site/${PAGE%.md}"
+            if [ ! -f "$HTML" ]; then red "Tidy validation pass: file ($PAGE → $HTML) not readable?"; fi
             # we do not reformat HTML files with Tidy, because it has caused too many subtle bugs in the long run.
             # however, we still want to use Tidy to lint and look for HTML validation problems.
             # But if we do that on the original unmodified HTML, we get a ton of apparently spurious warnings we don't care about and which are Tidy-isms, especially with closing tags.
