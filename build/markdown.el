@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-10-26 21:22:17 gwern"
+;;; When:  Time-stamp: "2025-11-28 14:13:55 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -112,6 +112,7 @@
 (defun arrow-up    () (interactive (insert-char ?↑ 1)))
 (defun arrow-down  () (interactive (insert-char ?↓ 1)))
 (defun interpunct  () (interactive (insert-char ?• 1)))
+(defun g-gwern     () (interactive (insert-char ?𝔊 1))) ; 'MATHEMATICAL FRAKTUR CAPITAL G'
 
 (defun replace-all (original replacement)
   "Do regexp search-and-replace in the current buffer of ORIGINAL to REPLACEMENT.

@@ -829,6 +829,7 @@ canonicals = M.fromList
   , ("GPT-5.1 pro", "GPT-5.1 Pro")
   , ("Dril", "dril")
   , ("Thomas H. Benton", "William Pannapacker")
+  , ("Josh Tenenbaum", "Joshua B. Tenenbaum")
   ]
 
 -- tests: unique
@@ -1962,6 +1963,9 @@ authorLinkDB = M.fromList $
     , ("Robert Griffiths", "https://en.wikipedia.org/wiki/Robert_Griffiths_(mathematician)")
     , ("John A. Leslie", "https://en.wikipedia.org/wiki/John_A._Leslie")
     , ("Alexander Wales", "https://alexanderwales.com/")
+    , ("DaystarEld", "https://www.lesswrong.com/users/daystareld")
+    , ("Jack Houck", "https://journalofscientificexploration.org/index.php/jse/article/download/641/424#pdf")
+    , ("Alan Newell", "https://en.wikipedia.org/wiki/Alan_Newell_(English_computer_scientist)")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3236,5 +3240,8 @@ authorWpLinkDB =
     , "James B. Potash", "Jean-Jacques Laffont", "Robert D. Hare", "Anthony Bourdain", "Ross J. Anderson"
     , "Primo Levi", "Stuart Woolf", "Arnold B. Bakker", "Justine Tunney", "Jens Hoffmann", "Stanislav Drobyshevsky"
     , "Galit Shmueli", "Robert Mitchell Lindner", "The Daily Telegraph", "Max More", "David Roundy", "Chris Callison-Burch"
-    , "Wes McKinney", "Zoltán Kodály", "Jacob Koranyi", "Matthew Garrett", "Peter Medawar", "David M. Berry", "CTAN", "James Blish", "Motoo Kimura", "M. John Harrison",
-    "Anne Trefethen", "Tony Hey", "Robert Ghrist", "Michael Bloomberg", "Gloria Origgi", "Diego Gambetta", "Ann Shulgin", "Alexander Shulgin", "Craig Packer", "Charles Allen Moser", "Ruriko Yoshida", "Michael Stillman", "William Empson", "Michael Eisen", "dril", "William Pannapacker"]
+    , "Wes McKinney", "Zoltán Kodály", "Jacob Koranyi", "Matthew Garrett", "Peter Medawar", "David M. Berry", "CTAN"
+    , "James Blish", "Motoo Kimura", "M. John Harrison",
+    "Anne Trefethen", "Tony Hey", "Robert Ghrist", "Michael Bloomberg", "Gloria Origgi", "Diego Gambetta"
+    , "Ann Shulgin", "Alexander Shulgin", "Craig Packer", "Charles Allen Moser", "Ruriko Yoshida", "Michael Stillman"
+    , "William Empson", "Michael Eisen", "dril", "William Pannapacker", "Gail Hareven", "Alan C. Newell", "Kenneth Tynan"]

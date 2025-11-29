@@ -46,9 +46,10 @@ linkDispatcher md (Link _ _ (l, tooltip)) =
            authorsUnknownPrint author
            return $ Right $ guessAuthorDateFromPath (l'',(title',author,date,defaultCreatedToToday dc,kvs,tags,abstract))
       Left Permanent -> do let (title,author,date') = tooltipToMetadata l' (T.unpack tooltip)
+                           date'' <- if date' /= "" then return date' else guessDateFromString (title ++ " : " ++ l')
                            title' <- reformatTitle title
                            print ("Left Permanent"::String)
-                           let guess = guessAuthorDateFromPath (l',(title',author,date',defaultCreatedToToday "",[],[],""))
+                           let guess = guessAuthorDateFromPath (l',(title',author,date'',defaultCreatedToToday "",[],[],""))
                            authorsUnknownPrint author
                            return (Right guess)
       Left Temporary -> return mi
