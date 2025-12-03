@@ -179,4 +179,4 @@ stringDelete = [" - The Public Domain Review"
             , " @ osmarks' website", " at MROB", " - Clear Language, Clear Mind"
             , " : Institute for Policy Research - Northwestern University", "Snarkmarket: ", " - Google Developers Blog"
             , " - Dmitry Brant", "Geoff Greer’s site: ", "Wes McKinney - ", " - an article by Chris Morgan", "First Known When Lost: "
-            , " - by Bryan Caplan", "Tom Lehman - ", "small clever rooms: ", "research!rsc: "]
+            , " - by Bryan Caplan", "Tom Lehman - ", "small clever rooms: ", "research!rsc: ", " - Debbie Maddy"]

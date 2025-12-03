@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-11-29 12:40:53 gwern"
+# When:  Time-stamp: "2025-12-02 21:00:13 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -794,6 +794,8 @@ Selection vs. Rejection"
 "10 Thousand Lifetimes with Roguelikes"
 - "https://research.swtch.com/nih research!rsc: Running the “Reflections on Trusting Trust” Compiler"
 "Running the “Reflections on Trusting Trust” Compiler"
+- "https://www.debbiemaddy.com/blogs/musings-of-a-fiber-fanatic/kakishibu-dyeing-in-seattle Kakishibu Dyeing in Seattle — Debbie Maddy"
+"Kakishibu Dyeing in Seattle"
 
 Task:
 

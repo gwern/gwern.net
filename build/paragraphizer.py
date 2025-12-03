@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using LLM API
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2025-11-13 18:06:58 gwern"
+# When:  Time-stamp: "2025-12-02 22:26:26 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -732,6 +732,10 @@ The analysis of character appearance frequency is essential for understanding na
 In this work, we introduce OregairuChar, a benchmark dataset designed for appearance frequency analysis in the anime series <em>My Teen Romantic Comedy SNAFU</em>. The dataset comprises 1,600 manually selected frames from the third season, annotated with 2,860 <a href="https://en.wikipedia.org/wiki/Minimum_bounding_box">bounding boxes</a> across 11 main characters. OregairuChar captures diverse visual challenges, including occlusion, pose variation, and inter-character similarity, providing a realistic basis for appearance-based studies.
 To enable quantitative research, we benchmark several <a href="https://en.wikipedia.org/wiki/Object_detection">object detection</a> models on the dataset and leverage their predictions for fine-grained, episode-level analysis of character presence over time. This approach reveals patterns of character prominence and their evolution within the narrative.
 By emphasizing appearance frequency, OregairuChar serves as a valuable resource for exploring computational narrative dynamics and character-centric storytelling in stylized media.
+- <abstract>This paper proposes a method of unifying quantum mechanics and gravity based on quantum computation. In this theory, fundamental processes are described in terms of pairwise interactions between quantum degrees of freedom. The geometry of space-time is a construct, derived from the underlying quantum information processing. The computation gives rise to a superposition of four-dimensional spacetimes, each of which obeys the Einstein-Regge equations. The theory makes explicit predictions for the back-reaction of the metric to computational ‘matter’, black-hole evaporation, holography, and quantum cosmology.</abstract>
+This paper proposes a method of unifying quantum mechanics and gravity based on quantum computation.
+In this theory, fundamental processes are described in terms of pairwise interactions between quantum degrees of freedom. The geometry of space-time is a construct, derived from the underlying quantum information processing. The computation gives rise to a superposition of four-dimensional spacetimes, each of which obeys the Einstein-Regge equations.
+The theory makes explicit predictions for the back-reaction of the metric to computational ‘matter’, black-hole evaporation, holography, and quantum cosmology.
 
 [End of examples. Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 

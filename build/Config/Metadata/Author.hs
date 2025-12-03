@@ -1966,6 +1966,8 @@ authorLinkDB = M.fromList $
     , ("DaystarEld", "https://www.lesswrong.com/users/daystareld")
     , ("Jack Houck", "https://journalofscientificexploration.org/index.php/jse/article/download/641/424#pdf")
     , ("Alan Newell", "https://en.wikipedia.org/wiki/Alan_Newell_(English_computer_scientist)")
+    , ("Rauno Freiberg", "https://rauno.me")
+    , ("Steve Lawrence", "https://en.wikipedia.org/wiki/Steve_Lawrence_(computer_scientist)")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3244,4 +3246,5 @@ authorWpLinkDB =
     , "James Blish", "Motoo Kimura", "M. John Harrison",
     "Anne Trefethen", "Tony Hey", "Robert Ghrist", "Michael Bloomberg", "Gloria Origgi", "Diego Gambetta"
     , "Ann Shulgin", "Alexander Shulgin", "Craig Packer", "Charles Allen Moser", "Ruriko Yoshida", "Michael Stillman"
-    , "William Empson", "Michael Eisen", "dril", "William Pannapacker", "Gail Hareven", "Alan C. Newell", "Kenneth Tynan"]
+    , "William Empson", "Michael Eisen", "dril", "William Pannapacker", "Gail Hareven", "Alan C. Newell", "Kenneth Tynan"
+    , "Alexander Mathis", "Mackenzie Weygandt Mathis", "Andrea Moro", "Stephen Crain", "Jean-Pierre Eckmann"]
