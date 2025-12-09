@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-11-29 19:59:05 gwern"
+# When:  Time-stamp: "2025-12-09 23:12:33 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -152,7 +152,7 @@ else
           s '</p></p>' '</p>'; s '’ ”' '’ ”'; s ' ”' ' “';
           s '[("doi","")]' ''; s '>/a>' '</a>'; s 'href="W!"' 'href="!W"'; s 'class="Logotype-Tex"' 'class="logotype-tex"'; s 'Class="Logotype-Tex"' 'class="logotype-tex"'; s '<span Class="' '<span class="';
           s '_n_th' '<em>n</em>th'; s 'thumbnailText: ' 'thumbnail-text: '; s ' — ' '—'; s '_n_=' '_n_ = ';
-          s '< a href' '<a href'; s 'modifed: 20' 'modified: 20'; s 'linklive-not' 'link-live-not'; s ' n-dimensional' ' <em>n</em>-dimensional'; s 'pdf#pg=' 'pdf#page='; s 'PDF#pg=' 'PDF#page='; s '<hr />' '<hr>'; s '</hr>' '<hr>'; s 'confidence: highly-likely' 'confidence: highly likely'; s 'drop-caps-de-zs' 'dropcaps-de-zs'; s 'drop-caps-kanzlei' 'dropcaps-kanzlei'; s '฿' '₿'; s 'mL/kg/day' 'mL⧸kg⧸day'; s 'μg/day' 'μg⧸day'; s 'kg/day' 'kg⧸day'; s 'mg/day' 'mg⧸day'; s 'g/day' 'g⧸day'; s 'kcal/day' 'kcal⧸day'; s 'tokens/sec' 'tokens⧸sec'; s 'kg/m<sup>2</sup>' 'kg⧸m<sup>2</sup>'; s 'kg/m(2)' 'kg⧸m<sup>2</sup>'; s 'ng/mL' 'ng⧸mL'; s ' g/L' ' g⧸L'; s ' mg/L' ' mg⧸L';s ' mg/L' ' mg⧸L'; s 'μg/L' 'μg⧸L'; s 'g/cm2' 'g⧸cm<sup>2</sup>'; s ' g/d' ' g⧸d';
+          s '< a href' '<a href'; s 'modifed: 20' 'modified: 20'; s 'linklive-not' 'link-live-not'; s ' n-dimensional' ' <em>n</em>-dimensional'; s 'pdf#pg=' 'pdf#page='; s 'PDF#pg=' 'PDF#page='; s '<hr />' '<hr>'; s '</hr>' '<hr>'; s 'confidence: highly-likely' 'confidence: highly likely'; s 'drop-caps-de-zs' 'dropcaps-de-zs'; s 'drop-caps-kanzlei' 'dropcaps-kanzlei'; s '฿' '₿'; s 'mL/kg/day' 'mL⧸kg⧸day'; s 'μg/day' 'μg⧸day'; s 'kg/day' 'kg⧸day'; s 'mg/day' 'mg⧸day'; s 'g/day' 'g⧸day'; s 'kcal/day' 'kcal⧸day'; s 'tokens/sec' 'tokens⧸sec'; s 'kg/m<sup>2</sup>' 'kg⧸m<sup>2</sup>'; s 'kg/m(2)' 'kg⧸m<sup>2</sup>'; s 'ng/mL' 'ng⧸mL'; s ' g/L' ' g⧸L'; s ' mg/L' ' mg⧸L';s ' mg/L' ' mg⧸L'; s 'μg/L' 'μg⧸L'; s 'g/cm2' 'g⧸cm<sup>2</sup>'; s ' g/d' ' g⧸d'; s 'kV/m' 'kV⧸m';
           s 'src="doc/' 'src="/doc/'; s 'href="doc/' 'href="/doc/';
           s 'link-icon-not' 'icon-not'; s '<!--<p>' '<!-- <p>'; s '</p>-->' '</p> -->';
           s '](W!' '](!W'; s '<em>𝛽</em>' '<em>β</em>'; s '𝛽' '<em>β</em>'; s 'class="table-simple' 'class="table-small'
@@ -351,7 +351,6 @@ else
     ## Pandoc Markdown doesn't let you write stuff 'in between' sections, either. So… a hack.
     sed -i -e 's/section id=\"newest-blog\"/hr class="horizontal-rule-nth-1"> <section id="newest-blog"/' ./_site/index
     sed -i -e 's/section id=\"statistics\"/hr class="horizontal-rule-nth-1"> <section id="statistics"/' ./_site/index
-    gwsed "<hr />" "<hr>" &>/dev/null; gwsed "<hr><hr>" "<hr>" &>/dev/null;
 
     bold "Building sitemap.xml…"
     ## generate a sitemap file for search engines:
@@ -544,9 +543,12 @@ else
     echo "$PAGES_ALL" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 separator
 
     bold "Cleaning up Pandoc’s self-closing-tag-isms…" # TODO: why *does* Pandoc do this even with HTML5 output if it's invalid?
+    # Pandoc AST/HTML block problems seem to lead to odd problems with duplicate rulers, so we try to fix that up as well:
     hr () { sed -i -e 's/<hr \/>/<hr>/g' -e 's/<hr\/>/<hr>/g' -e 's/<hr><\/hr>/<hr>/g' -e 's/><\/img>/>/g' -e 's/<br \/>/<br>/g'  -- "$@"; } # they are primarily generated in the footnote section, but who knows where else?
     export -f hr
     echo "$PAGES_ALL" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 hr
+    gwsed "<hr />" "<hr>" &>/dev/null &
+    gwsed "<hr><hr>" "<hr>" &>/dev/null &
 
     # 1. turn "As per Foo et al 2020, we can see." → "<p>As per Foo et al 2020, we can see.</p>" (&nbsp;); likewise for 'Foo 2020' or 'Foo & Bar 2020'
     # 2. add non-breaking character to punctuation after links to avoid issues with links like '[Foo](/bar);' where ';' gets broken onto the next line (this doesn't happen in regular text, but only after links, so I guess browsers have that builtin but only for regular text handling?), (U+2060 WORD JOINER (HTML &#8288; • &NoBreak; • WJ))
@@ -1635,7 +1637,7 @@ else
             if [ "$HEADER" != "" ]; then echo "Header: $@"; fi;
         }
         export -f checkSpamHeader
-        find ./doc/ -type f -mtime -31 -name "*.pdf" | gfv -e 'doc/www/' -e '2012-kirk.pdf' -e '1929-tolmachoff.pdf' | parallel checkSpamHeader
+        find ./doc/ -type f -mtime -31 -name "*.pdf" | gfv -e 'doc/www/' -e '2012-kirk.pdf' -e '1929-tolmachoff.pdf' -e '1920-courtierforster.pdf' | parallel checkSpamHeader
     }
     wrap λ "Remove academic-publisher wrapper junk from PDFs using 'pdfcut'. (Reminder: can use 'pdfcut-append' to move low-quality-but-not-deletion-worthy first pages to the end, and 'pdfcut-last' to remove the last page.)" &
 

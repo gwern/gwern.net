@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-12-02 19:21:44 gwern"
+;;; When:  Time-stamp: "2025-12-09 20:07:06 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -2273,8 +2273,8 @@ may malfunction if run on other formats like HTML
                     (progn
                       (delete-region (point-min) (point-max))
                       (insert original-text)
-                      (message "Paragraphizing skipped: new text invalid (character length: %d → %d, has \\n\\n: %s)."
-                               original-length new-length (if has-double-newline "yes" "no"))))))
+                      (message "Paragraphizing skipped: new text invalid [char-length change: %d → %d, has \\n\\n: %s]."
+                               original-length new-length (if has-double-newline "True" "False"))))))
             (error "Error: Python `paragraphizer.py` script not found in path")))))
     (when double-newline-found
       (goto-char (point-max)))))
