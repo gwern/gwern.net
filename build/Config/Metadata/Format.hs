@@ -181,7 +181,7 @@ filterMetaBadWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is20
                       , "bar", "tmp", "jvore", "ÿþ", "I.R.I.S.", "C&M", "C&amp;M", "()", "[]", "{}"
                       , "Gundars Strads", "Error - CORE file server", "comp2", "u2ps", "mac2"
                       , "Chrome", "Chromium", "Firefox", "Safari", "Author", "Binsbench"
-                      , "Western Publishing"]
+                      , "Western Publishing", "John Wiley, Sons"]
 
 -- tests: unique-all
 htmlRewriteTestCases :: [(String, String)]

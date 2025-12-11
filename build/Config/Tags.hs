@@ -7,7 +7,7 @@ import Utils (anyInfix, anyPrefix)
 
 -- Maximum edit distance for typo correction in tag guessing using Levenshtein edit-distance (eg. 'sunkcost' → 'sunk-cost'):
 tagTypoMaxDistance :: Int
-tagTypoMaxDistance = 2
+tagTypoMaxDistance = 3
 
 -- sub-directories where directory ≠ tag; this is usually the case in projects or archives/mirrors/dumps. We don't consider them to be tags.
 tagGuessBlacklist :: String -> Bool
@@ -187,7 +187,9 @@ tagsShort2LongRewrites =
    , ("queueing-theory", "queuing"), ("queueing_theory", "queuing"), ("queueingtheory", "queuing"), ("queue", "queuing"), ("queues", "queuing"), ("queue-theory", "queuing"), ("queue_theory", "queuing"), ("queuetheory", "queuing"), ("queuingtheory", "queuing"), ("queuing-theory", "queuing"), ("queuing_theory", "queuing"), ("quing", "queuing")   -- there are just way too many ways to spell 'queue'...
    , ("japanese/art", "japan/art"), ("rlhf", "preference-learning"), ("evoluton", "evolution"), ("epigentics", "epigenetics")
    , ("kufic", "design/typography/square"), ("square-kufic", "design/typography/square"), ("kufic-square", "design/typography/square"), ("textgame", "text-game"), ("got", "gpt"), ("high-iq", "iq/high"), ("nootropics", "nootropic"), ("bac", "abc"), ("cab", "abc"), ("acb", "abc"), ("hardware/scaling", "scaling/hardware")
-   , ("sunkcosts", "sunk-cost"), ("sparse", "sparsity"), ("ai/nn/transformer/attention/sparse", "ai/nn/transformer/attention/sparsity")
+   , ("sunkcosts", "sunk-cost"), ("sparse", "sparsity"), ("ai/nn/transformer/attention/sparse", "ai/nn/transformer/attention/sparsity"), ("wrtigin", "writing")
+   , ("star-war", "star-wars"), ("starwars", "star-wars"), ("starwar", "star-wars")
+   , ("hydranencephaly", "anencephaly"), ("aencephaly", "anencephaly"), ("amencephaly", "anencephaly"), ("anancephaly", "anencephaly"), ("ancephaly", "anencephaly"), ("anecephaly", "anencephaly"), ("anecnephaly", "anencephaly"), ("anencefaly", "anencephaly"), ("anenceohalyt", "anencephaly"), ("anencepahly", "anencephaly"), ("anencepaly", "anencephaly"), ("anencephal", "anencephaly"), ("anencephaley", "anencephaly"), ("anencephalg", "anencephaly"), ("anencephalt", "anencephaly"), ("anencephay", "anencephaly"), ("anencephlay", "anencephaly"), ("anencephly", "anencephaly"), ("anencepphaly", "anencephaly"), ("anencphaly", "anencephaly"), ("anencwphaly", "anencephaly"), ("anenecephaly", "anencephaly"), ("anenecphaly", "anencephaly"), ("anenenecephaly", "anencephaly"), ("anennccephaly", "anencephaly"), ("anensefaly", "anencephaly"), ("anensephaly", "anencephaly"), ("anincephaly", "anencephaly"), ("annencephaly", "anencephaly"), ("gydrancrephaly", "anencephaly"), ("hydracephaly", "anencephaly"), ("hydrancefaly", "anencephaly"), ("hydrancepahly", "anencephaly"), ("hydrancepaly", "anencephaly"), ("hydrancephakt", "anencephaly"), ("hydrancephal", "anencephaly"), ("hydrancephaley", "anencephaly"), ("hydrancephalg", "anencephaly"), ("hydrancephay", "anencephaly"), ("hydrancephlay", "anencephaly"), ("hydrancephly", "anencephaly"), ("hydrancepphaly", "anencephaly"), ("hydrancwphaly", "anencephaly"), ("hydranecephaly", "anencephaly"), ("hydranecphaly", "anencephaly"), ("hydranephaly", "anencephaly"), ("hydrannccephaly", "anencephaly"), ("hydransefaly", "anencephaly"), ("hydransephaly", "anencephaly"), ("hydranxephaly", "anencephaly"), ("hydrnacephaly", "anencephaly"), ("hydroancephaly", "anencephaly"), ("hydrocephaly", "anencephaly"), ("hydrrancephaly", "anencephaly"), ("hyrdrancephaly", "anencephaly"), ("jydrancephaly", "anencephaly"), ("naencephaly", "anencephaly"), ("nencephaly", "anencephaly"), ("snencephaly", "anencephaly")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
@@ -281,6 +283,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("genetics/genome-synthesis/virus-proof", "virus-proof cells")
   , ("genetics/genome-synthesis", "genome synthesis")
   , ("food/mead", "mead")
+  , ("fiction/science-fiction/star-wars", "<em>Star Wars</em>")
   , ("fiction/science-fiction/r-a-lafferty", "R. A. Lafferty")
   , ("fiction/science-fiction/batman", "<em>Batman</em>")
   , ("fiction/science-fiction/time-travel", "time-travel")

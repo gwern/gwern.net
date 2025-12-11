@@ -832,6 +832,8 @@ canonicals = M.fromList
   , ("Josh Tenenbaum", "Joshua B. Tenenbaum")
   , ("Terry Tao", "Terence Tao")
   , ("Rama Chellappa", "Ramalingam Chellappa")
+  , ("cms", "Colin M. Strickland")
+  , ("Alan Greene", "Alan Dague-Greene")
   ]
 
 -- tests: unique
@@ -879,7 +881,7 @@ canonicalsWithInitials =
   , "Aniruddh D. Patel", "James Y. Zou", "Ida L. Surakka", "Jeanne E. Savage", "James B. Potash"
   , "Ross J. Anderson", "Arnold B. Bakker", "Dwayne Richard Hipp", "David C. Liewald", "Elizabeth K. Speliotes"
   , "Douglas F. Levinson", "Blair H. Smith", "Michael J. Wreen", "Andreas J. Forstner", "Clair L. Stong"
-  , "Charles Allen Moser", "John A. Leslie", "Robert D. Putnam", "Joel D. Cooper"]
+  , "Charles Allen Moser", "John A. Leslie", "Robert D. Putnam", "Joel D. Cooper", "Duane A. Compton"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1975,6 +1977,12 @@ authorLinkDB = M.fromList $
     , ("David L. G. Arnold", "https://www3.uwsp.edu/english/Documents/Arnold_CV.pdf")
     , ("David Gros", "https://dgros.io/")
     , ("Joel D. Cooper", "https://fabbs.org/about/in-honor-of/joel-cooper-phd/")
+    , ("Colin M. Strickland", "https://www.beatworm.co.uk/")
+    , ("Frederick Brennan", "https://copypaste.wtf/about-me.html")
+    , ("Thomas Casey", "https://anomalouscognitions.substack.com/about")
+    , ("John August", "https://johnaugust.com/about")
+    , ("Alan Dague-Greene", "https://luc.devroye.org/fonts-36439.html")
+    , ("Claudia Casser", "https://web.archive.org/web/20241005164720/https://www.ethicalantics.com/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3255,4 +3263,5 @@ authorWpLinkDB =
     , "Ann Shulgin", "Alexander Shulgin", "Craig Packer", "Charles Allen Moser", "Ruriko Yoshida", "Michael Stillman"
     , "William Empson", "Michael Eisen", "dril", "William Pannapacker", "Gail Hareven", "Alan C. Newell", "Kenneth Tynan"
     , "Alexander Mathis", "Mackenzie Weygandt Mathis", "Andrea Moro", "Stephen Crain", "Jean-Pierre Eckmann"
-    , "Katia Obraczka", "SwiftOnSecurity", "Robert D. Putnam", "Ramalingam Chellappa", "Explosions in the Sky"]
+    , "Katia Obraczka", "SwiftOnSecurity", "Robert D. Putnam", "Ramalingam Chellappa", "Explosions in the Sky"
+    , "Omer Reingold", "Frauke Kreuter", "Eduardo D. Rodriguez", "Duane A. Compton"]
