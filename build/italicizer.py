@@ -4,7 +4,7 @@
 # italicizer.py: reformat a string to add italics as semantically appropriate (eg. book titles) using LLMs
 # Author: Gwern Branwen
 # Date: 2025-01-17
-# When:  Time-stamp: "2025-11-26 18:30:59 gwern"
+# When:  Time-stamp: "2025-12-09 22:15:25 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python italicizer.py
@@ -1187,6 +1187,30 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 - "Guilt" # too vague and common a title to risk italicizing
 ""
 - "The American Psychiatric Association Says Disney Adults Don’t Have to Worry About This Problem Anymore"
+""
+- "small clever rooms: 10 Thousand Lifetimes with Roguelikes"
+""
+- "Ruby’s Ultimate Guide to Thoughtful Gifts"
+""
+- "Japanese game developers face ridiculously high font license fees following US acquisition of major domestic provider. Live-service gamesto take the biggest blow"
+""
+- "Honeybees Mesmerizing Defensive Wave"
+""
+- "Stranger in Parodies: Weird Al and the Law of Musical Satire"
+""
+- "/doc/science/chemistry/2010-oleary.pdf Where ‘Things Go The Other Way’: The Stereochemistry of Lewis Carroll’s Looking-Glass World" # the title of the novel is 'Through the Looking-Glass', not 'Looking-Glass World'
+""
+- "An Adventure in Stereochemistry: Alice in Mirror Image Land"
+""
+- "Diplomacy and Domestic Politics: The Logic of Two-Level Games"
+""
+- "The Missing 9: Why Some Movies Have a Hole in Their IMDb Ratings"
+""
+- "The Man in the Snow White Cell"
+""
+- "Mr. Roberts Goes to Hollywood, Part 2: The Producer"
+""
+- "Postcard From 1952"
 ""
 
 [End of examples. Reminder: your only task is to add missing italics you are sure of.]

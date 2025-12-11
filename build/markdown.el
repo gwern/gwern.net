@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-10-26 21:22:17 gwern"
+;;; When:  Time-stamp: "2025-12-09 20:07:06 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -112,6 +112,7 @@
 (defun arrow-up    () (interactive (insert-char ?↑ 1)))
 (defun arrow-down  () (interactive (insert-char ?↓ 1)))
 (defun interpunct  () (interactive (insert-char ?• 1)))
+(defun g-gwern     () (interactive (insert-char ?𝔊 1))) ; 'MATHEMATICAL FRAKTUR CAPITAL G'
 
 (defun replace-all (original replacement)
   "Do regexp search-and-replace in the current buffer of ORIGINAL to REPLACEMENT.
@@ -1191,6 +1192,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("\\([0-9∞.]+\\)- to \\([0-9∞.]+\\)-"          . "\\1–\\2-") ; "18- to 20-year-olds" → "18--20-year-olds"
                         ("95% CI = \\([0-9]\\.[0-9]+\\), \\([0-9]\\.[0-9]+\\)" . "95% CI = \\1–\\2")
                         ("CI:\\([0-9]\\)" . "CI: \\1") ; "95% CI:0.01-0.99"
+                        (" ~ \\([0-9]+\\)" . " ~\\1") ; "a period of ~ 20 min"
                         )
                       ))
          (dolist (pair regexps)
@@ -2271,8 +2273,8 @@ may malfunction if run on other formats like HTML
                     (progn
                       (delete-region (point-min) (point-max))
                       (insert original-text)
-                      (message "Paragraphizing skipped: new text invalid (character length: %d → %d, has \\n\\n: %s)."
-                               original-length new-length (if has-double-newline "yes" "no"))))))
+                      (message "Paragraphizing skipped: new text invalid [char-length change: %d → %d, has \\n\\n: %s]."
+                               original-length new-length (if has-double-newline "True" "False"))))))
             (error "Error: Python `paragraphizer.py` script not found in path")))))
     (when double-newline-found
       (goto-char (point-max)))))

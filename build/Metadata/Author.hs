@@ -3,7 +3,7 @@
 {- Metadata.Author.hs: module for managing 'author' metadata & hyperlinking author names in annotations
 Author: Gwern Branwen
 Date: 2024-04-14
-When:  Time-stamp: "2025-08-22 20:51:39 gwern"
+When:  Time-stamp: "2025-11-28 09:46:53 gwern"
 License: CC-0
 
 Authors are useful to hyperlink in annotations, but pose some problems: author names are often ambiguous in both colliding and having many non-canonical versions, are sometimes extremely high frequency & infeasible to link one by one, and there can be a large number of authors (sometimes hundreds or even thousands in some scientific fields).
@@ -210,7 +210,7 @@ authorsUnknownPrint :: String -> IO ()
 authorsUnknownPrint "" = return ()
 authorsUnknownPrint auts = do let missing = authorsUnknown $ splitOn ", " auts
                               missingInWikipedia <- filterM (isWPArticle True . toWikipediaEnURL . T.pack) missing
-                              unless (null missing) $ do printRed "Authors unknown: "
+                              unless (null missing) $ do printRed (if length missing == 1 then "Author unknown: " else "Authors unknown: ")
                                                          printGreen (intercalate ", " missing)
                               unless (null missingInWikipedia) $ do printGreen "Unknown authors possibly in Wikipedia:"
                                                                     let urls = map (T.unpack . toWikipediaEnURL . T.pack) missingInWikipedia

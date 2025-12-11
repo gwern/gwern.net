@@ -4,7 +4,7 @@
 # date-guesser.py: extract recent dates in YYYY[[-MM]-DD] format from natural language inputs or structured text like URLs
 # Author: Gwern Branwen
 # Date: 2024-08-21
-# When:  Time-stamp: "2025-11-26 20:44:39 gwern"
+# When:  Time-stamp: "2025-12-09 22:15:39 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo 'https://erikbern.com/2016/04/04/nyc-subway-math' | python date-guesser.py
@@ -1359,6 +1359,32 @@ Task examples (with explanations in '#' comments):
 ""
 - "https://www.anthropic.com/news/claude-opus-4-5" # 2025-11-24
 "2025"
+- "https://theonion.com/more-u-s-children-being-diagnosed-with-youthful-tenden-1819565754/" # 2000-09-27
+"2000"
+- "https://www.lesswrong.com/posts/xEPiojzEzQexafcBR/information-hygiene" # 2025-11-26
+""
+- "https://futuring.substack.com/p/wearing-dresses-is-cheating-an-experiment" # 2025-11-13
+""
+- "https://research.swtch.com/nih" # 2023-10-25
+""
+- "https://www.nature.com/articles/s41586-025-09761-x#deepmind" # 2025-10-22
+"2025"
+- "https://www.sciencedirect.com/science/article/pii/S016748701630277X" # 2017-12
+""
+- "https://www.lesswrong.com/posts/vpNG99GhbBoLov9og/claude-4-5-opus-soul-document" # 2025-11-28
+"2025"
+- "https://www.pnas.org/doi/10.1073/pnas.2415254122" # 2025-03-24
+""
+- "https://www.lesswrong.com/posts/u6Lacc7wx4yYkBQ3r/insights-into-claude-opus-4-5-from-pokemon" # 2025-12-04
+"2025"
+- "https://journals.sagepub.com/doi/10.1177/25152459231213375" # 2024-02-05
+""
+- "https://journals.sagepub.com/doi/full/10.1177/09567976251392219" # 2025-11-21
+""
+- "https://www.sciencedirect.com/science/article/pii/S0960982221008769" # 2021-09-13
+"2021"
+- "https://vimeo.com/41669642 Postcard From 1952" # 2012-05-06
+""
 
 Task:
 

@@ -187,7 +187,7 @@ tagsShort2LongRewrites =
    , ("queueing-theory", "queuing"), ("queueing_theory", "queuing"), ("queueingtheory", "queuing"), ("queue", "queuing"), ("queues", "queuing"), ("queue-theory", "queuing"), ("queue_theory", "queuing"), ("queuetheory", "queuing"), ("queuingtheory", "queuing"), ("queuing-theory", "queuing"), ("queuing_theory", "queuing"), ("quing", "queuing")   -- there are just way too many ways to spell 'queue'...
    , ("japanese/art", "japan/art"), ("rlhf", "preference-learning"), ("evoluton", "evolution"), ("epigentics", "epigenetics")
    , ("kufic", "design/typography/square"), ("square-kufic", "design/typography/square"), ("kufic-square", "design/typography/square"), ("textgame", "text-game"), ("got", "gpt"), ("high-iq", "iq/high"), ("nootropics", "nootropic"), ("bac", "abc"), ("cab", "abc"), ("acb", "abc"), ("hardware/scaling", "scaling/hardware")
-   , ("sunkcosts", "sunk-cost")
+   , ("sunkcosts", "sunk-cost"), ("sparse", "sparsity"), ("ai/nn/transformer/attention/sparse", "ai/nn/transformer/attention/sparsity")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 

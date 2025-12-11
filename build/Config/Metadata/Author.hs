@@ -829,6 +829,9 @@ canonicals = M.fromList
   , ("GPT-5.1 pro", "GPT-5.1 Pro")
   , ("Dril", "dril")
   , ("Thomas H. Benton", "William Pannapacker")
+  , ("Josh Tenenbaum", "Joshua B. Tenenbaum")
+  , ("Terry Tao", "Terence Tao")
+  , ("Rama Chellappa", "Ramalingam Chellappa")
   ]
 
 -- tests: unique
@@ -875,7 +878,8 @@ canonicalsWithInitials =
   , "Stephen R. Quake", "Keri L. Monda", "Jennifer E. Huffman", "Robert L. Williams", "Charles M. Dollar"
   , "Aniruddh D. Patel", "James Y. Zou", "Ida L. Surakka", "Jeanne E. Savage", "James B. Potash"
   , "Ross J. Anderson", "Arnold B. Bakker", "Dwayne Richard Hipp", "David C. Liewald", "Elizabeth K. Speliotes"
-  , "Douglas F. Levinson", "Blair H. Smith", "Michael J. Wreen", "Andreas J. Forstner", "Clair L. Stong", "Charles Allen Moser", "John A. Leslie"]
+  , "Douglas F. Levinson", "Blair H. Smith", "Michael J. Wreen", "Andreas J. Forstner", "Clair L. Stong"
+  , "Charles Allen Moser", "John A. Leslie", "Robert D. Putnam", "Joel D. Cooper"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1947,7 +1951,7 @@ authorLinkDB = M.fromList $
     , ("iamronen", "https://about.iamronen.com/")
     , ("Ian Henry", "https://ianthehenry.com/")
     , ("DeepSeek-V3.1", "https://huggingface.co/deepseek-ai/DeepSeek-V3.1")
-    , ("DeepSeek-V3.2", "https://huggingface.co/deepseek-ai/DeepSeek-V3.2-Exp")
+    , ("DeepSeek-V3.2", "https://arxiv.org/abs/2512.02556#deepseek")
     , ("Ravid Shwartz-Ziv", "https://www.ravid-shwartz-ziv.com/")
     , ("Nikita Prokopov", "https://tonsky.me/")
     , ("Suno", "https://en.wikipedia.org/wiki/Suno_(platform)")
@@ -1962,6 +1966,15 @@ authorLinkDB = M.fromList $
     , ("Robert Griffiths", "https://en.wikipedia.org/wiki/Robert_Griffiths_(mathematician)")
     , ("John A. Leslie", "https://en.wikipedia.org/wiki/John_A._Leslie")
     , ("Alexander Wales", "https://alexanderwales.com/")
+    , ("DaystarEld", "https://www.lesswrong.com/users/daystareld")
+    , ("Jack Houck", "https://journalofscientificexploration.org/index.php/jse/article/download/641/424#pdf")
+    , ("Alan Newell", "https://en.wikipedia.org/wiki/Alan_Newell_(English_computer_scientist)")
+    , ("Rauno Freiberg", "https://rauno.me")
+    , ("Steve Lawrence", "https://en.wikipedia.org/wiki/Steve_Lawrence_(computer_scientist)")
+    , ("414design", "https://github.com/414design")
+    , ("David L. G. Arnold", "https://www3.uwsp.edu/english/Documents/Arnold_CV.pdf")
+    , ("David Gros", "https://dgros.io/")
+    , ("Joel D. Cooper", "https://fabbs.org/about/in-honor-of/joel-cooper-phd/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3236,5 +3249,10 @@ authorWpLinkDB =
     , "James B. Potash", "Jean-Jacques Laffont", "Robert D. Hare", "Anthony Bourdain", "Ross J. Anderson"
     , "Primo Levi", "Stuart Woolf", "Arnold B. Bakker", "Justine Tunney", "Jens Hoffmann", "Stanislav Drobyshevsky"
     , "Galit Shmueli", "Robert Mitchell Lindner", "The Daily Telegraph", "Max More", "David Roundy", "Chris Callison-Burch"
-    , "Wes McKinney", "Zoltán Kodály", "Jacob Koranyi", "Matthew Garrett", "Peter Medawar", "David M. Berry", "CTAN", "James Blish", "Motoo Kimura", "M. John Harrison",
-    "Anne Trefethen", "Tony Hey", "Robert Ghrist", "Michael Bloomberg", "Gloria Origgi", "Diego Gambetta", "Ann Shulgin", "Alexander Shulgin", "Craig Packer", "Charles Allen Moser", "Ruriko Yoshida", "Michael Stillman", "William Empson", "Michael Eisen", "dril", "William Pannapacker"]
+    , "Wes McKinney", "Zoltán Kodály", "Jacob Koranyi", "Matthew Garrett", "Peter Medawar", "David M. Berry", "CTAN"
+    , "James Blish", "Motoo Kimura", "M. John Harrison",
+    "Anne Trefethen", "Tony Hey", "Robert Ghrist", "Michael Bloomberg", "Gloria Origgi", "Diego Gambetta"
+    , "Ann Shulgin", "Alexander Shulgin", "Craig Packer", "Charles Allen Moser", "Ruriko Yoshida", "Michael Stillman"
+    , "William Empson", "Michael Eisen", "dril", "William Pannapacker", "Gail Hareven", "Alan C. Newell", "Kenneth Tynan"
+    , "Alexander Mathis", "Mackenzie Weygandt Mathis", "Andrea Moro", "Stephen Crain", "Jean-Pierre Eckmann"
+    , "Katia Obraczka", "SwiftOnSecurity", "Robert D. Putnam", "Ramalingam Chellappa", "Explosions in the Sky"]
