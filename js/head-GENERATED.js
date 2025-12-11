@@ -3018,7 +3018,8 @@ GW.layout = {
 		".margin-notes-block",
 		".page-description-annotation",
 		".data-field",
-		".admonition-title > p"
+		".admonition-title > p",
+		".poem > p:last-child"
 	].join(", "),
 
 	//	Wrappers are transparent at the top and bottom.
@@ -3170,13 +3171,15 @@ GW.layout = {
 		[ ".interview .exchange",		 4, false ],
 		[ ".interview .utterance",		 2, false ],
 
-		[ ".admonition-title > p + p",   1, false ],
+		[ ".admonition-title > p + .admonition-title > p",
+										 1, false ],
 
 		[ "p.footnote-back-block",		 1, false ],
 		[ "p.in-list + p.data-field",	10 ],
 		[ "p.first-graf",				10 ],
 		[ "p.list-heading",				10 ],
 		[ ".poem p",					10 ],
+		[ ".poem p + .poem p",			10 ],
 		[ ".epigraph p.last-block:not(.first-block)",
 										 8 ],
 		[ "p",							 0 ],

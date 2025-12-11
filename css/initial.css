@@ -1260,6 +1260,10 @@ p.empty-graf {
 	--text-alignment: left;
 }
 
+.poem-html {
+	white-space: pre;
+}
+
 
 /***************/
 /* BLOCKQUOTES */

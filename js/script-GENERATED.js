@@ -16348,6 +16348,24 @@ if (Extracts.popFrameProvider == Popups) {
 }
 
 
+/**********/
+/* POETRY */
+/**********/
+
+addContentLoadHandler(GW.contentLoadHandlers.processPoems = (eventInfo) => {
+    GWLog("deleteColgroups", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll("pre.poem-html").forEach(poem => {
+		//	To compensate for <code> within the <pre>.
+		unwrap(poem.firstElementChild);
+
+		//	Rewrap and rewrite.
+		poem = rewrapContents(poem, "div.poem.poem-html");
+		poem.innerHTML = "<p>" + poem.textContent.split("\n\n").join("</p><p>") + "</p>";
+	});
+}, "rewrite");
+
+
 /***************/
 /* CODE BLOCKS */
 /***************/
