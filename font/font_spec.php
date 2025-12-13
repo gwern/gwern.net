@@ -9,6 +9,8 @@
 		for ToC and UI elements; primarily intended for Mac/iOS users
 	- IBM Plex Mono
 		for code blocks
+	- Nimbus Mono
+		for poetry (monospaced for enjambment, etc.)
 	- Initial-capital fonts
 		for 5 kinds of dropcaps; enabled in /static/css/default.css
 		- Deutsche Zierschrift
@@ -87,6 +89,14 @@ unicode-range	U+0020-007E, U+00A0-00FF, U+0152, U+0153, U+017F, U+018F, U+0192, 
 IBM Plex Mono
 /static/font/ibm-plex-mono/IBMPlexMono-
 otf
+font-display	swap
+italic			/$/		Italic
+`normal			Regular
+`bold			Bold
+
+Nimbus Mono
+/static/font/nimbus-mono/NimbusMonoLUN-
+ttf
 font-display	swap
 italic			/$/		Italic
 `normal			Regular

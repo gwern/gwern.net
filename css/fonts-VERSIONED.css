@@ -251,6 +251,39 @@
 	font-display: swap;
 }
 
+/***************/
+/* NIMBUS MONO */
+/***************/
+
+@font-face {
+	font-family: 'Nimbus Mono';
+	font-weight: normal;
+	font-style: normal;
+	src: url('/static/font/nimbus-mono/NimbusMonoLUN-Regular.ttf?v=1765652906') format('truetype');
+	font-display: swap;
+}
+@font-face {
+	font-family: 'Nimbus Mono';
+	font-weight: normal;
+	font-style: italic;
+	src: url('/static/font/nimbus-mono/NimbusMonoLUN-RegularItalic.ttf?v=1765652905') format('truetype');
+	font-display: swap;
+}
+@font-face {
+	font-family: 'Nimbus Mono';
+	font-weight: bold;
+	font-style: normal;
+	src: url('/static/font/nimbus-mono/NimbusMonoLUN-Bold.ttf?v=1765652905') format('truetype');
+	font-display: swap;
+}
+@font-face {
+	font-family: 'Nimbus Mono';
+	font-weight: bold;
+	font-style: italic;
+	src: url('/static/font/nimbus-mono/NimbusMonoLUN-BoldItalic.ttf?v=1765652904') format('truetype');
+	font-display: swap;
+}
+
 /***********/
 /* QUIVIRA */
 /***********/
