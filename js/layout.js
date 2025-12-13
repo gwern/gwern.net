@@ -1060,6 +1060,19 @@ function textContentOf(node) {
 	return Array.from(node.childNodes).reduce((textContent, childNode) => (textContent + textContentOf(childNode)), "");
 }
 
+/**************************************************************************/
+/*	Returns true if it’s ok to remove the given block if it’s empty.
+
+	The purpose of this function is to be conservative by using a whitelist
+	approach to removing empty grafs.
+*/
+function emptyGrafRemovable(block) {
+	if (block.closest(".poem"))
+		return true;
+
+	return false;
+}
+
 
 /*********************/
 /* LAYOUT PROCESSORS */
@@ -1245,8 +1258,12 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 			//	Empty paragraphs (the .empty-graf class; not displayed).
 			let emptyGraf = isEmpty(block);
 			block.classList.toggle("empty-graf", emptyGraf);
-			if (emptyGraf)
+			if (emptyGraf) {
+				if (emptyGrafRemovable(block))
+					block.remove();
+
 				return;
+			}
 
 			/*	Paragraphs not preceded directly by other paragraphs
 				(not in lists) (the .first-graf class).
