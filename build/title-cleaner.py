@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-12-10 22:28:29 gwern"
+# When:  Time-stamp: "2025-12-13 19:59:10 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -798,6 +798,10 @@ Selection vs. Rejection"
 "Kakishibu Dyeing in Seattle"
 - "Hitler Did NOT Have Kallmann Syndrome — Keith Woods"
 "Hitler Did <em>Not</em> Have Kallmann Syndrome"
+- "How To Tell Youre In Base Reality"
+"How To Tell You’re In Base Reality"
+- "Wages under superintelligence - by Zachary Brown"
+"Wages under superintelligence"
 
 Task:
 

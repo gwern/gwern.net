@@ -122,7 +122,7 @@ dateRangeDurationRaw todayYear x s =
                                                     Subscript   [Str $ if dateLongP then dateRangeDaysRounded else dateRangeT]],
                        Str dateSecond] ++
                        if durationP then [] else [Subscript
-                                                 [Span ("", [], [("title", dateFirst`T.append`" was "`T.append`dateDurationT`T.append`" years ago.")]) [Str (dateDurationT`T.append`"ya")]]]
+                                                 [Span ("", [], [("title", dateFirst`T.append`" was "`T.append`(T.pack $ show (todayYear - dateFirstInt))`T.append`" years ago.")]) [Str (dateDurationT`T.append`"ya")]]]
                       )
                     ] ++
                    if T.null after then [] else [dateRangeDuration todayYear $ Str after]

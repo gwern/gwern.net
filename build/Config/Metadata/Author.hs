@@ -834,6 +834,13 @@ canonicals = M.fromList
   , ("Rama Chellappa", "Ramalingam Chellappa")
   , ("cms", "Colin M. Strickland")
   , ("Alan Greene", "Alan Dague-Greene")
+  , ("Xiaoping Ren", "Ren Xiaoping")
+  , ("100th Coin", "100<sup>th</sup> Coin")
+  , ("explain xkcd", "Explain XKCD")
+  , ("Explain xkcd", "Explain XKCD")
+  , ("Explain Xkcd", "Explain XKCD")
+  , ("J. Strother Moore", "J Strother Moore") -- NOTE: yes, really: <https://en.wikipedia.org/wiki/J_Strother_Moore> "J Strother Moore (his first name is the alphabetic character 'J'—not an abbreviated 'J.') is an American computer scientist."
+  , ("Kaj_Sotala", "Kaj Sotala")
   ]
 
 -- tests: unique
@@ -881,7 +888,8 @@ canonicalsWithInitials =
   , "Aniruddh D. Patel", "James Y. Zou", "Ida L. Surakka", "Jeanne E. Savage", "James B. Potash"
   , "Ross J. Anderson", "Arnold B. Bakker", "Dwayne Richard Hipp", "David C. Liewald", "Elizabeth K. Speliotes"
   , "Douglas F. Levinson", "Blair H. Smith", "Michael J. Wreen", "Andreas J. Forstner", "Clair L. Stong"
-  , "Charles Allen Moser", "John A. Leslie", "Robert D. Putnam", "Joel D. Cooper", "Duane A. Compton"]
+  , "Charles Allen Moser", "John A. Leslie", "Robert D. Putnam", "Joel D. Cooper", "Duane A. Compton"
+  , "Timo E. Saaristo", "Arthur L. Caplan", "Robert T. Croyle", "Barbara K. Rimer", "Walter J. Ong"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1879,7 +1887,10 @@ authorLinkDB = M.fromList $
     , ("Jean Ferrières", "https://cerpop.inserm.fr/jean-ferrieres-publications-1")
     , ("GPT-5", "https://openai.com/gpt-5/")
     , ("GPT-5 Pro", "https://openai.com/index/introducing-gpt-5/#gpt-5-pro")
+    , ("GPT-5.1", "https://openai.com/index/gpt-5-1/#gpt-51-thinking")
     , ("GPT-5.1 Pro", "https://openai.com/index/gpt-5-1/#gpt-51-thinking")
+    , ("GPT-5.2", "https://openai.com/index/introducing-gpt-5-2/")
+    , ("GPT-5.2 Pro", "https://openai.com/index/introducing-gpt-5-2/#science-and-math")
     , ("Jerry Green", "https://en.wikipedia.org/wiki/Jerry_Green_(economist)")
     , ("Inger Njølstad", "https://no.wikipedia.org/wiki/Inger_Nj%C3%B8lstad")
     , ("Ingrid Agartz", "https://scholar.google.com/citations?user=NlZOhHMAAAAJ")
@@ -1983,6 +1994,22 @@ authorLinkDB = M.fromList $
     , ("John August", "https://johnaugust.com/about")
     , ("Alan Dague-Greene", "https://luc.devroye.org/fonts-36439.html")
     , ("Claudia Casser", "https://web.archive.org/web/20241005164720/https://www.ethicalantics.com/")
+    , ("Joseph Bernstein#math", "https://en.wikipedia.org/wiki/Joseph_Bernstein")
+    , ("Joseph Bernstein", "https://www.nytimes.com/by/joseph-bernstein")
+    , ("Timo E. Saaristo", "https://scholargps.com/scholars/98205076456069/timo-saaristo")
+    , ("Valeriya Lyssenko", "https://www.exodiab.se/valeriya-lyssenko/")
+    , ("Wei Wang", "https://web.cs.ucla.edu/~weiwang/")
+    , ("Xinlei Chen", "https://xinleic.xyz/")
+    , ("Arthur L. Caplan", "https://en.wikipedia.org/wiki/Arthur_Caplan")
+    , ("100<sup>th</sup> Coin", "https://www.youtube.com/@100thCoin")
+    , ("Bruno Simon", "https://bruno-simon.com/")
+    , ("Sam Kriss", "https://samkriss.substack.com/about")
+    , ("Robert T. Croyle", "/doc/biology/2021-rimer.pdf")
+    , ("Barbara K. Rimer", "https://en.wikipedia.org/wiki/Barbara_Rimer")
+    , ("Cole Wyeth", "https://colewyeth.com/")
+    , ("David Chapman", "https://meaningness.com/about-my-sites")
+    , ("Kaj Sotala", "https://www.lesswrong.com/users/kaj_sotala")
+    , ("Fergus Fettes", "https://www.lesswrong.com/users/fergus-fettes")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2567,7 +2594,7 @@ authorWpLinkDB =
     ,"Jordi Bur\233s", "Jordi Cam\237", "Jordi Torres", "Jorge Barros", "Jorge L. Contreras"
     ,"Jorge Leite", "Jorge Luis Borges", "Jorge Nocedal", "Jorge Rocha", "Jose Antonio"
     ,"Josef Coresh", "Josef Parnas", "Josef Priller", "Josef Urban", "Josep Call"
-    ,"Joseph A. Konstan", "Joseph Agassi", "Joseph Alsop", "Joseph B. Kadane", "Joseph Bernstein"
+    ,"Joseph A. Konstan", "Joseph Agassi", "Joseph Alsop", "Joseph B. Kadane"
     ,"Joseph Biederman", "Joseph Boden", "Joseph E. Parisi", "Joseph F. Quinn", "Joseph Felsenstein"
     ,"Joseph Firth", "Joseph Hellerstein", "Joseph Henrich", "Joseph L. DeRisi", "Joseph L. Fleiss"
     ,"Joseph Lau", "Joseph Lee Rodgers", "Joseph Loscalzo", "Joseph M. Baker", "Joseph M. Horn"
@@ -3264,4 +3291,5 @@ authorWpLinkDB =
     , "William Empson", "Michael Eisen", "dril", "William Pannapacker", "Gail Hareven", "Alan C. Newell", "Kenneth Tynan"
     , "Alexander Mathis", "Mackenzie Weygandt Mathis", "Andrea Moro", "Stephen Crain", "Jean-Pierre Eckmann"
     , "Katia Obraczka", "SwiftOnSecurity", "Robert D. Putnam", "Ramalingam Chellappa", "Explosions in the Sky"
-    , "Omer Reingold", "Frauke Kreuter", "Eduardo D. Rodriguez", "Duane A. Compton"]
+    , "Omer Reingold", "Frauke Kreuter", "Eduardo D. Rodriguez", "Duane A. Compton", "Gerald Schatten"
+    , "Laura Hewitson", "Bjorn Merker", "Ren Xiaoping", "Sergio Canavero", "Charles Krauthammer", "Akinori Yonezawa", "J Strother Moore", "Matt Kaufmann", "Ilka Agricola"]

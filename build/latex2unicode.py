@@ -4,7 +4,7 @@
 # latex2unicode.py: Convert a simple inline TeX/LaTeX (aimed at ArXiv abstracts) into Unicode+HTML+CSS, using the OA API.
 # Author: Gwern Branwen
 # Date: 2023-06-28
-# When:  Time-stamp: "2025-05-05 17:34:00 gwern"
+# When:  Time-stamp: "2025-12-13 21:31:27 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python latex2unicode.py
@@ -260,6 +260,8 @@ DyT(<em>x</em>) = tanh(α<em>x</em>)
 ~3 × 10<sup>6</sup> <em>μ</em>Lenat⧸word
 - '\\322\\
 322
+- 'E\in\mathbb{R}^{m\times n}'
+<em>E</em> ∈ ℝ<sup><em>m</em> × <em>n</em></sup>
 
 Task:
 

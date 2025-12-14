@@ -88,7 +88,7 @@ toWikipediaEnURLSearch title = "https://en.wikipedia.org/w/index.php?fulltext=1&
 escapeWikiArticleTitle :: T.Text -> T.Text
 escapeWikiArticleTitle ""    = error "Interwiki.escapeWikiArticleTitle: called with an empty string! This should never happen."
 escapeWikiArticleTitle title = E.encodeTextWith (\c -> (E.isAllowed c || c `elem` [':','/', '(', ')', ',', '#', '+'])) $
-                               replaceManyT [("–", "%E2%80%93"), ("\"", "%22"), ("[", "%5B"), ("]", "%5D"), ("%", "%25"), (" ", "_")] $
+                               replaceManyT [("–", "%E2%80%93"), ("\"", "%22"), ("[", "%5B"), ("]", "%5D"), ("%", "%25"), (" ", "_"), ("<span class=\"smallcaps\"", ""), ("</span>", "")] $
                                deunicode title
     where deunicode :: T.Text -> T.Text
           deunicode = replaceManyT [("‘", "\'"), ("’", "\'"), (" ", " "), (" ", " "), (" ", "")]
@@ -189,7 +189,7 @@ isWPLive :: T.Text -> Bool
 isWPLive url = "link-live" `elem` wpPopupClasses url
 
 isWPAPI :: T.Text -> Bool
-isWPAPI url = not ("content-transform-not" `elem` wpPopupClasses url)
+isWPAPI url = "content-transform-not" `notElem` wpPopupClasses url
 
 -- WP namespaces which are known to not return a useful annotation from the API; Special: does not (eg. Special:Random, or, common in article popups, Special:BookSources for ISBNs) and returns nothing while Category: returns something which is useless (just the category title!), but surprisingly, most others return something useful (eg. even Talk pages like <https://en.wikipedia.org/api/rest_v1/page/mobile-sections/Talk:Small_caps> do).
 -- WARNING: I have not checked the full list of namespaces carefully so some of the odder namespaces are probably also bad.

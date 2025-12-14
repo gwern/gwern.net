@@ -190,6 +190,7 @@ tagsShort2LongRewrites =
    , ("sunkcosts", "sunk-cost"), ("sparse", "sparsity"), ("ai/nn/transformer/attention/sparse", "ai/nn/transformer/attention/sparsity"), ("wrtigin", "writing")
    , ("star-war", "star-wars"), ("starwars", "star-wars"), ("starwar", "star-wars")
    , ("hydranencephaly", "anencephaly"), ("aencephaly", "anencephaly"), ("amencephaly", "anencephaly"), ("anancephaly", "anencephaly"), ("ancephaly", "anencephaly"), ("anecephaly", "anencephaly"), ("anecnephaly", "anencephaly"), ("anencefaly", "anencephaly"), ("anenceohalyt", "anencephaly"), ("anencepahly", "anencephaly"), ("anencepaly", "anencephaly"), ("anencephal", "anencephaly"), ("anencephaley", "anencephaly"), ("anencephalg", "anencephaly"), ("anencephalt", "anencephaly"), ("anencephay", "anencephaly"), ("anencephlay", "anencephaly"), ("anencephly", "anencephaly"), ("anencepphaly", "anencephaly"), ("anencphaly", "anencephaly"), ("anencwphaly", "anencephaly"), ("anenecephaly", "anencephaly"), ("anenecphaly", "anencephaly"), ("anenenecephaly", "anencephaly"), ("anennccephaly", "anencephaly"), ("anensefaly", "anencephaly"), ("anensephaly", "anencephaly"), ("anincephaly", "anencephaly"), ("annencephaly", "anencephaly"), ("gydrancrephaly", "anencephaly"), ("hydracephaly", "anencephaly"), ("hydrancefaly", "anencephaly"), ("hydrancepahly", "anencephaly"), ("hydrancepaly", "anencephaly"), ("hydrancephakt", "anencephaly"), ("hydrancephal", "anencephaly"), ("hydrancephaley", "anencephaly"), ("hydrancephalg", "anencephaly"), ("hydrancephay", "anencephaly"), ("hydrancephlay", "anencephaly"), ("hydrancephly", "anencephaly"), ("hydrancepphaly", "anencephaly"), ("hydrancwphaly", "anencephaly"), ("hydranecephaly", "anencephaly"), ("hydranecphaly", "anencephaly"), ("hydranephaly", "anencephaly"), ("hydrannccephaly", "anencephaly"), ("hydransefaly", "anencephaly"), ("hydransephaly", "anencephaly"), ("hydranxephaly", "anencephaly"), ("hydrnacephaly", "anencephaly"), ("hydroancephaly", "anencephaly"), ("hydrocephaly", "anencephaly"), ("hydrrancephaly", "anencephaly"), ("hyrdrancephaly", "anencephaly"), ("jydrancephaly", "anencephaly"), ("naencephaly", "anencephaly"), ("nencephaly", "anencephaly"), ("snencephaly", "anencephaly")
+   , ("physucs", "physics")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
@@ -235,6 +236,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("reinforcement-learning/imitation-learning",                          "imitation learning")
   , ("reinforcement-learning/offline",                          "offline RL")
   , ("reinforcement-learning/armstrong-controlproblem", "Armstrong’s control problem")
+  , ("psychology/neuroscience/anencephaly", "anencephaly")
   , ("psychology/neuroscience/memory/savant", "savantism")
   , ("psychology/neuroscience/memory", "memory")
   , ("psychology/neuroscience/pain/anesthesia", "anesthesia")
@@ -318,7 +320,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("cs/cryptography/timelock", "timelock crypto")
   , ("cs/algorithm/information/compression", "compression")
   , ("cs/algorithm/information", "information theory")
-  , ("cs/algorithm/sorting/seriation", "seriate")
+  , ("cs/algorithm/sorting/seriation", "seriation")
   , ("cs/algorithm/sorting", "sorting")
   , ("cs/algorithm", "algorithm")
   , ("cs/computable", "computability")
