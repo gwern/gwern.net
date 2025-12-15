@@ -1276,7 +1276,6 @@ p.empty-graf {
 /*	POEMS
  */
 .poem {
-	--text-indent: 0;
 	--text-alignment: left;
 
 	font-family: var(--GW-monospaced-serif-font-stack);
@@ -1284,6 +1283,15 @@ p.empty-graf {
 
 .poem-html {
 	white-space: pre;
+}
+
+.poem .stanza p {
+	text-indent: calc(-1 * var(--text-indent));
+	padding-left: var(--text-indent);
+}
+
+.poem .stanza p .slash {
+	opacity: 0.4;
 }
 
 

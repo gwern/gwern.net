@@ -2960,7 +2960,7 @@ GW.layout = {
 
 	layoutProcessors: [ ],
 
-	//	Block containers
+	//	Block containers.
 	blockContainers: [
 		".markdownBody",
 		"section",
@@ -3019,7 +3019,7 @@ GW.layout = {
 		".page-description-annotation",
 		".data-field",
 		".admonition-title > p",
-		".poem > p:last-child"
+		".poem .stanza p.last-line"
 	].join(", "),
 
 	//	Wrappers are transparent at the top and bottom.
@@ -3178,8 +3178,7 @@ GW.layout = {
 		[ "p.in-list + p.data-field",	10 ],
 		[ "p.first-graf",				10 ],
 		[ "p.list-heading",				10 ],
-		[ ".poem p",					10 ],
-		[ ".poem p + .poem p",			10 ],
+		[ ".poem .stanza p.first-line",	10 ],
 		[ ".epigraph p.last-block:not(.first-block)",
 										 8 ],
 		[ "p",							 0 ],
@@ -4253,7 +4252,7 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 			let introGraf = false;
 			if (   block.matches(".text-center, .margin-notes-block, .data-field") != true
 				&& block.matches(".in-list") != true
-				&& block.parentElement?.closest("#footer, figcaption, table") == null
+				&& block.parentElement?.closest("#footer, figcaption, table, .poem") == null
 				&& block.firstElementChild?.matches("span.smallcaps") != true) {
 				let isFirstWithin = (block, containerSelector, options) => {
 					return (   blockContainerOf(block, options)?.matches(containerSelector) == true
