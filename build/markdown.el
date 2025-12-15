@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-12-09 20:07:06 gwern"
+;;; When:  Time-stamp: "2025-12-14 23:39:23 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -2446,6 +2446,31 @@ To save typing effort, we add those as well if not present."
     (if (and (string-prefix-p "[" content) (string-suffix-p "]" content))
         (surround-region-or-word "<span class=\"marginnote\">" "</span>")
       (surround-region-or-word "<span class=\"marginnote\">[" "]</span>"))))
+
+(defun markdown-insert-editorial ()
+  "Surround selected region (or word) with editorial syntax.
+Used on Gwern.net to denote ‘editorial’ insertions like commentary
+or annotations. Markdown version"
+  (interactive)
+  (surround-region-or-word "[" "]{.editorial}"))
+(defun html-insert-editorial-note ()
+  "Surround selected region FOO BAR (or word FOO) with `editorial note`.
+\(Implemented as a special `<span>` HTML class.\)
+This is for editorial insertions like commentary.
+When inserting editorial notes into HTML snippets,
+that usually means an annotation and
+ the editorial-note is an editorial insertion,
+which are denoted by paired `[]` brackets.
+To save typing effort, we add those as well if not present.
+See also margin-notes (‘html-insert-margin-note’, ‘markdown-insert-margin-note’)."
+  (interactive)
+  (let ((content (if (use-region-p)
+                     (buffer-substring-no-properties (region-beginning) (region-end))
+                   (thing-at-point 'word t))))
+    (if (and (string-prefix-p "[" content) (string-suffix-p "]" content))
+        (surround-region-or-word "<span class=\"editorial\">" "</span>")
+      (surround-region-or-word "<span class=\"editorial\">[" "]</span>"))))
+
 ;; keybindings:
 ;;; Markdown:
 (add-hook 'markdown-mode-hook (lambda()(define-key markdown-mode-map "\C-c\ \C-e" 'markdown-insert-emphasis)))
@@ -2453,12 +2478,14 @@ To save typing effort, we add those as well if not present."
 (add-hook 'markdown-mode-hook (lambda()(define-key markdown-mode-map "\C-c\ s"    'markdown-insert-smallcaps)))
 (add-hook 'markdown-mode-hook (lambda()(define-key markdown-mode-map "\C-c\ \C-w" 'markdown-insert-wp-link)))
 (add-hook 'markdown-mode-hook (lambda()(define-key markdown-mode-map "\C-c\ \C-m" 'markdown-insert-margin-note)))
+(add-hook 'markdown-mode-hook (lambda()(define-key markdown-mode-map "\C-c\ e" 'markdown-insert-editorial-note)))
 ;;; HTML:
 (add-hook 'html-mode-hook (lambda()(define-key html-mode-map "\C-c\ \C-e" 'html-insert-emphasis)))
 (add-hook 'html-mode-hook (lambda()(define-key html-mode-map "\C-c\ \C-s" 'html-insert-strong)))
 (add-hook 'html-mode-hook (lambda()(define-key html-mode-map "\C-c\ s"    'html-insert-smallcaps)))
 (add-hook 'html-mode-hook (lambda()(define-key html-mode-map "\C-c\ \C-w" 'html-insert-wp-link)))
 (add-hook 'html-mode-hook (lambda()(define-key html-mode-map "\C-c\ \C-m" 'html-insert-margin-note)))
+(add-hook 'html-mode-hook (lambda()(define-key html-mode-map "\C-c\ e" 'html-insert-editorial-note)))
 ;; ;;; YAML: (the YAML files store raw HTML snippets, so insert HTML rather than Markdown markup)
 ;; (add-hook 'yaml-mode-hook (lambda()(define-key yaml-mode-map "\C-c\ \C-e" 'html-insert-emphasis)))
 ;; (add-hook 'yaml-mode-hook (lambda()(define-key yaml-mode-map "\C-c\ \C-s" 'html-insert-strong)))

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-12-13 20:57:04 gwern"
+# When:  Time-stamp: "2025-12-14 21:33:03 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -717,7 +717,7 @@ else
             "completion-status" "collapsible" "me" "new-essays" "new-links" "site" "accesskey"
             "dark-mode-selector-inline" "extracts-mode-selector-inline" "help-mode-selector-inline" "search-mode-selector-inline" "toolbar-mode-selector-inline"
             "link-bibliography-context" "extract-not" "fraction" "separator-inline" "dark-mode-invert" "dark-mode-enable-when-here" "dark-mode"
-            "prefetch" "prefetch-not" "filesize-not" "poem" "poem-html" "redirect-from-id" "toc-not" "index"
+            "prefetch" "prefetch-not" "filesize-not" "poem" "poem-html" "redirect-from-id" "toc-not" "index" "editorial"
         )
         html_dataattributes_whitelist=("data-filesize-bytes" "data-link-icon" "data-amount-current" "data-amount-original" "data-aspect-ratio" "data-filesize-bytes" "data-filesize-percentage" "data-href-mobile" "data-image-height" "data-image-width" "data-include-selector-not" "data-include-template" "data-inflation" "data-link-content-type" "data-link-icon" "data-link-icon-color" "data-link-icon-type" "data-progress-percentage" "data-redirect-from-id" "data-target-id" "data-url-archive" "data-url-iframe" "data-url-original" "data-year-current" "data-year-original")
         html_classes_regexpattern=$(IFS='|'; echo "${html_classes_whitelist[*]}" "${html_dataatributes_whitelist[*]}")
