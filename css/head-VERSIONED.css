@@ -25,7 +25,7 @@
     --GW-serif-font-stack: "Source Serif 4", "Apple Garamond", "Baskerville", "Libre Baskerville", "Droid Serif", "Times New Roman", "Times", serif, "Noto Emoji", "Quivira";
     --GW-sans-serif-font-stack: "Source Sans 3", "Lucida Sans Unicode", "Helvetica", "Trebuchet MS", sans-serif, "Noto Emoji", "Quivira";
     --GW-monospaced-font-stack: "IBM Plex Mono", "Liberation Mono", "Consolas", "Courier", monospace, "Noto Emoji", "Quivira";
-    --GW-poetry-font-stack: "Nimbus Mono", "Free Mono", "Courier New", monospace, "Noto Emoji", "Quivira";
+    --GW-monospaced-serif-font-stack: "Nimbus Mono", "Free Mono", "Courier New", monospace, "Noto Emoji", "Quivira";
 
     --GW-body-text-font-size: 20px;
 
@@ -1279,7 +1279,7 @@ p.empty-graf {
 	--text-indent: 0;
 	--text-alignment: left;
 
-	font-family: var(--GW-poetry-font-stack);
+	font-family: var(--GW-monospaced-serif-font-stack);
 }
 
 .poem-html {
