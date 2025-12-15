@@ -1603,8 +1603,13 @@ if (Extracts.popFrameProvider == Popups) {
 /* POETRY */
 /**********/
 
-addContentLoadHandler(GW.contentLoadHandlers.processPoems = (eventInfo) => {
-    GWLog("deleteColgroups", "rewrite.js", 1);
+/****************************************************************************/
+/*	Process preformatted a.k.a. “HTML” poems, which use whitespace for layout
+	and are therefore given in the source as <pre> blocks; this is used for 
+	techniques like “enjambment”.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.processPreformattedPoems = (eventInfo) => {
+    GWLog("processPreformattedPoems", "rewrite.js", 1);
 
 	eventInfo.container.querySelectorAll("pre.poem-html").forEach(poem => {
 		//	To compensate for <code> within the <pre>.
@@ -1615,6 +1620,41 @@ addContentLoadHandler(GW.contentLoadHandlers.processPoems = (eventInfo) => {
 		poem.innerHTML = "<p>" + poem.textContent.split("\n\n").join("</p><p>") + "</p>";
 	});
 }, "rewrite");
+
+/******************************************************************************/
+/*	Rewrite poems to be divided into stanzas, with each line a <p>; this allows
+	proper indentation of line-wrapped lines.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.processPoems = (eventInfo) => {
+    GWLog("processPoems", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll(".poem p").forEach(graf => {
+		if (graf.closest(".stanza"))
+			return;
+
+		let stanza = rewrapContents(graf, "div.stanza");
+		paragraphizeTextNodesOfElement(stanza);
+		stanza.querySelector("p:first-of-type").classList.add("first-line");
+		stanza.querySelector("p:last-of-type").classList.add("last-line");
+	});
+}, "rewrite");
+
+/*********************************************************************/
+/*	Wrap line-break-indicator slashes in poems in span.slash wrappers.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.wrapSlashesInPoems = (eventInfo) => {
+    GWLog("wrapSlashesInPoems", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll(".poem p").forEach(graf => {
+		graf.querySelectorAll("wbr").forEach(wbr => {
+			let precedingNode = wbr.previousSibling;
+			if (precedingNode.textContent.endsWith(" /")) {
+				precedingNode.textContent = precedingNode.textContent.slice(0, -1);
+				precedingNode.parentElement.insertBefore(elementFromHTML(`<span class="slash">/</span>`), wbr);
+			}
+		});
+	});
+}, ">rewrite");
 
 
 /***************/
