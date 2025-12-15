@@ -2181,6 +2181,13 @@ span.smallcaps {
     font-variant-caps: small-caps;
 }
 
+/*	“Editorial” insertions in [brackets], either block or inline, should be
+	styled specially.
+ */
+.editorial {
+	font-family: var(--GW-monospaced-serif-font-stack);
+}
+
 
 /*************/
 /* SIDENOTES */
