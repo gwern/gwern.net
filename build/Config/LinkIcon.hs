@@ -216,6 +216,7 @@ linkIconRulesSingle u
  | u'' u "cs.stanford.edu" = ("S", "text,mono", "#8c1515") -- 'S' red
  | u'' u "www.marxists.org" = ("☭", "text", "#c40303")  -- '☭' red
  | u'' u "3quarksdaily.com" = ("3", "text", "#e80004") -- 3 Quarks Daily; red; black right border but that would be invisible so not worth supporting
+ | u'' u "theonion.com" = ("the-onion", "svg", "#006b3a") -- The Onion humor magazine; hunter green; from <https://theonion.com/wp-content/uploads/2024/07/site-logo.svg>
  | otherwise = ("", "", "")
 
 linkIconRulesDouble "" = error "Config.LinkIcon.linkIconRulesDouble: passed empty string as the URL; this should never happen!"
@@ -1381,6 +1382,7 @@ linkIconTestUnitsText =
          , ("/static/build/clean-pdf.py", "code", "svg", "#2f6592")
          , ("https://yuxi.ml/essays/posts/cyc/", "Yuxi", "text,mono,quad", "#2c3e50")
          , ("https://3quarksdaily.com/3quarksdaily/2020/03/freeman-dyson-the-last-great-contrarian.html", "3", "text", "#e80004")
+         , ("https://theonion.com/study-wolf-attacks-still-leading-cause-of-death-in-u-s-1819574862/", "the-onion", "svg", "#006b3a")
   ]
 -- TODO: more complex link-icon testing: suppression of redundant link-icons
 -- linkIcon $ Link nullAttr [Str "WSJ"] ("https://www.wsj.com/articles/world-chess-championship-magnus-carlsen-ian-nepomniachtchi-seconds-11638167905", "", "") →
