@@ -883,40 +883,6 @@ addContentInjectHandler(GW.contentInjectHandlers.designateBlockquoteLevels = (ev
 /* EPIGRAPHS */
 /*************/
 
-/*************************************************************************/
-/*	Epigraphs are sometimes a single big <p> broken by <br>. Unacceptable.
-	But no problem, we fix. (If the epigraph is already marked as a poem,
-	via the .poem class, then we leave it alone.)
- */
-addContentLoadHandler(GW.contentLoadHandlers.paragraphizeLineBrokenEpigraphs = (eventInfo) => {
-    GWLog("paragraphizeLineBrokenEpigraphs", "rewrite.js", 1);
-
-	eventInfo.container.querySelectorAll(".epigraph:not(.poem) br").forEach(br => {
-		if (br.parentElement == null)
-			return;
-
-		let graf = br.closest("p");
-		let epigraph = br.closest(".epigraph");
-
-		//	Report broken epigraphs.
-		if (epigraph.classList.contains("broken"))
-			return;
-		if (graf == null) {
-			console.log("BROKEN EPIGRAPH!");
-			console.log(epigraph.textContent);
-			epigraph.classList.add("broken");
-			return;
-		}
-
-		paragraphizeTextNodesOfElement(graf);
-		graf.appendChild(newElement("P"));
-		unwrap(graf);
-
-		//	We infer that this is a poem. (Sometimes not, but usually yes.)
-		epigraph.classList.add("poem");
-	});
-}, "rewrite");
-
 /******************************************************************************/
 /*	Add the ‘narrow’ class to epigraphs that are laid out in such a way that
 	they must be squeezed to an unusually small width, such that their internal
