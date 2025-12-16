@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-12-14 23:39:23 gwern"
+;;; When:  Time-stamp: "2025-12-15 16:36:06 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1816,6 +1816,8 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace "].(" ".](" nil begin end)
        ; (query-replace-regexp " \"'\\(.+?\\)', " " \"‘\\1’, " nil begin end) ; avoid downstream YAML errors from titles encoded in tooltips with single straight quotes
        (replace-all "\n\n\n" "\n\n")
+
+       (query-replace-regexp "\\(\\[[^][]+\\]\\)[^](]" "[\\1]{.editorial} " nil begin end) ; add '<span class="editorial">' to bracketed comments in annotations, eg '5 underlying genomic [factors](!W) [Compulsive, Schizophrenia-bipolar, Neurodevelopmental, Internalizing, Substance-use] that explained' → 5 underlying genomic [factors](!W) [\[Compulsive, Schizophrenia-bipolar, Neurodevelopmental, Internalizing, Substance-use\]]{.editorial} that explained
 
        (pdf-fix-spaced-words begin end)
 

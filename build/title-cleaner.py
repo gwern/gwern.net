@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-12-13 19:59:10 gwern"
+# When:  Time-stamp: "2025-12-15 11:31:23 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -802,6 +802,10 @@ Selection vs. Rejection"
 "How To Tell You’re In Base Reality"
 - "Wages under superintelligence - by Zachary Brown"
 "Wages under superintelligence"
+- "https://github.com/Wyattwalls/system_prompts/blob/c22fdaf611cc8224a511f6ea650b30ccc89b0580/OpenAI/gpt-5.2-thinking-20251213 Rate limit"
+""
+- "https://www.abcb.com/newspaper/1999-12-30_asahi_01.htm The Anime Cafe"
+""
 
 Task:
 

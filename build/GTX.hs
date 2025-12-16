@@ -2,7 +2,7 @@
 
 Author: Gwern Branwen
 Date: 2024-02-28
-When:  Time-stamp: "2025-04-29 19:23:11 gwern"
+When:  Time-stamp: "2025-12-14 18:30:50 gwern"
 License: CC-0
 
 A 'GTX' (short for 'Gwern text' until I come up with a better name) text file is a UTF-8 text file
@@ -69,6 +69,7 @@ Note that this format is intended to be extremely inflexible and tailored to the
 Problems with YAML: indentation was easy to get wrong; the YAML writer alternates seemingly at random between single & double-quotes, so editing old annotations (eg. to add a link) would unpredictably break them; the *lack* of quotes also caused the same problem, when editing added a colon character & broke it; the YAML writer forcibly wraps lines at a rather short line length, which breaks many searches (which would work if it only line-broke at a more logical place like the end of a block element like `</p>`); dates could be frustrating to write because while `2000-01-01` would parse as a string, `2000` would *not* and had to be quoted as `"2000"` to ensure it wasn’t turned into an integer; it was easy to omit a field (because if I had required them to be labeled as key-value pairs, that would have meant a lot more typing/repetition); it was impossible to think about having Markdown entries (which would be ideal for writing convenience) because it would have to be wrapped in quotes and whitespace escaped and rendered un-editable natively since they are then hard to read & you might indentation...
 
 The previous format, Haskell, lacked many of YAML’s "helpful" shortcuts and was highly regular; but unfortunately, it still requires whitespace & quotes to be escaped, was slow to parse/write, and the usual encoding, as a list, meant that it could not be appended to (because one would have to move the closing-bracket).
+It is simpler than GNU Recutils <https://www.gnu.org/software/recutils/> <https://en.wikipedia.org/wiki/Recutils>, because it will be queried or manipulated primarily from inside Haskell, rather than from the CLI.
 
 One alternative I didn’t explore too thoroughly was the idea of writing each annotation as a Markdown section; this might have worked but would have required somewhat unnatural formatting like requiring newlines between each field (so they could be unambiguously parsed as separate `Para` AST nodes) or ordered/unordered lists. This would have worked poorly with the increasingly-complicated HTML inside many annotations.
 -}

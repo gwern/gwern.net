@@ -841,6 +841,7 @@ canonicals = M.fromList
   , ("Explain Xkcd", "Explain XKCD")
   , ("J. Strother Moore", "J Strother Moore") -- NOTE: yes, really: <https://en.wikipedia.org/wiki/J_Strother_Moore> "J Strother Moore (his first name is the alphabetic character 'J'—not an abbreviated 'J.') is an American computer scientist."
   , ("Kaj_Sotala", "Kaj Sotala")
+  , ("aidigest_", "AI Digest")
   ]
 
 -- tests: unique
@@ -1887,7 +1888,7 @@ authorLinkDB = M.fromList $
     , ("Jean Ferrières", "https://cerpop.inserm.fr/jean-ferrieres-publications-1")
     , ("GPT-5", "https://openai.com/gpt-5/")
     , ("GPT-5 Pro", "https://openai.com/index/introducing-gpt-5/#gpt-5-pro")
-    , ("GPT-5.1", "https://openai.com/index/gpt-5-1/#gpt-51-thinking")
+    , ("GPT-5.1", "https://openai.com/index/gpt-5-1/")
     , ("GPT-5.1 Pro", "https://openai.com/index/gpt-5-1/#gpt-51-thinking")
     , ("GPT-5.2", "https://openai.com/index/introducing-gpt-5-2/")
     , ("GPT-5.2 Pro", "https://openai.com/index/introducing-gpt-5-2/#science-and-math")
@@ -2010,6 +2011,14 @@ authorLinkDB = M.fromList $
     , ("David Chapman", "https://meaningness.com/about-my-sites")
     , ("Kaj Sotala", "https://www.lesswrong.com/users/kaj_sotala")
     , ("Fergus Fettes", "https://www.lesswrong.com/users/fergus-fettes")
+    , ("AI Digest", "https://theaidigest.org/about")
+    , ("Uwe Friedrichsen", "https://www.ufried.com/about/")
+    , ("Marcus Olang’", "https://substack.com/@marcusolang")
+    , ("Sonali Pechlivanis", "https://de.linkedin.com/in/sonali-pechlivanis-a434407b")
+    , ("Stéphane Jamain", "https://scholar.google.com/citations?user=r1WfirEAAAAJ")
+    , ("Swapnil Awasthi", "https://scholar.google.com/citations?user=HRbPSQ8AAAAJ")
+    , ("Tatsunori Hashimoto","https://thashim.github.io/")
+    , ("nseavia71501", "https://www.reddit.com/user/nseavia71501")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3292,4 +3301,5 @@ authorWpLinkDB =
     , "Alexander Mathis", "Mackenzie Weygandt Mathis", "Andrea Moro", "Stephen Crain", "Jean-Pierre Eckmann"
     , "Katia Obraczka", "SwiftOnSecurity", "Robert D. Putnam", "Ramalingam Chellappa", "Explosions in the Sky"
     , "Omer Reingold", "Frauke Kreuter", "Eduardo D. Rodriguez", "Duane A. Compton", "Gerald Schatten"
-    , "Laura Hewitson", "Bjorn Merker", "Ren Xiaoping", "Sergio Canavero", "Charles Krauthammer", "Akinori Yonezawa", "J Strother Moore", "Matt Kaufmann", "Ilka Agricola"]
+    , "Laura Hewitson", "Bjorn Merker", "Ren Xiaoping", "Sergio Canavero", "Charles Krauthammer", "Akinori Yonezawa"
+    , "J Strother Moore", "Matt Kaufmann", "Ilka Agricola", "Lisanne Bainbridge", "Daniel H. Janzen", "Rachel Aviv"]

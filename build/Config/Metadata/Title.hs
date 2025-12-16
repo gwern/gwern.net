@@ -72,7 +72,9 @@ badStrings = ["", " ", "Quanta Magazine", "OSF", "CAIDA Resource Catalog", "Blog
      , "fi-le.net", "Personal Page", "Fantasy and Science Fiction", "Sam Patterson", "Subscribe to read"
      , "Internet Sacred Text Archive", "Ricki Heicklen", "Language Log", "Construction Physics", "Stan Winston School of Character Arts"
      , "No Moods, Ads or Cutesy Fucking Icons", "Bloomberg", "PROSPERO", "archive.is", "Notion", "Yahoo", "inc.com"
-     , "Colin Woodbury", "Machine Learning", "Discovery", "Client Challenge", "X Cancelled", "Minusx", "Mariano Gappa’s Blog", "HAMIDI USA", "Shtetl-Optimized", "Signals and Threads", "The Yale Review", "archive.ph", "Renato Athaydes"]
+     , "Colin Woodbury", "Machine Learning", "Discovery", "Client Challenge", "X Cancelled", "Minusx", "Mariano Gappa’s Blog"
+     , "HAMIDI USA", "Shtetl-Optimized", "Signals and Threads", "The Yale Review", "archive.ph", "Renato Athaydes", "Rate limit"
+     , "The Anime Cafe"]
 
 -- A list of bad substrings to remove. Note this is used with `Utils.deleteMixedMany` to specialize down to either prefix or suffix deletion based on the trailing vs leading space (respectively). This should greatly reduce the risk of unintended deletions.
 -- testing: unique list
@@ -179,4 +181,5 @@ stringDelete = [" - The Public Domain Review"
             , " @ osmarks' website", " at MROB", " - Clear Language, Clear Mind"
             , " : Institute for Policy Research - Northwestern University", "Snarkmarket: ", " - Google Developers Blog"
             , " - Dmitry Brant", "Geoff Greer’s site: ", "Wes McKinney - ", " - an article by Chris Morgan", "First Known When Lost: "
-            , " - by Bryan Caplan", "Tom Lehman - ", "small clever rooms: ", "research!rsc: ", " - Debbie Maddy", " - Keith Woods", " - by Zachary Brown"]
+            , " - by Bryan Caplan", "Tom Lehman - ", "small clever rooms: ", "research!rsc: ", " - Debbie Maddy"
+            , " - Keith Woods", " - by Zachary Brown"]
