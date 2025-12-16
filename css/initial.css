@@ -1271,6 +1271,10 @@ p.empty-graf {
 	padding-left: var(--text-indent);
 }
 
+.poem .stanza.empty-stanza {
+	display: none;
+}
+
 .poem span.slash {
 	opacity: 0.4;
 }

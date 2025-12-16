@@ -98,7 +98,8 @@ GW.layout = {
 		"button",
 		"a:empty",
 		".heading.collapse",
-		".abstract-collapse-only"
+		".abstract-collapse-only",
+		".empty-stanza"
 	],
 
 	//	Elements which always participate in block layout, even when empty.

@@ -1636,8 +1636,13 @@ addContentLoadHandler(GW.contentLoadHandlers.processPoems = (eventInfo) => {
 
 		let stanza = rewrapContents(graf, "div.stanza");
 		paragraphizeTextNodesOfElement(stanza);
-		stanza.querySelector("p:first-of-type").classList.add("first-line");
-		stanza.querySelector("p:last-of-type").classList.add("last-line");
+
+		if (isNodeEmpty(stanza)) {
+			stanza.classList.add("empty-stanza");
+		} else {
+			stanza.querySelector("p:first-of-type").classList.add("first-line");
+			stanza.querySelector("p:last-of-type").classList.add("last-line");
+		}
 	});
 
 	//	Compensate for HTML in enjambed lines.
