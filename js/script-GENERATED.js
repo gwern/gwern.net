@@ -439,7 +439,8 @@ function requestImageInversionJudgmentsForImagesInContainer(container) {
     let imageURLs = Array.from(container.querySelectorAll("figure img")).map(image => {
     	let imageURL = Images.smallestAvailableImageSizeURLForImage(image);
         return (   imageURL.pathname.match(/\.(png|jpe?g$)/i)
-        		&& GW.invertOrNot[imageURL.href] == null)
+        		&& GW.invertOrNot[imageURL.href] == null
+        		&& inversionJudgmentHasBeenAppliedToImage(image) == false)
         	   ? imageURL.href
         	   : null;
     }).filter(x => x);
