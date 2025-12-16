@@ -16361,8 +16361,8 @@ addContentLoadHandler(GW.contentLoadHandlers.processPoems = (eventInfo) => {
 addContentLoadHandler(GW.contentLoadHandlers.wrapSlashesInPoems = (eventInfo) => {
     GWLog("wrapSlashesInPoems", "rewrite.js", 1);
 
-	eventInfo.container.querySelectorAll(".poem p").forEach(graf => {
-		graf.querySelectorAll("wbr").forEach(wbr => {
+	eventInfo.container.querySelectorAll(".poem").forEach(poem => {
+		poem.querySelectorAll("wbr").forEach(wbr => {
 			let precedingNode = wbr.previousSibling;
 			if (precedingNode.textContent.endsWith(" /")) {
 				precedingNode.textContent = precedingNode.textContent.slice(0, -1);

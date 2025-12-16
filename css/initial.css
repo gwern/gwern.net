@@ -1271,7 +1271,7 @@ p.empty-graf {
 	padding-left: var(--text-indent);
 }
 
-.poem .stanza p .slash {
+.poem span.slash {
 	opacity: 0.4;
 }
 
