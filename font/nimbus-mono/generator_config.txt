@@ -1,1 +1,1 @@
-pyftsubset path/to/font/file --unicodes=0020-007E,00A0-00A1,00BF,00C0-00CB,00E0-00EB,02C6-02DD,2013-2026,2039-203A,2122,2212,221A,221E,EA11-EA6A --layout-features=liga,smcp,c2sc,onum,tnum,pnum,lnum,ordn,frac --output-file=path/to/output/file
+pyftsubset path/to/font/file --unicodes=0020-007E,00A0-00A1,00BF,00C0-00CB,00E0-00EB,014C-014D,016A-016B,02C6-02DD,2013-2026,2039-203A,2122,2212,221A,221E,EA11-EA6A --layout-features=liga,smcp,c2sc,onum,tnum,pnum,lnum,ordn,frac --output-file=path/to/output/file
