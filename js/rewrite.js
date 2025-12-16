@@ -1612,12 +1612,13 @@ addContentLoadHandler(GW.contentLoadHandlers.processPreformattedPoems = (eventIn
     GWLog("processPreformattedPoems", "rewrite.js", 1);
 
 	eventInfo.container.querySelectorAll("pre.poem-html").forEach(poem => {
-		//	To compensate for <code> within the <pre>.
-		unwrap(poem.firstElementChild);
-
 		//	Rewrap and rewrite.
 		poem = rewrapContents(poem, "div.poem.poem-html");
-		poem.innerHTML = "<p>" + poem.textContent.split("\n\n").join("</p><p>") + "</p>";
+		poem.innerHTML = "<p>" 
+					   + poem.innerHTML.split("\n\n").map(
+					         stanza => stanza.split("\n").join("<br>")
+					     ).join("</p><p>") 
+					   + "</p>";
 	});
 }, "rewrite");
 
@@ -1628,6 +1629,7 @@ addContentLoadHandler(GW.contentLoadHandlers.processPreformattedPoems = (eventIn
 addContentLoadHandler(GW.contentLoadHandlers.processPoems = (eventInfo) => {
     GWLog("processPoems", "rewrite.js", 1);
 
+	//	Separate poems into stanzas, each line a <p>.
 	eventInfo.container.querySelectorAll(".poem p").forEach(graf => {
 		if (graf.closest(".stanza"))
 			return;
@@ -1636,6 +1638,20 @@ addContentLoadHandler(GW.contentLoadHandlers.processPoems = (eventInfo) => {
 		paragraphizeTextNodesOfElement(stanza);
 		stanza.querySelector("p:first-of-type").classList.add("first-line");
 		stanza.querySelector("p:last-of-type").classList.add("last-line");
+	});
+
+	//	Compensate for HTML in enjambed lines.
+	eventInfo.container.querySelectorAll("div.poem-html").forEach(poem => {
+		poem.querySelectorAll("p").forEach(graf => {
+			//	Adjustment for HTML tags.
+			//	EXPERIMENTAL/TEMPORARY CODE.
+			if (graf.firstTextNode.textContent.startsWith("  ") == false)
+				return;
+
+			let result = graf.innerHTML.match(/^\s+(<.+?>)/);
+			if (result)
+				graf.firstTextNode.textContent += "".padStart(result.last.length, " ");
+		});
 	});
 }, "rewrite");
 
