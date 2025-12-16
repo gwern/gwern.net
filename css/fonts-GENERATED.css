@@ -261,7 +261,7 @@
 	font-style: normal;
 	src: url('/static/font/nimbus-mono/NimbusMonoLUN-BASIC-Regular.ttf') format('truetype');
 	font-display: swap;
-	unicode-range: U+0020-007E, U+00A0-00A1, U+00BF, U+00C0-00CB, U+00E0-00EB, U+014C-014D, U+016A-016B, U+02C6-02DD, U+2013-2026, U+2039-203A, U+2122, U+2212, U+221A, U+221E, U+EA11-EA6A;
+	unicode-range: U+0020-007E, U+00A0-00A1, U+00A7, U+00B6, U+00BF, U+00C0-00CB, U+00E0-00EB, U+014C-014D, U+016A-016B, U+02C6-02DD, U+2013-2026, U+2039-203A, U+2122, U+2212, U+221A, U+221E, U+EA11-EA6A;
 }
 @font-face {
 	font-family: 'Nimbus Mono';
@@ -269,7 +269,7 @@
 	font-style: italic;
 	src: url('/static/font/nimbus-mono/NimbusMonoLUN-BASIC-RegularItalic.ttf') format('truetype');
 	font-display: swap;
-	unicode-range: U+0020-007E, U+00A0-00A1, U+00BF, U+00C0-00CB, U+00E0-00EB, U+014C-014D, U+016A-016B, U+02C6-02DD, U+2013-2026, U+2039-203A, U+2122, U+2212, U+221A, U+221E, U+EA11-EA6A;
+	unicode-range: U+0020-007E, U+00A0-00A1, U+00A7, U+00B6, U+00BF, U+00C0-00CB, U+00E0-00EB, U+014C-014D, U+016A-016B, U+02C6-02DD, U+2013-2026, U+2039-203A, U+2122, U+2212, U+221A, U+221E, U+EA11-EA6A;
 }
 @font-face {
 	font-family: 'Nimbus Mono';
@@ -277,7 +277,7 @@
 	font-style: normal;
 	src: url('/static/font/nimbus-mono/NimbusMonoLUN-BASIC-Bold.ttf') format('truetype');
 	font-display: swap;
-	unicode-range: U+0020-007E, U+00A0-00A1, U+00BF, U+00C0-00CB, U+00E0-00EB, U+014C-014D, U+016A-016B, U+02C6-02DD, U+2013-2026, U+2039-203A, U+2122, U+2212, U+221A, U+221E, U+EA11-EA6A;
+	unicode-range: U+0020-007E, U+00A0-00A1, U+00A7, U+00B6, U+00BF, U+00C0-00CB, U+00E0-00EB, U+014C-014D, U+016A-016B, U+02C6-02DD, U+2013-2026, U+2039-203A, U+2122, U+2212, U+221A, U+221E, U+EA11-EA6A;
 }
 @font-face {
 	font-family: 'Nimbus Mono';
@@ -285,7 +285,7 @@
 	font-style: italic;
 	src: url('/static/font/nimbus-mono/NimbusMonoLUN-BASIC-BoldItalic.ttf') format('truetype');
 	font-display: swap;
-	unicode-range: U+0020-007E, U+00A0-00A1, U+00BF, U+00C0-00CB, U+00E0-00EB, U+014C-014D, U+016A-016B, U+02C6-02DD, U+2013-2026, U+2039-203A, U+2122, U+2212, U+221A, U+221E, U+EA11-EA6A;
+	unicode-range: U+0020-007E, U+00A0-00A1, U+00A7, U+00B6, U+00BF, U+00C0-00CB, U+00E0-00EB, U+014C-014D, U+016A-016B, U+02C6-02DD, U+2013-2026, U+2039-203A, U+2122, U+2212, U+221A, U+221E, U+EA11-EA6A;
 }
 
 /***********/
