@@ -1612,6 +1612,10 @@ addContentLoadHandler(GW.contentLoadHandlers.processPreformattedPoems = (eventIn
     GWLog("processPreformattedPoems", "rewrite.js", 1);
 
 	eventInfo.container.querySelectorAll("pre.poem-html").forEach(poem => {
+		//	Unwrap a <code> element, if present (due to Pandoc weirdness).
+		if (poem.firstElementChild?.matches("code"))
+			unwrap(poem.firstElementChild);
+
 		//	Rewrap and rewrite.
 		poem = rewrapContents(poem, "div.poem.poem-html");
 		poem.innerHTML = "<p>" 
