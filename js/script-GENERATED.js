@@ -16357,9 +16357,30 @@ addContentLoadHandler(GW.contentLoadHandlers.processPoems = (eventInfo) => {
 		if (graf.closest(".stanza"))
 			return;
 
+		//	Rewrap paragraph in a div.stanza.
 		let stanza = rewrapContents(graf, "div.stanza");
+
+		//	Save styling wrappers and unwrap.
+		let possibleStylingTags = [ "em" ];
+		let stylingTags = [ ];
+		while (possibleStylingTags.includes(stanza.firstElementChild.tagName.toLowerCase())) {
+			stylingTags.unshift(stanza.firstElementChild.tagName.toLowerCase());
+			unwrap(stanza.firstElementChild);
+		}
+
+		//	Paragraphize lines of stanza.
 		paragraphizeTextNodesOfElement(stanza);
 
+		//	Re-apply styling wrappers (if need be).
+		for (let stylingTag of stylingTags) {
+			stanza.querySelectorAll("p").forEach(graf => {
+				let wrapper = newElement(stylingTag);
+				wrapper.append(...(graf.childNodes));
+				graf.appendChild(wrapper);
+			});
+		}
+
+		//	Apply class(es).
 		if (isNodeEmpty(stanza)) {
 			stanza.classList.add("empty-stanza");
 		} else {
