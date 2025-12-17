@@ -5478,11 +5478,15 @@ function pageThumbnailAttributesFromDocument(doc) {
 		let pageThumbnailWidth = doc.querySelector("meta[property='og:image:width']").getAttribute("content");
 		let pageThumbnailHeight = doc.querySelector("meta[property='og:image:height']").getAttribute("content");
 
+		//	Image class(es).
+		let pageThumbnailClasses = doc.querySelector("meta[property='gwern:thumbnail:css-classes']").getAttribute("content");
+
 		return {
 			src: pageThumbnailURL.href,
 			title: pageThumbnailAltText,
 			width: pageThumbnailWidth,
 			height: pageThumbnailHeight,
+			class: pageThumbnailClasses,
 			style: "width: ${pageThumbnailWidth}px; height: auto;"
 		};
 	} else {
