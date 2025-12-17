@@ -497,7 +497,8 @@ function updateTOCVisibility(TOC) {
 
     let numEntries = TOC.querySelectorAll("li").length;
     if (   (   TOC.id == "TOC"
-            && numEntries <= 1)
+            && (   numEntries <= 1
+        		|| document.body.classList.contains("toc-not") == true))
         || numEntries == 0) {
         TOC.classList.toggle("hidden", true);
     } else {
