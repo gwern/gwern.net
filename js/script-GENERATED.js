@@ -15781,10 +15781,11 @@ function applyImageInversionJudgmentNowOrLater(image) {
 			image inversion judgments to become available in the future.
 		 */
 		GW.notificationCenter.addHandlerForEvent("GW.imageInversionJudgmentsAvailable", image.inversionJudgmentAvailabilityHandler = (info) => {
-			if (applyImageInversionJudgment(image)) {
-				GW.notificationCenter.removeHandlerForEvent("GW.imageInversionJudgmentsAvailable", image.inversionJudgmentAvailabilityHandler);
+			if (applyImageInversionJudgment(image))
 				image.inversionJudgmentAvailabilityHandler = null;
-			}
+		}, {
+			once: true,
+			condition: (info) => (inversionJudgmentForImage(image) != null)
 		});
 	}
 }
