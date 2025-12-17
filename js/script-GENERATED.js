@@ -16385,7 +16385,7 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapSlashesInPoems = (eventInfo) =>
 	eventInfo.container.querySelectorAll(".poem").forEach(poem => {
 		poem.querySelectorAll("wbr").forEach(wbr => {
 			let precedingNode = wbr.previousSibling;
-			if (precedingNode.textContent.endsWith(" /")) {
+			if (precedingNode?.textContent.endsWith(" /")) {
 				precedingNode.textContent = precedingNode.textContent.slice(0, -1);
 				precedingNode.parentElement.insertBefore(elementFromHTML(`<span class="slash">/</span>`), wbr);
 			}
