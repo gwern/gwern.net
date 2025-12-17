@@ -2610,7 +2610,7 @@ ul.interview .speaker {
     font-style: normal;
     margin: 0 0 0 0.125em;
 }
-.epigraph blockquote p:last-child:not(:only-child) {
+.epigraph:not(.poem) blockquote p:last-child:not(:only-child) {
     text-align: right;
     font-size: 0.875em;
     font-style: normal;
@@ -2666,6 +2666,15 @@ ul.interview .speaker {
 .epigraph.narrow > blockquote::after {
     right: -0.3em;
     bottom: -1.4em;
+}
+
+
+/*********/
+/* POEMS */
+/*********/
+
+.poem span.slash {
+	opacity: 0.4;
 }
 
 
