@@ -74,7 +74,7 @@ badStrings = ["", " ", "Quanta Magazine", "OSF", "CAIDA Resource Catalog", "Blog
      , "No Moods, Ads or Cutesy Fucking Icons", "Bloomberg", "PROSPERO", "archive.is", "Notion", "Yahoo", "inc.com"
      , "Colin Woodbury", "Machine Learning", "Discovery", "Client Challenge", "X Cancelled", "Minusx", "Mariano Gappa’s Blog"
      , "HAMIDI USA", "Shtetl-Optimized", "Signals and Threads", "The Yale Review", "archive.ph", "Renato Athaydes", "Rate limit"
-     , "The Anime Cafe"]
+     , "The Anime Cafe", "life in a monospace typeface"]
 
 -- A list of bad substrings to remove. Note this is used with `Utils.deleteMixedMany` to specialize down to either prefix or suffix deletion based on the trailing vs leading space (respectively). This should greatly reduce the risk of unintended deletions.
 -- testing: unique list
