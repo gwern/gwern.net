@@ -1167,7 +1167,9 @@ function updatePageTOC(container = document) {
 
     container.querySelectorAll("#markdownBody section").forEach(section => {
         //  If this section already has a TOC entry, return.
-        if (TOC.querySelector(`a[href$='#${(CSS.escape(fixedEncodeURIComponent(section.id)))}']`) != null)
+        if (TOC.querySelector([ `a#toc-${section.id}`, 
+        						`a[href$='#${(CSS.escape(fixedEncodeURIComponent(section.id)))}']` 
+        						].join(", ")) != null)
             return;
 
         //  If this section is too deeply nested, do not add it.
