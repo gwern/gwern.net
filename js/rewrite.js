@@ -1645,7 +1645,8 @@ addContentLoadHandler(GW.contentLoadHandlers.processPoems = (eventInfo) => {
 		//	Save styling wrappers and unwrap.
 		let possibleStylingTags = [ "em" ];
 		let stylingTags = [ ];
-		while (possibleStylingTags.includes(stanza.firstElementChild.tagName.toLowerCase())) {
+		while (   stanza.children.length > 0
+			   && possibleStylingTags.includes(stanza.firstElementChild.tagName.toLowerCase())) {
 			stylingTags.unshift(stanza.firstElementChild.tagName.toLowerCase());
 			unwrap(stanza.firstElementChild);
 		}
