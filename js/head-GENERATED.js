@@ -220,6 +220,16 @@ URL.prototype.deleteQueryVariable = function (key) {
 	this.search = query.toString();
 };
 
+/************************************************************************/
+/*	Return array of path segments for the given URL.
+	(See https://developer.mozilla.org/en-US/docs/Web/API/URL/pathname .)
+ */
+Object.defineProperty(URL.prototype, "pathSegments", {
+    get() {
+        return this.pathname.slice(1).split("/").map(seg => "/" + seg);
+    }
+});
+
 /*****************************************************************************/
 /*	Returns a URL constructed from either a fully qualified URL string,
 	or an absolute local URL (pathname starting at root), or a relative URL

@@ -88,18 +88,19 @@ async function fetchSitemap() {
 }
 
 // Function to parse the sitemap and extract URLs
-function parseUrls(sitemapText) {
+function urlPathnamesFromSitemapString(sitemapText) {
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(sitemapText, "text/xml");
-    const urlNodes = xmlDoc.getElementsByTagName("url");
+    const locNodes = xmlDoc.getElementsByTagName("loc");
     // sitemap XML looks like this:
     // `<url><loc>https://gwern.net/doc/rotten.com/library/history/espionage/mossad/mossad_logo.gif</loc><changefreq>never</changefreq></url>`
-    return Array.from(urlNodes).map(node => new URL(node.getElementsByTagName("loc")[0].textContent).pathname);
+    return Array.from(locNodes).map(locNode => new URL(locNode.textContent).pathname);
 }
 
 // Function to calculate a bounded Levenshtein distance <https://en.wikipedia.org/wiki/Levenshtein_distance>
 function boundedLevenshteinDistance(a, b, maxDistance) {
-    if (Math.abs(a.length - b.length) > maxDistance) return maxDistance + 1;
+    if (Math.abs(a.length - b.length) > maxDistance)
+    	return maxDistance + 1;
 
     const matrix = [];
     for (let i = 0; i <= b.length; i++) {
@@ -131,43 +132,41 @@ function boundedLevenshteinDistance(a, b, maxDistance) {
     return matrix[b.length][a.length];
 }
 
-// Function to find similar URLs
-function findSimilarUrls(urls, targetUrl, n = 10,
-                         maxDistance = 8) { // max distance chosen heuristically
-    const targetPath = new URL(targetUrl, location.origin).pathname;
-
-    // Quick filter based on length difference
-    const potentialMatches = urls.filter(url =>
-        Math.abs(url.length - targetPath.length) <= maxDistance
+//	Function to find similar URLs
+function findSimilarUrlPaths(urlPaths, targetPath, numResults, maxDistance) {
+    const uniqueSimilarUrlPaths = urlPaths.filter(
+	    //	Quick filter based on length difference
+    	urlPath => (Math.abs(urlPath.length - targetPath.length) <= maxDistance)
+    ).unique(
+    ).map(
+    	//	Calculate bounded Levenshtein distance
+    	urlPath => ({
+            pathname: urlPath,
+            distance: boundedLevenshteinDistance(urlPath, targetPath, maxDistance)
+        })
+    ).filter(
+    	//	Filter by max distance
+    	item => item.distance <= maxDistance
+    ).sort(
+    	//	Sort by distance
+    	(a, b) => a.distance - b.distance
+    ).slice(
+    	0, numResults
+    ).map(
+    	item => item.pathname
     );
 
-    const similarUrls = potentialMatches
-        .map(url => ({
-            url,
-            distance: boundedLevenshteinDistance(url, targetPath, maxDistance)
-        }))
-        .filter(item => item.distance <= maxDistance)
-        .sort((a, b) => a.distance - b.distance);
-
-    // De-duplicate while preserving order
-    const seenUrls = new Set();
-    const uniqueSimilarUrls = similarUrls.filter(item => {
-        if (seenUrls.has(item.url)) return false;
-        seenUrls.add(item.url);
-        return true;
-    }).slice(0, n);
-
-    return uniqueSimilarUrls.map(item => location.origin + item.url);
+    return uniqueSimilarUrlPaths;
 }
 
 // Function to inject suggestions into the page
-function injectSuggestions(current, suggestions) {
-    let suggestionsHtml = suggestions.length > 0
-    					  ? suggestions.map(url => `<li><p><a class="link-live" href="${url}"><code>${url}</code></a></p></li>`).join("")
+function injectSuggestions(currentPath, suggestedUrlStrings) {
+    let suggestionsHtml = suggestedUrlStrings.length > 0
+    					  ? suggestedUrlStrings.map(urlString => `<li><p><a class="link-live" href="${urlString}"><code>${urlString}</code></a></p></li>`).join("")
     					  : "<li><p><strong>None found.</strong></p></li>";
     let suggestionsElement = elementFromHTML(`<section class="level1">
         <h1 id="guessed-urls">Guessed URLs</h1>
-        <p>Nearest URLs to your current one (<code>${current}</code>):</p>
+        <p>Nearest URLs to your current one (<code>${(location.origin + currentPath)}</code>):</p>
         <div class="columns">
          <ul>${suggestionsHtml}</ul>
         </div>
@@ -190,9 +189,9 @@ async function suggest404Alternatives() {
 
     const sitemapText = await fetchSitemap();
     if (sitemapText) {
-        const urls = parseUrls(sitemapText);
-        const similarUrls = findSimilarUrls(urls, currentPath);
-        injectSuggestions(currentPath, similarUrls);
+        const urlPaths = urlPathnamesFromSitemapString(sitemapText);
+        const similarUrlPaths = findSimilarUrlPaths(urlPaths, currentPath, 10, 8); // max distance chosen heuristically
+        injectSuggestions(currentPath, similarUrlPaths);
     }
 }
 
