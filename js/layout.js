@@ -231,7 +231,7 @@ GW.layout = {
 		[ "p.first-graf",				10 ],
 		[ "p.list-heading",				10 ],
 		[ ".poem .stanza p.first-line",	10 ],
-		[ ".epigraph p.last-block:not(.first-block)",
+		[ ".epigraph:not(.poem) p.last-block:not(.first-block)",
 										 8 ],
 		[ "p",							 0 ],
 
