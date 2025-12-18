@@ -66,7 +66,7 @@
  * rewritten to be ultra-paranoid & do things like ping the final suggested URLs to
  * make sure they exist.
  *
- * Dependencies: None (vanilla JS)
+ * Dependencies: Minimal (vanilla JS + custom utility functions in utility.js)
  *
  * Browser compatibility:
  * This script uses modern JS features like async/await and fetch.
@@ -75,7 +75,9 @@
 
 const sitemapURL = location.origin + "/sitemap.xml";
 
-// Function to fetch the sitemap
+/*********************/
+/*	Fetch the sitemap.
+ */
 async function fetchSitemap() {
     try {
         const response = await fetch(sitemapURL);
@@ -87,17 +89,22 @@ async function fetchSitemap() {
     }
 }
 
-// Function to parse the sitemap and extract URLs
+/**************************************/
+/*	Parse the sitemap and extract URLs.
+ */
 function urlPathnamesFromSitemapString(sitemapText) {
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(sitemapText, "text/xml");
     const locNodes = xmlDoc.getElementsByTagName("loc");
-    // sitemap XML looks like this:
-    // `<url><loc>https://gwern.net/doc/rotten.com/library/history/espionage/mossad/mossad_logo.gif</loc><changefreq>never</changefreq></url>`
+    //	sitemap XML looks like this:
+    //	`<url><loc>https://gwern.net/doc/rotten.com/library/history/espionage/mossad/mossad_logo.gif</loc><changefreq>never</changefreq></url>`
     return Array.from(locNodes).map(locNode => new URL(locNode.textContent).pathname);
 }
 
-// Function to calculate a bounded Levenshtein distance <https://en.wikipedia.org/wiki/Levenshtein_distance>
+/*******************************************************/
+/*	Calculate a bounded Levenshtein distance.
+	<https://en.wikipedia.org/wiki/Levenshtein_distance>
+ */
 function boundedLevenshteinDistance(a, b, maxDistance) {
     if (Math.abs(a.length - b.length) > maxDistance)
     	return maxDistance + 1;
@@ -132,23 +139,26 @@ function boundedLevenshteinDistance(a, b, maxDistance) {
     return matrix[b.length][a.length];
 }
 
-//	Function to find similar URLs
+/**********************************************************************/
+/*	Find similar URLs (with “basename”, a.k.a. last-segment, fallback).
+ */
 function findSimilarUrlPaths(urlPaths, targetPath, numResults, maxDistance) {
     const uniqueSimilarUrlPaths = urlPaths.filter(
 	    //	Quick filter based on length difference
     	urlPath => (Math.abs(urlPath.length - targetPath.length) <= maxDistance)
-    ).unique(
+// 	).unique(
+	//	NOTE: Aren’t the URLs in the sitemap unique already? —SA 2025-12-17
     ).map(
-    	//	Calculate bounded Levenshtein distance
+    	//	Calculate bounded Levenshtein distance.
     	urlPath => ({
             pathname: urlPath,
             distance: boundedLevenshteinDistance(urlPath, targetPath, maxDistance)
         })
     ).filter(
-    	//	Filter by max distance
+    	//	Filter by max distance.
     	item => item.distance <= maxDistance
     ).sort(
-    	//	Sort by distance
+    	//	Sort by distance.
     	(a, b) => a.distance - b.distance
     ).slice(
     	0, numResults
@@ -156,10 +166,64 @@ function findSimilarUrlPaths(urlPaths, targetPath, numResults, maxDistance) {
     	item => item.pathname
     );
 
+    //	If we found good full-path matches, use them.
+    if (uniqueSimilarUrlPaths.length > 0)
+        return uniqueSimilarUrlPaths;
+    
+    //	Fallback: try matching by basename only.
+    return findSimilarByBasename(urlPaths, targetPath, numResults, Math.ceil(maxDistance * 0.5));
+}
+
+/******************************************************************************/
+/*	Find URLs with similar “basenames” (a.k.a. last segments of the pathname) 
+	(fallback for when full-path matching fails).
+
+	This catches cases like /ai-slop → /blog/ai-slop where the basename is 
+	correct but the directory path is wrong or missing.
+ */
+/*	NOTE: the above example does not work because /blog/ai-slop is not actually
+	in the sitemap.
+		—SA 2025-12-17
+ */
+function findSimilarByBasename(urlPaths, targetPath, numResults, maxDistance) {
+    const targetPathLastSegment = URLFromString(targetPath).pathSegments.last; 
+    //	Skip if basename is too short or empty
+    if (targetPathLastSegment.length < 3)
+    	return [];
+ 
+    const uniqueSimilarUrlPaths = urlPaths.map(
+    	//	Get last pathname segments.
+    	urlPath => ({
+    		pathname: urlPath,
+    		lastSegment: URLFromString(urlPath).pathSegments.last
+    	})
+    ).filter(
+    	//	Eliminate directory-only paths.
+    	item => item.lastSegment.length > 1
+    ).map(
+    	//	Calculate bounded Levenshtein distance.
+    	item => ({
+            ...item,
+            distance: boundedLevenshteinDistance(item.lastSegment, targetPathLastSegment, maxDistance)
+        })
+    ).filter(
+    	//	Filter by max distance.
+    	item => item.distance <= maxDistance
+    ).sort(
+    	//	Sort by distance.
+		(a, b) => a.distance - b.distance
+// 	).unique(
+	//	NOTE: Aren’t the URLs in the sitemap unique already? —SA 2025-12-17
+	).map(
+		item => item.pathname
+	);
+ 
     return uniqueSimilarUrlPaths;
 }
 
-// Function to inject suggestions into the page
+/************************************/
+/*	Inject suggestions into the page.
+ */
 function injectSuggestions(currentPath, suggestedUrlStrings) {
     let suggestionsHtml = suggestedUrlStrings.length > 0
     					  ? suggestedUrlStrings.map(urlString => `<li><p><a class="link-live" href="${urlString}"><code>${urlString}</code></a></p></li>`).join("")
@@ -168,7 +232,7 @@ function injectSuggestions(currentPath, suggestedUrlStrings) {
         <h1 id="guessed-urls">Guessed URLs</h1>
         <p>Nearest URLs to your current one (<code>${(location.origin + currentPath)}</code>):</p>
         <div class="columns">
-         <ul>${suggestionsHtml}</ul>
+            <ul>${suggestionsHtml}</ul>
         </div>
     </section>`);
 
@@ -177,11 +241,15 @@ function injectSuggestions(currentPath, suggestedUrlStrings) {
 	Extracts.addTargetsWithin(suggestionsElement);
 }
 
-// Main function
+/*****************/
+/*	Main function.
+ */
 async function suggest404Alternatives() {
     const currentPath = window.location.pathname;
-    // if we redirected to a 404 rather than received it as an error, then the current URL is useless
-    // and can’t be guessed, so we skip the whole business, saving the bandwidth & injection:
+    /*	If we redirected to a 404 rather than received it as an error, then the 
+    	current URL is useless and can’t be guessed, so we skip the whole 
+    	business, saving the bandwidth & injection:
+     */
     if (currentPath.endsWith("/404")) {
         console.log("Current page is a 404 page; unable to guess intended URL. Skipping suggestions.");
         return;
@@ -195,5 +263,7 @@ async function suggest404Alternatives() {
     }
 }
 
-// Run the script when the page loads
+/**************************************/
+/*	Run the script when the page loads.
+ */
 window.addEventListener("load", suggest404Alternatives);
