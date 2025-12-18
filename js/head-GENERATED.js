@@ -359,6 +359,24 @@ Element.prototype.trimQuotes = function () {
 	return this;
 };
 
+/****************************************************************************/
+/*	All text nodes of a node. If the node is itself a text node, return value
+	is an array with just the node itself. If the node contains other nodes,
+	return value is a possibly-empty array of all text nodes contained within
+	the node (in document order).
+ */
+Object.defineProperty(Node.prototype, "textNodes", {
+	get() {
+		if (this.nodeType == Node.TEXT_NODE)
+			return [ this ];
+
+		if (this.childNodes.length == 0)
+			return [ ];
+
+		return Array.from(this.childNodes).flatMap(node => node.textNodes);
+	}
+});
+
 /******************************************************************************/
 /*  The first text node of a node or element (or null if an element contains no
     text nodes).

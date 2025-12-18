@@ -1634,6 +1634,26 @@ addContentLoadHandler(GW.contentLoadHandlers.processPreformattedPoems = (eventIn
 addContentLoadHandler(GW.contentLoadHandlers.processPoems = (eventInfo) => {
     GWLog("processPoems", "rewrite.js", 1);
 
+	//	Render enjambment in non-preformatted block poems, indicated by “ / ”.
+	//	(This is a pre-processing step.)
+	let enjambmentSeparatorRegExp = new RegExp("^(.+?) \/ (.+)$");
+	eventInfo.container.querySelectorAll("div.poem:not(.poem-html)").forEach(poem => {
+		for (let textNode of poem.textNodes) {
+			let match;
+			while (match = textNode.textContent.match(enjambmentSeparatorRegExp)) {
+				[ document.createTextNode(match[1]),
+				  newElement("BR"),
+				  newElement("SPAN", { class: "enjambment-spacer" }),
+				  document.createTextNode(match[2])
+				  ].forEach(newNode => {
+				  	textNode.parentElement.insertBefore(newNode, textNode);
+				});
+				textNode = textNode.previousSibling;
+				textNode.parentElement.removeChild(textNode.nextSibling);
+			}
+		}
+	});
+
 	//	Separate poems into stanzas, each line a <p>.
 	eventInfo.container.querySelectorAll(".poem p").forEach(graf => {
 		if (graf.closest(".stanza"))
@@ -1652,7 +1672,7 @@ addContentLoadHandler(GW.contentLoadHandlers.processPoems = (eventInfo) => {
 		}
 
 		//	Paragraphize lines of stanza.
-		paragraphizeTextNodesOfElement(stanza);
+		paragraphizeTextNodesOfElementRetainingMetadata(stanza);
 
 		//	Re-apply styling wrappers (if need be).
 		for (let stylingTag of stylingTags) {
@@ -1672,7 +1692,16 @@ addContentLoadHandler(GW.contentLoadHandlers.processPoems = (eventInfo) => {
 		}
 	});
 
-	//	Compensate for HTML in enjambed lines.
+	//	Render enjambment in non-preformatted block poems, indicated by “ / ”.
+	eventInfo.container.querySelectorAll("div.poem:not(.poem-html)").forEach(poem => {
+		poem.querySelectorAll(".enjambment-spacer").forEach(indicator => {
+			let thisGraf = indicator.closest("p");
+			let prevGraf = previousBlockOf(thisGraf);
+			indicator.textContent = "".padStart(prevGraf.textContent.length, " ");
+		});
+	});
+
+	//	Compensate for HTML in enjambed lines in preformatted poems.
 	eventInfo.container.querySelectorAll("div.poem-html").forEach(poem => {
 		poem.querySelectorAll("p").forEach(graf => {
 			//	Adjustment for HTML tags.

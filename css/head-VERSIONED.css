@@ -1294,6 +1294,10 @@ p.empty-graf {
 	display: none;
 }
 
+.poem .enjambment-spacer {
+	white-space: pre;
+}
+
 
 /***************/
 /* BLOCKQUOTES */
