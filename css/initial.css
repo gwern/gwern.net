@@ -1277,6 +1277,7 @@ p.empty-graf {
 
 .poem .enjambment-spacer {
 	white-space: pre;
+	padding-right: 0.5ch;
 }
 
 
