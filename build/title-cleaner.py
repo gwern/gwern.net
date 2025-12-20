@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-12-19 00:00:54 gwern"
+# When:  Time-stamp: "2025-12-20 15:10:56 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -808,6 +808,8 @@ Selection vs. Rejection"
 ""
 - "https://life-in-a-monospace-typeface.tumblr.com/post/800786180245504000/the-shibari-game life in a monospace typeface"
 ""
+- "The Bomb That Wanted to Stop Exploding: Reze’s Impossible Freedom in <em>Chainsaw Man—The Movie</em> - Anime News Network"
+"The Bomb That Wanted to Stop Exploding: Reze’s Impossible Freedom in <em>Chainsaw Man—The Movie</em>"
 
 Task:
 

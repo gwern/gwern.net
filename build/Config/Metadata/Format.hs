@@ -181,7 +181,7 @@ filterMetaBadWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is20
                       , "bar", "tmp", "jvore", "ÿþ", "I.R.I.S.", "C&M", "C&amp;M", "()", "[]", "{}"
                       , "Gundars Strads", "Error - CORE file server", "comp2", "u2ps", "mac2"
                       , "Chrome", "Chromium", "Firefox", "Safari", "Author", "Binsbench"
-                      , "Western Publishing", "John Wiley, Sons"]
+                      , "Western Publishing", "John Wiley, Sons", "40505-40237-1-PB.pdf"]
 
 -- tests: unique-all
 htmlRewriteTestCases :: [(String, String)]
@@ -1794,6 +1794,8 @@ htmlRewriteFixed =
          , ("nonspecifically", "non-specifically")
          , ("attentionless", "attention-less")
          , ("disfavour", "disfavor")
+         , (" homogeneous", " homogenous")
+         , (" Homogeneous", " Homogenous")
          , ("nonpredictive", "non-predictive")
          , ("subquadratic-time", "sub-quadratic-time")
          , ("nonimmersive", "non-immersive")

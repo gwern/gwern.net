@@ -46,7 +46,7 @@ authorID = C.authorL
 lengthMin, lengthMax, titleMax :: Int
 lengthMin = 600
 lengthMax = 30000 -- at this length, should probably be split out to a standalone essay
-titleMax = 71 -- chosen empirically based on what lengths seem to trigger line-wrapping when transcluded on /index in Firefox/Chromium
+titleMax = 51 -- chosen empirically based on what lengths seem to trigger line-wrapping when transcluded on /index in Firefox/Chromium in my Google Pixel 9 smartphone
 
 writeOutBlogEntries :: Metadata -> IO ()
 writeOutBlogEntries md =

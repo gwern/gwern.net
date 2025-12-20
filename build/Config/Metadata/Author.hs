@@ -845,6 +845,9 @@ canonicals = M.fromList
   , ("User:Cmglee", "CMG Lee")
   , ("Cmglee", "CMG Lee")
   , ("Nano Banana Pro", "Google Nano Banana Pro")
+  , ("CartoonsHateHer", "Cartoons Hate Her")
+  , ("cartoonshateher", "Cartoons Hate Her")
+  , ("Claude-3-sonnet-new", "Claude-3.5-Sonnet")
   ]
 
 -- tests: unique
@@ -893,7 +896,8 @@ canonicalsWithInitials =
   , "Ross J. Anderson", "Arnold B. Bakker", "Dwayne Richard Hipp", "David C. Liewald", "Elizabeth K. Speliotes"
   , "Douglas F. Levinson", "Blair H. Smith", "Michael J. Wreen", "Andreas J. Forstner", "Clair L. Stong"
   , "Charles Allen Moser", "John A. Leslie", "Robert D. Putnam", "Joel D. Cooper", "Duane A. Compton"
-  , "Timo E. Saaristo", "Arthur L. Caplan", "Robert T. Croyle", "Barbara K. Rimer", "Walter J. Ong", "Samuel S. Wilks", "Kenneth Lee Pike"]
+  , "Timo E. Saaristo", "Arthur L. Caplan", "Robert T. Croyle", "Barbara K. Rimer", "Walter J. Ong"
+  , "Samuel S. Wilks", "Kenneth Lee Pike", "Richard E. Turner"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1417,6 +1421,7 @@ authorLinkDB = M.fromList $
     , ("GPT-4-o3", "https://openai.com/index/introducing-o3-and-o4-mini/#o3")
     , ("GPT-4-o4-mini", "https://openai.com/index/introducing-o3-and-o4-mini/#o4-mini")
     , ("GPT-4-o4-mini-high", "https://openai.com/index/introducing-o3-and-o4-mini/#o4-mini-high")
+    , ("Claude-3.5-Sonnet", "https://www.anthropic.com/news/claude-3-5-sonnet")
     , ("Claude-3.7", "https://www.anthropic.com/news/claude-3-7-sonnet")
     , ("Brian Hayes", "https://en.wikipedia.org/wiki/Brian_Hayes_(scientist)")
     , ("Nat McAleese", "https://scholar.google.com/citations?user=crw6TeIAAAAJ")
@@ -2016,7 +2021,7 @@ authorLinkDB = M.fromList $
     , ("Fergus Fettes", "https://www.lesswrong.com/users/fergus-fettes")
     , ("AI Digest", "https://theaidigest.org/about")
     , ("Uwe Friedrichsen", "https://www.ufried.com/about/")
-    , ("Marcus Olang’", "https://substack.com/@marcusolang")
+    , ("Marcus Olang`", "https://substack.com/@marcusolang")
     , ("Sonali Pechlivanis", "https://de.linkedin.com/in/sonali-pechlivanis-a434407b")
     , ("Stéphane Jamain", "https://scholar.google.com/citations?user=r1WfirEAAAAJ")
     , ("Swapnil Awasthi", "https://scholar.google.com/citations?user=HRbPSQ8AAAAJ")
@@ -2026,6 +2031,9 @@ authorLinkDB = M.fromList $
     , ("CMG Lee", "https://en.wikipedia.org/wiki/User:Cmglee")
     , ("Richard Polt", "https://site.xavier.edu/polt/typewriters/about.html")
     , ("Google Nano Banana Pro", "https://blog.google/technology/ai/nano-banana-pro/")
+    , ("Richard E. Turner", "https://rich-turner-group.github.io/")
+    , ("Cartoons Hate Her", "https://www.cartoonshateher.com/about")
+    , ("Cendyne", "https://cendyne.dev/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -2968,7 +2976,7 @@ authorWpLinkDB =
     ,"Richard Andrew", "Richard Baraniuk", "Richard Bonneau", "Richard Bruggeman", "Richard C. Trembath"
     ,"Richard D. Arvey", "Richard Danzig", "Richard Delgado", "Richard Dobson", "Richard Doll"
     ,"Richard E. Boyatzis", "Richard E. Carey", "Richard E. Lenski", "Richard E. Mayer", "Richard E. Nisbett"
-    ,"Richard E. Snow", "Richard E. Tremblay", "Richard E. Turner", "Richard Everett", "Richard Feynman"
+    ,"Richard E. Snow", "Richard E. Tremblay", "Richard Everett", "Richard Feynman"
     ,"Richard G. Baraniuk", "Richard G. Frank", "Richard Gibbons", "Richard H. Thaler", "Richard Hamming"
     ,"Richard Hanania", "Richard Ho", "Richard J. Davidson", "Richard J. Haier", "Richard J. Hatchett"
     ,"Richard J. Lipton", "Richard J. Murnane", "Richard J. Rose", "Richard J. Samuels", "Richard J. Shaw"
@@ -3310,4 +3318,4 @@ authorWpLinkDB =
     , "Omer Reingold", "Frauke Kreuter", "Eduardo D. Rodriguez", "Duane A. Compton", "Gerald Schatten"
     , "Laura Hewitson", "Bjorn Merker", "Ren Xiaoping", "Sergio Canavero", "Charles Krauthammer", "Akinori Yonezawa"
     , "J Strother Moore", "Matt Kaufmann", "Ilka Agricola", "Lisanne Bainbridge", "Daniel H. Janzen", "Rachel Aviv"
-    , "Oliver Sacks", "Keiichi Matsuura", "Aleksandra Faust", "Samuel S. Wilks", "Kenneth Lee Pike"]
+    , "Oliver Sacks", "Keiichi Matsuura", "Aleksandra Faust", "Samuel S. Wilks", "Kenneth Lee Pike", "Josh Lerner"]

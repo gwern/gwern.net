@@ -70,7 +70,7 @@ guessDateFromString u  =
 -- `<span class="date-range" title="The date range 2020-09-27–2023-05-17 lasted 3 years (963 days), ending 2 years ago.">2020-09-27<span class="subsup"><sup>–</sup><sub>2y</sub></span>2023-05-17</span>`
 -- See </lorem-inline#date-subscripts>, </subscript#date-ranges>.
 -- TODO: handle YYYY-MM and YYYY-MM-DD dates like "Heisenberg was able to find his error by 1945-08-14"
--- NOTE: in general, we do not attempt to annotate dates in `<time>` microdata because there are no current use-cases and it would clutter the HTML markup quite a bit & risk side-effects.
+-- NOTE: in general, we do not attempt to annotate dates in `<time>` microdata because there are no current use-cases (<https://nolanlawson.com/2025/12/14/the-time-element-should-actually-do-something/>) and it would clutter the HTML markup quite a bit & risk side-effects.
 -- TODO: handle archaeological/geological/anthropologically-sized dates using 'kya'/'mya'/'gya'?
 dateRangeDuration :: Int -> Inline -> Inline
 dateRangeDuration todayYear x@(Str s)                                 = dateRangeDurationRaw todayYear x s
