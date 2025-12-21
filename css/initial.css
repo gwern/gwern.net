@@ -1369,7 +1369,7 @@ blockquote,
 }
 @media all and (max-width: 649px) {
     .list {
-        --list-left-padding: 1.75em;
+        --list-left-padding: 1.5em;
     }
 }
 @media all and (min-width: 650px) {
