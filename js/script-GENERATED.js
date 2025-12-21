@@ -15597,28 +15597,6 @@ addContentInjectHandler(GW.contentInjectHandlers.designateBlockquoteLevels = (ev
 }, ">rewrite");
 
 
-/*************/
-/* EPIGRAPHS */
-/*************/
-
-/******************************************************************************/
-/*	Add the ‘narrow’ class to epigraphs that are laid out in such a way that
-	they must be squeezed to an unusually small width, such that their internal
-	layout and styling may be adjusted accordingly.
- */
-addContentInjectHandler(GW.contentInjectHandlers.designateNarrowEpigraphs = (eventInfo) => {
-    GWLog("designateNarrowEpigraphs", "rewrite.js", 1);
-
-	let narrowEpigraphsSelector = [
-		".float-left + .epigraph",
-		".float-right + .epigraph"
-	].join(", ");
-	eventInfo.container.querySelectorAll(".epigraph").forEach(epigraph => {
-		epigraph.classList.toggle("narrow", epigraph.matches(narrowEpigraphsSelector));
-	});
-}, "rewrite", (info) => (GW.mediaQueries.mobileWidth.matches == false));
-
-
 /**********/
 /* TABLES */
 /**********/
@@ -16451,6 +16429,44 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapSlashesInPoems = (eventInfo) =>
 		});
 	});
 }, ">rewrite");
+
+
+/*************/
+/* EPIGRAPHS */
+/*************/
+
+/***************************************************************************/
+/*	Turn leading em-dashes in last paragraphs of epigraphs into .attribution
+	classes on said paragraphs.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.designateEpigraphAttributions = (eventInfo) => {
+    GWLog("designateEpigraphAttributions", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll(".epigraph").forEach(epigraph => {
+		let lastGraf = Array.from(epigraph.querySelectorAll("p")).last;
+		if (lastGraf.firstTextNode.textContent.startsWith("—")) {
+			lastGraf.firstTextNode.textContent = lastGraf.firstTextNode.textContent.slice(1);
+			lastGraf.classList.add("attribution");
+		}
+	});
+}, "rewrite");
+
+/******************************************************************************/
+/*	Add the ‘narrow’ class to epigraphs that are laid out in such a way that
+	they must be squeezed to an unusually small width, such that their internal
+	layout and styling may be adjusted accordingly.
+ */
+addContentInjectHandler(GW.contentInjectHandlers.designateNarrowEpigraphs = (eventInfo) => {
+    GWLog("designateNarrowEpigraphs", "rewrite.js", 1);
+
+	let narrowEpigraphsSelector = [
+		".float-left + .epigraph",
+		".float-right + .epigraph"
+	].join(", ");
+	eventInfo.container.querySelectorAll(".epigraph").forEach(epigraph => {
+		epigraph.classList.toggle("narrow", epigraph.matches(narrowEpigraphsSelector));
+	});
+}, "rewrite", (info) => (GW.mediaQueries.mobileWidth.matches == false));
 
 
 /***************/

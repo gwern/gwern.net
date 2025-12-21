@@ -2610,14 +2610,15 @@ ul.interview .speaker {
     font-style: normal;
     margin: 0 0 0 0.125em;
 }
-.epigraph:not(.poem) blockquote p:last-child:not(:only-child) {
-    text-align: right;
+
+.epigraph .attribution {
+	--text-alignment: right;
+
     font-size: 0.875em;
     font-style: normal;
 }
 
-.epigraph blockquote blockquote p,
-.epigraph blockquote blockquote p:last-child:not(:only-child) {
+.epigraph blockquote blockquote p {
     text-align: var(--text-alignment);
 }
 
@@ -9812,6 +9813,12 @@ a[data-link-icon='caduceus'] { /* medical snake Asclepius icon for hospitals etc
     --link-icon-size: 0.95em;
     --link-icon-offset-x: -0.15em;
     --link-icon-offset-y: 0.45em;
+}
+
+a[data-link-icon='the-onion'] {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.05em;
+    --link-icon-offset-y: 0.4em;
 }
 
 /*=------------------=*/
