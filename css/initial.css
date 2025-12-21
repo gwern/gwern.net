@@ -1275,6 +1275,9 @@ p.empty-graf {
 	display: none;
 }
 
+.poem .enjambed-line {
+	white-space: pre;
+}
 .poem .enjambment-spacer {
 	white-space: pre;
 	padding-right: 0.5ch;

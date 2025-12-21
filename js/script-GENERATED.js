@@ -16416,6 +16416,7 @@ addContentLoadHandler(GW.contentLoadHandlers.processPoems = (eventInfo) => {
 			let thisGraf = indicator.closest("p");
 			let prevGraf = previousBlockOf(thisGraf);
 			indicator.textContent = "".padStart(prevGraf.textContent.length, " ");
+			thisGraf.classList.add("enjambed-line");
 		});
 	});
 

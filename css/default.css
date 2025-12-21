@@ -1535,26 +1535,26 @@ ul.interview .speaker {
 	opacity: 0.4;
 }
 
-.poem-html {
+.poem {
 	overflow-x: auto;
 }
 
 /*  Horizontal scroll bar styles (for WebKit/Blink).
  */
-.poem-html::-webkit-scrollbar {
+.poem::-webkit-scrollbar {
     height: 16px;
     background-color: var(--GW-pre-element-scrollbar-track-color);
 }
-.poem-html::-webkit-scrollbar-thumb {
+.poem::-webkit-scrollbar-thumb {
     background-color: var(--GW-pre-element-scrollbar-thumb-color);
     box-shadow:
         0 0 0 3px var(--GW-pre-element-scrollbar-track-color) inset;
 }
-.poem-html::-webkit-scrollbar-thumb:hover {
+.poem::-webkit-scrollbar-thumb:hover {
     background-color: var(--GW-pre-element-scrollbar-thumb-hover-color);
 }
 @media all and (max-width: 649px) {
-    .poem-html::-webkit-scrollbar {
+    .poem::-webkit-scrollbar {
         height: 10px;
     }
 }
@@ -1562,10 +1562,10 @@ ul.interview .speaker {
 /*  Horizontal scroll bar styles (for Firefox).
  */
 @supports (-moz-appearance: none) {
-    .poem-html {
+    .poem {
         scrollbar-color: var(--GW-pre-element-scrollbar-thumb-color) var(--GW-pre-element-scrollbar-track-color);
     }
-    .poem-html:hover {
+    .poem:hover {
         scrollbar-color: var(--GW-pre-element-scrollbar-thumb-hover-color) var(--GW-pre-element-scrollbar-track-color);
     }
 }
