@@ -2816,7 +2816,7 @@ addScrollListener(updateScrollState, {
 	ifDeferCallWhenAdd: true
 });
 
-/*  Toggles whether the page is scrollable.
+/*  Returns true if the page is scrollable, false otherwise.
  */
 function isPageScrollingEnabled() {
     return !(document.documentElement.classList.contains("scroll-enabled-not"));

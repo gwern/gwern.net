@@ -2134,8 +2134,8 @@ GW.floatingHeader = {
         GW.floatingHeader.scrollIndicator.dataset.scrollPosition = getPageScrollPosition();
         GW.floatingHeader.scrollIndicator.style.backgroundSize = `${GW.floatingHeader.scrollIndicator.dataset.scrollPosition}% 100%`;
 
-        //  Update breadcrumb display.
-        let trail = GW.floatingHeader.getTrail();
+        //  Update breadcrumb display. (Look ahead on scroll down.)
+        let trail = GW.floatingHeader.getTrail(GW.scrollState.unbrokenDownScrollDistance > 0);
 		if (GW.isMobile()) {
 			/*	We must update the display if either the current position in the
 				page has changed (i.e., we’ve scrolled), or if we are having to
@@ -2197,14 +2197,22 @@ GW.floatingHeader = {
 		}
     },
 
-    getTrail: () => {
-        let element = document.elementFromPoint(window.innerWidth / 2, 20);
+	/*	The `lookAhead` argument determines whether to update the trail if
+		the element at the top is nothing (i.e., “between sections”); if set to
+		false, do not update; if set to true, do update (by nudging the “target
+		point” downward until a real block is encountered, or the end of the
+		content section is reached).
+	 */
+    getTrail: (lookAhead = false, offset = 20) => {
+        let element = document.elementFromPoint(window.innerWidth / 2, offset);
 
         if (   element.tagName == "SECTION"
             || element == GW.floatingHeader.markdownBody)
             return (GW.floatingHeader.currentTrail.length == 0
                     ? [ "header" ]
-                    : GW.floatingHeader.currentTrail);
+                    : (lookAhead
+                       ? GW.floatingHeader.getTrail(false, offset + 20)
+                       : GW.floatingHeader.currentTrail));
 
         if (GW.floatingHeader.firstSection == null)
             return [ "header" ];
