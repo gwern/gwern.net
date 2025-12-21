@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-12-15 16:36:06 gwern"
+;;; When:  Time-stamp: "2025-12-15 20:52:30 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -2449,7 +2449,7 @@ To save typing effort, we add those as well if not present."
         (surround-region-or-word "<span class=\"marginnote\">" "</span>")
       (surround-region-or-word "<span class=\"marginnote\">[" "]</span>"))))
 
-(defun markdown-insert-editorial ()
+(defun markdown-insert-editorial-note ()
   "Surround selected region (or word) with editorial syntax.
 Used on Gwern.net to denote ‘editorial’ insertions like commentary
 or annotations. Markdown version"

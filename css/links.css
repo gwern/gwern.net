@@ -1115,6 +1115,12 @@ a[data-link-icon='caduceus'] { /* medical snake Asclepius icon for hospitals etc
     --link-icon-offset-y: 0.45em;
 }
 
+a[data-link-icon='the-onion'] {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.05em;
+    --link-icon-offset-y: 0.4em;
+}
+
 /*=------------------=*/
 /*= Wikipedia links. =*/
 /*=------------------=*/

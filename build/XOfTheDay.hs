@@ -49,7 +49,7 @@ quoted (quote,attribution,_) =
     "<div class=\"epigraph quote-of-the-day\">\n<blockquote>" ++
     -- allow the quote snippet to override the default <p>-wrapper, eg. to add in a `div.poem` wrapper:
       (if head quote == '<' then quote' else "<p>" ++ quote'          ++ "</p>") ++
-      (if null attribution  then ""     else "\n<p>" ++ attribution'  ++ "</p>") ++
+      (if null attribution  then ""     else "\n<p>—" ++ attribution'  ++ "</p>") ++
     "</blockquote>\n</div>"
 
 sited :: Snippet -> String

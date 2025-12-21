@@ -842,6 +842,9 @@ canonicals = M.fromList
   , ("J. Strother Moore", "J Strother Moore") -- NOTE: yes, really: <https://en.wikipedia.org/wiki/J_Strother_Moore> "J Strother Moore (his first name is the alphabetic character 'J'—not an abbreviated 'J.') is an American computer scientist."
   , ("Kaj_Sotala", "Kaj Sotala")
   , ("aidigest_", "AI Digest")
+  , ("User:Cmglee", "CMG Lee")
+  , ("Cmglee", "CMG Lee")
+  , ("Nano Banana Pro", "Google Nano Banana Pro")
   ]
 
 -- tests: unique
@@ -890,7 +893,7 @@ canonicalsWithInitials =
   , "Ross J. Anderson", "Arnold B. Bakker", "Dwayne Richard Hipp", "David C. Liewald", "Elizabeth K. Speliotes"
   , "Douglas F. Levinson", "Blair H. Smith", "Michael J. Wreen", "Andreas J. Forstner", "Clair L. Stong"
   , "Charles Allen Moser", "John A. Leslie", "Robert D. Putnam", "Joel D. Cooper", "Duane A. Compton"
-  , "Timo E. Saaristo", "Arthur L. Caplan", "Robert T. Croyle", "Barbara K. Rimer", "Walter J. Ong"]
+  , "Timo E. Saaristo", "Arthur L. Caplan", "Robert T. Croyle", "Barbara K. Rimer", "Walter J. Ong", "Samuel S. Wilks", "Kenneth Lee Pike"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -2019,6 +2022,10 @@ authorLinkDB = M.fromList $
     , ("Swapnil Awasthi", "https://scholar.google.com/citations?user=HRbPSQ8AAAAJ")
     , ("Tatsunori Hashimoto","https://thashim.github.io/")
     , ("nseavia71501", "https://www.reddit.com/user/nseavia71501")
+    , ("foodforthought", "https://www.lesswrong.com/users/foodforthought")
+    , ("CMG Lee", "https://en.wikipedia.org/wiki/User:Cmglee")
+    , ("Richard Polt", "https://site.xavier.edu/polt/typewriters/about.html")
+    , ("Google Nano Banana Pro", "https://blog.google/technology/ai/nano-banana-pro/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3294,12 +3301,13 @@ authorWpLinkDB =
     , "Primo Levi", "Stuart Woolf", "Arnold B. Bakker", "Justine Tunney", "Jens Hoffmann", "Stanislav Drobyshevsky"
     , "Galit Shmueli", "Robert Mitchell Lindner", "The Daily Telegraph", "Max More", "David Roundy", "Chris Callison-Burch"
     , "Wes McKinney", "Zoltán Kodály", "Jacob Koranyi", "Matthew Garrett", "Peter Medawar", "David M. Berry", "CTAN"
-    , "James Blish", "Motoo Kimura", "M. John Harrison",
-    "Anne Trefethen", "Tony Hey", "Robert Ghrist", "Michael Bloomberg", "Gloria Origgi", "Diego Gambetta"
-    , "Ann Shulgin", "Alexander Shulgin", "Craig Packer", "Charles Allen Moser", "Ruriko Yoshida", "Michael Stillman"
-    , "William Empson", "Michael Eisen", "dril", "William Pannapacker", "Gail Hareven", "Alan C. Newell", "Kenneth Tynan"
+    , "James Blish", "Motoo Kimura", "M. John Harrison", "Anne Trefethen", "Tony Hey", "Robert Ghrist"
+    , "Michael Bloomberg", "Gloria Origgi", "Diego Gambetta", "Ann Shulgin", "Alexander Shulgin"
+    , "Craig Packer", "Charles Allen Moser", "Ruriko Yoshida", "Michael Stillman", "William Empson"
+    , "Michael Eisen", "dril", "William Pannapacker", "Gail Hareven", "Alan C. Newell", "Kenneth Tynan"
     , "Alexander Mathis", "Mackenzie Weygandt Mathis", "Andrea Moro", "Stephen Crain", "Jean-Pierre Eckmann"
     , "Katia Obraczka", "SwiftOnSecurity", "Robert D. Putnam", "Ramalingam Chellappa", "Explosions in the Sky"
     , "Omer Reingold", "Frauke Kreuter", "Eduardo D. Rodriguez", "Duane A. Compton", "Gerald Schatten"
     , "Laura Hewitson", "Bjorn Merker", "Ren Xiaoping", "Sergio Canavero", "Charles Krauthammer", "Akinori Yonezawa"
-    , "J Strother Moore", "Matt Kaufmann", "Ilka Agricola", "Lisanne Bainbridge", "Daniel H. Janzen", "Rachel Aviv"]
+    , "J Strother Moore", "Matt Kaufmann", "Ilka Agricola", "Lisanne Bainbridge", "Daniel H. Janzen", "Rachel Aviv"
+    , "Oliver Sacks", "Keiichi Matsuura", "Aleksandra Faust", "Samuel S. Wilks", "Kenneth Lee Pike"]
