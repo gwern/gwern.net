@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-12-21 19:38:46 gwern"
+;;; When:  Time-stamp: "2025-12-21 20:55:41 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -2605,27 +2605,67 @@ Runs ORIG-FUN on ARGS to create the selected text (ie. original `gui-get-selecti
 ;;                          t nil nil 0)
 ;;           (setq id (1+ id)))))))
 
-;;; Modern, ad-hoc, symmetric encryption for arbitrary text.
-;;;
-;;; Encrypt text notes in-place in a buffer using GPG & ASCII encoding.
-;;; Useful for inline secrets in shared documents (e.g., notes/org-mode).
-;;; Select text to censor/uncensor, run `M-x gpg-toggle-region`, and enter a password.
-;;; The secrets become opaque ASCII armor blocks safe for untrusted storage.
-;;; WARNING: block-level-only due to the PGP ASCII armor formatting overhead; inline requires alternative approaches.
-;;;
-;;; Conceptually analogous to "Column-Level Encryption" in GNU Recutils or SQL,
-;;; but applied ad-hoc to text regions. Uses randomized symmetric OpenPGP
-;;; (typically AES-256), prioritizing security over searchability.
-;;;
-;;; NOTE: To support `--pinentry-mode loopback` reliably, your ~/.gnupg/gpg-agent.conf
-;;; generally requires:
-;;; > allow-loopback-pinentry
-;;;
-;;; TODO: Possible alternative: <https://github.com/FiloSottile/age>
-(require 'subr-x)  ;; string-trim, string-empty-p
+;;; region-gpg-inline.el --- Inline symmetric-encrypted GPG tokens for regions (version 1)
+;;
+;; Usage
+;;
+;;  - Select a region and run:   `M-x gpg-toggle-region`
+;;    → replaces region with a single-line token:  `[GPG1:BASE64...]`
+;;
+;;  - Put point anywhere inside a `[GPG1:...]` token (no region needed) and run:
+;;      `M-x gpg-toggle-region`
+;;    → replaces token with decrypted plaintext.
+;;
+;;  - Put point inside an ASCII-armored PGP block (`-----BEGIN PGP MESSAGE-----`)
+;;    and run:
+;;      `M-x gpg-toggle-region`
+;;    → replaces the block with decrypted plaintext.
+;;
+;; Example usage:
+;;
+;; "baz quux xxyyzz baz Modern, ad-hoc, symmetric encryption for arbitrary text. lorem ipsum"
+;; [Select → M-x gpg-toggle-region → password: "foo bar" → password confirmation: "foo bar" →]
+;; "baz quux xxyyzz baz [GPG1:jA0ECQMKtkRJcAQru0b/0mkBVGAblrLxisvGKBk+gSDTobtTa7VaNEjEHeYeCyH2Zppau4eYtR8TBRNptwEqbqLNtghc4ohjREm4K8kPhrop6epU398LdH1NT6ItLdANcvby53YXVa0PTKqA0WD0MDNdx6IVGh7cYgg=] lorem ipsum"
+;;
+;; Requirements
+;;
+;;  - gpg installed.
+;;  - For --pinentry-mode loopback to work reliably, set in ~/.gnupg/gpg-agent.conf:
+;;      allow-loopback-pinentry
+;;    then reload:
+;;      gpgconf --reload gpg-agent
+;;
+;; Caveats
+;;
+;;  - Decrypting in-place puts plaintext into the buffer/undo history and may
+;;    interact with autosave/backups.
+;;  - Tokens must remain on one physical line (hard-wrapping breaks them).
+;;  - Encryption-only; no authentication or signing or resistance to editing.
+;;
+;; Background: Modern, ad-hoc, symmetric encryption for arbitrary text.
+;;
+;; Encrypt text notes in-place in a buffer using GPG & Base64 of the ASCII armored encoding.
+;; Useful for inline secrets in shared documents (e.g., notes/org-mode).
+;; Select text to censor/uncensor, run `M-x gpg-toggle-region`, and enter a password.
+;; The secrets become opaque ASCII armor blocks safe for untrusted storage.
+;;
+;; Conceptually analogous to "Column-Level Encryption" in GNU Recutils or SQL,
+;; but applied ad-hoc to text regions. Uses randomized symmetric OpenPGP
+;; (typically AES-256 with slower key derivation), prioritizing security over searchability/performance.
+;;
+;; NOTE: To support `--pinentry-mode loopback` reliably, your ~/.gnupg/gpg-agent.conf
+;; may require:
+;;
+;; > allow-loopback-pinentry
+;;
+;; TODO: Possible alternative: <https://github.com/FiloSottile/age>. Benefits: scrypt, shorter outputs, simpler invocation with no pinentry. Drawbacks: not installed by default on Linux, still relatively new.
+;;
+;;; Code:
 
-(defgroup region-gpg nil
-  "Encrypt/decrypt regions using symmetric GPG."
+(require 'subr-x) ;; string-trim, string-trim-left, string-empty-p, when-let
+
+(defgroup region-gpg-inline nil
+  "Inline encrypt/decrypt of regions using symmetric GPG."
   :group 'tools)
 
 (defcustom region-gpg-program "gpg"
@@ -2633,84 +2673,229 @@ Runs ORIG-FUN on ARGS to create the selected text (ie. original `gui-get-selecti
   :type 'string)
 
 (defcustom region-gpg-common-args
-  '("--batch" "--yes" "--pinentry-mode" "loopback" "--passphrase-fd" "0")
-  "Args always passed to gpg.
-This setup expects gpg-agent to allow loopback pinentry."
+  '("--batch" "--yes" "--pinentry-mode" "loopback" "--passphrase-fd" "0"
+    "--compress-algo" "none"
+    ; slow down decryption to reduce risk of bruteforcing short passphrases using string-to-key iteration count.
+    ; Hardening: use SHA512 and max out iteration count (~65 million):
+    "--s2k-digest-algo" "SHA512"
+    "--s2k-count" "65011712")
+  "Arguments always passed to gpg.
+This setup expects gpg-agent to allow loopback pinentry.
+Compression is disabled since inline tokens are typically small.
+S2K (string-to-key) is set to max iterations with SHA512 to resist
+brute-force attacks on short passphrases."
   :type '(repeat string))
 
-(defun region-gpg--run (input passphrase args)
-  "Run gpg with ARGS, feeding PASSPHRASE then INPUT on stdin.
-Return stdout as a string. On failure, signal a user-error with stderr."
+(defconst region-gpg-inline-tag "GPG1"
+  "Inline ciphertext token prefix.
+Tokens look like: [GPG1:BASE64...]")
+
+(defconst region-gpg-inline-token-regexp
+  (concat "\\[" (regexp-quote region-gpg-inline-tag) ":\\([A-Za-z0-9+/=]+\\)\\]")
+  "Regexp matching a [GPG1:...] token on a single line.")
+
+(defconst region-gpg-armor-begin-regexp "^-----BEGIN PGP MESSAGE-----[ \t]*$"
+  "Regexp matching the start of an ASCII-armored PGP message.")
+
+(defconst region-gpg-armor-end-regexp "^-----END PGP MESSAGE-----[ \t]*$"
+  "Regexp matching the end of an ASCII-armored PGP message.")
+
+(defun region-gpg--assert-gpg ()
+  "Signal `user-error' if `region-gpg-program' is not executable.
+This checks `region-gpg-program' using function `executable-find'."
   (unless (executable-find region-gpg-program)
     (user-error "Cannot find %s via `executable-find' (check variable `exec-path')"
-                region-gpg-program))
-  (let ((coding-system-for-read 'utf-8-unix)
-        (coding-system-for-write 'utf-8-unix))
-    ;; We use a temp buffer to composite the input, then stream it via
-    ;; `call-process-region'. This avoids OS pipe deadlocks on large inputs.
+                region-gpg-program)))
+
+(defun region-gpg--replace (start end text)
+  "Replace region START..END with TEXT."
+  (save-excursion
+    (goto-char start)
+    (delete-region start end)
+    (insert text)))
+
+(defun region-gpg--as-bytes (s)
+  "Return S as a unibyte string of bytes.
+If S is multibyte, it is encoded with coding system `raw-text'."
+  (if (multibyte-string-p s)
+      (encode-coding-string s 'raw-text)
+    s))
+
+(defun region-gpg--run (input passphrase args output-mode)
+  "Run gpg with ARGS, feeding PASSPHRASE then INPUT on stdin.
+
+OUTPUT-MODE controls how stdout is returned:
+- the symbol `binary' returns a unibyte string of raw bytes
+- the symbol `text' returns a UTF-8 decoded string
+
+On failure, signal `user-error' with stderr."
+  (region-gpg--assert-gpg)
+  (when (string-match-p "\n" passphrase)
+    (user-error "Passphrase must not contain a newline"))
+  (let ((coding-system-for-write 'binary)
+        (coding-system-for-read 'binary))
     (with-temp-buffer
-      (insert passphrase "\n" input)
-      (let* ((err-file (make-temp-file "gpg-stderr"))
-             ;; T for DELETE argument replaces the temp-buffer content with stdout
+      ;; Work in bytes; build stdin as: PASS\n(PLAINTEXT-or-CIPHERTEXT BYTES)
+      (set-buffer-multibyte nil)
+
+      ;; Passphrase is interpreted as a line of text by gpg; encode as UTF-8.
+      (insert (encode-coding-string passphrase 'utf-8-unix))
+      (insert "\n")
+
+      ;; INPUT: plaintext (UTF-8) or raw bytes (unibyte).
+      (if (multibyte-string-p input)
+          (insert (encode-coding-string input 'utf-8-unix))
+        (insert (region-gpg--as-bytes input)))
+
+      (let* ((err-file (make-temp-file "region-gpg-inline-stderr-"))
              (exit-code (apply #'call-process-region
                                (point-min) (point-max)
                                region-gpg-program
+                               ;; DELETE=t means replace this temp buffer with stdout
                                t (list t err-file) nil
                                (append region-gpg-common-args args))))
         (unwind-protect
-            (if (zerop exit-code)
-                (buffer-string)
-              (with-temp-buffer
-                (insert-file-contents err-file)
-                (let ((err (string-trim (buffer-string))))
-                  (user-error "GNU gpg failed (exit %d): %s"
-                              exit-code (if (string-empty-p err) "(no stderr)" err)))))
-          (delete-file err-file))))))
+            (if (and (integerp exit-code) (zerop exit-code))
+                (let ((out-bytes (region-gpg--as-bytes (buffer-string))))
+                  (pcase output-mode
+                    ('binary out-bytes)
+                    ('text   (decode-coding-string out-bytes 'utf-8-unix))
+                    (_ (user-error "Invalid OUTPUT-MODE (expected `binary' or `text'): %S"
+                                   output-mode))))
+              (let ((err (with-temp-buffer
+                           (when (file-exists-p err-file)
+                             (insert-file-contents err-file))
+                           (string-trim (buffer-string)))))
+                (user-error "GNU gpg failed (%s): %s"
+                            (format "%s" exit-code)
+                            (if (string-empty-p err) "(no stderr)" err))))
+          (when (file-exists-p err-file)
+            (delete-file err-file)))))))
 
-(defun encrypt-region-to-password (start end)
-  "Encrypt the region from START to END.
-Uses symmetric GPG (ASCII-armored) with a password.
-Replaces the region with the armored ciphertext."
+(defun region-gpg-inline--wrap (b64)
+  "Wrap base64 B64 as a [GPG1:...] token."
+  (format "[%s:%s]" region-gpg-inline-tag b64))
+
+(defun region-gpg-inline--unwrap (token)
+  "Extract base64 payload from TOKEN of the form [GPG1:...].
+Signal `user-error' if TOKEN does not match exactly."
+  (let ((s (string-trim token)))
+    (if (string-match (concat "\\`\\[" (regexp-quote region-gpg-inline-tag)
+                              ":\\([A-Za-z0-9+/=]+\\)\\]\\'") s)
+        (match-string 1 s)
+      (user-error "Region is not exactly a [%s:...] token" region-gpg-inline-tag))))
+
+(defun region-gpg-inline-encrypt-region (start end)
+  "Encrypt region START..END into a single-line [GPG1:...] token (symmetric)."
   (interactive "r")
-  (unless (use-region-p)
+  (when (and (called-interactively-p 'any) (not (use-region-p)))
     (user-error "No active region"))
-  (let* ((p1 (read-passwd "Encrypt passphrase: "))
-         (p2 (read-passwd "Confirm passphrase: ")))
+  (let ((p1 (read-passwd "Encrypt passphrase: "))
+        (p2 (read-passwd "Confirm passphrase: ")))
     (unless (string= p1 p2)
       (user-error "Passphrases do not match"))
     (let* ((plain (buffer-substring-no-properties start end))
-           (cipher (region-gpg--run plain p1 '("--symmetric" "--armor"))))
-      (save-excursion
-        (goto-char start)
-        (delete-region start end)
-        (insert cipher)))))
+           (bin (region-gpg--run plain p1 '("--symmetric") 'binary))
+           (b64 (base64-encode-string (region-gpg--as-bytes bin) t))
+           (tok (region-gpg-inline--wrap b64)))
+      (region-gpg--replace start end tok))))
 
-(defun decrypt-region-from-password (start end)
-  "Decrypt the region START to END using a password.
-Assumes a standard ASCII-armored GPG message;
-replaces the region with decrypted plaintext."
+(defun region-gpg-inline-decrypt-region (start end)
+  "Decrypt region START..END containing a [GPG1:...] token (symmetric)."
   (interactive "r")
-  (unless (use-region-p)
+  (when (and (called-interactively-p 'any) (not (use-region-p)))
     (user-error "No active region"))
-  (let* ((p (read-passwd "Decrypt passphrase: "))
-         (cipher (buffer-substring-no-properties start end))
-         (plain (region-gpg--run cipher p '("--decrypt"))))
-    (save-excursion
-      (goto-char start)
-      (delete-region start end)
-      (insert plain))))
+  (let* ((token (buffer-substring-no-properties start end))
+         (b64 (region-gpg-inline--unwrap token))
+         (bin (region-gpg--as-bytes (base64-decode-string b64)))
+         (p (read-passwd "Decrypt passphrase: "))
+         (plain (region-gpg--run bin p '("--decrypt") 'text)))
+    (region-gpg--replace start end plain)))
 
+(defun region-gpg-armor-decrypt-region (start end)
+  "Decrypt an ASCII-armored PGP MESSAGE block in region START..END (symmetric)."
+  (interactive "r")
+  (when (and (called-interactively-p 'any) (not (use-region-p)))
+    (user-error "No active region"))
+  (let* ((cipher (buffer-substring-no-properties start end))
+         (p (read-passwd "Decrypt passphrase: "))
+         (plain (region-gpg--run cipher p '("--decrypt") 'text)))
+    (region-gpg--replace start end plain)))
+
+(defun region-gpg-inline--bounds-of-inline-token-at-point ()
+  "Return (START . END) of the [GPG1:...] token containing point, or nil.
+This searches only the current line (tokens are intended to be single-line)."
+  (save-excursion
+    (let ((pos (point)))
+      (goto-char (line-beginning-position))
+      (catch 'found
+        (while (re-search-forward region-gpg-inline-token-regexp
+                                  (line-end-position) t)
+          (when (<= (match-beginning 0) pos (match-end 0))
+            (throw 'found (cons (match-beginning 0) (match-end 0)))))
+        nil))))
+
+(defun region-gpg-inline--bounds-of-armor-block-at-point ()
+  "Return (START . END) of the ASCII-armored PGP block containing point, or nil."
+  (save-excursion
+    (let ((pos (point)))
+      (when (re-search-backward region-gpg-armor-begin-regexp nil t)
+        (let ((beg (match-beginning 0)))
+          (when (re-search-forward region-gpg-armor-end-regexp nil t)
+            (let ((end (match-end 0)))
+              (when (<= beg pos end)
+                (cons beg end)))))))))
+
+(defun region-gpg-inline--dwim-bounds ()
+  "Return (START END) bounds for DWIM toggling.
+
+Priority:
+  1) Active region.
+  2) [GPG1:...] token at point.
+  3) ASCII-armored PGP block at point.
+
+If none apply, signal `user-error'."
+  (cond
+   ((use-region-p)
+    (list (region-beginning) (region-end)))
+   ((when-let ((b (region-gpg-inline--bounds-of-inline-token-at-point)))
+      (list (car b) (cdr b))))
+   ((when-let ((b (region-gpg-inline--bounds-of-armor-block-at-point)))
+      (list (car b) (cdr b))))
+   (t
+    (user-error "Select a region to encrypt, or put point inside a [%s:...] token / PGP block to decrypt"
+                region-gpg-inline-tag))))
+
+(defun region-gpg-inline--classify (start end)
+  "Classify region START..END as the symbol `inline', `armor', or `plain'."
+  (let* ((prefix (buffer-substring-no-properties start (min end (+ start 64))))
+         (s (string-trim-left prefix))
+         (token-prefix (format "[%s:" region-gpg-inline-tag)))
+    (cond
+     ((string-prefix-p token-prefix s) 'inline)
+     ((string-prefix-p "-----BEGIN PGP MESSAGE-----" s) 'armor)
+     (t 'plain))))
+
+;;;###autoload
 (defun gpg-toggle-region (start end)
-  "If region START to END appears like a PGP, decrypt; otherwise encrypt.
-Assumes an armored GPG block."
-  (interactive "r")
-  (unless (use-region-p)
-    (user-error "No active region"))
-  ;; Check first ~80 chars for PGP header
-  (let ((s (buffer-substring-no-properties start (min end (+ start 80)))))
-    (if (string-match-p "-----BEGIN PGP MESSAGE-----" s)
-        (decrypt-region-from-password start end)
-      (encrypt-region-to-password start end))))
+  "DWIM: encrypt START to END region, or decrypt [GPG1:...].
+
+If a region is active, operate on that region.
+If no region is active, decrypt the token/block containing point."
+  (interactive (region-gpg-inline--dwim-bounds))
+  (pcase (region-gpg-inline--classify start end)
+    ('inline (region-gpg-inline-decrypt-region start end))
+    ('armor  (region-gpg-armor-decrypt-region start end))
+    ('plain  (region-gpg-inline-encrypt-region start end))))
+
+;; Optional aliases matching earlier drafts:
+;;;###autoload
+(defalias 'encrypt-region-to-password #'region-gpg-inline-encrypt-region)
+;;;###autoload
+(defalias 'decrypt-region-from-password #'region-gpg-inline-decrypt-region)
+
+(provide 'region-gpg-inline)
+;;; region-gpg-inline.el ends here
 
 ;;; markdown.el ends here
 
