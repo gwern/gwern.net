@@ -26,7 +26,7 @@ import Data.Containers.ListUtils (nubOrd)
 import Data.Maybe (fromMaybe)
 import qualified Data.Map.Strict as M (toList, filterWithKey)
 import qualified Data.Text as T (append, pack, unpack)
-import Text.Pandoc (pandocExtensions, writerExtensions, writeMarkdown, def, nullMeta, runPure, Block(BulletList, Header, Para, Div), Inline(Link, Span, Str, Strong, RawInline), Format(Format), Pandoc(Pandoc))
+import Text.Pandoc (pandocExtensions, writerExtensions, writeMarkdown, def, nullMeta, runPure, Block(BulletList, Header, Para, Div), Inline(Link, Str, Strong, RawInline), Format(Format), Pandoc(Pandoc))
 import System.Directory (createDirectoryIfMissing)
 import System.FilePath (takeDirectory)
 
@@ -140,7 +140,7 @@ annotation2Markdown url (title, author, dateCreated, dateModified, kvs, _, _) =
       status      = get "status"         "finished"
       importance  = get "importance"     "0"
       confidence  = get "confidence"     "log"
-      cssExt      = get "css-extension"  "dropcaps-de-zs"
+      cssExt      = get "css-extension"  "dropcaps-de-zs toc-not"
       thumbnail   = get "thumbnail"      ""
       thumbnailT  = get "thumbnail-text" ""
   in unlines $
@@ -178,8 +178,8 @@ generateDirectoryBlog targets = do
   when (null sortedPosts) $ error "generateDirectory.generateDirectoryBlog: sortedPosts is empty, processing failed."
 
   let lastEntryDate = (\(_,(_,_,date,_,_,_,_),_) -> date) $ head sortedPosts
-  let listLinksByYear = BulletList $ generateBlogLinksByYears sortedPosts
-  let listTranscludesByYear = BulletList $ generateBlogTranscludes (zip (True : repeat False) sortedPosts)
+  let sectionLinksByYear = generateBlogLinksByYears sortedPosts
+  let sectionTranscludesByYear = generateBlogTranscludes (zip (True : repeat False) sortedPosts)
 
   let header = unlines ["---", "title: Blog Posts"
                        , "description: 'Index of my shorter or off-site writings, presented as annotations. (Sorted in reverse chronological order.)'"
@@ -195,7 +195,7 @@ generateDirectoryBlog targets = do
                        , "Reverse-chronological index of my short-form writings (including off-site):\n"]
 
   let blogSectionTransclude = Header 1 ("", [], []) [Str "View Full Posts"]
-  let document = Pandoc nullMeta [listLinksByYear, blogSectionTransclude, listTranscludesByYear]
+  let document = Pandoc nullMeta (sectionLinksByYear ++ [blogSectionTransclude] ++ sectionTranscludesByYear)
   let p = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} document
 
   case p of
@@ -203,9 +203,9 @@ generateDirectoryBlog targets = do
     Right p' -> do let contentsNew = T.pack header `T.append` p'
                    writeUpdatedFile "directory" "blog/index.md" contentsNew
 
-generateBlogLinksByYears :: [(FilePath, MetadataItem, Path)] -> [[Block]]
+generateBlogLinksByYears :: [(FilePath, MetadataItem, Path)] -> [Block]
 generateBlogLinksByYears sortedPosts = let years = nubOrd $ map (\(_, (_,_,dc,_,_,_,_), _) -> take 4 dc) sortedPosts
-                                       in map (\y -> Para [Strong [Span (T.pack y,[],[]) [Str (T.pack y)], Str ":"]] : [generateBlogLinksByYear y]) years
+                                       in concatMap (\y -> Header 1 (T.pack y,[],[]) [Str (T.pack y)] : [generateBlogLinksByYear y]) years
   where
     generateBlogLinksByYear :: String -> Block
     generateBlogLinksByYear year = let hits = filter (\(_, (_,_,dc,_,_,_,_), _) -> year `isPrefixOf` dc) sortedPosts
@@ -218,11 +218,11 @@ generateBlogLink :: (FilePath, MetadataItem, Path) -> [Block]
 generateBlogLink (urlPath, (tle,_,dc,_,_,_,_), _) =
   let link = Link (T.pack dc, ["link-annotated-not", "icon-not"], [("data-include-selector-not", "#return-to-blog-index-link")])
                                       [RawInline (Format "html") (T.pack $ truncateString 70 $ titlecase' tle)] (T.pack urlPath,"")
-  in [Para [Str (T.pack (drop 5 dc ++ ": ")), Strong [link]]]
+  in [Para [Strong [link], Str (T.pack (" (" ++ drop 5 dc ++ ")"))]]
 
-generateBlogTranscludes :: [(Bool, (FilePath, MetadataItem, Path))] -> [[Block]]
+generateBlogTranscludes :: [(Bool, (FilePath, MetadataItem, Path))] -> [Block]
 generateBlogTranscludes sortedPostsWithBool = let years = nubOrd $ map (\(_, (_, (_,_,dc,_,_,_,_), _)) -> take 4 dc) sortedPostsWithBool
-                                       in map (\y -> Para [Strong [Span (T.pack $ "transclude-"++y,[],[]) [Str (T.pack y)], Str ":"]] : [generateBlogTranscludesByYear y]) years
+                                       in concatMap (\y -> Header 2 (T.pack $ "transclude-"++y,[],[]) [Str (T.pack y)] : [generateBlogTranscludesByYear y]) years
   where
     generateBlogTranscludesByYear :: String -> Block
     generateBlogTranscludesByYear year = let hits = filter (\(_, (_,(_,_,dc,_,_,_,_), _)) -> year `isPrefixOf` dc) sortedPostsWithBool
@@ -264,3 +264,4 @@ generateDirectoryBlogSimplified items =
        Left e   -> printRed (show e)
        Right p' -> do let contentsNew = T.pack header `T.append` p'
                       writeUpdatedFile "directory" "blog/newest.md" contentsNew
+
