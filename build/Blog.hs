@@ -187,7 +187,7 @@ generateDirectoryBlog targets = do
                        , "modified: " ++ lastEntryDate
                        , "status: log"
                        , "importance: 0"
-                       , "css-extension: dropcap-not"
+                       , "css-extension: dropcap-not toc-not"
                        , "backlink: False"
                        , "placeholder: True"
                        , "index: True"
@@ -205,6 +205,7 @@ generateDirectoryBlog targets = do
 
 generateBlogLinksByYears :: [(FilePath, MetadataItem, Path)] -> [Block]
 generateBlogLinksByYears sortedPosts = let years = nubOrd $ map (\(_, (_,_,dc,_,_,_,_), _) -> take 4 dc) sortedPosts
+                                           -- NOTE: top level headers for a more balanced look, because <h1> is indented to the right
                                        in concatMap (\y -> Header 1 (T.pack y,[],[]) [Str (T.pack y)] : [generateBlogLinksByYear y]) years
   where
     generateBlogLinksByYear :: String -> Block
@@ -218,7 +219,11 @@ generateBlogLink :: (FilePath, MetadataItem, Path) -> [Block]
 generateBlogLink (urlPath, (tle,_,dc,_,_,_,_), _) =
   let link = Link (T.pack dc, ["link-annotated-not", "icon-not"], [("data-include-selector-not", "#return-to-blog-index-link")])
                                       [RawInline (Format "html") (T.pack $ truncateString 70 $ titlecase' tle)] (T.pack urlPath,"")
-  in [Para [Strong [link], Str (T.pack (" (" ++ drop 5 dc ++ ")"))]]
+      dd = drop 8 dc
+      mm = drop 5 $ take 2 dc
+  in [Para [Strong [link],
+            -- append the MM-DD dates as low-priority parentheticals (since YYYY is covered in the section headers); include WORD JOINER for nicer line-breaking of the MM-DD as a whole.
+            Str (T.pack (" (" ++ mm ++ "\8288-" ++ dd ++ ")"))]]
 
 generateBlogTranscludes :: [(Bool, (FilePath, MetadataItem, Path))] -> [Block]
 generateBlogTranscludes sortedPostsWithBool = let years = nubOrd $ map (\(_, (_, (_,_,dc,_,_,_,_), _)) -> take 4 dc) sortedPostsWithBool
