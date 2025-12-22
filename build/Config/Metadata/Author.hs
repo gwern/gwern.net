@@ -897,7 +897,7 @@ canonicalsWithInitials =
   , "Douglas F. Levinson", "Blair H. Smith", "Michael J. Wreen", "Andreas J. Forstner", "Clair L. Stong"
   , "Charles Allen Moser", "John A. Leslie", "Robert D. Putnam", "Joel D. Cooper", "Duane A. Compton"
   , "Timo E. Saaristo", "Arthur L. Caplan", "Robert T. Croyle", "Barbara K. Rimer", "Walter J. Ong"
-  , "Samuel S. Wilks", "Kenneth Lee Pike", "Richard E. Turner"]
+  , "Samuel S. Wilks", "Kenneth Lee Pike", "Richard E. Turner", "Phil Hyoun Lee"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -2034,6 +2034,10 @@ authorLinkDB = M.fromList $
     , ("Richard E. Turner", "https://rich-turner-group.github.io/")
     , ("Cartoons Hate Her", "https://www.cartoonshateher.com/about")
     , ("Cendyne", "https://cendyne.dev/")
+    , ("Simon Osindero", "https://scholar.google.com/citations?user=Jq8ZS5kAAAAJ&hl=en&oi=ao")
+    , ("Simon R. Cox", "https://edwebprofiles.ed.ac.uk/profile/simon-cox")
+    , ("Ditte Demontis", "https://scholar.google.com/citations?user=wJI6WS0AAAAJ&hl=en&oi=ao")
+    , ("Phil Hyoun Lee", "https://researchers.mgh.harvard.edu/profile/2797527/Phil-Hyoun-Lee")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3318,4 +3322,5 @@ authorWpLinkDB =
     , "Omer Reingold", "Frauke Kreuter", "Eduardo D. Rodriguez", "Duane A. Compton", "Gerald Schatten"
     , "Laura Hewitson", "Bjorn Merker", "Ren Xiaoping", "Sergio Canavero", "Charles Krauthammer", "Akinori Yonezawa"
     , "J Strother Moore", "Matt Kaufmann", "Ilka Agricola", "Lisanne Bainbridge", "Daniel H. Janzen", "Rachel Aviv"
-    , "Oliver Sacks", "Keiichi Matsuura", "Aleksandra Faust", "Samuel S. Wilks", "Kenneth Lee Pike", "Josh Lerner"]
+    , "Oliver Sacks", "Keiichi Matsuura", "Aleksandra Faust", "Samuel S. Wilks", "Kenneth Lee Pike", "Josh Lerner"
+    , "Robert Hayden", "Michael Ondaatje", "Galway Kinnell", "Li-Young Lee", "Douwe Kiela"]

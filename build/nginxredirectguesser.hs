@@ -62,76 +62,56 @@ listFilesRecursivelyWithBasename dir = do
   return $ concat paths
 
 main :: IO ()
-main = do
-        raw <- getContents
-        let errors =
-              S.toAscList
-            . S.fromList
-            . filter (not . null)
-            . map strip
-            . lines
-            $ raw
+main =
+  do raw <- getContents
+     let errors = S.toAscList . S.fromList . filter (not . null) . map strip . lines $ raw
 
-        files <- listFilesRecursivelyWithBasename C.root
+     files <- listFilesRecursivelyWithBasename C.root
 
-        one <- readFile "static/redirect/nginx.conf"
-        two <- readFile "static/redirect/nginx-broken.conf"
+     one <- readFile "static/redirect/nginx.conf"
+     two <- readFile "static/redirect/nginx-broken.conf"
 
-        -- Optional: suppress exact-line duplicates already present in existing files.
-        let existingLines =
-              S.fromList
-            . map strip
-            . lines
-            $ one ++ two
+     -- Optional: suppress exact-line duplicates already present in existing files.
+     let existingLines = S.fromList . map strip . lines $ one ++ two
 
-        let redirects =
-              filter (\(_,b) -> b `notElem` ["/404\";","404\";"])
-            . map safeTuplize
-            . filter ((== 2) . length)
-            . map (splitOn "$\" \"")
-            . lines
-            $ one ++ two
+     let redirects = filter (\(_,b) -> b `notElem` ["/404\";","404\";"]) . map safeTuplize . filter ((== 2) . length) . map (splitOn "$\" \"") . lines $ one ++ two
 
-        let redirectsCleaned =
-              map (\(a,b) -> (filter (`notElem` ("~^.*?+[]\"" :: String)) a, b)) redirects
+     let redirectsCleaned = map (\(a,b) -> (filter (`notElem` ("~^.*?+[]\"" :: String)) a, b)) redirects
 
-        let bestMatch err =
-              case filter (\(d,_,_) -> d <= minDistance) (diffAndRank files redirectsCleaned err) of
-                []    -> Nothing
-                x : _ -> Just x
+     let bestMatch err =
+           case filter (\(d,_,_) -> d <= minDistance) (diffAndRank files redirectsCleaned err) of
+             []    -> Nothing
+             x : _ -> Just x
 
-        let results :: [(String, Maybe (Int,String,String))]
-            results = [ (err, bestMatch err) | err <- errors ]
+     let results :: [(String, Maybe (Int,String,String))]
+         results = [ (err, bestMatch err) | err <- errors ]
 
-        -- failures first; then closer matches; then lexicographic by err
-        let resultsSorted =
-              sortOn (\(err, m) ->
-                        case m of
-                          Nothing      -> (0 :: Int, maxBound :: Int, err)
-                          Just (d,_,_) -> (1 :: Int, d, err))
-                     results
+     -- failures first; then closer matches; then lexicographic by err
+     let resultsSorted =
+           sortOn (\(err, m) ->
+                     case m of
+                       Nothing      -> (0 :: Int, maxBound :: Int, err)
+                       Just (d,_,_) -> (1 :: Int, d, err))
+                  results
 
-        let mkRule err m =
-              case m of
-                Nothing ->
-                  "\"~^" ++ mkPattern err ++ "\" \"\";"
-                Just (_,_,tgt) ->
-                  "\"~^" ++ mkPattern err ++ "\" \"" ++ tgt
+     let mkRule err m =
+           case m of
+             Nothing ->
+               "\"~^" ++ mkPattern err ++ "\" \"\";"
+             Just (_,_,tgt) ->
+               "\"~^" ++ mkPattern err ++ "\" \"" ++ tgt
 
-        let generated = map (uncurry mkRule) resultsSorted
+     let generated = map (uncurry mkRule) resultsSorted
 
-        -- De-dupe output, and drop rules already present verbatim in existing config.
-        let generated' =
-              nubOrd
-            . filter (`S.notMember` existingLines)
-            $ generated
+     -- De-dupe output, and drop rules already present verbatim in existing config.
+     let generated' = nubOrd . filter (`S.notMember` existingLines) $ generated
 
-        mapM_ putStrLn generated'
+     mapM_ putStrLn generated'
 
-        where
-          safeTuplize []      = error "nginxredirectguesser: main: safeTuplize: empty list!"
-          safeTuplize [a]     = error $ "nginxredirectguesser: main: safeTuplize: only 1 item in list! original: " ++ show a
-          safeTuplize (a:b:_) = (a,b)
+     where
+       safeTuplize []      = error "nginxredirectguesser: main: safeTuplize: empty list!"
+       safeTuplize [a]     = error $ "nginxredirectguesser: main: safeTuplize: only 1 item in list! original: " ++ show a
+       safeTuplize (a:b:_) = (a,b)
 
 -- Build the regex body after the leading "~^".
 -- Special-case: if the *path part* ends in .pdf, emit \.pdf.*$ so queries/fragments/etc still match.
@@ -139,7 +119,7 @@ mkPattern :: String -> String
 mkPattern err =
   let (path, _rest) = break (\c -> c == '?' || c == '#') err
   in if ".pdf" `isSuffixOf` path
-        then escapeRegex (take (length path - length ".pdf") path) ++ "\\.pdf.*$"
+        then escapeRegex (take ((length path :: Int) - (length (".pdf"::String) :: Int)) path) ++ "\\.pdf.*$"
         else escapeRegex err ++ "$"
 
 -- Escape a string so it is a literal PCRE regex fragment.
@@ -169,9 +149,7 @@ minDistance = 4
 
 diffAndRank :: [(FilePath,FilePath)] -> [(String,String)] -> String -> [(Int,String,String)]
 diffAndRank filedb redirects err =
-  let fuzzy =
-        sort
-      $ map (\(a,b) -> (levenshteinDistance defaultEditCosts err a, a, b)) redirects
+  let fuzzy = sort $ map (\(a,b) -> (levenshteinDistance defaultEditCosts err a, a, b)) redirects
 
       -- Shortcut exact basename matches: they should always win.
       exact =
