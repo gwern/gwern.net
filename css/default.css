@@ -1497,6 +1497,11 @@ ul.interview .speaker {
     right: -1em;
     bottom: -1.12em;
 }
+/*	Adjustment for poem epigraphs (due to font difference).
+ */
+.epigraph.poem > blockquote::after {
+	bottom: -1.05em;
+}
 
 @media all and (max-width: 649px) {
     .epigraph {
@@ -1511,6 +1516,11 @@ ul.interview .speaker {
         right: -0.3em;
         bottom: -1.4em;
     }
+	/*	Adjustment for poem epigraphs (due to font difference).
+	 */
+	.epigraph.poem > blockquote::after {
+		bottom: -1.25em;
+	}
 }
 
 /*  Narrow epigraphs (desktop only).

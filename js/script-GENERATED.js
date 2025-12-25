@@ -16443,6 +16443,18 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapSlashesInPoems = (eventInfo) =>
 /* EPIGRAPHS */
 /*************/
 
+/*****************************************************************************/
+/*	Epigraphs in poems are poems (for styling purposes; layout should be taken
+	care of by containment within the poem).
+ */
+addContentLoadHandler(GW.contentLoadHandlers.designatePoemEpigraphsInPoems = (eventInfo) => {
+    GWLog("designatePoemEpigraphsInPoems", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll(".poem .epigraph").forEach(epigraph => {
+		epigraph.classList.add("poem");
+	});
+}, "rewrite");
+
 /***************************************************************************/
 /*	Turn leading em-dashes in last paragraphs of epigraphs into .attribution
 	classes on said paragraphs.
