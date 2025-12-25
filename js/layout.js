@@ -969,8 +969,8 @@ function stripDropcapClassesFrom(block) {
 	(an ID, non-layout classes, or any data attributes), as well as links,
 	<br> elements, and lists.
  */
-function paragraphizeTextNodesOfElementRetainingMetadata(element) {
-	paragraphizeTextNodesOfElement(element, {
+function paragraphizeTextNodesOfElementRetainingMetadata(element, options) {
+	options = Object.assign({ }, {
 		excludeSelector: [
 			".graf-content-not"		
 			].join(", "),
@@ -979,7 +979,9 @@ function paragraphizeTextNodesOfElementRetainingMetadata(element) {
 			alsoExcludeSelector: "a, br, ul, ol", 
 			excludeIdentifiedElements: true
 		}
-	});
+	}, options);
+
+	paragraphizeTextNodesOfElement(element, options);
 }
 
 /*****************************************************************************/

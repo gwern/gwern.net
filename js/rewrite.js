@@ -1614,7 +1614,7 @@ addContentLoadHandler(GW.contentLoadHandlers.processPoems = (eventInfo) => {
 
 	//	Render enjambment in non-preformatted block poems, indicated by “ / ”.
 	//	(This is a pre-processing step.)
-	let enjambmentSeparatorRegExp = new RegExp("^(.+?) \/ (.+)$");
+	let enjambmentSeparatorRegExp = new RegExp("^(.*?) \/ (.*)$");
 	eventInfo.container.querySelectorAll("div.poem:not(.poem-html)").forEach(poem => {
 		for (let textNode of poem.textNodes) {
 			let match;
@@ -1650,7 +1650,9 @@ addContentLoadHandler(GW.contentLoadHandlers.processPoems = (eventInfo) => {
 		}
 
 		//	Paragraphize lines of stanza.
-		paragraphizeTextNodesOfElementRetainingMetadata(stanza);
+		paragraphizeTextNodesOfElementRetainingMetadata(stanza, {
+			trimWhitespaceFromEachParagraph: (stanza.closest(".poem").classList.contains("poem-html") == false)
+		});
 
 		//	Re-apply styling wrappers (if need be).
 		for (let stylingTag of stylingTags) {

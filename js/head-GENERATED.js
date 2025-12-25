@@ -1095,6 +1095,9 @@ function isNodeEmpty(node, options) {
 		Options to pass to the isNodeEmpty() call that determines whether a
 		node should be dropped when aggregating nodes into paragraphs.
 
+	trimWhitespaceFromEachParagraph (boolean)
+		If true is passed (the default), trims whitespace nodes from each 
+		paragraph, not just the element as a whole.
  */
 function paragraphizeTextNodesOfElement(element, options) {
 	let inlineElementSelector = [
@@ -1115,7 +1118,8 @@ function paragraphizeTextNodesOfElement(element, options) {
 		nodeOmissionOptions: {
 			alsoExcludeSelector: "a, br",
 			excludeIdentifiedElements: true
-		}
+		},
+		trimWhitespaceFromEachParagraph: true
 	}, options);
 
 	let nodes = Array.from(element.childNodes);
@@ -1130,7 +1134,8 @@ function paragraphizeTextNodesOfElement(element, options) {
 			|| (   node?.nodeType == Node.ELEMENT_NODE
 				&& node.matches(options.includeSelector) == true
 				&& node.matches(options.excludeSelector) == false
-				&& omitNode == false)) {
+				&& omitNode == false)
+			|| node?.nodeType == Node.COMMENT_NODE) {
 			nodeSequence.push(node);
 		} else if (omitNode) {
 			node?.remove();
@@ -1140,6 +1145,14 @@ function paragraphizeTextNodesOfElement(element, options) {
 				//	(This removes the nodes from the element.)
 				let graf = newElement("P");
 				graf.append(...nodeSequence);
+
+				//	Trim whitespace, if need be.
+				if (options.trimWhitespaceFromEachParagraph) {
+					graf.trimWhitespace({
+						trimWithinNodes: true,
+						nodeOmissionOptions: options.nodeOmissionOptions
+					});
+				}
 
 				//	Insert paragraph (with the previously removed nodes).
 				element.insertBefore(graf, node)
@@ -1209,11 +1222,16 @@ Element.prototype.trimWhitespace = function (options) {
 	nodeOmissionOptions (object)
 		Options to pass to the isNodeEmpty() call that determines whether a
 		node should be dropped when trimming.
+
+	trimWithinNodes (boolean)
+		If true is passed, trims whitespace within nodes as well.
+		(Default is false.)
  */
 Element.prototype.trimWhitespaceFromStart = function (options) {
 	options = Object.assign({
 		descend: true,
-		nodeOmissionOptions: null
+		nodeOmissionOptions: null,
+		trimWithinNodes: false
 	}, options);
 
 	let nodesToRemove = [ ];
@@ -1232,6 +1250,12 @@ Element.prototype.trimWhitespaceFromStart = function (options) {
 	if (   options.descend == true
 		&& this.firstChild?.nodeType == Node.ELEMENT_NODE)
 		this.firstChild.trimWhitespaceFromStart(options);
+
+	if (options.trimWithinNodes == true) {
+		let firstTextNode = this.firstTextNode;
+		if (firstTextNode)
+			firstTextNode.textContent = firstTextNode.textContent.trimStart();
+	}
 };
 
 /************************************************************************/
@@ -1243,7 +1267,8 @@ Element.prototype.trimWhitespaceFromStart = function (options) {
 Element.prototype.trimWhitespaceFromEnd = function (options) {
 	options = Object.assign({
 		descend: true,
-		nodeOmissionOptions: null
+		nodeOmissionOptions: null,
+		trimWithinNodes: false
 	}, options);
 
 	let nodesToRemove = [ ];
@@ -1262,6 +1287,12 @@ Element.prototype.trimWhitespaceFromEnd = function (options) {
 	if (   options.descend == true
 		&& this.lastChild?.nodeType == Node.ELEMENT_NODE)
 		this.lastChild.trimWhitespaceFromEnd(options);
+
+	if (options.trimWithinNodes == true) {
+		let lastTextNode = this.lastTextNode;
+		if (lastTextNode)
+			lastTextNode.textContent = lastTextNode.textContent.trimEnd();
+	}
 };
 
 /*********************************/
@@ -3946,8 +3977,8 @@ function stripDropcapClassesFrom(block) {
 	(an ID, non-layout classes, or any data attributes), as well as links,
 	<br> elements, and lists.
  */
-function paragraphizeTextNodesOfElementRetainingMetadata(element) {
-	paragraphizeTextNodesOfElement(element, {
+function paragraphizeTextNodesOfElementRetainingMetadata(element, options) {
+	options = Object.assign({ }, {
 		excludeSelector: [
 			".graf-content-not"		
 			].join(", "),
@@ -3956,7 +3987,9 @@ function paragraphizeTextNodesOfElementRetainingMetadata(element) {
 			alsoExcludeSelector: "a, br, ul, ol", 
 			excludeIdentifiedElements: true
 		}
-	});
+	}, options);
+
+	paragraphizeTextNodesOfElement(element, options);
 }
 
 /*****************************************************************************/
