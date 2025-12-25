@@ -689,5 +689,4 @@ doWhenBodyExists(() => {
     GW.notificationCenter.addHandlerForEvent("DarkMode.computedModeDidChange", (info) => {
         applySpecialOccasionClasses();
     });
-    DarkMode.setMode();
 });

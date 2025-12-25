@@ -84,7 +84,7 @@ DarkMode = { ...DarkMode,
 
 	//	Called by: DarkMode.injectModeSelector
 	modeSelectorHTML: (inline = false) => {
-		//	Get saved mode setting (or default).
+		//	Get current mode setting.
 		let currentMode = DarkMode.currentMode();
 
 		let modeSelectorInnerHTML = DarkMode.modeOptions.map(modeOption => {
@@ -205,7 +205,7 @@ DarkMode = { ...DarkMode,
 		if (modeSelector == null)
 			return;
 
-		//	Get saved mode setting (or default).
+		//	Get current mode setting.
 		let currentMode = DarkMode.currentMode();
 
 		//	Clear current buttons state.

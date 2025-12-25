@@ -30,21 +30,23 @@ DarkMode = {
 		"light": "not all"
 	},
 
-	/*	Overridable default mode.
+	/*	Overridable default mode. (This is not a configuration parameter!)
 	 */
 	defaultMode: "auto",
 
-    /*  Returns current (saved) mode (light, dark, or auto).
+    /*  Returns current mode (light, dark, or auto).
      */
     currentMode: () => {
-        return (localStorage.getItem("dark-mode-setting") ?? DarkMode.defaultMode);
+		let switchedElement = document.querySelector(DarkMode.switchedElementsSelector);
+
+		return Object.keys(DarkMode.mediaAttributeValues).find(key => switchedElement.media == DarkMode.mediaAttributeValues[key]);
     },
 
 	//	Called by: DarkMode.setMode
 	saveMode: (newMode = DarkMode.currentMode()) => {
 		GWLog("DarkMode.saveMode", "dark-mode-initial.js", 1);
 
-		if (newMode == DarkMode.defaultMode)
+		if (newMode == "auto")
 			localStorage.removeItem("dark-mode-setting");
 		else
 			localStorage.setItem("dark-mode-setting", newMode);
@@ -55,7 +57,7 @@ DarkMode = {
 		Called by: this file (immediately upon load)
 		Called by: DarkMode.modeSelectButtonClicked (dark-mode.js)
 	 */
-	setMode: (selectedMode = DarkMode.currentMode()) => {
+	setMode: (selectedMode = DarkMode.defaultMode) => {
 		GWLog("DarkMode.setMode", "dark-mode-initial.js", 1);
 
 		//	Remember previous mode.
@@ -91,17 +93,16 @@ DarkMode.setMode();
 
 //  Once the <body> element is loaded (and classes known), set specified mode.
 doWhenBodyExists(() => {
-	if (document.body.classList.contains("dark-mode")) {
+	if (document.body.classList.contains("dark-mode"))
 		DarkMode.defaultMode = "dark";
-		DarkMode.setMode();
-	}
+
+	DarkMode.setMode();
 });
 
 //	Set up mode change events.
 GW.notificationCenter.addHandlerForEvent("DarkMode.didSetMode", (info) => {
-	let previousComputedMode = DarkMode.computedMode(info.previousMode, GW.mediaQueries.systemDarkModeActive.matches)
-	if (   previousComputedMode != null
-		&& previousComputedMode != DarkMode.computedMode())	
+	let previousComputedMode = DarkMode.computedMode(info.previousMode, GW.mediaQueries.systemDarkModeActive.matches);
+	if (previousComputedMode != DarkMode.computedMode())	
 		GW.notificationCenter.fireEvent("DarkMode.computedModeDidChange");
 });
 doWhenMatchMedia(GW.mediaQueries.systemDarkModeActive, {
