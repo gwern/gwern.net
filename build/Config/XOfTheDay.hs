@@ -219,7 +219,7 @@ siteBlackList = [
           "www.cs.york.ac.uk", "www.culhwch.info", "www.daemonology.net", "www.dafont.com", "www.dailydot.com",
           "www.dailymail.co.uk", "www.dailystar.co.uk", "www.danmurphydc.com", "www.dartmouth.edu", "www.davidbordwell.net",
           "www.davidbrin.com", "www.daviddarling.info", "www.davidsongifted.org", "www.dcscience.net", "www.dea.gov",
-          "www.deepmind.com", "www.depauw.edu", "www.deseret.com", "www.deviantart.com", "www.dhammawiki.com",
+          "www.deepmind.com", "www.deseret.com", "www.deviantart.com", "www.dhammawiki.com",
           "www.direct-ms.org", "www.discovermagazine.com", "www.discoverteas.com", "www.ditext.com", "www.diva-portal.org",
           "www.dna.caltech.edu", "www.dobuusagi.com", "www.drugs.com", "www.drugsdata.org", "www.dtic.mil",
           "www.dummy-system.com", "www.eaton.com", "www.e-codices.unifr.ch", "www.econlib.org", "www.economist.com",

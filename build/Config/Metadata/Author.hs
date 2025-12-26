@@ -848,6 +848,8 @@ canonicals = M.fromList
   , ("CartoonsHateHer", "Cartoons Hate Her")
   , ("cartoonshateher", "Cartoons Hate Her")
   , ("Claude-3-sonnet-new", "Claude-3.5-Sonnet")
+  , ("JP Aumasson", "J. P. Aumasson")
+  , ("J. P. Aumasson", "Jean-Philippe Aumasson")
   ]
 
 -- tests: unique
@@ -2034,10 +2036,12 @@ authorLinkDB = M.fromList $
     , ("Richard E. Turner", "https://rich-turner-group.github.io/")
     , ("Cartoons Hate Her", "https://www.cartoonshateher.com/about")
     , ("Cendyne", "https://cendyne.dev/")
-    , ("Simon Osindero", "https://scholar.google.com/citations?user=Jq8ZS5kAAAAJ&hl=en&oi=ao")
+    , ("Simon Osindero", "https://scholar.google.com/citations?user=Jq8ZS5kAAAAJ")
     , ("Simon R. Cox", "https://edwebprofiles.ed.ac.uk/profile/simon-cox")
-    , ("Ditte Demontis", "https://scholar.google.com/citations?user=wJI6WS0AAAAJ&hl=en&oi=ao")
+    , ("Ditte Demontis", "https://scholar.google.com/citations?user=wJI6WS0AAAAJ")
     , ("Phil Hyoun Lee", "https://researchers.mgh.harvard.edu/profile/2797527/Phil-Hyoun-Lee")
+    , ("Heikki Lotvonen", "https://blog.glyphdrawing.club/about/")
+    , ("Jean-Philippe Aumasson", "https://www.aumasson.jp/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3323,4 +3327,4 @@ authorWpLinkDB =
     , "Laura Hewitson", "Bjorn Merker", "Ren Xiaoping", "Sergio Canavero", "Charles Krauthammer", "Akinori Yonezawa"
     , "J Strother Moore", "Matt Kaufmann", "Ilka Agricola", "Lisanne Bainbridge", "Daniel H. Janzen", "Rachel Aviv"
     , "Oliver Sacks", "Keiichi Matsuura", "Aleksandra Faust", "Samuel S. Wilks", "Kenneth Lee Pike", "Josh Lerner"
-    , "Robert Hayden", "Michael Ondaatje", "Galway Kinnell", "Li-Young Lee", "Douwe Kiela"]
+    , "Robert Hayden", "Michael Ondaatje", "Galway Kinnell", "Li-Young Lee", "Douwe Kiela", "Richmond Lattimore", "William T. Vollmann"]

@@ -268,6 +268,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("personal/mulberry-tree", "my mulberry tree")
   , ("personal/2013-cicadas", "2013 cicadas")
   , ("personal/2011-gwern-yourmorals.org", "Gwern’s YourMorals surveys")
+  , ("nootropic/phenibut", "phenibut")
   , ("nootropic/caffeine", "caffeine")
   , ("nootropic/bacopa", "<em>Bacopa</em>")
   , ("nootropic/magnesium", "magnesium (nootropic)")

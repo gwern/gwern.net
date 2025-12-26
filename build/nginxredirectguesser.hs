@@ -145,7 +145,7 @@ escapeRegex = replaceMany
   ]
 
 minDistance :: Int
-minDistance = 4
+minDistance = 2
 
 diffAndRank :: [(FilePath,FilePath)] -> [(String,String)] -> String -> [(Int,String,String)]
 diffAndRank filedb redirects err =

@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2025-08-22 19:18:42 gwern"
+# When:  Time-stamp: "2025-12-24 21:11:21 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -35,7 +35,7 @@ _upload() {
   wait
 
   # immediately lowercase it with a blind move to get that requirement out of the way:
-  FILENAME="$(echo "$1" | tr '[:upper:]' '[:lower:]')"
+  FILENAME="$(echo "$1" | tr '[:upper:]' '[:lower:]' | sed -e 's/\.jpeg$/.jpg/')"
   mv "$1" "$FILENAME" 2> /dev/null || true
   (locate "$FILENAME" &)
 

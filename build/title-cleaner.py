@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-12-20 15:10:56 gwern"
+# When:  Time-stamp: "2025-12-25 15:18:45 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -810,6 +810,16 @@ Selection vs. Rejection"
 ""
 - "The Bomb That Wanted to Stop Exploding: Reze’s Impossible Freedom in <em>Chainsaw Man—The Movie</em> - Anime News Network"
 "The Bomb That Wanted to Stop Exploding: Reze’s Impossible Freedom in <em>Chainsaw Man—The Movie</em>"
+- "https://www.novonordisk.com/content/nncorp/global/en/news-and-media/news-and-ir-materials/news-details.html?id=916472 News Details"
+""
+- "https://blog.glyphdrawing.club/font-with-built-in-syntax-highlighting/ GlyphDrawing.Club -blog"
+""
+- https://bfswa.substack.com/p/6-years-after-too-much-crypto 6 years after too much crypto—by JP Aumasson—bfSwA"
+"6 years after too much crypto"
+- http://www.mindandmuscle.net/forum/42324-another-phenibut-casualty MindAndMuscle.net—Informasi Resmi Game Online Terkini Cuan"
+""
+- "Phenibut—Erowid Exp—’Drunk for Hours’"
+"Phenibut—Erowid Exp—‘Drunk for Hours’"
 
 Task:
 
