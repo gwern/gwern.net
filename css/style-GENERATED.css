@@ -8879,6 +8879,12 @@ a[data-link-icon-type*='svg']:hover .link-icon-hook::after {
     opacity: calc(var(--link-icon-opacity, var(--link-icon-opacity-default)) * 0.55);
 }
 
+/*	SVG icons in .editorial (set in a typewriter font, thus different metrics).
+ */
+.editorial a[data-link-icon-type*='svg'] .link-icon-hook::after {
+    background-position-y: 0.80ex;
+}
+
 /*  Quad-letter (rendered) SVG icons.
  */
 a[data-link-icon-type*='svg'][data-link-icon-type*='quad'] {
@@ -8889,6 +8895,13 @@ a[data-link-icon-type*='svg'][data-link-icon-type*='quad'] {
 }
 a[data-link-icon-type*='svg'][data-link-icon-type*='quad'] .link-icon-hook::after {
     background-position-y: 0.75ex;
+}
+
+/*	Quad-letter SVG icons in .editorial (set in a typewriter font, thus 
+	different metrics).
+ */
+.editorial a[data-link-icon-type*='svg'][data-link-icon-type*='quad'] .link-icon-hook::after {
+    background-position-y: 0.50ex;
 }
 
 /*  Quad-letter (rendered) SVG icons in a sans-serif font.
