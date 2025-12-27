@@ -1146,16 +1146,20 @@ function paragraphizeTextNodesOfElement(element, options) {
 				let graf = newElement("P");
 				graf.append(...nodeSequence);
 
-				//	Trim whitespace, if need be.
-				if (options.trimWhitespaceFromEachParagraph) {
-					graf.trimWhitespace({
-						trimWithinNodes: true,
-						nodeOmissionOptions: options.nodeOmissionOptions
-					});
-				}
+				//	Sometimes a whole paragraph ends up being just whitespace.
+				//	In that case, drop it on the floor.
+				if (shouldOmitNode(graf) == false) {
+					//	Trim whitespace, if need be.
+					if (options.trimWhitespaceFromEachParagraph) {
+						graf.trimWhitespace({
+							trimWithinNodes: true,
+							nodeOmissionOptions: options.nodeOmissionOptions
+						});
+					}
 
-				//	Insert paragraph (with the previously removed nodes).
-				element.insertBefore(graf, node)
+					//	Insert paragraph (with the previously removed nodes).
+					element.insertBefore(graf, node);
+				}
 
 				//	Reset node sequence.
 				nodeSequence = [ ];
