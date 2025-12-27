@@ -2186,6 +2186,27 @@ span.smallcaps {
 }
 
 
+/*******************/
+/* UTILITY CLASSES */
+/*******************/
+
+/*	Allow easy hiding of any element (eg. for the LinkAuto self-link 
+	suppression trick):
+
+	Just set a ‘.display-not’ class on it, which is nicer than writing 
+	something like ‘[Foo](bar){style="display: none;"}’.
+
+	(The ‘!important’ ensures the utility always wins over more specific 
+	 selectors—useful for a utility class meant to override anything. See also 
+	 Bootstrap's hidden utility `.d-none` <https://getbootstrap.com/docs/5.0/utilities/display/>. 
+	 Downside: makes it harder to un-hide programmatically via inline styles 
+	 if you ever need that.
+ */
+.display-not {
+	display: none !important;
+}
+
+
 /*************/
 /* SIDENOTES */
 /*************/

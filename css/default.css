@@ -7568,11 +7568,3 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 #console .console-command-line-entry-field input:focus {
     outline: none;
 }
-
-/*********************/
-/* Utility functions */
-/*********************/
-
-/* allow easy hiding of any element (eg. for the LinkAuto self-link suppression trick):
-   just set a '.hidden' class on it, which is nicer than writing something like '[Foo](bar){style="display: none;"}'. */
-.hidden { display: none !important; } /* The '!important' ensures the utility always wins over more specific selectors—useful for a utility class meant to override anything. See also Bootstrap's hidden utility `.d-none` <https://getbootstrap.com/docs/5.0/utilities/display/>. Downside: makes it harder to un-hide programmatically via inline styles if you ever need that. */
