@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered, linkAutoTest) 
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2024-01-28 17:59:23 gwern"
+When:  Time-stamp: "2025-12-27 11:24:32 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -173,7 +173,7 @@ findRegexMatch ((_,r,u):rs) s = let (a,b,c) = R.match r s in
 -- filter out that one exact rewrite only on that page. This link can be hidden to avoid distracting
 -- the reader.
 -- So to disable the modafinil rewrite on /modafinil, one could insert into the Markdown a line like:
--- `<span style="display:none;">[null](/modafinil)</span> <!-- LinkAuto override: disable self-linking -->`
+-- `[null](/modafinil){.hidden} <!-- LinkAuto override: disable self-linking -->`
 filterDefinitions :: Pandoc -> [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.Text)]
 filterDefinitions p = let allLinks = S.fromList $ map (T.replace "https://gwern.net/" "/") $ extractURLs p in
                                           filter (\(_,_,linkTarget) -> linkTarget `notElem` allLinks)

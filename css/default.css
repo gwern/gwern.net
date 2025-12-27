@@ -1470,7 +1470,7 @@ ul.interview .speaker {
 }
 
 .epigraph .attribution {
-	--text-alignment: right;
+    --text-alignment: right;
 
     font-size: 0.875em;
     font-style: normal;
@@ -1497,10 +1497,10 @@ ul.interview .speaker {
     right: -1em;
     bottom: -1.12em;
 }
-/*	Adjustment for poem epigraphs (due to font difference).
+/*  Adjustment for poem epigraphs (due to font difference).
  */
 .epigraph.poem > blockquote::after {
-	bottom: -1.05em;
+    bottom: -1.05em;
 }
 
 @media all and (max-width: 649px) {
@@ -1516,11 +1516,11 @@ ul.interview .speaker {
         right: -0.3em;
         bottom: -1.4em;
     }
-	/*	Adjustment for poem epigraphs (due to font difference).
-	 */
-	.epigraph.poem > blockquote::after {
-		bottom: -1.25em;
-	}
+    /*  Adjustment for poem epigraphs (due to font difference).
+     */
+    .epigraph.poem > blockquote::after {
+        bottom: -1.25em;
+    }
 }
 
 /*  Narrow epigraphs (desktop only).
@@ -1543,11 +1543,11 @@ ul.interview .speaker {
 /*********/
 
 .poem span.slash {
-	opacity: 0.4;
+    opacity: 0.4;
 }
 
 .poem {
-	overflow-x: auto;
+    overflow-x: auto;
 }
 
 /*  Horizontal scroll bar styles (for WebKit/Blink).
@@ -2087,6 +2087,8 @@ pre::-webkit-scrollbar-thumb:hover {
 
     This skips the underlining and overuse of graying, and uses a bit of blue
     as an alternative, and retains red for warnings/errors.
+
+    (For a list of all languages Pandoc supports, run `$ pandoc --list-highlight-languages`.)
  */
 code span    { color: var(--GW-syntax-highlight-color-normal); } /* Normal */
 code span.at { color: var(--GW-syntax-highlight-color-attribute); } /* Attribute */
@@ -7566,3 +7568,11 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 #console .console-command-line-entry-field input:focus {
     outline: none;
 }
+
+/*********************/
+/* Utility functions */
+/*********************/
+
+/* allow easy hiding of any element (eg. for the LinkAuto self-link suppression trick):
+   just set a '.hidden' class on it, which is nicer than writing something like '[Foo](bar){style="display: none;"}'. */
+.hidden { display: none !important; } /* The '!important' ensures the utility always wins over more specific selectors—useful for a utility class meant to override anything. See also Bootstrap's hidden utility `.d-none` <https://getbootstrap.com/docs/5.0/utilities/display/>. Downside: makes it harder to un-hide programmatically via inline styles if you ever need that. */

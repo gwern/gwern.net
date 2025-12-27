@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-12-21 14:12:14 gwern"
+# When:  Time-stamp: "2025-12-27 11:17:59 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -156,7 +156,7 @@ else
           s 'src="doc/' 'src="/doc/'; s 'href="doc/' 'href="/doc/';
           s 'link-icon-not' 'icon-not'; s '<!--<p>' '<!-- <p>'; s '</p>-->' '</p> -->';
           s '](W!' '](!W'; s '<em>𝛽</em>' '<em>β</em>'; s '𝛽' '<em>β</em>'; s 'class="table-simple' 'class="table-small';
-          s ' > > ' ' >> '; s '</pan>' '</span>';
+          s ' > > ' ' >> '; s '</pan>' '</span>'; s 'display:none;' 'display: none;';
 
           ## TODO: duplicate HTML classes from Pandoc reported as issue #8705 & fixed; fix should be in >pandoc 3.1.1 (2023-03-05), so can remove these two rewrites once I upgrade past that:
           s 'class="odd odd' 'class="odd'; s 'class="even even' 'class="even';
@@ -807,8 +807,9 @@ else
 
     λ(){ ge 'http.*http' ./metadata/archive.hs | \
              gfv -e 'web.archive.org' -e 'https-everywhere' -e 'check_cookie.html' -e 'translate.goog' -e 'archive.md' -e 'webarchive.loc.gov' -e 'https://http.cat/' -e '//)' -e 'https://esolangs.org/wiki////' -e 'https://ansiwave.net/blog/sqlite-over-http.html' -e 'addons.mozilla.org/en-US/firefox/addon/' -e 'httparchive.org/' -e 'github.com/phiresky/' -e 'github.com/psanford/' -e 'stackoverflow.com/questions/' -e 'https://www.latent.space/p/sim-ai#%C2%A7websim-httpswebsimai';
-         ge 'https://web.archive.org/web/[0-9]+/https?://web.archive.org/http' ./metadata/archive.hs ./metadata/backlinks.hs;
-         gf -e \\ ./metadata/archive.hs ./metadata/backlinks.hs; }
+         ge 'https://web.archive.org/web/[0-9]+/https?://web.archive.org/http' ./metadata/*.hs;
+         gf -e '#org=' ./metadata/*.hs | gef -e 'page=[0-9]+'; # check for unnecessary 'org=' uses like 'https://arxiv.org/abs/2507.20534#org=moonshot', which should just be '#moonshot'
+         gf -e \\ ./metadata/*.hs; }
     wrap λ "Bad URL links in archive database (and perhaps site-wide?)."
 
     λ(){ echo "$PAGES_ALL" | xargs grep --fixed-strings --with-filename --color=always -e '<div>' -e '<div class="horizontal-rule-nth-1" />' -e '<div class="horizontal-rule-nth-2" />' -e '<div class="horizontal-rule-nth-3" />' -e ':::' | gfv -e 'I got around this by adding in the Hakyll template an additional'; }
