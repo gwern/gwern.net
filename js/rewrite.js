@@ -814,7 +814,7 @@ addContentLoadHandler(GW.contentLoadHandlers.paragraphizeListTextNodes = (eventI
         if (listItem.closest(".TOC"))
             return;
 
-        paragraphizeTextNodesOfElementRetainingMetadata(listItem);
+//         paragraphizeTextNodesOfElementRetainingMetadata(listItem);
     });
 }, "rewrite");
 
