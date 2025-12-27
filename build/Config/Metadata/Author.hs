@@ -2048,6 +2048,7 @@ authorLinkDB = M.fromList $
     , ("Jean-Philippe Aumasson", "https://www.aumasson.jp/")
     , ("Roon", "https://x.com/tszzl")
     , ("Drew Breunig", "https://www.dbreunig.com/")
+    , ("Moonshot", "https://www.moonshot.ai/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole

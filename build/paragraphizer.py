@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using LLM API
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2025-12-26 15:44:56 gwern"
+# When:  Time-stamp: "2025-12-27 10:07:05 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -751,6 +751,9 @@ In this study, we use a computational approach to examine social behaviors on th
 Our results indicate that the strength of social interactions is lower on the Dark Web than on the Surface Web, while emotional valence is generally more positive.
 Moreover, strong social interactions and negative feedback are associated with reduced prolonged participation on the Dark Web, contrasting with their role in promoting user sustainability on the Surface Web.
 These findings suggest that Dark Web users, who typically engage with clear task-oriented goals, may exhibit benevolence toward peers through restrained social activity, yet maintain relatively tenuous connections to the broader community.
+- <abstract>We show that two-dimensional billiard systems are Turing complete by encoding their dynamics within the framework of Topological Kleene Field Theory. Billiards serve as idealized models of particle motion with elastic reflections and arise naturally as limits of smooth Hamiltonian systems under steep confining potentials. Our results establish the existence of undecidable trajectories in physically natural billiard-type models, including billiard-type models arising in hard-sphere gases and in collision-chain limits of celestial mechanics.</abstract>
+We show that two-dimensional billiard systems are Turing complete by encoding their dynamics within the framework of Topological Kleene Field Theory.
+Billiards serve as idealized models of particle motion with elastic reflections and arise naturally as limits of smooth Hamiltonian systems under steep confining potentials. Our results establish the existence of undecidable trajectories in physically natural billiard-type models, including billiard-type models arising in hard-sphere gases and in collision-chain limits of celestial mechanics.
 
 [End of examples. Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 
