@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using LLM API
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2025-12-09 20:02:37 gwern"
+# When:  Time-stamp: "2025-12-26 15:44:56 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -745,6 +745,12 @@ We show that deep neural networks trained across diverse tasks exhibit remarkabl
 Through mode-wise spectral analysis of over 11,00 models—including 500 Mistral-7B LoRAs, 500 Vision Transformers, and 50 LLaMA-8B models—we:
 identify universal subspaces capturing majority variance in just a few principal directions. By applying spectral decomposition techniques to the weight matrices of various architectures trained on a wide range of tasks and datasets, we identify sparse, joint subspaces that are consistently exploited, within shared architectures across diverse tasks and datasets.
 Our findings offer new insights into the intrinsic organization of information within deep networks and raise important questions about the possibility of discovering these universal subspaces without the need for extensive data and computational resources. Furthermore, this inherent structure has significant implications for model reusability, multi-task learning, model merging, and the development of training and inference-efficient algorithms, potentially reducing the carbon footprint of large-scale neural models.
+- <abstract>The Dark Web provides a technically anonymous environment, yet users must still manage their online behaviors to maintain social anonymity within communities. Such dynamics may influence continued participation. In this study, we use a computational approach to examine social behaviors on the Dark Web and their impact on user sustainability. Our results indicate that the strength of social interactions is lower on the Dark Web than on the Surface Web, while emotional valence is generally more positive. Moreover, strong social interactions and negative feedback are associated with reduced prolonged participation on the Dark Web, contrasting with their role in promoting user sustainability on the Surface Web. These findings suggest that Dark Web users, who typically engage with clear task-oriented goals, may exhibit benevolence toward peers through restrained social activity, yet maintain relatively tenuous connections to the broader community.</abstract>
+The Dark Web provides a technically anonymous environment, yet users must still manage their online behaviors to maintain social anonymity within communities. Such dynamics may influence continued participation.
+In this study, we use a computational approach to examine social behaviors on the Dark Web and their impact on user sustainability.
+Our results indicate that the strength of social interactions is lower on the Dark Web than on the Surface Web, while emotional valence is generally more positive.
+Moreover, strong social interactions and negative feedback are associated with reduced prolonged participation on the Dark Web, contrasting with their role in promoting user sustainability on the Surface Web.
+These findings suggest that Dark Web users, who typically engage with clear task-oriented goals, may exhibit benevolence toward peers through restrained social activity, yet maintain relatively tenuous connections to the broader community.
 
 [End of examples. Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 

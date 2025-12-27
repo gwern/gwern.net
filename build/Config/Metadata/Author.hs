@@ -850,6 +850,9 @@ canonicals = M.fromList
   , ("Claude-3-sonnet-new", "Claude-3.5-Sonnet")
   , ("JP Aumasson", "J. P. Aumasson")
   , ("J. P. Aumasson", "Jean-Philippe Aumasson")
+  , ("gemini-2.5-pro-0325", "Gemini-2.5-pro-0325")
+  , ("Gemini-2.5-0325", "Gemini-2.5-pro-0325")
+  , ("gemini-2.5-0325", "Gemini-2.5-pro-0325")
   ]
 
 -- tests: unique
@@ -1830,6 +1833,7 @@ authorLinkDB = M.fromList $
     , ("Keach Hagey", "https://www.keachhagey.com/about/")
     , ("Stephen D.", "https://www.scd31.com/pages/about")
     , ("Gemini-2.5-pro", "https://blog.google/technology/google-deepmind/gemini-model-thinking-updates-march-2025/#gemini-2-5-thinking")
+    , ("Gemini-2.5-pro-0325", "https://blog.google/technology/google-deepmind/gemini-model-thinking-updates-march-2025/")
     , ("Gemini-3-pro-preview", "https://blog.google/products/gemini/gemini-3/")
     , ("Time Magazine", "https://en.wikipedia.org/wiki/Time_(magazine)")
     , ("Martha Duffy", "https://www.nytimes.com/1997/06/17/arts/martha-duffy-61-arts-editor-and-writer-at-time-magazine.html")
@@ -2042,6 +2046,8 @@ authorLinkDB = M.fromList $
     , ("Phil Hyoun Lee", "https://researchers.mgh.harvard.edu/profile/2797527/Phil-Hyoun-Lee")
     , ("Heikki Lotvonen", "https://blog.glyphdrawing.club/about/")
     , ("Jean-Philippe Aumasson", "https://www.aumasson.jp/")
+    , ("Roon", "https://x.com/tszzl")
+    , ("Drew Breunig", "https://www.dbreunig.com/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3327,4 +3333,5 @@ authorWpLinkDB =
     , "Laura Hewitson", "Bjorn Merker", "Ren Xiaoping", "Sergio Canavero", "Charles Krauthammer", "Akinori Yonezawa"
     , "J Strother Moore", "Matt Kaufmann", "Ilka Agricola", "Lisanne Bainbridge", "Daniel H. Janzen", "Rachel Aviv"
     , "Oliver Sacks", "Keiichi Matsuura", "Aleksandra Faust", "Samuel S. Wilks", "Kenneth Lee Pike", "Josh Lerner"
-    , "Robert Hayden", "Michael Ondaatje", "Galway Kinnell", "Li-Young Lee", "Douwe Kiela", "Richmond Lattimore", "William T. Vollmann"]
+    , "Robert Hayden", "Michael Ondaatje", "Galway Kinnell", "Li-Young Lee", "Douwe Kiela", "Richmond Lattimore", "William T. Vollmann"
+    , "Laurence Perrine", "John Milton"]

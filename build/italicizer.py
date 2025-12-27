@@ -4,7 +4,7 @@
 # italicizer.py: reformat a string to add italics as semantically appropriate (eg. book titles) using LLMs
 # Author: Gwern Branwen
 # Date: 2025-01-17
-# When:  Time-stamp: "2025-12-25 15:15:12 gwern"
+# When:  Time-stamp: "2025-12-26 23:10:22 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python italicizer.py
@@ -1234,6 +1234,10 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - "Phenibut: The Soviet smart drug"
 ""
+- "Tajwid" # Arabic Quran term
+"<em>Tajwid</em>"
+- "Genesis B § Relationship with Paradise Lost"
+"<em>Genesis B</em> § Relationship with <em>Paradise Lost</em>"
 
 [End of examples. Reminder: your only task is to add missing italics you are sure of.]
 
