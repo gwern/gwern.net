@@ -1463,8 +1463,7 @@ ul.interview .speaker {
 
 /*  Reverse back to normal when italics are used inside an epigraph, or final block.
  */
-.epigraph blockquote p:only-child em,
-.epigraph blockquote p:not(:last-child) em {
+.epigraph:not(.poem) blockquote p:not(.attribution) em {
     font-style: normal;
     margin: 0 0 0 0.125em;
 }

@@ -16470,6 +16470,15 @@ addContentLoadHandler(GW.contentLoadHandlers.designateEpigraphAttributions = (ev
 			lastGraf.firstTextNode.textContent = lastGraf.firstTextNode.textContent.slice(1);
 			lastGraf.classList.add("attribution");
 		}
+
+		/*	TEMPORARY FIX. (Only until gwern adds the proper em-dash markers
+			to attributions in all epigraphs on all pages.)
+				—SA 2025-12-27
+		 */
+		if (   isOnlyChild(lastGraf) == false
+			&& epigraph.classList.contains("poem") == false) {
+			lastGraf.classList.add("attribution");
+		}
 	});
 }, "rewrite");
 
