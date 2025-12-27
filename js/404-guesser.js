@@ -228,12 +228,15 @@ function injectSuggestions(currentPath, suggestedUrlStrings) {
     let suggestionsHtml = suggestedUrlStrings.length > 0
     					  ? suggestedUrlStrings.map(urlString => `<li><p><a class="link-live" href="${urlString}"><code>${urlString}</code></a></p></li>`).join("")
     					  : "<li><p><strong>None found.</strong></p></li>";
+	let wrapInColumnsIfMoreEntriesThan = 3;
+	let listWrapper = [
+		(suggestedUrlStrings.length > wrapInColumnsIfMoreEntriesThan ? `<div class="columns">\n` : ``),
+		(suggestedUrlStrings.length > wrapInColumnsIfMoreEntriesThan ? `\n</div>` : ``),
+	];
     let suggestionsElement = elementFromHTML(`<section class="level1">
         <h1 id="guessed-urls">Guessed URLs</h1>
         <p>Nearest URLs to your current one (<code>${(location.origin + currentPath)}</code>):</p>
-        <div class="columns">
-            <ul>${suggestionsHtml}</ul>
-        </div>
+        ${listWrapper[0]}<ul>${suggestionsHtml}</ul>${listWrapper[1]}
     </section>`);
 
 	document.querySelector("#markdownBody").insertBefore(suggestionsElement, document.querySelector("#other-options"));
