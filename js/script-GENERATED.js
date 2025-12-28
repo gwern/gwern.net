@@ -6359,10 +6359,10 @@ Annotations = { ...Annotations,
     },
 
 	//	Called by: Annotations.load
-	referenceDataFromParsedAPIResponse: (response, link) => {
-		let titleLink = response.querySelector([ Annotations.annotatedLinkFullClass,
-												 Annotations.annotatedLinkPartialClass
-												 ].map(className => `a.${className}`).join(", "));
+	referenceDataFromParsedAPIResponse: (responseDocument, link) => {
+		let titleLink = responseDocument.querySelector([ Annotations.annotatedLinkFullClass,
+														 Annotations.annotatedLinkPartialClass
+														 ].map(className => `a.${className}`).join(", "));
 
 		//	Strip date ranges (if any).
 		stripDateRangeMetadataInBlock(titleLink);
@@ -6409,7 +6409,7 @@ Annotations = { ...Annotations,
 
 		//  Author list.
 		let authorHTML = null;
-		let authorElement = response.querySelector(".author");
+		let authorElement = responseDocument.querySelector(".author");
 		if (authorElement) {
 			let authorListClass = [ "data-field", ...(authorElement.classList) ].join(" ");
 			authorHTML = `<span class="${authorListClass}">${authorElement.innerHTML}</span>`
@@ -6417,7 +6417,7 @@ Annotations = { ...Annotations,
 
 		//  Date.
 		let dateHTML = null;
-		let dateElement = response.querySelector(".date");
+		let dateElement = responseDocument.querySelector(".date");
 		if (dateElement) {
 			let dateClass = [ "data-field", ...(dateElement.classList) ].join(" ");
 			dateHTML = `<span class="${dateClass}" title="${dateElement.textContent}">`
@@ -6427,14 +6427,14 @@ Annotations = { ...Annotations,
 
 		//	Link tags.
 		let tagsHTML = null;
-		let tagsElement = response.querySelector(".link-tags");
+		let tagsElement = responseDocument.querySelector(".link-tags");
 		if (tagsElement) {
 			let tagsListClass = [ "data-field", ...(tagsElement.classList) ].join(" ");
 			tagsHTML = `<span class="${tagsListClass}">${tagsElement.innerHTML}</span>`;
 		}
 
 		//	The backlinks link (if exists).
-		let backlinksElement = response.querySelector(".backlinks");
+		let backlinksElement = responseDocument.querySelector(".backlinks");
 		let backlinksHTML = backlinksElement
 							? `<span
 								class="data-field aux-links backlinks"
@@ -6442,7 +6442,7 @@ Annotations = { ...Annotations,
 							: null;
 
 		//	The similar-links link (if exists).
-		let similarsElement = response.querySelector(".similars");
+		let similarsElement = responseDocument.querySelector(".similars");
 		let similarsHTML = similarsElement
 						   ? `<span
 							   class="data-field aux-links similars"
@@ -6450,7 +6450,7 @@ Annotations = { ...Annotations,
 						   : null;
 
 		//	The link-link-bibliography link (if exists).
-		let linkbibElement = response.querySelector(".link-bibliography");
+		let linkbibElement = responseDocument.querySelector(".link-bibliography");
 		let linkbibHTML = linkbibElement
 						  ? `<span
 							  class="data-field aux-links link-bibliography"
@@ -6467,7 +6467,7 @@ Annotations = { ...Annotations,
 		let authorDateAuxHTML = ([ authorHTML, dateHTML, auxLinksHTML ].filter(x => x).join("") || null);
 
 		//	Abstract (if exists).
-		let abstractElement = response.querySelector("blockquote");
+		let abstractElement = responseDocument.querySelector("blockquote");
 		let abstractHTML = null;
 		let thumbnailFigureHTML = null;
 		if (abstractElement) {
@@ -6489,7 +6489,7 @@ Annotations = { ...Annotations,
 		}
 
 		//	File includes (if any).
-		let fileIncludesElement = response.querySelector(".aux-links-transclude-file");
+		let fileIncludesElement = responseDocument.querySelector(".aux-links-transclude-file");
 		let fileIncludesHTML = null;
 		if (fileIncludesElement) {
 			/*	Remove any file embed links that lack a valid content
@@ -6520,7 +6520,7 @@ Annotations = { ...Annotations,
 		let popFrameTitleLinkHref = "/ref/" + (link.id || titleLink.id.slice("link-bibliography-".length));
 
 		return {
-			document: response,
+			document: responseDocument,
 			content: {
 				title:                    titleLink.innerHTML,
 				titleLinkHref:            titleLinkHref,
