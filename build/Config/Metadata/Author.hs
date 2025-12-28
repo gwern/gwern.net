@@ -853,6 +853,11 @@ canonicals = M.fromList
   , ("gemini-2.5-pro-0325", "Gemini-2.5-pro-0325")
   , ("Gemini-2.5-0325", "Gemini-2.5-pro-0325")
   , ("gemini-2.5-0325", "Gemini-2.5-pro-0325")
+  , ("ChatGPT-4o", "GPT-4o")
+  , ("ChatGPT 4o", "GPT-4o")
+  , ("GPT 4o", "GPT-4o")
+  , ("anthropic", "Anthropic")
+  , ("openAI", "OpenAI")
   ]
 
 -- tests: unique
@@ -902,7 +907,7 @@ canonicalsWithInitials =
   , "Douglas F. Levinson", "Blair H. Smith", "Michael J. Wreen", "Andreas J. Forstner", "Clair L. Stong"
   , "Charles Allen Moser", "John A. Leslie", "Robert D. Putnam", "Joel D. Cooper", "Duane A. Compton"
   , "Timo E. Saaristo", "Arthur L. Caplan", "Robert T. Croyle", "Barbara K. Rimer", "Walter J. Ong"
-  , "Samuel S. Wilks", "Kenneth Lee Pike", "Richard E. Turner", "Phil Hyoun Lee"]
+  , "Samuel S. Wilks", "Kenneth Lee Pike", "Richard E. Turner", "Phil Hyoun Lee", "Karthik Rajagopal Narasimhan", "Hunter S. Thompson"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1421,11 +1426,13 @@ authorLinkDB = M.fromList $
     , ("Timo Aila", "https://scholar.google.com/citations?user=e7abmgkAAAAJ")
     , ("Samuli Laine", "https://users.aalto.fi/~laines9/")
     , ("Li Dong", "https://scholar.google.com/citations?user=wEfQgPgAAAAJ")
+    , ("GPT-4o", "https://openai.com/index/hello-gpt-4o/")
     , ("ChatGPT-4 o1-pro", "https://openai.com/index/introducing-chatgpt-pro/")
     , ("GPT-4.5", "https://openai.com/index/introducing-gpt-4-5/")
     , ("GPT-4-o3", "https://openai.com/index/introducing-o3-and-o4-mini/#o3")
     , ("GPT-4-o4-mini", "https://openai.com/index/introducing-o3-and-o4-mini/#o4-mini")
     , ("GPT-4-o4-mini-high", "https://openai.com/index/introducing-o3-and-o4-mini/#o4-mini-high")
+    , ("Claude-2", "https://www.anthropic.com/news/claude-2")
     , ("Claude-3.5-Sonnet", "https://www.anthropic.com/news/claude-3-5-sonnet")
     , ("Claude-3.7", "https://www.anthropic.com/news/claude-3-7-sonnet")
     , ("Brian Hayes", "https://en.wikipedia.org/wiki/Brian_Hayes_(scientist)")
@@ -2049,6 +2056,10 @@ authorLinkDB = M.fromList $
     , ("Roon", "https://x.com/tszzl")
     , ("Drew Breunig", "https://www.dbreunig.com/")
     , ("Moonshot", "https://www.moonshot.ai/")
+    , ("Sebastian Riedel", "http://www.riedelcastro.org/")
+    , ("Serena Sanna", "https://scholar.google.com/citations?user=6hjWp7sAAAAJ&hl=en&oi=ao")
+    , ("Simon Kornblith", "https://www.zotero.org/simon/cv")
+    , ("Karthik Rajagopal Narasimhan", "https://karthikncode.github.io/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3335,4 +3346,4 @@ authorWpLinkDB =
     , "J Strother Moore", "Matt Kaufmann", "Ilka Agricola", "Lisanne Bainbridge", "Daniel H. Janzen", "Rachel Aviv"
     , "Oliver Sacks", "Keiichi Matsuura", "Aleksandra Faust", "Samuel S. Wilks", "Kenneth Lee Pike", "Josh Lerner"
     , "Robert Hayden", "Michael Ondaatje", "Galway Kinnell", "Li-Young Lee", "Douwe Kiela", "Richmond Lattimore", "William T. Vollmann"
-    , "Laurence Perrine", "John Milton"]
+    , "Laurence Perrine", "John Milton", "Ted Hughes", "Hunter S. Thompson"]

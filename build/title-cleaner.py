@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-12-25 15:18:45 gwern"
+# When:  Time-stamp: "2025-12-27 20:57:34 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -820,6 +820,12 @@ Selection vs. Rejection"
 ""
 - "Phenibut—Erowid Exp—’Drunk for Hours’"
 "Phenibut—Erowid Exp—‘Drunk for Hours’"
+- https://www.zotero.org/simon/cv Zotero"
+""
+- "https://aistudio.google.com/app/prompts/1DIwkut2wKo_G~Q~_25fo6lSEphQFBnEhWLKq Sign in—Google Accounts"
+""
+- https://www.anthropic.com/research/many-shot-jailbreaking Many-shot jailbreaking \\ Anthropic"
+"Many-shot jailbreaking"
 
 Task:
 

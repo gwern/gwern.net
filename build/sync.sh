@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-12-27 11:17:59 gwern"
+# When:  Time-stamp: "2025-12-27 20:24:01 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -545,7 +545,8 @@ else
 
     bold "Cleaning up Pandoc’s self-closing-tag-isms…" # TODO: why *does* Pandoc do this even with HTML5 output if it's invalid?
     # Pandoc AST/HTML block problems seem to lead to odd problems with duplicate rulers, so we try to fix that up as well:
-    hr () { sed -i -e 's/<hr \/>/<hr>/g' -e 's/<hr\/>/<hr>/g' -e 's/<hr><\/hr>/<hr>/g' -e 's/><\/img>/>/g' -e 's/<br \/>/<br>/g'  -- "$@"; } # they are primarily generated in the footnote section, but who knows where else?
+    # (They are primarily generated in the footnote section, but who knows where else? Generated tables, poem blockquotes, and horizontal rulers seem especial offenders.)
+    hr () { sed -i -e 's/<hr \/>/<hr>/g' -e 's/<hr\/>/<hr>/g' -e 's/<hr><\/hr>/<hr>/g' -e 's/><\/img>/>/g' -e 's/<br \/>/<br>/g' -e 's/<col \(style="width: [0-9]\{1,3\}%"\) \/>/<col \1>/g' -e 's/<col \(style="width: [0-9]\{1,3\}%"\)\/>/<col \1>/g' -- "$@"; }
     export -f hr
     echo "$PAGES_ALL" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 hr
     gwsed "<hr />" "<hr>" &>/dev/null &
@@ -1002,7 +1003,7 @@ else
             -e ' -\$[1-9][0-9]+' -e ' -\$[1-9][0-9][0-9]' -e ' -\$[1-9][0-9][0-9]+' -e ' \$[0-9][0-9][0-9][0-9]' -e ' \$[0-9][0-9][0-9][0-9][0-9]' -e ' \$[1-9][0-9][0-9][0-9]' -e '[^=]\$[1-9][0-9][0-9][0-9][^)>kmg"]' -e '\$[0-9][0-9][0-9][0-9][0-9]' -e '\[\$[12][0-9][0-9][0-9]' \
             -e '[12][0-9][0-9][0-9]-[012][0-9]-[12][0-9][0-9][0-9]-[012][0-9]' -e '[0-9][0-9]−[0-9][0-9]' \
             -e '<p>\.\.[A-Z]' -- ./metadata/*.gtx;
-         ge -e ' I[0-9][0-9][0-9]' -- ./metadata/*.gtx | gfv ' I432'; }
+         ge -e ' I[0-9][0-9][0-9]' -e '</span> <[A-Z]' -- ./metadata/*.gtx | gfv ' I432'; }
     wrap λ "Check possible syntax errors in GTX metadata database (regexp matches)." &
 
     λ(){ gfc -e ']{' -e 'id="cb1"' -e '<dd>' -e '<dl>' \

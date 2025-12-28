@@ -173,7 +173,7 @@ findRegexMatch ((_,r,u):rs) s = let (a,b,c) = R.match r s in
 -- filter out that one exact rewrite only on that page. This link can be hidden to avoid distracting
 -- the reader.
 -- So to disable the modafinil rewrite on /modafinil, one could insert into the Markdown a line like:
--- `[null](/modafinil){.hidden} <!-- LinkAuto override: disable self-linking -->`
+-- `[null](/modafinil){.display-not} <!-- LinkAuto override: disable self-linking -->`
 filterDefinitions :: Pandoc -> [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.Text)]
 filterDefinitions p = let allLinks = S.fromList $ map (T.replace "https://gwern.net/" "/") $ extractURLs p in
                                           filter (\(_,_,linkTarget) -> linkTarget `notElem` allLinks)

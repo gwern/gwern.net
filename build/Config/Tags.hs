@@ -343,7 +343,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("ai/scaling/economics", "AI economics")
   , ("ai/scaling/hardware", "AI hardware")
   , ("ai/poetry", "poetry by AI")
-  , ("ai/nn/transformer/gpt/calibration", "GPT calibration")
+  , ("ai/nn/transformer/gpt/calibration", "LLM calibration")
   -- , ("ai/nn/transformer/fiction", "Transformer fiction")
   , ("ai/nn/gan/stylegan/progan", "ProGAN")
   , ("ai/nn/gan/data-augmentation", "data-augmented GANs")
