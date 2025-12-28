@@ -1614,7 +1614,7 @@ addContentLoadHandler(GW.contentLoadHandlers.processPoems = (eventInfo) => {
 
 	//	Render enjambment in non-preformatted block poems, indicated by “ / ”.
 	//	(This is a pre-processing step.)
-	let enjambmentSeparatorRegExp = new RegExp("^(.*?) \/ (.*)$");
+	let enjambmentSeparatorRegExp = new RegExp("^(.*?) \/ (.*)$", "s");
 	eventInfo.container.querySelectorAll("div.poem:not(.poem-html)").forEach(poem => {
 		for (let textNode of poem.textNodes) {
 			let match;
