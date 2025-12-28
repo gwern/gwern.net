@@ -373,7 +373,8 @@ Annotations = { ...Annotations,
 	postProcessAnnotationAbstract: (abstractDocument, link = null) => {
 		//	Unwrap extraneous <div>s, if present.
 		if (   abstractDocument.firstElementChild == abstractDocument.lastElementChild
-			&& abstractDocument.firstElementChild.tagName == "DIV")
+			&& abstractDocument.firstElementChild.tagName == "DIV"
+			&& abstractDocument.firstElementChild.className == "")
 			unwrap(abstractDocument.firstElementChild);
 
 		//	If there’s a “See Also” section, rectify its classes.
