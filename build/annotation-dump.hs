@@ -21,11 +21,13 @@ import Tags (validateTagsSyntax)
 type Path = String
 
 main :: IO ()
-main = do full <- readGTXSlow (C.root ++ "metadata/full.gtx") -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use GTX:
+main = do -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use GTX:
+          me   <- readGTXSlow (C.root ++ "metadata/me.gtx")
+          full <- readGTXSlow (C.root ++ "metadata/full.gtx")
           half <- readGTXSlow (C.root ++ "metadata/half.gtx") -- tagged but not handwritten/cleaned-up
           auto <- readGTXSlow (C.root ++ "metadata/auto.gtx") -- auto-generated cached definitions; can be deleted if gone stale
-          let incompleteDB = M.union (M.fromList full) $ M.union (M.fromList half) (M.fromList auto)
-          let finalDB = M.union (M.fromList $ blacklist "f" full) $ M.union (M.fromList $ blacklist "h" half) (M.fromList $ blacklist "a" auto)
+          let incompleteDB = M.union (M.fromList me) $ M.union (M.fromList full) $ M.union (M.fromList half) (M.fromList auto)
+          let finalDB = M.union (M.fromList $ blacklist "m" me) $ M.union (M.fromList $ blacklist "f" full) $ M.union (M.fromList $ blacklist "h" half) (M.fromList $ blacklist "a" auto)
           let final = sortItemPathDate $ M.toList finalDB
           let finalSingleLine = map (toSingleLine incompleteDB) final
 

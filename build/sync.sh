@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-12-28 11:09:45 gwern"
+# When:  Time-stamp: "2025-12-29 10:42:52 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -962,13 +962,13 @@ else
          gfv -e 'https://web.archive.org/web/'; }
     wrap λ "Check possible typo in GTX metadata database." &
 
-    λ(){ ge '  - .*[a-z]–[a-Z]' ./metadata/full.gtx ./metadata/half.gtx; }
+    λ(){ ge '  - .*[a-z]–[a-Z]' -- ./metadata/me.gtx ./metadata/full.gtx ./metadata/half.gtx; }
     wrap λ "Look for en-dash abuse." &
 
     λ(){ gf -e ' ?' ./metadata/full.gtx; }
     wrap λ "Problem with question-marks (perhaps the crossref/Emacs copy-paste problem?)." &
 
-    λ(){ gfv -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone' -e 'N,N-Dimethyltryptamine' -e 'N,N-dimethyltryptamine' -e 'h,s,v' -e ',VGG<sub>' -e 'data-link-icon-type="text,' -e 'data-link-icon-type=\"text,' -e '(R,S)' -e 'R,R-formoterol' -e '(18)F-FDG' -e '<em>N,N</em>' -e '3,n-butylphthalide' -e '3,n-butylhexahydrophthalide' -e 'AUC0-5h,para' -e '0-1h,para' -e '"text,tri' -e '"text,quad' -e '"text,sans"' -e '<sub>T,c</sub>' -e '<sub>T,t</sub>' -e '<sub>C,t</sub>' -e '<em>L<sub>ρ,n</sub></em>' -- ./metadata/full.gtx ./metadata/half.gtx | \
+    λ(){ gfv -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone' -e 'N,N-Dimethyltryptamine' -e 'N,N-dimethyltryptamine' -e 'h,s,v' -e ',VGG<sub>' -e 'data-link-icon-type="text,' -e 'data-link-icon-type=\"text,' -e '(R,S)' -e 'R,R-formoterol' -e '(18)F-FDG' -e '<em>N,N</em>' -e '3,n-butylphthalide' -e '3,n-butylhexahydrophthalide' -e 'AUC0-5h,para' -e '0-1h,para' -e '"text,tri' -e '"text,quad' -e '"text,sans"' -e '<sub>T,c</sub>' -e '<sub>T,t</sub>' -e '<sub>C,t</sub>' -e '<em>L<sub>ρ,n</sub></em>' -- ./metadata/me.gtx ./metadata/full.gtx ./metadata/half.gtx | \
              gec -e ',[A-Za-z]'; }
     wrap λ "Look for run-together commas (but exclude chemical names where that's correct)." &
 
@@ -978,13 +978,13 @@ else
     λ(){ ge -e '[.,:;-<]</a>' -e '\]</a>' -- ./metadata/*.gtx | gfv -e 'i.i.d.' -e 'sativum</em> L.</a>' -e 'this cloning process.</a>' -e '#' -e '[review]</a>' | gec -e '[.,:;-<]</a>'; }
     wrap λ "Look for punctuation inside links; unless it's a full sentence or a quote or a section link, generally prefer to put punctuation outside." &
 
-    λ(){ gfc -e '**' -e ' _' -e '_ ' -e '!!' -e '*' -- ./metadata/full.gtx ./metadata/half.gtx | gfv -e '_search_algorithm' -e 'Bad_Apple' -e 'Bad Apple' -e 'Sagittarius_A'; } # need to exclude 'A* search'
+    λ(){ gfc -e '**' -e ' _' -e '_ ' -e '!!' -e '*' -- ./metadata/me.gtx ./metadata/full.gtx ./metadata/half.gtx | gfv -e '_search_algorithm' -e 'Bad_Apple' -e 'Bad Apple' -e 'Sagittarius_A'; } # need to exclude 'A* search'
     wrap λ "Look for italics errors." &
 
     λ(){ gf -e 'amp#' -- ./metadata/*.gtx; }
     wrap λ "Unicode/HTML entity encoding error?" &
 
-    λ(){ gfc -e 'en.m.wikipedia.org' -- ./metadata/full.gtx; }
+    λ(){ gfc -e 'en.m.wikipedia.org' -- ./metadata/me.gtx ./metadata/full.gtx; }
     wrap λ "Check possible syntax errors in full.gtx GTX metadata database (fixed string-matches)." &
 
     λ(){ gec -e '^- - /docs/.*' -e '^  -  ' -e "\. '$" -e '[a-zA-Z]\.[0-9]+ [A-Z]' \
@@ -1083,7 +1083,7 @@ else
     λ(){ gf -e '""' -- ./metadata/*.gtx | gfv -e ' alt=""' -e 'controls=""' -e 'loop=""' -e '[("doi","")]'; }
     wrap λ "Doubled double-quotes in GTX, usually an error." &
 
-    λ(){ gf -e "'''" -- ./metadata/full.gtx ./metadata/half.gtx; }
+    λ(){ gf -e "'''" -- ./metadata/me.gtx ./metadata/full.gtx ./metadata/half.gtx; }
     wrap λ "Triple quotes in GTX, should be curly quotes for readability/safety." &
 
     λ(){ gev '^- - ' -- ./metadata/*.gtx | gf -e ' -- '; }
@@ -1109,7 +1109,7 @@ else
     λ(){  find metadata/ -type f -name "*.html" -exec grep --with-filename --perl-regexp "[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]" {} \;; }
     wrap λ "Metadata HTML files: garbage or control characters detected?" &
 
-    λ(){ gec -e '^- - https://en\.wikipedia\.org/wiki/' -- ./metadata/full.gtx; }
+    λ(){ gec -e '^- - https://en\.wikipedia\.org/wiki/' -- ./metadata/me.gtx ./metadata/full.gtx; }
     wrap λ "Wikipedia annotations in GTX metadata database, but will be ignored by popups! Override with non-WP URL?" &
 
     λ(){ gec -e '^- - /[12][0-9][0-9]-[a-z]\.pdf$' -- ./metadata/*.gtx; }
@@ -1134,10 +1134,10 @@ else
     λ(){ grep --perl-regexp --null --color --only-matching -e '\!\[.*\]\(.*\)\n\!\[.*\]\(.*\)' -- $PAGES; }
     wrap λ "look for images used without newline in between them; in some situations, this leads to odd distortions of aspect ratio/zooming or something (first discovered in /correlation in blockquotes)" &
 
-    λ(){ gfc -e ' significant'  ./metadata/full.gtx; }
+    λ(){ gfc -e ' significant' -- ./metadata/me.gtx ./metadata/full.gtx; }
     wrap λ "Misleading language in full.gtx" &
 
-    λ(){ gfc -e '/doc/www/'  ./metadata/full.gtx; }
+    λ(){ gfc -e '/doc/www/' -- ./metadata/me.gtx ./metadata/full.gtx; }
     wrap λ "Generated local archive links showing up in manual annotations." &
 
     λ(){ gfc -e 'backlink/' -e 'metadata/annotation/' -e '?gi=' -- ./metadata/backlinks.hs; }
@@ -1451,6 +1451,7 @@ else
           cm "text/x-r; charset=utf-8" 'https://gwern.net/doc/darknet-market/2013-05-05-moore-bitcoinexchangesurvivalanalysis.R'
           cm "text/plain; charset=utf-8" 'https://gwern.net/static/build/linkArchive.sh'
           cm "text/x-gtx; charset=utf-8" 'https://gwern.net/metadata/full.gtx'
+          cm "text/x-gtx; charset=utf-8" 'https://gwern.net/metadata/me.gtx'
           cm "video/mp4"  'https://gwern.net/doc/genetics/selection/artificial/2019-coop-illinoislongtermselectionexperiment-responsetoselection-animation.mp4'
           cm "video/webm" 'https://gwern.net/doc/statistics/2003-gwern-murray-humanaccomplishment-region-proportions-bootstrap.webm'
           cm "image/jpeg" 'https://gwern.net/doc/cs/security/lobel-frogandtoadtogether-thebox-crop.jpg'

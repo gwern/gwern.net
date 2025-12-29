@@ -79,22 +79,29 @@ changeOneTag link tag = do
                         if existP then return $ "/" ++ link' else
                           error $ "File does not exist? : '" ++ link' ++ "'"
           when (head tag == '/' || take 4 tag == "http") $ error $ "Arguments not 'changeTag.hs *tag* link'? : '" ++ tag ++ "'"
-          [full,half,auto] <- mapM readGTXFast ["metadata/full.gtx", "metadata/half.gtx", "metadata/auto.gtx"]
+          [me,full,half,auto] <- mapM readGTXFast ["metadata/me.gtx", "metadata/full.gtx", "metadata/half.gtx", "metadata/auto.gtx"]
           printGreen ("Executing: " ++ tag ++ " tag on link: " ++ link'')
-          changeAndWriteTags tag link'' full half auto
+          changeAndWriteTags tag link'' me full half auto
 
--- If an annotation is in full.gtx, we only want to write that. If it's in half.gtx,
+-- If an annotation is in me.gtx, we only want to write that; if it's in full.gtx/half.gtx,
 -- likewise. If it's in auto.gtx, now that we've added a tag to it, it is no longer disposable and
 -- must be preserved by moving it from auto.gtx to half.gtx. If it's not in any metadata file
 -- (such as a Wikipedia link, which is normally suppressed), then we add it to half.gtx.
-changeAndWriteTags :: String -> String -> MetadataList -> MetadataList -> MetadataList -> IO ()
-changeAndWriteTags t i c p a = do let cP = hasItem i c
-                                      pP = hasItem i p
-                                      aP = hasItem i a
-                                  if cP then writeUpdatedGTX c "metadata/full.gtx" (changeTag i c t) else
-                                    if pP then writeUpdatedGTX p "metadata/half.gtx" (changeTag i p t) else
-                                      if aP then let (autoNew,halfNew) = mvItem a p i in writeUpdatedGTX a "metadata/auto.gtx" autoNew >> writeUpdatedGTX a "metadata/half.gtx" (changeTag i halfNew t)
-                                      else addNewLink t i
+changeAndWriteTags :: String -> String -> MetadataList -- me.gtx
+                   -> MetadataList -- full.gtx
+                   -> MetadataList -- half.gtx
+                   -> MetadataList -- auto.gtx
+                   -> IO ()
+changeAndWriteTags t i m f p a =
+  do let mP = hasItem i m
+         fP = hasItem i f
+         pP = hasItem i p
+         aP = hasItem i a
+     if mP then writeUpdatedGTX m "metadata/me.gtx" (changeTag i m t) else
+      if fP then writeUpdatedGTX f "metadata/full.gtx" (changeTag i f t) else
+        if pP then writeUpdatedGTX p "metadata/half.gtx" (changeTag i p t) else
+          if aP then let (autoNew,halfNew) = mvItem a p i in writeUpdatedGTX a "metadata/auto.gtx" autoNew >> writeUpdatedGTX a "metadata/half.gtx" (changeTag i halfNew t)
+          else addNewLink t i
 
 writeUpdatedGTX :: MetadataList -> String -> MetadataList -> IO ()
 writeUpdatedGTX oldList target newList = when (oldList /= newList) $ writeGTX target newList

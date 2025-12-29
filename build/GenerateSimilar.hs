@@ -658,7 +658,8 @@ clusterIntoSublist es list = let k = 1 `max` (round(sqrt(fromIntegral $ length l
 
 {-
 Experiment: can we sort full.gtx by embedding for better browsing/serendipity?
-result: sorta. Doing global greedy distance, which works well on short lists, seems to yield unfortunately random behavior when run globally across 7144 annotations in full.gtx. You need to nest within-tag, and then do a few iterations of bubble-sort to clean it up & reduce issues like date-inversions.
+Result: sorta. Doing global greedy distance, which works well on short lists, seems to yield unfortunately random behavior when run globally across 7,144 annotations in full.gtx.
+You need to nest within-tag, and then do a few iterations of bubble-sort to clean it up & reduce issues like date-inversions.
 
 mdl <- GTX.readGTXSlow "metadata/full.gtx"
 let seed = head $ map fst mdl

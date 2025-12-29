@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-12-21 21:22:41 gwern"
+;;; When:  Time-stamp: "2025-12-29 10:40:33 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -2153,8 +2153,8 @@ and it will be updated based on any manually-added links."
                         ))))))))
 
 (defun markdown-annotation-compile ()
-  "Turn a Markdown buffer into a HTML5 snippet without newlines and with escaped quotes,
-suitable for using as a GTX string inside annotated gwern.net links (see `full.gtx`)."
+  "Turn Markdown buffer into HTML5 without newlines & escaped quotes.
+Suitable for a GTX  of annotated gwern.net links (`{me,full,half}.gtx`)."
   (interactive)
   (call-interactively #'fmt)
   (save-window-excursion

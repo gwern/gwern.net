@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-12-28 12:34:51 gwern"
+When:  Time-stamp: "2025-12-29 10:46:23 gwern"
 License: CC-0
 -}
 
@@ -148,7 +148,8 @@ addPageLink x = x
 -- > let f = \x@(path,(a,b,c,d,e,f,g)) -> return $ case (lookup path Config.LinkID.linkIDOverrides) of { Nothing -> x; Just ident -> (path,(a,b,c,d,e++[("id",T.unpack ident)],f,g)) }
 -- > walkAndUpdateLinkMetadata True f
 walkAndUpdateLinkMetadata :: Bool -> ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> IO ()
-walkAndUpdateLinkMetadata check f = do walkAndUpdateLinkMetadataGTX f "metadata/full.gtx"
+walkAndUpdateLinkMetadata check f = do walkAndUpdateLinkMetadataGTX f "metadata/me.gtx"
+                                       walkAndUpdateLinkMetadataGTX f "metadata/full.gtx"
                                        walkAndUpdateLinkMetadataGTX f "metadata/half.gtx"
                                        walkAndUpdateLinkMetadataGTX f "metadata/auto.gtx"
                                        when check (printGreen "Checking…" >> readLinkMetadataAndCheck >> printGreen "Validated all GTX post-update; exiting.")
@@ -161,7 +162,8 @@ walkAndUpdateLinkMetadataGTX f file = do db <- readGTXSlow file -- TODO: refacto
 
 -- This can be run every few months to update abstracts (they generally don't change much).
 updateGwernEntries :: IO ()
-updateGwernEntries = do -- rescrapeGTX gwernEntries "metadata/full.gtx" -- why do we try to rescrape full.gtx? is there anything we really want to clobber (even assuming we are excluding /blog/?)
+updateGwernEntries = do -- rescrapeGTX gwernEntries "metadata/me.gtx"
+                        -- rescrapeGTX gwernEntries "metadata/full.gtx" -- TODO: why would we try to rescrape me/full.gtx? is there anything we really want to clobber (even assuming we are excluding /blog/?); temporarily commented out to see if anything breaks
                         rescrapeGTX gwernEntries "metadata/half.gtx"
                         rescrapeGTX gwernEntries "metadata/auto.gtx"
                         readLinkMetadataAndCheck >> printGreen "Validated all GTX post-update; exiting…"
@@ -196,20 +198,22 @@ updateGwernEntry x@(path,(title,author,date,dc,kvs,tags,_)) = if False then retu
 -- read the annotation base (no checks, >8× faster)
 readLinkMetadata :: IO Metadata
 readLinkMetadata = do
+             me   <- readGTXFast "metadata/me.gtx"
              full <- readGTXFast "metadata/full.gtx"  -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use GTX:
              half <- readGTXFast "metadata/half.gtx" -- tagged but not handwritten/cleaned-up
              auto <- readGTXFast "metadata/auto.gtx"    -- auto-generated cached definitions; can be deleted if gone stale
              -- merge the hand-written & auto-generated link annotations, and return:
-             let final = M.union (M.fromList full) $ M.union (M.fromList half) (M.fromList auto) -- left-biased, so 'full' overrides 'half' overrides 'half' overrides 'auto'
+             let final = M.union (M.fromList me) $ M.union (M.fromList full) $ M.union (M.fromList half) (M.fromList auto) -- left-biased, so 'full' overrides 'half' overrides 'half' overrides 'auto'
              return final
 
 readLinkMetadataSlow :: IO Metadata
 readLinkMetadataSlow = do
+             me   <- readGTXSlow "metadata/me.gtx"
              full <- readGTXSlow "metadata/full.gtx"  -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use GTX:
              half <- readGTXSlow "metadata/half.gtx" -- tagged but not handwritten/cleaned-up
              auto <- readGTXSlow "metadata/auto.gtx"    -- auto-generated cached definitions; can be deleted if gone stale
              -- merge the hand-written & auto-generated link annotations, and return:
-             let final = M.union (M.fromList full) $ M.union (M.fromList half) (M.fromList auto) -- left-biased, so 'full' overrides 'half' overrides 'half' overrides 'auto'
+             let final = M.union (M.fromList me) $ M.union (M.fromList full) $ M.union (M.fromList half) (M.fromList auto) -- left-biased, so 'full' overrides 'half' overrides 'half' overrides 'auto'
              return final
 
 -- read the annotation database, and do extensive semantic & syntactic checks for errors/duplicates:
@@ -217,38 +221,40 @@ readLinkMetadataSlow = do
 readLinkMetadataAndCheck :: IO Metadata
 readLinkMetadataAndCheck = do
              -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use GTX:
-             full <- readGTXSlow "metadata/full.gtx"
+             me   <- readGTXSlow "metadata/me.gtx"
+             fullGTX <- readGTXSlow "metadata/full.gtx"
+             let full = me ++ fullGTX
 
              -- Quality checks:
              -- requirements:
-             -- - URLs/keys must exist, be unique, and either be a remote URL (starting with 'h') or a local filepath (starting with '/') which exists on disk (auto.gtx may have stale entries, but full.gtx should never! This indicates a stale annotation, possibly due to a renamed or accidentally-missing file, which means the annotation can never be used and the true URL/filepath will be missing the hard-earned annotation). We strip http/https because so many websites now redirect and that's an easy way for duplicate annotations to exist.
+             -- - URLs/keys must exist, be unique, and either be a remote URL (starting with 'h') or a local filepath (starting with '/') which exists on disk (auto.gtx may have stale entries, but me/full.gtx should never! This indicates a stale annotation, possibly due to a renamed or accidentally-missing file, which means the annotation can never be used and the true URL/filepath will be missing the hard-earned annotation). We strip http/https because so many websites now redirect and that's an easy way for duplicate annotations to exist.
              -- - titles must exist & be unique (overlapping annotations to pages are disambiguated by adding the section title or some other description)
              -- - authors must exist (if only as 'Anonymous' or 'N/A'), but are non-unique
              -- - dates are non-unique & optional/NA for always-updated things like Wikipedia. If they exist, they should be of the format 'YYYY[-MM[-DD]]'.
              -- - DOIs are optional since they usually don't exist, and non-unique (there might be annotations for separate pages/anchors for the same PDF and thus same DOI; DOIs don't have any equivalent of `#page=n` I am aware of unless the DOI creator chose to mint such DOIs, which they never (?) do). DOIs sometimes use hyphens and so are subject to the usual problems of em/en-dashes sneaking in by 'smart' systems screwing up.
              -- - tags are optional, but all tags should exist on-disk as a directory of the form "doc/$TAG/"
-             -- - annotations must exist and be unique inside full.gtx (overlap in auto.gtx can be caused by the hacky appending); their HTML should pass some simple syntactic validity checks
+             -- - annotations must exist and be unique inside me/full.gtx (overlap in auto.gtx can be caused by the hacky appending); their HTML should pass some simple syntactic validity checks
              -- - the key-value list can be empty, but any entries must have non-empty string keys & values
              -- CHECK FULL-ONLY
              let urlsC = map fst full
              let normalizedUrlsC = map (delete "https://" . delete "http://") urlsC
-             when (length (nubOrd (sort normalizedUrlsC)) /=  length normalizedUrlsC) $ error $ "full.gtx: Duplicate URLs! " ++ unlines (normalizedUrlsC \\ nubOrd normalizedUrlsC)
+             when (length (nubOrd (sort normalizedUrlsC)) /=  length normalizedUrlsC) $ error $ "me/full.gtx: Duplicate URLs! " ++ unlines (normalizedUrlsC \\ nubOrd normalizedUrlsC)
 
              let tagsAllC = nubOrd $ concatMap (\(_,(_,_,_,_,_,ts,_)) -> ts) full
 
              -- mandatory field check (includes checking for empty annotation string):
              let emptyCheck = filter (\(u,(t,a,_,_,_,_,s)) ->  "" `elem` [u,t,a,s]) full
-             unless (null emptyCheck) $ error $ "full.gtx: Link Annotation Error: empty mandatory fields! [URL/title/author/abstract] This should never happen: " ++ show emptyCheck
+             unless (null emptyCheck) $ error $ "me/full.gtx: Link Annotation Error: empty mandatory fields! [URL/title/author/abstract] This should never happen: " ++ show emptyCheck
 
              duplicateAbstracts full
 
              -- CHECK HALF-ONLY
-             -- intermediate link annotations: not finished, like 'full.gtx' entries, but also not fully auto-generated.
-             -- This is currently intended for storing entries for links which I give tags (probably as part of creating a new tag & rounding up all hits), but which are not fully-annotated; I don't want to delete the tag metadata, because it can't be rebuilt, but such half annotations can't be put into 'full.gtx' without destroying all of the checks' validity.
+             -- intermediate link annotations: not finished, like 'me/full.gtx' entries, but also not fully auto-generated.
+             -- This is currently intended for storing entries for links which I give tags (probably as part of creating a new tag & rounding up all hits), but which are not fully-annotated; I don't want to delete the tag metadata, because it can't be rebuilt, but such half annotations can't be put into 'me/full.gtx' without destroying all of the checks' validity.
              half <- readGTXSlow "metadata/half.gtx"
              let (fullPaths,halfPaths) = (map fst full, map fst half)
              let redundantHalfs = fullPaths `intersect` halfPaths
-             unless (null redundantHalfs) (printRed "Redundant entries in half.gtx & full.gtx: " >> printGreen (show redundantHalfs))
+             unless (null redundantHalfs) (printRed "Redundant entries in half.gtx & me/full.gtx: " >> printGreen (show redundantHalfs))
              duplicateAbstracts (filter (\(p,_) -> not (isLocal (T.pack p))) half) -- filter out local paths, because there are annoying reasons (for now) why annotations of essays/essay sections may be redundant. TODO: fix that.
 
              let urlsCP = map fst (full ++ half)
