@@ -112,8 +112,8 @@ addNewLink tag "" = error $ "changeTag.addNewLink: empty string passed in; other
 addNewLink tag p  = do md <- readLinkMetadata
                        returnValue <- annotateLink md (Link nullAttr [] (T.pack p, T.pack ""))
                        case returnValue of
-                        Left Temporary -> error ("annotateLink returned a Temporary error! " ++ show tag ++ " : " ++ show p)
-                        Left Permanent -> changeOneTag p tag
+                        Left Temporary -> error ("changeTag.addNewLink: LM.annotateLink returned a Temporary error! " ++ show tag ++ " : " ++ show p)
+                        Left Permanent -> return () -- changeOneTag p tag
                         Right _        -> changeOneTag p tag
 
 changeTag, addTag, removeTag :: String -> MetadataList -> String -> MetadataList

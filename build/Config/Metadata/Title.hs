@@ -182,4 +182,4 @@ stringDelete = [" - The Public Domain Review"
             , " : Institute for Policy Research - Northwestern University", "Snarkmarket: ", " - Google Developers Blog"
             , " - Dmitry Brant", "Geoff Greer’s site: ", "Wes McKinney - ", " - an article by Chris Morgan", "First Known When Lost: "
             , " - by Bryan Caplan", "Tom Lehman - ", "small clever rooms: ", "research!rsc: ", " - Debbie Maddy"
-            , " - Keith Woods", " - by Zachary Brown", " - Anime News Network", " -blog", " - by JP Aumasson - bfSwA", "MindAndMuscle.net - ", " \\ Anthropic"]
+            , " - Keith Woods", " - by Zachary Brown", " - Anime News Network", " -blog", " - by JP Aumasson - bfSwA", "MindAndMuscle.net - ", " \\ Anthropic", " (Maurycy's blog)"]

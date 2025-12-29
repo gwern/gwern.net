@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using LLM API
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2025-12-27 10:07:05 gwern"
+# When:  Time-stamp: "2025-12-28 12:06:14 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -754,6 +754,18 @@ These findings suggest that Dark Web users, who typically engage with clear task
 - <abstract>We show that two-dimensional billiard systems are Turing complete by encoding their dynamics within the framework of Topological Kleene Field Theory. Billiards serve as idealized models of particle motion with elastic reflections and arise naturally as limits of smooth Hamiltonian systems under steep confining potentials. Our results establish the existence of undecidable trajectories in physically natural billiard-type models, including billiard-type models arising in hard-sphere gases and in collision-chain limits of celestial mechanics.</abstract>
 We show that two-dimensional billiard systems are Turing complete by encoding their dynamics within the framework of Topological Kleene Field Theory.
 Billiards serve as idealized models of particle motion with elastic reflections and arise naturally as limits of smooth Hamiltonian systems under steep confining potentials. Our results establish the existence of undecidable trajectories in physically natural billiard-type models, including billiard-type models arising in hard-sphere gases and in collision-chain limits of celestial mechanics.
+- <abstract>Antibacterial additive use has surged because of rising incidences of food contamination despite concerns over antibiotic resistance. Bacteriophage (bacterial viruses) is a promising alternative with pathogen-level specificity. However, their commercial success has been limited by the considerable diffusion barriers they face within food, preventing effective delivery at contamination sites. Here, we introduce bacteriophage-loaded microneedle patches that enable targeted phage delivery directly within food, eliminating internal pathogens in a minimally disruptive manner. The application of microneedles within food is first explored. The platform is then substantiated by comparing performance in raw beef and cooked chicken, where we achieved up to 3-log reduction in Escherichia coli, meeting regulatory limits. In contrast, conventional surface application of the same phage failed to provide statistically significant decontamination. To ensure broad applicability, phage cocktails were also loaded into microneedles to demonstrate polymicrobial decontamination. This platform can also be adapted to extend food shelf-life by targeting spoilage-inducing bacteria.</abstract>
+Antibacterial additive use has surged because of rising incidences of food contamination despite concerns over antibiotic resistance.
+Bacteriophage (bacterial viruses) is a promising alternative with pathogen-level specificity.
+However, their commercial success has been limited by the considerable diffusion barriers they face within food, preventing effective delivery at contamination sites.
+Here, we introduce bacteriophage-loaded microneedle patches that enable targeted phage delivery directly within food, eliminating internal pathogens in a minimally disruptive manner.
+The application of microneedles within food is first explored.
+The platform is then substantiated by comparing performance in raw beef and cooked chicken, where we achieved up to 3-log reduction <em>Escherichia coli</em>, meeting regulatory limits.
+In contrast, conventional surface application of the same phage failed to provide statistically-significant decontamination.
+To ensure broad applicability, phage cocktails were also loaded into microneedles to demonstrate polymicrobial decontamination.
+This platform can also be adapted to extend food shelf-life by targeting spoilage-inducing bacteria.
+
+
 
 [End of examples. Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 

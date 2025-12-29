@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-12-27 17:21:47 gwern"
+When:  Time-stamp: "2025-12-28 12:34:51 gwern"
 License: CC-0
 -}
 
@@ -17,7 +17,7 @@ import Data.Char (isPunctuation, isNumber)
 import Data.Maybe (fromMaybe)
 import qualified Data.Map.Strict as M (elems, empty, filter, filterWithKey, fromList, fromListWith, keys, toList, lookup, map, union, size, member, keysSet, Map) -- traverseWithKey, union, Map
 import qualified Data.Set as Set (member, null)
-import qualified Data.Text as T (append, isInfixOf, isPrefixOf, pack, unpack, replace, Text)
+import qualified Data.Text as T (append, isInfixOf, isPrefixOf, pack, unpack, replace, Text, unlines)
 import Data.Containers.ListUtils (nubOrd)
 import Data.Function (on)
 import Data.List (intersect, isInfixOf, isPrefixOf, isSuffixOf, sort, sortBy, (\\))
@@ -56,7 +56,7 @@ import Utils (writeUpdatedFile, printGreen, printRed, anyInfix, anyPrefix, anySu
 import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
 import LinkIcon (linkIcon)
-import GTX (appendLinkMetadata, readGTXFast, readGTXSlow, rewriteLinkMetadata, writeGTX)
+import GTX (appendLinkMetadata, readGTXFast, readGTXSlow, rewriteLinkMetadata, writeGTX, untupleize)
 import Metadata.Author (authorCollapse)
 import qualified Config.Metadata.Author as CA (authorLinkDB, authorWhitelist)
 
@@ -483,7 +483,7 @@ annotateLink md x@(Link (_,_,_) _ (targetT,_))
 
           unless (takeFileName target''' == "index" || takeFileName target''' == "index.md") $
              do exist <- doesFileExist target'''
-                unless exist $ printRed ("Link error in 'annotateLink': file does not exist? " ++ target''' ++ " (" ++target++")" ++ " (" ++ show x ++ ")")
+                unless exist $ printRed ("Link error in 'LM.annotateLink': file does not exist? " ++ target''' ++ " (" ++target++")" ++ " (" ++ show x ++ ")")
 
      let annotated = M.lookup target'' md
      today <- C.todayDayString
@@ -496,11 +496,11 @@ annotateLink md x@(Link (_,_,_) _ (targetT,_))
                        Left Temporary -> return (Left Temporary)
                        -- cache the failures too, so we don't waste time rechecking the PDFs every build; return False because we didn't come up with any new useful annotations:
                        Left Permanent -> appendLinkMetadata target'' ("", "", "", today, [], [], "") >> return (Left Permanent)
-                       Right y@(f,m@(_,_,_,_,_,_,e)) -> do
-                                       when (e=="") $ printGreen (f ++ " : " ++ show target ++ " : " ++ show y)
+                       Right y@(f,m) -> do
+                                       printGreen (f ++ "; GTX:\n" ++ T.unpack (T.unlines (GTX.untupleize today y)) ++ "\nHaskell: " ++ show y)
                                        -- return true because we *did* change the database & need to rebuild:
                                        appendLinkMetadata f m >> return (Right y)
-annotateLink _ x = error ("annotateLink was passed an Inline which was not a Link: " ++ show x)
+annotateLink _ x = error ("LM.annotateLink was passed an Inline which was not a Link: " ++ show x)
 
 -- walk the page, and modify each URL to specify if it has an annotation available or not, and add its link ID:
 -- WARNING: all pseudo-URLs like interwikis ('!W') or inflation-adjustments ('$2025') must be gone at this point, and converted to proper URLs. Assigning link IDs based on a link like '!W' is useless and collides all WP links.

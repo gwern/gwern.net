@@ -858,6 +858,11 @@ canonicals = M.fromList
   , ("GPT 4o", "GPT-4o")
   , ("anthropic", "Anthropic")
   , ("openAI", "OpenAI")
+  , ("SE Baumeister", "Sebastian-Edgar Baumeister")
+  , ("S. Sanchez-Roige", "Sandra Sanchez-Roige")
+  , ("S Sanchez-Roige", "Sandra Sanchez-Roige")
+  , ("Hans-J. Boehm", "Hans-Juergen Boehm")
+  , ("Hans-J Boehm", "Hans-Juergen Boehm")
   ]
 
 -- tests: unique
@@ -907,7 +912,7 @@ canonicalsWithInitials =
   , "Douglas F. Levinson", "Blair H. Smith", "Michael J. Wreen", "Andreas J. Forstner", "Clair L. Stong"
   , "Charles Allen Moser", "John A. Leslie", "Robert D. Putnam", "Joel D. Cooper", "Duane A. Compton"
   , "Timo E. Saaristo", "Arthur L. Caplan", "Robert T. Croyle", "Barbara K. Rimer", "Walter J. Ong"
-  , "Samuel S. Wilks", "Kenneth Lee Pike", "Richard E. Turner", "Phil Hyoun Lee", "Karthik Rajagopal Narasimhan", "Hunter S. Thompson"]
+  , "Samuel S. Wilks", "Kenneth Lee Pike", "Richard E. Turner", "Phil Hyoun Lee", "Karthik Rajagopal Narasimhan", "Hunter S. Thompson", "Robert C. Kaplan", "Richard N. Bergman"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -2057,9 +2062,16 @@ authorLinkDB = M.fromList $
     , ("Drew Breunig", "https://www.dbreunig.com/")
     , ("Moonshot", "https://www.moonshot.ai/")
     , ("Sebastian Riedel", "http://www.riedelcastro.org/")
-    , ("Serena Sanna", "https://scholar.google.com/citations?user=6hjWp7sAAAAJ&hl=en&oi=ao")
+    , ("Serena Sanna", "https://scholar.google.com/citations?user=6hjWp7sAAAAJ")
     , ("Simon Kornblith", "https://www.zotero.org/simon/cv")
     , ("Karthik Rajagopal Narasimhan", "https://karthikncode.github.io/")
+    , ("Sebastian-Edgar Baumeister", "https://scholar.google.com/citations?user=mymsjo8AAAAJ&hl=en&oi=ao")
+    , ("Sandra Sanchez-Roige", "https://www.sanchezroigelab.org/")
+    , ("Robert C. Kaplan", "https://www.fredhutch.org/en/faculty-lab-directory/kaplan-robert.html")
+    , ("Richard N. Bergman", "https://researchers.cedars-sinai.edu/Richard.Bergman")
+    , ("Maurycy", "https://maurycyz.com/")
+    , ("Ek Type", "https://ektype.in/")
+    , ("Hans-Juergen Boehm", "https://www.hboehm.info/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3346,4 +3358,4 @@ authorWpLinkDB =
     , "J Strother Moore", "Matt Kaufmann", "Ilka Agricola", "Lisanne Bainbridge", "Daniel H. Janzen", "Rachel Aviv"
     , "Oliver Sacks", "Keiichi Matsuura", "Aleksandra Faust", "Samuel S. Wilks", "Kenneth Lee Pike", "Josh Lerner"
     , "Robert Hayden", "Michael Ondaatje", "Galway Kinnell", "Li-Young Lee", "Douwe Kiela", "Richmond Lattimore", "William T. Vollmann"
-    , "Laurence Perrine", "John Milton", "Ted Hughes", "Hunter S. Thompson"]
+    , "Laurence Perrine", "John Milton", "Ted Hughes", "Hunter S. Thompson", "Kevin D. Williamson", "Martin Ellison", "David E. Hoffman", "Paul Ginsparg"]
