@@ -217,10 +217,10 @@ generateBlogLinksByYears sortedPosts = let years = nubOrd $ map (\(_, (_,_,dc,_,
 
 generateBlogLink :: (FilePath, MetadataItem, Path) -> [Block]
 generateBlogLink (urlPath, (tle,_,dc,_,_,_,_), _) =
-  let link = Link (T.pack dc, ["link-annotated-not", "icon-not"], [("data-include-selector-not", "#return-to-blog-index-link")])
+  let link = Link (T.pack dc, ["icon-not"], [("data-include-selector-not", "#return-to-blog-index-link")]) -- "link-annotated-not",
                                       [RawInline (Format "html") (T.pack $ truncateString 70 $ titlecase' tle)] (T.pack urlPath,"")
-      dd = drop 8 dc
-      mm = drop 5 $ take 2 dc
+      mm = take 2 $ drop 5 dc --- "YYYY-MM-DD" → "MM-DD" → "MM"
+      dd = drop 8 dc --- "YYYY-MM-DD" → "DD"
   in [Para [Strong [link],
             -- append the MM-DD dates as low-priority parentheticals (since YYYY is covered in the section headers); include WORD JOINER for nicer line-breaking of the MM-DD as a whole.
             Str (T.pack (" (" ++ mm ++ "\8288-" ++ dd ++ ")"))]]

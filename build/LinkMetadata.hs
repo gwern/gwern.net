@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-12-29 10:46:23 gwern"
+When:  Time-stamp: "2025-12-30 15:41:21 gwern"
 License: CC-0
 -}
 
@@ -571,17 +571,17 @@ addCanPrefetch x@(Link (_,classes,_) _ (f,_))
 addCanPrefetch x = return x
 
 addHasAnnotation :: MetadataItem -> Inline -> Inline
-addHasAnnotation (title,aut,dt,_,_,_,abstrct) x@(Link (a,b,c) e (f,g))
+addHasAnnotation (title,aut,dt,_,miscMetadata,_,abstrct) x@(Link (a,b,c) e (f,g))
   | wasAnnotated x = x'
   -- WARNING: Twitter is currently handled in Config.LinkArchive, because whether a Twitter/Nitter URL is a valid 'annotation' depends on whether there is a Nitter snapshot hosted locally the JS can query. Many Nitter snapshots, sadly, fail, so it is *not* guaranteed that a Twitter URL will have a usable snapshot. TODO: when Twitter is merged into the backend, parsing the Nitter mirrors to create proper annotations, rather than using JS to parse them at runtime, this should be removed.
-  | length abstrct > C.minimumAnnotationLength  = addClass "link-annotated" x' -- full annotation, no problem.
+  | length abstrct > C.minimumAnnotationLength  = addClassPopupNot miscMetadata $ addClass "link-annotated" x' -- full annotation, no problem.
    -- may be a partial…?
   | not $ unsafePerformIO $ doesFileExist $ fst $ getAnnotationLink $ T.unpack f = x'
   -- | unsafePerformIO $ do
   --                         (filepath',_) <- getAnnotationLinkCheck $ T.unpack f
   --                         return $ filepath' == ""
   --     = x' -- no, a viable partial would have a (short) fragment written out, see `writeAnnotationFragment` logic; WARNING: race condition here - what if we process a full annotation, which links to a partial (eg. its author) *before* the partial has been written out? we will get a spurious 'no full or partial annotation' return... The current compromise is to try to process all URLs with short/empty annotations first (which might be partials) and then when the fragments should all be written out, rerun with the regular batch
-  | otherwise = addClass "link-annotated-partial" x'
+  | otherwise = addClassPopupNot miscMetadata $ addClass "link-annotated-partial" x'
   where
     g'
       | g/="" = g
@@ -591,6 +591,14 @@ addHasAnnotation (title,aut,dt,_,_,_,abstrct) x@(Link (a,b,c) e (f,g))
       | otherwise = T.pack $ "'" ++ title ++ "', " ++ authorsToCite (T.unpack f) aut dt
     x' = Link (a,b,c) e (f,g')
 addHasAnnotation _ z = z
+
+-- sometimes we want to disable a popup on a link where the popup view would be bad for whatever reason (eg. spoilers hidden by reader-mode on the main page). The property to disable a popup is '.extract-not'. So we check if the page has .extract-not set in its metadata; specifically, its 'css-extension' key.
+addClassPopupNot :: [(String,String)] -> Inline -> Inline
+addClassPopupNot []           x = x
+addClassPopupNot [("","")]    x = error $ "LM.addClassPopupNot: invalid metadata key-value dict passed in Only empty strings? Other input was: " ++ show x
+addClassPopupNot miscMetadata x = case lookup "css-extension" miscMetadata of
+                                    Just cssExtensions -> if not ("extract-not" `isInfixOf` cssExtensions) then x else addClass "extract-not" x
+                                    Nothing        -> x
 
 -- checks if a Link was recently modified & sets a '.link-modified-recently' class (with usual negation '.link-modified-recently-not') for CSS styling.
 -- Exclusions: indexes/tag-directories, because they churn far too frequently (and contain intrinsically dated contents) to be worth highlighting to readers.
