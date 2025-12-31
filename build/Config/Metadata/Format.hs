@@ -1819,6 +1819,7 @@ htmlRewriteFixed =
          , ("small saple", "small sample")
          , (" model s ", " model’s ")
          , (" ofsmoking", " of smoking")
+         , (" U.S.", " US")
          , (" u.s. ", " U.S. ")
          , (" ofthe", " of the")
          , (" ofdata", " of data")

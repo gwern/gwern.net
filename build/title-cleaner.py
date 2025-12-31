@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-12-28 20:18:11 gwern"
+# When:  Time-stamp: "2025-12-30 21:34:10 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -830,6 +830,10 @@ Selection vs. Rejection"
 "The Curious Case of The National Fund"
 - "https://maurycyz.com/misc/raw_photo/ What an unprocessed photo looks like: (Maurycy’s blog)"
 "What an unprocessed photo looks like"
+- "Disney Imagineering Reveals Robotic OlafCharacter"
+"Disney Imagineering Reveals Robotic Olaf Character"
+- "http://www.ldysinger.com/ThM_599d_Beg/08_exp-fet_neon/01_anenceph-donor_missed.htm <em>Virgin and Child</em>"
+""
 
 Task:
 

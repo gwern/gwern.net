@@ -45,7 +45,7 @@ authorU  = C.author
 authorID = C.authorL
 lengthMin, lengthMax, titleMax :: Int
 lengthMin = 600
-lengthMax = 30000 -- at this length, should probably be split out to a standalone essay
+lengthMax = 30000 -- at this character length, should probably be split out to a standalone essay
 titleMax = 51 -- chosen empirically based on what lengths seem to trigger line-wrapping when transcluded on /index in Firefox/Chromium in my Google Pixel 9 smartphone
 
 writeOutBlogEntries :: Metadata -> IO ()
@@ -257,7 +257,7 @@ generateDirectoryBlogSimplified items =
      let body = Div ("newest-list",["columns"],[]) [
            BulletList (
                map (\(f, (tle, _, _, _, _, _, _), u) ->
-                   [Para [Link ("",["link-modified-recently-not", "link-annotated-not", "icon-not"],[])
+                   [Para [Link ("",["link-modified-recently-not", "icon-not"],[]) -- "link-annotated-not",
                         [RawInline (Format "html") (T.pack $ titlecase' tle)]
                         (T.pack ("/" ++ delete ".md" f), if head u == '/' then "" else T.pack $ "Original URL: <" ++ u ++ ">")]]) items' ++
                 [ [Para [Link ("",["link-modified-recently-not", "link-annotated-not", "icon-not"],[]) [Str "[…]"] ("/blog/index", "Full index of blog entries.")]] ]

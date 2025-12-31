@@ -2072,6 +2072,7 @@ authorLinkDB = M.fromList $
     , ("Maurycy", "https://maurycyz.com/")
     , ("Ek Type", "https://ektype.in/")
     , ("Hans-Juergen Boehm", "https://www.hboehm.info/")
+    , ("Zhengdong Wang", "https://zhengdongwang.com/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3358,4 +3359,4 @@ authorWpLinkDB =
     , "J Strother Moore", "Matt Kaufmann", "Ilka Agricola", "Lisanne Bainbridge", "Daniel H. Janzen", "Rachel Aviv"
     , "Oliver Sacks", "Keiichi Matsuura", "Aleksandra Faust", "Samuel S. Wilks", "Kenneth Lee Pike", "Josh Lerner"
     , "Robert Hayden", "Michael Ondaatje", "Galway Kinnell", "Li-Young Lee", "Douwe Kiela", "Richmond Lattimore", "William T. Vollmann"
-    , "Laurence Perrine", "John Milton", "Ted Hughes", "Hunter S. Thompson", "Kevin D. Williamson", "Martin Ellison", "David E. Hoffman", "Paul Ginsparg"]
+    , "Laurence Perrine", "John Milton", "Ted Hughes", "Hunter S. Thompson", "Kevin D. Williamson", "Martin Ellison", "David E. Hoffman", "Paul Ginsparg", "Wojciech Kopczuk", "Highway to Hitler"]

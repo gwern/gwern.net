@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using LLM API
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2025-12-28 12:06:14 gwern"
+# When:  Time-stamp: "2025-12-30 11:48:10 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -764,8 +764,11 @@ The platform is then substantiated by comparing performance in raw beef and cook
 In contrast, conventional surface application of the same phage failed to provide statistically-significant decontamination.
 To ensure broad applicability, phage cocktails were also loaded into microneedles to demonstrate polymicrobial decontamination.
 This platform can also be adapted to extend food shelf-life by targeting spoilage-inducing bacteria.
-
-
+- <abstract>We show that the building of the Autobahn network in Nazi Germany boosted popular support for Adolf Hitler, helping to entrench the Nazi dictatorship. Direct local economic benefits are unlikely to explain the effect. Instead, it reflects successful propaganda: The regime portrayed the Autobahn as a symbol of recovery and the end of austerity. Support rose particularly strongly where highway construction coincided with greater radio availability and in politically unstable regions. Our findings suggest that visible infrastructure projects can raise support for autocratic regimes when voters are led to associate them with economic progress and an end to political instability.</abstract>
+We show that the building of the Autobahn network in Nazi Germany boosted popular support for Adolf Hitler, helping to entrench the Nazi dictatorship.
+Direct local economic benefits are unlikely to explain the effect.
+Instead, it reflects successful propaganda: The regime portrayed the Autobahn as a symbol of recovery and the end of austerity. Support rose particularly strongly where highway construction coincided with greater radio availability and in politically unstable regions.
+Our findings suggest that visible infrastructure projects can raise support for autocratic regimes when voters are led to associate them with economic progress and an end to political instability.
 
 [End of examples. Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 
