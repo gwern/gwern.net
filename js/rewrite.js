@@ -1425,7 +1425,12 @@ addContentLoadHandler(GW.contentLoadHandlers.rectifyFigureClasses = (eventInfo) 
             return;
 
         //  Tag the figure with the first (or only) media element’s classes.
-        [ "float-left", "float-right", "outline-not", "image-focus-not" ].forEach(imgClass => {
+        [ "float-left", 
+          "float-right", 
+          "outline-not", 
+          "image-focus-not",
+          "display-not"
+          ].forEach(imgClass => {
             if (media.classList.contains(imgClass)) {
                 figure.classList.add(imgClass);
                 media.classList.remove(imgClass);
