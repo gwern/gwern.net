@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-12-29 10:42:52 gwern"
+# When:  Time-stamp: "2025-12-30 19:46:29 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -669,14 +669,15 @@ else
             "Bash" "book-review-author" "book-review-date" "book-review-rating" "book-review-title" "cite-author"
             "cite-author-plural" "cite-date" "date" "display" "email" "external-page-embed"
             "id-not" "inflation-adjusted" "logotype-tex" "logotype-latex" "logotype-latex-a" "logotype-latex-e"
-            "link-annotated" "link-live" "link-page" "link-page-not" "link-tag" "link-tags"
+            "link-annotated" "link-annotated-not" "link-annotated-partial" "link-live" "link-page" "link-page-not" "link-tag" "link-tags"
+            "image-annotated" "image-annotated-not" "image-annotated-partial"
             "cite" "cite-joiner" "collapse" "collapse-small" "columns" "directory-indexes-downwards" "directory-indexes-upwards"
             "epigraph" "even" "figures" "float-right" "float-left" "logo" "footer-logo" "footnote-ref" "full-width"
             "haskell" "header" "heading" "horizontal-rule-nth-1" "horizontal-rule-nth-2" "horizontal-rule-nth-3" "icon-not" "icon-special"
             "link-modified-recently" "icon-single-white-star-on-black-circle" "icon-manicule-left" "icon-manicule-right"
             "icon-book-open-solid" "icon-gear-solid" "icon-magnifying-glass" "icon-message-slash-solid" "icon-moon-solid" "icon-sun-solid" "icon-eye-slash-solid"
             "inline" "invert" "invert-auto" "invert-not"
-            "javascript" "link-annotated-not" "link-annotated-partial" "content-transform-not" "link-live-not"
+            "javascript" "content-transform-not" "link-live-not"
             "math" "odd" "page-thumbnail" "patreon" "pascal" "python" "reader-mode-selector-inline"
             "smallcaps" "smallcaps-not" "sourceCode" "subsup" "table-small" "table-sort-not" "width-full"
             "TOC" "uri" "at" "bu" "c1" "c2"

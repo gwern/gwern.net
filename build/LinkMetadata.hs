@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2025-12-30 15:41:21 gwern"
+When:  Time-stamp: "2025-12-30 19:47:18 gwern"
 License: CC-0
 -}
 
@@ -28,7 +28,7 @@ import System.Directory (doesFileExist, doesDirectoryExist, getFileSize)
 import System.FilePath (takeDirectory, takeFileName, takeExtension)
 import Text.Pandoc (Inline(Link, Span),
                     writeHtml5String, runPure,
-                    nullAttr, nullMeta,
+                    nullAttr, nullMeta, Attr, Target,
                     Inline(Code, Image, Str, RawInline, Space, Strong), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div))
 import Text.Pandoc.Walk (walk, walkM)
 import Text.Show.Pretty (ppShow)
@@ -515,29 +515,36 @@ hasAnnotation md = walk (hasAnnotationOrIDInline md)
 
 hasAnnotationOrIDInline :: Metadata -> Inline -> Inline
 hasAnnotationOrIDInline md inline = case inline of
-    link@(Link (_, classes, _) _ (url, _)) ->
-        if hasAnyAnnotatedClass classes
-            then link
-            else processLink md url link
+    link@(Link  (_, classes, _) _ (url, _)) -> process classes url link
+    img@(Image (_, classes, _) _ (url, _))  -> process classes url img
     _ -> inline
- where
-        hasAnyAnnotatedClass :: [T.Text] -> Bool
-        hasAnyAnnotatedClass = hasAny ["link-annotated-not", "link-annotated", "link-annotated-partial"]
+  where
+    hasAnyAnnotatedClass :: [T.Text] -> Bool
+    hasAnyAnnotatedClass = hasAny ["link-annotated-not", "link-annotated", "link-annotated-partial", "image-annotated", "image-annotated-not", "image-annotated-partial"]
 
-        processLink :: Metadata -> T.Text -> Inline -> Inline
-        processLink metadatadb url link =
-            let canonicalUrl = linkCanonicalize $ T.unpack url
-                -- NOTE: we do not implement any blacklists or exclusion here, but defer it to the Metadata database, which will or will not have a Nothing vs Just entry; so all that logic is handled by `linkDispatcherURL` creating them in the first place.
-            in case M.lookup canonicalUrl metadatadb of
-                Nothing                     -> addID metadatadb Nothing link
-                Just ("","","","",[],[],"") -> addID metadatadb Nothing link
-                Just metadataItem           -> addID metadatadb (Just metadataItem) (addRecentlyChanged metadataItem $ addHasAnnotation metadataItem link)
+    process :: [T.Text] -> T.Text -> Inline -> Inline
+    process classes url x
+      | hasAnyAnnotatedClass classes = x
+      | otherwise = processLink md url x
 
+    processLink :: Metadata -> T.Text -> Inline -> Inline
+    processLink metadatadb url x =
+        let canonicalUrl = linkCanonicalize $ T.unpack url
+         -- NOTE: we do not implement any blacklists or exclusion here, but defer it to the Metadata database, which will or will not have a Nothing vs Just entry; so all that logic is handled by `linkDispatcherURL` creating them in the first place.
+        in case M.lookup canonicalUrl metadatadb of
+            Nothing                     -> addID metadatadb Nothing x
+            Just ("","","","",[],[],"") -> addID metadatadb Nothing x
+            Just metadataItem           -> addID metadatadb (Just metadataItem)
+                                             (addRecentlyChanged metadataItem $ addHasAnnotation metadataItem x)
 addID :: Metadata -> Maybe MetadataItem -> Inline -> Inline
 addID md maybeMetadataItem inline = case inline of
     (Link x@(anchor, classes, _) e (url, title)) ->
         if anchor == "" && "id-not" `notElem` classes
             then Link (generateLinkID x maybeMetadataItem url) e (url, title)
+            else inline
+    (Image x@(anchor, classes, _) e (url, title)) ->
+        if anchor == "" && "id-not" `notElem` classes
+            then Image (generateLinkID x maybeMetadataItem url) e (url, title)
             else inline
     _ -> handleInvalidAddIDCall maybeMetadataItem inline
  where
@@ -570,18 +577,43 @@ addCanPrefetch x@(Link (_,classes,_) _ (f,_))
   where f' = T.unpack f
 addCanPrefetch x = return x
 
+-- addHasAnnotation :: MetadataItem -> Inline -> Inline
+-- addHasAnnotation (title,aut,dt,_,miscMetadata,_,abstrct) x@(Link (a,b,c) e (f,g))
+--   | wasAnnotated x = x'
+--   -- WARNING: Twitter is currently handled in Config.LinkArchive, because whether a Twitter/Nitter URL is a valid 'annotation' depends on whether there is a Nitter snapshot hosted locally the JS can query. Many Nitter snapshots, sadly, fail, so it is *not* guaranteed that a Twitter URL will have a usable snapshot. TODO: when Twitter is merged into the backend, parsing the Nitter mirrors to create proper annotations, rather than using JS to parse them at runtime, this should be removed.
+--   | length abstrct > C.minimumAnnotationLength  = addClassPopupNot miscMetadata $ addClass "link-annotated" x' -- full annotation, no problem.
+--    -- may be a partial…?
+--   | not $ unsafePerformIO $ doesFileExist $ fst $ getAnnotationLink $ T.unpack f = x'
+--   -- | unsafePerformIO $ do
+--   --                         (filepath',_) <- getAnnotationLinkCheck $ T.unpack f
+--   --                         return $ filepath' == ""
+--   --     = x' -- no, a viable partial would have a (short) fragment written out, see `writeAnnotationFragment` logic; WARNING: race condition here - what if we process a full annotation, which links to a partial (eg. its author) *before* the partial has been written out? we will get a spurious 'no full or partial annotation' return... The current compromise is to try to process all URLs with short/empty annotations first (which might be partials) and then when the fragments should all be written out, rerun with the regular batch
+--   | otherwise = addClassPopupNot miscMetadata $ addClass "link-annotated-partial" x'
+--   where
+--     g'
+--       | g/="" = g
+--       | title=="" && aut=="" = g
+--       | title/="" && aut=="" = T.pack title
+--       | title=="" && aut/="" = T.pack $ authorsToCite (T.unpack f) aut dt
+--       | otherwise = T.pack $ "'" ++ title ++ "', " ++ authorsToCite (T.unpack f) aut dt
+--     x' = Link (a,b,c) e (f,g')
+-- addHasAnnotation _ z = z
+
 addHasAnnotation :: MetadataItem -> Inline -> Inline
-addHasAnnotation (title,aut,dt,_,miscMetadata,_,abstrct) x@(Link (a,b,c) e (f,g))
+addHasAnnotation meta x@(Link  attr e target) = addHasAnnotationLinkLike meta "link"  Link  attr e target x
+addHasAnnotation meta x@(Image attr e target) = addHasAnnotationLinkLike meta "image" Image attr e target x
+addHasAnnotation _ z = z
+addHasAnnotationLinkLike :: MetadataItem
+                         -> T.Text -- prefix
+                         -> (Attr -> [Inline] -> Target -> Inline)  -- constructor
+                         -> Attr -> [Inline] -> Target
+                         -> Inline  -- original for wasAnnotated check
+                         -> Inline
+addHasAnnotationLinkLike (title,aut,dt,_,miscMetadata,_,abstrct) prefix mkInline (a,b,c) e (f,g) x
   | wasAnnotated x = x'
-  -- WARNING: Twitter is currently handled in Config.LinkArchive, because whether a Twitter/Nitter URL is a valid 'annotation' depends on whether there is a Nitter snapshot hosted locally the JS can query. Many Nitter snapshots, sadly, fail, so it is *not* guaranteed that a Twitter URL will have a usable snapshot. TODO: when Twitter is merged into the backend, parsing the Nitter mirrors to create proper annotations, rather than using JS to parse them at runtime, this should be removed.
-  | length abstrct > C.minimumAnnotationLength  = addClassPopupNot miscMetadata $ addClass "link-annotated" x' -- full annotation, no problem.
-   -- may be a partial…?
+  | length abstrct > C.minimumAnnotationLength  = addClassPopupNot miscMetadata $ addClass (prefix`T.append`"-annotated") x'
   | not $ unsafePerformIO $ doesFileExist $ fst $ getAnnotationLink $ T.unpack f = x'
-  -- | unsafePerformIO $ do
-  --                         (filepath',_) <- getAnnotationLinkCheck $ T.unpack f
-  --                         return $ filepath' == ""
-  --     = x' -- no, a viable partial would have a (short) fragment written out, see `writeAnnotationFragment` logic; WARNING: race condition here - what if we process a full annotation, which links to a partial (eg. its author) *before* the partial has been written out? we will get a spurious 'no full or partial annotation' return... The current compromise is to try to process all URLs with short/empty annotations first (which might be partials) and then when the fragments should all be written out, rerun with the regular batch
-  | otherwise = addClassPopupNot miscMetadata $ addClass "link-annotated-partial" x'
+  | otherwise = addClassPopupNot miscMetadata $ addClass (prefix`T.append`"-annotated-partial") x'
   where
     g'
       | g/="" = g
@@ -589,8 +621,7 @@ addHasAnnotation (title,aut,dt,_,miscMetadata,_,abstrct) x@(Link (a,b,c) e (f,g)
       | title/="" && aut=="" = T.pack title
       | title=="" && aut/="" = T.pack $ authorsToCite (T.unpack f) aut dt
       | otherwise = T.pack $ "'" ++ title ++ "', " ++ authorsToCite (T.unpack f) aut dt
-    x' = Link (a,b,c) e (f,g')
-addHasAnnotation _ z = z
+    x' = mkInline (a,b,c) e (f,g')
 
 -- sometimes we want to disable a popup on a link where the popup view would be bad for whatever reason (eg. spoilers hidden by reader-mode on the main page). The property to disable a popup is '.extract-not'. So we check if the page has .extract-not set in its metadata; specifically, its 'css-extension' key.
 addClassPopupNot :: [(String,String)] -> Inline -> Inline
@@ -607,6 +638,9 @@ addRecentlyChanged (_,_,_,"",       _,_,_) x = x
 addRecentlyChanged (_,_,_,dtChanged,_,_,_) x@(Link _ _ (url,_)) =
   if dtChanged < C.currentMonthAgo || hasClass "link-modified-recently-not" x || "/index" `T.isInfixOf` url then x
   else addClass "link-modified-recently" x
+addRecentlyChanged (_,_,_,dtChanged,_,_,_) x@(Image _ _ (url,_)) =
+  if dtChanged < C.currentMonthAgo || hasClass "image-modified-recently-not" x || "/index" `T.isInfixOf` url then x
+  else addClass "image-modified-recently" x
 addRecentlyChanged _ x = x
 
 -- was this link given either a partial or full annotation?
