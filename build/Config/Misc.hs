@@ -209,7 +209,7 @@ fileExtensionToEnglish ext = case lookup (takeWhile (/= '#') ext) extensionMappi
 -- We want to avoid those silly warnings like 'PDF (warning: 0.11MB)', since no one is ever going to decide to *not* read an interesting paper if it's only a few MBs. And many webpages today think nothing of loading 10MB+ of assets, and no one demands warnings for those. So the pain point these days seems >10MB.
 -- [NOTE: bump by 10%/year given <https://www.statista.com/statistics/995096/average-cellular-network-speed-in-the-us/> + <https://www.nngroup.com/articles/law-of-bandwidth/>]
 minFileSizeWarning :: Int
-minFileSizeWarning = 16
+minFileSizeWarning = 17
 
 -- how long should a URL's annotation's abstract be if we consider it worth marking as 'annotated' and thus showing the reader & transcluding it etc?
 minimumAnnotationLength :: Int

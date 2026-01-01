@@ -329,7 +329,7 @@
 		data-include-template="annotation-partial-inline"
 
 		Does the same thing as .include-annotation-partial (see below), with the
-		additional effect that the transcluded annotation will use the 
+		additional effect that the transcluded annotation will use the
 		`annotation-partial-inline` template (unless a `data-include-template`
 		attribute is set on the link to override this), which uses no block
 		elements, and thus allows the transcluded partial annotation to be used
@@ -1633,7 +1633,7 @@ Transclude = {
 
     transcludeAnnotationsByDefault: true,
 
-    defaultLoadViewportMargin: "105%",
+    defaultLoadViewportMargin: "110%",
 
     /******************************/
     /*  Detection of include-links.
