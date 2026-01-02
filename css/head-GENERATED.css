@@ -1308,6 +1308,24 @@ p.empty-graf {
 	padding-right: 0.5ch;
 }
 
+.poem .stanza.layout-special-center p {
+	padding: 0;
+	display: flex;
+	justify-content: center;
+}
+.poem .stanza.layout-special-center p .segment {
+	flex: 1 1 50%;
+}
+.poem .stanza.layout-special-center p .segment:nth-child(1) {
+	text-align: right;
+}
+.poem .stanza.layout-special-center p .segment:nth-child(2) {
+	flex: 0 0 3ch;
+}
+.poem .stanza.layout-special-center p .segment:nth-child(3) {
+	text-align: left;
+}
+
 
 /***************/
 /* BLOCKQUOTES */

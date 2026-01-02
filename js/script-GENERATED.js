@@ -16489,6 +16489,32 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapCaesuraMarksInPoems = (eventInf
 	});
 }, ">rewrite");
 
+/***************************************************************************/
+/*	Special layout for when there’s a centered stanza in a poem and there’s 
+	caesura marks “ || ” in it and so we want them to be vertically aligned.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.rewriteCenteredPoemThingies = (eventInfo) => {
+    GWLog("rewriteCenteredPoemThingies", "rewrite.js", 1);
+
+	eventInfo.container.querySelectorAll(".poem .text-center .caesura-mark").forEach(caesuraMark => {
+		let stanza = caesuraMark.closest(".stanza");
+		if (stanza.classList.contains("layout-special-center"))
+			return;
+
+		stanza.querySelectorAll("p").forEach(graf => {
+			wrapElement(graf.querySelector(".caesura-mark"), "p");
+			let line = rewrapContents(graf, "div.line");
+			paragraphizeTextNodesOfElementRetainingMetadata(line);
+			line.querySelectorAll("p").forEach(subGraf => {
+				rewrapContents(subGraf, "span.segment")
+			});
+			rewrapContents(line, "p");
+		});
+
+		stanza.classList.add("layout-special-center");
+	});
+}, ">rewrite");
+
 
 /*************/
 /* EPIGRAPHS */
