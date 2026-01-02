@@ -1261,14 +1261,20 @@ p.empty-graf {
 /*  Exceptions.
  */
 
+/*	NOTE: .graf is a class that indicates blocks which act like <p> for styling
+	purposes, but are not <p>, such as .stanza in .poem.
+ */
+
 /*  EPITAPH (eg /LARPing)
  */
-.markdownBody p.text-center {
+.markdownBody p.text-center,
+.markdownBody .graf.text-center p {
     text-align: center;
     text-indent: 0;
 }
 
-.markdownBody p.text-right {
+.markdownBody p.text-right,
+.markdownBody .graf.text-right p {
     text-align: right;
     text-indent: 0;
 }

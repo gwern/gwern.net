@@ -16369,8 +16369,8 @@ addContentLoadHandler(GW.contentLoadHandlers.processPoems = (eventInfo) => {
 		if (graf.closest(".stanza"))
 			return;
 
-		//	Rewrap paragraph in a div.stanza.
-		let stanza = rewrapContents(graf, "div.stanza");
+		//	Rewrap paragraph in a div.graf.stanza .
+		let stanza = rewrapContents(graf, "div.graf.stanza");
 
 		//	Save styling wrappers and unwrap.
 		let possibleStylingTags = [ "em" ];
