@@ -1321,6 +1321,7 @@ p.empty-graf {
 }
 .poem .stanza.layout-special-center p .segment:nth-child(2) {
 	flex: 0 0 3ch;
+	text-align: center;
 }
 .poem .stanza.layout-special-center p .segment:nth-child(3) {
 	text-align: left;
