@@ -1720,6 +1720,30 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapSlashesInPoems = (eventInfo) =>
 	});
 }, ">rewrite");
 
+/*************************************************************************/
+/*	Wrap double-vertical-bars “||” in poems in span.caesura-mark wrappers.
+ */
+addContentLoadHandler(GW.contentLoadHandlers.wrapCaesuraMarksInPoems = (eventInfo) => {
+    GWLog("wrapCaesuraMarksInPoems", "rewrite.js", 1);
+
+	let caesuraMarkRegExp = new RegExp("^(.*? )\\|\\|( .*)$", "s");
+	eventInfo.container.querySelectorAll(".poem").forEach(poem => {
+		for (let textNode of poem.textNodes) {
+			let match;
+			while (match = textNode.textContent.match(caesuraMarkRegExp)) {
+				[ document.createTextNode(match[1]),
+				  newElement("SPAN", { class: "caesura-mark" }, { innerHTML: "||" }),
+				  document.createTextNode(match[2])
+				  ].forEach(newNode => {
+				  	textNode.parentElement.insertBefore(newNode, textNode);
+				});
+				textNode = textNode.previousSibling;
+				textNode.parentElement.removeChild(textNode.nextSibling);
+			}
+		}
+	});
+}, ">rewrite");
+
 
 /*************/
 /* EPIGRAPHS */

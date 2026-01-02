@@ -2687,6 +2687,19 @@ ul.interview .speaker {
     opacity: 0.4;
 }
 
+.poem span.caesura-mark {
+	--letter-spacing: -0.3em;
+	--margin-adjustment: -0.25em;
+	--right-margin-tweak: 0.05em;
+	
+	opacity: 0.25;
+	letter-spacing: var(--letter-spacing);
+	margin-left: var(--margin-adjustment);
+	margin-right: calc(var(--margin-adjustment) + (-1 * var(--letter-spacing)) + var(--right-margin-tweak));
+	font-size: 1.2em;
+	line-height: 1;
+}
+
 .poem {
     overflow-x: auto;
 }
