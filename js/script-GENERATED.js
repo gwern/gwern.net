@@ -16405,6 +16405,24 @@ addContentLoadHandler(GW.contentLoadHandlers.processPoems = (eventInfo) => {
 		}
 	});
 
+	//	Prevent single words (“orphans” or w/e) from being alone after a line 
+	//	break.
+	//	(Like that ^ .)
+	let lastWordRegExp = new RegExp("(.*) (\\S*)$", "s");
+	eventInfo.container.querySelectorAll(".poem p").forEach(graf => {
+		let lastTextNode = graf.lastTextNode;
+		let match = lastTextNode.textContent.match(lastWordRegExp);
+		if (match) {
+			[ document.createTextNode(match[1]),
+			  document.createTextNode("\u{00A0}"), // non-breaking space
+			  document.createTextNode(match[2])
+			  ].forEach(newNode => {
+				lastTextNode.parentElement.insertBefore(newNode, lastTextNode);
+			});
+			lastTextNode.remove();
+		}
+	});
+
 	//	Render enjambment in non-preformatted block poems, indicated by “ / ”.
 	eventInfo.container.querySelectorAll("div.poem:not(.poem-html)").forEach(poem => {
 		poem.querySelectorAll(".enjambment-spacer").forEach(indicator => {
