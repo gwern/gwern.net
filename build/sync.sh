@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-01-02 13:41:49 gwern"
+# When:  Time-stamp: "2026-01-03 14:15:14 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -274,27 +274,56 @@ else
     cd ~/wiki/ # go to site root
     bold "Building site…"
 
-    # make sure all videos have 'poster' preview images:
-    for VIDEO in $(find . -type f -name "*.mp4" -or -name "*.webm" -or -name "*.avi" | gfv "doc/www/"); do # we skip posters for videos in /doc/www/* archives from split archives because nothing sets a poster on them, so just a waste of space
-        POSTER="$VIDEO-poster.jpg"; if [ ! -f "$POSTER" ]; then
-                                        echo "Generating poster image for $VIDEO…"
-                                        # Problem: embedded videos (e.g. https://gwern.net/lorem-multimedia#video ) all look like generic small black rectangles. User has no idea what it is until they click to begin download the (possibly huge) video file. This also causes layout shift as the `<video>` element expands to the proper size of the video.
-                                        #
-                                        # We would like user to see, on load, preview of video: a single frame, displayed as still image (usually first frame is fine). (Even if the first frame or whatever frame we choose is uninformative, in any case this solves the layout shift problem.)
-                                        #
-                                        # Solution: the `poster="foo.jpg"` attribute of the HTML <video> element. Its value is URL of image file, to be shown as preview (and used for layout sizing of video element), prior to the user clicking to download and play video. Example:
-                                        #
-                                        # <video controls="controls" preload="none" loop="" poster="/doc/ai/nn/gan/biggan/2019-06-03-gwern-biggan-danbooru1k-256px.mp4.png"><source src="/doc/ai/nn/gan/biggan/2019-06-03-gwern-biggan-danbooru1k-256px.mp4" type="video/mp4"></video>
-                                        #
-                                        # How to generate poster image file? Use ffmpeg:
-                                        #
-                                        # ffmpeg -i 2019-06-03-gwern-biggan-danbooru1k-256px.mp4 -vf "select=eq(n\,0),scale=iw*sar:ih,setsar=1" -vframes 1 2019-06-03-gwern-biggan-danbooru1k-256px.mp4.png
-                                        #
-                                        # (A frame other than the first can be extracted by putting in a higher number in the `select=eq(n\,0)` part of the command, e.g. `select=eq(n\,99)` would give the 100th frame.) We then heavily compress them quality-wise (they're just placeholders).
-                                        # Solved? No. Because posters are still reasonably large (eg. /face could load >1MB of posters because it has so many videos in it!), and because `<img>` lazy-loading doesn't apply to posters (due to poorly-conceived standards <https://github.com/whatwg/html/issues/6636> which short-sightedly implemented `poster=` as a hack without thinking about how this is reinventing `<img>` badly), we have a problem with bandwidth usage. So, we don't actually use `poster=` per se, we instead use a data attribute `data-video-poster` to store it, and hand-implement lazy-loading with IntersectionObservers /sigh).
-                                        ffmpeg -i "$VIDEO" -vf "select=eq(n\\,5),scale=iw*sar:ih,setsar=1" -vframes 1 "$POSTER";
-                                        mogrify -quality 15 "$POSTER"
-                                    fi;
+    # Make sure all videos have  3×3 filmstrip 'poster' preview images:
+    for VIDEO in $(find . -type f \( -name "*.mp4" -o -name "*.webm" -o -name "*.avi" \) | gfv "doc/www/" | sort); do
+        # We skip posters for videos in /doc/www/* archives from split archives because nothing sets a poster on them, so just a waste of space
+        POSTER="$VIDEO-poster.jpg"
+        if [ ! -f "$POSTER" ]; then
+            green "Generating filmstrip poster for $VIDEO…"
+            # Problem: embedded videos (e.g. https://gwern.net/lorem-multimedia#video ) all look like generic small black rectangles.
+            # User has no idea what it is until they click to begin download the (possibly huge) video file.
+            # This also causes layout shift as the `<video>` element expands to the proper size of the video.
+            #
+            # We would like user to see, on load, preview of video displayed as still image.
+            # Even if uninformative, this solves the layout shift problem.
+            #
+            # Solution: the `poster="foo.jpg"` attribute of the HTML <video> element.
+            # Its value is URL of image file, to be shown as preview (and used for layout sizing of video element),
+            # prior to the user clicking to download and play video.
+            #
+            # Original approach: extract a single frame (e.g. frame 5). Problem: a single frame is often uninformative—
+            # it might be black, a transition, or otherwise unrepresentative. Videos are temporally extended but
+            # a single thumbnail discards the entire temporal dimension.
+            #
+            # Improved approach: generate a 3×3 filmstrip grid sampling 9 frames evenly across the video duration.
+            # This restores temporal information to the thumbnail—user can see the video's progression at a glance.
+            # Output dimensions match the original video dimensions (each cell is 1/3 size, tiled 3×3 = original).
+            # A 2px black grid separates cells for visual clarity.
+            #
+            # For very short videos (<0.5s), we fall back to single-frame extraction since there's insufficient
+            # temporal content to sample meaningfully.
+            #
+            # Note: because posters can be large (e.g. /face loads >1MB of posters), and because `<img>` lazy-loading
+            # doesn't apply to posters (due to poorly-conceived standards <https://github.com/whatwg/html/issues/6636>
+            # which short-sightedly implemented `poster=` as a hack without thinking about how this is reinventing
+            # `<img>` badly), we don't actually use `poster=` per se. We instead use a data attribute `data-video-poster`
+            # to store it, and hand-implement lazy-loading with IntersectionObservers.
+
+            DURATION=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$VIDEO" 2>/dev/null)
+
+            if [ -n "$DURATION" ] && [ "$(echo "$DURATION > 0.5" | bc)" -eq 1 ]; then
+                SAMPLE_FPS=$(echo "scale=6; 10 / $DURATION" | bc)
+                ffmpeg -y -i "$VIDEO" \
+                    -vf "fps=$SAMPLE_FPS,scale=iw*sar:ih,setsar=1,scale=iw/3:ih/3,tile=3x3:nb_frames=9:padding=2:color=black" \
+                    -frames:v 1 "$POSTER" 2>/dev/null;
+            else
+                ffmpeg -y -i "$VIDEO" \
+                    -vf "select=eq(n\\,0),scale=iw*sar:ih,setsar=1" \
+                    -vframes 1 "$POSTER" 2>/dev/null;
+            fi
+
+            compressJPG "$POSTER";
+        fi
     done &
 
     # for use in popups, as an optimization, we provide 256px-width thumbnails of all Gwern.net locally-hosted essay/annotation JPGs/PNGs.
