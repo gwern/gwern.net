@@ -27,6 +27,31 @@ function processMainContentAndAddRewriteProcessor(processorName, processor) {
 }
 
 
+/***********************/
+/* ATOMIC DOM UPDATING */
+/***********************/
+
+/*****************************************************************************/
+/*	This function is for speeding up updates that are confined to a subtree 
+	rooted in the given element, by “buffering” those updates, and delaying
+	any layout processing (i.e., layout.js) and rendering until it’s all done.
+
+	We create a new document (fragment) with a copy of the given element; we
+	call the provided updating function, to which we pass the copied element;
+	then we replace the original element with the updated contents of our
+	“buffer” (the document fragment with the working copy of the element).
+
+	At this point, all layout processing and rendering will be done at once.
+
+	The function `f` takes a single Element and returns nothing.
+ */
+function atomicDOMUpdate(element, f) {
+	let doc = newDocument(element);
+	f(doc.firstElementChild);
+	element.replaceWith(doc);
+}
+
+
 /****************/
 /* INLINE ICONS */
 /****************/

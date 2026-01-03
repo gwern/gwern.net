@@ -16501,17 +16501,19 @@ addContentLoadHandler(GW.contentLoadHandlers.rewriteCenteredPoemThingies = (even
 		if (stanza.classList.contains("layout-special-center"))
 			return;
 
-		stanza.querySelectorAll("p").forEach(graf => {
-			wrapElement(graf.querySelector(".caesura-mark"), "p");
-			let line = rewrapContents(graf, "div.line");
-			paragraphizeTextNodesOfElementRetainingMetadata(line);
-			line.querySelectorAll("p").forEach(subGraf => {
-				rewrapContents(subGraf, "span.segment")
+		atomicDOMUpdate(stanza, (stanza) => {
+			stanza.querySelectorAll("p").forEach(graf => {
+				wrapElement(graf.querySelector(".caesura-mark"), "p");
+				let line = rewrapContents(graf, "div.line");
+				paragraphizeTextNodesOfElementRetainingMetadata(line);
+				line.querySelectorAll("p").forEach(subGraf => {
+					rewrapContents(subGraf, "span.segment")
+				});
+				rewrapContents(line, "p");
 			});
-			rewrapContents(line, "p");
-		});
 
-		stanza.classList.add("layout-special-center");
+			stanza.classList.add("layout-special-center");
+		});
 	});
 }, ">rewrite");
 

@@ -1308,8 +1308,11 @@ p.empty-graf {
 	padding-right: 0.5ch;
 }
 
-.poem .stanza.layout-special-center p {
+.poem .text-center p {
 	padding: 0;
+}
+
+.poem .stanza.layout-special-center p {
 	display: flex;
 	justify-content: center;
 }
