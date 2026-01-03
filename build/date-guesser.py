@@ -4,7 +4,7 @@
 # date-guesser.py: extract recent dates in YYYY[[-MM]-DD] format from natural language inputs or structured text like URLs
 # Author: Gwern Branwen
 # Date: 2024-08-21
-# When:  Time-stamp: "2026-01-02 12:00:25 gwern"
+# When:  Time-stamp: "2026-01-03 18:53:54 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo 'https://erikbern.com/2016/04/04/nyc-subway-math' | python date-guesser.py
@@ -83,134 +83,106 @@ Task examples (with explanations in '#' comments):
 
 - "Published: 02-29-2024 | https://example.com/leap-year-article"
 2024-02-29
-- "Published: 02-29-2023 | https://example.com/another-leap-year-article"
-"" # Invalid: 2023 is not a leap year
-- "Date: 04/31/2024: Article about calendars"
+- "Published: 02-29-2023 | https://example.com/another-leap-year-article" # Invalid: 2023 is not a leap year
 ""
-# Invalid: April has 30 days
-- "Article from Sep 31, 2023 about date formats"
+- "Date: 04/31/2024: Article about calendars" # Invalid: April has 30 days
 ""
-# Invalid: September has 30 days
-- "Updated 2024.13.01 with new information"
+- "Article from Sep 31, 2023 about date formats" # Invalid: September has 30 days
 ""
-# Invalid month 13
-- "Version: 2024.00.01"
+- "Updated 2024.13.01 with new information" # Invalid month 13
 ""
-# Invalid month 0
-- "Created on 2024-04-00"
+- "Version: 2024.00.01" # Invalid month 0
 ""
-# Invalid day 0
-- "Last modified: 31/12/2023 23:59:59 UTC"
-2023-12-31  # Should extract just the date portion
-- "Posted: Yesterday at 3pm"
+- "Created on 2024-04-00" # Invalid day 0
 ""
-# Relative dates should be ignored, as who knows what they are *actually* relative to?
-- "Updated: 2 days ago"
+- "Last modified: 31/12/2023 23:59:59 UTC" # Should extract just the date portion
+2023-12-31
+- "Posted: Yesterday at 3pm" # Relative dates without an absolute date anywhere should be ignored, as who knows what they are *actually* relative to?
 ""
-# Relative dates should be ignored
-- "EST Release Date: 12/13/23"
-2023-12-13  # Should handle American date format
-- "Published Date: 13/12/23"
-2023-12-13  # Should handle European date format if unambiguous
-- "From our 2023-13-12 edition"
+- "today is 2025-09-30; posted 8 days ago" # example of when we *can* infer the absolute date even with a relative date
+2025-09-22
+- "Updated: 2 days ago" # Relative dates should be ignored
 ""
-# Invalid: month 13
-- "Article from Feb 30th, 2023"
+- "EST Release Date: 12/13/23" # Should handle American date format
+2023-12-13
+- "Published Date: 13/12/23" # Should handle European date format if unambiguous
+2023-12-13
+- "From our 2023-13-12 edition" # Invalid: month 13
 ""
-# Invalid: February never has 30 days
+- "Article from Feb 30th, 2023" # Invalid: February never has 30 days
+""
 - "Created: 2024.02.29"
 2024-02-29
-- "Date of record: 1999-11-31"
+- "Date of record: 1999-11-31" # Invalid: November has 30 days
 ""
-# Invalid: November has 30 days
-- "TimeStamp:20240229123456"
+- "TimeStamp:20240229123456" # Valid: a leap year
+2024-02-29
+- "YYYYMMDD: 20241301" # Invalid month 13
 ""
-# Invalid: not a leap year
-- "YYYYMMDD: 20241301"
-"" # Invalid month 13
-- "Released between 2023Q4 and 2024Q1"
+- "Released between 2023Q4 and 2024Q1" # Too ambiguous
 ""
-# Too ambiguous
-- "Copyright (c) 2020-2024"
-2020  # Take earliest year when given a range
-- "Volume 23, Issue 45 (Winter 2023-2024)"
-2023  # Take earliest year when given a range
-- "Academic Year 2023/24"
-2023  # Take earliest year when given a range
-- "Originally written in 2022, updated for 2024"
-2022  # Take original/earliest date
-- "Written 2024/04/31: Edited 2024/05/01"
+- "Copyright (c) 2020-2024" # Take earliest publication year when given a range
+2020
+- "Volume 23, Issue 45 (Winter 2023-2024)" # Take earliest year when given a range
+2023
+- "Academic Year 2023/24" # Take earliest year when given a range
+2023
+- "Originally written in 2022, updated for 2024" # Take original/earliest date
+2022
+- "Written 2024/04/31: Edited 2024/05/01" # Invalid first date (April has 30 days)
 ""
-# Invalid first date (April has 30 days)
-- "Looking back at the year 2000 problem (Y2K)"
-"" # Don't extract Y2K as it's a topic, not a date
-# NOTE: ArXiv IDs are in the form YYMM.NNNNN (since 2015), representing the year, month, and submission index that month​. For example, 1907.07174 = July 2019, 7174th submission. A version suffix (v1, v2, …) may follow for revisions
-- "A paper from arXiv:2401.12345"
-2024-01  # Extract date from arXiv ID
-- "DOI: 10.48550/arXiv.2408.08459
-2024-08  # Extract date from DOI when unambiguous; but be careful... This is valid for BioRxiv/MedRxiv/Arxiv, but not necessarily anywhere else.
-- "Posted on 29/02/2023 about leap years"
+- "Looking back at the year 2000 problem (Y2K)" # Don't extract Y2K as it's a topic, not a date # NOTE: ArXiv IDs are in the form YYMM.NNNNN (since 2015), representing the year, month, and submission index that month​. For example, 1907.07174 = July 2019, 7174th submission. A version suffix (v1, v2, …) may follow for revisions
 ""
-# Invalid: 2023 wasn't a leap year
-- "Article 123456789 from 2024-W01"
-2024  # ISO week dates should return just the year
-- "Publication: 2024. Journal of Examples"
-2024  # Handle trailing period after year
-- "From the 1990's collection"
+- "A paper from arXiv:2401.12345" # Extract date from arXiv ID
+2024-01
+- "DOI: 10.48550/arXiv.2408.08459" # Extract date from DOI when unambiguous; but be careful... This is valid for BioRxiv/MedRxiv/Arxiv, but not necessarily anywhere else.
+2024-08
+- "Posted on 29/02/2023 about leap years" # Invalid: 2023 wasn't a leap year
 ""
-# Don't extract dates from decades
-- "Temperature was 2023.5 degrees"
+- "Article 123456789 from 2024-W01" # ISO week dates should return just the year
+2024
+- "Publication: 2024. Journal of Examples" # Handle trailing period after year
+2024
+- "From the 1990's collection" # Don't extract dates from decades
 ""
-# Don't extract decimal numbers as dates
-- "Score was 2024:1"
+- "Temperature was 2023.5 degrees" # Don't extract decimal numbers as dates
 ""
-# Don't extract scores/ratios as dates
-- "Published at 2024hrs on Jan 1"
+- "Score was 2024:1" # Don't extract scores/ratios as dates
 ""
-# Don't extract 24-hour time as year
-- "Build version 2024.01.alpha"
-2024-01  # Software versions can contain valid dates
-- "Model: RTX 2080 Ti"
+- "Published at 2024hrs on Jan 1" # Don't extract 24-hour time as year
 ""
-# Don't extract product numbers as dates
-- "ISBN: 1-234567-890-2024"
+- "Build version 2024.01.alpha" # Software versions can contain valid dates
+2024-01
+- "Model: RTX 2080 Ti" # Don't extract product numbers as dates
 ""
-# Don't extract years from ISBNs
-- "Highway 2024 South"
+- "ISBN: 1-234567-890-2024" # Don't extract years from ISBNs
 ""
-# Don't extract road numbers as dates
-- "Room 2024B, Building 3"
+- "Highway 2024 South" # Don't extract road numbers as dates
 ""
-# Don't extract room numbers as dates
-- "Postal code 2024AB"
+- "Room 2024B, Building 3" # Don't extract room numbers as dates
 ""
-# Don't extract postal codes as dates
-- "In the year 2525, if man is still alive"
+- "Postal code 2024AB" # Don't extract postal codes as dates
 ""
-# Song lyric about future: not a publication date
-- "Article accepted 2024-02-30, published 2024-03-01"
-2024-03-01  # First date invalid, use second valid date
-- "File: IMG_20241301_123456.jpg"
+- "In the year 2525, if man is still alive" # Song lyric about future: not a publication date
 ""
-# Invalid date in filename (month 13)
-- "Updated 24-01-15"
-2024-01-15  # Assume 2-digit years >= 24 are 2024+
-- "Updated 95-01-15"
-1995-01-15  # Assume 2-digit years < 24 are 1900s
-- "Patent №2024-123456"
+- "Article accepted 2024-02-30, published 2024-03-01" # First date invalid, use second valid date
+2024-03-01
+- "File: IMG_20241301_123456.jpg" # Invalid date in filename (month 13)
 ""
-# Don't extract patent numbers as dates
-- "SKU: 20240123-ABC"
+- "Updated 24-01-15" # Assume 2-digit years <= 26 are 2000-2026
+2024-01-15
+- "Updated 95-01-15" # Assume 2-digit years >26 are 1900s
+1995-01-15
+- "Patent №2024-123456" # Don't extract patent numbers as dates
 ""
-# Don't extract SKU/product codes as dates
-- "Contact: +1 (202) 555-2024"
+- "SKU: 20240123-ABC" # Don't extract SKU/product codes as dates
 ""
-# Don't extract phone numbers as dates
-- "Sample #2024-01-A5"
-2024-01  # Laboratory sample IDs can contain valid dates
-- "hex color #202420"
+- "Contact: +1 (202) 555-2024" # Don't extract phone numbers as dates
 ""
-# Don't extract hex colors as dates
+- "Sample #2024-01-A5" # Laboratory sample IDs can contain valid dates
+2024-01
+- "hex color #202420" # Don't extract hex colors as dates
+""
 - "In 1492, Columbus sailed the ocean blue; he returned in 1499."
 1492
 - "1724256502"
@@ -226,7 +198,7 @@ Task examples (with explanations in '#' comments):
 - "https://arxiv.org/abs/2408.08459"
 2024-08
 - "https://www.biorxiv.org/content/10.1101/2024.08.13.607810.full" # 2024-08-16
-""
+2024-08
 - "Yesterday’s Pixels, Today"
 ""
 - "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10066154/"
@@ -240,8 +212,6 @@ Task examples (with explanations in '#' comments):
 - "We published this on the first of May after Obama’s re-election."
 2013-05-01
 - "https://x.com/jconorgrogan/status/1820212444016345146"
-""
-- "https://www.nature.com/articles/s41586-021-03819-2#deepmind"
 ""
 - " Jeffrey Arlo Brown, July 31, 2024"
 2024-07-31
@@ -264,7 +234,7 @@ Task examples (with explanations in '#' comments):
 - "https://academic.oup.com/biomedgerontology/article/70/9/1097/2949096"
 ""
 - "https://ctlj.colorado.edu/wp-content/uploads/2015/08/Meyer-final.pdf" # 2015-07-05
-2015-08
+2015
 - "http://www.synthesis.cc/synthesis/2016/15/on_dna_and_transistors"
 2016
 - "http://mbio.asm.org/content/7/4/e01018-16.full"
@@ -315,8 +285,8 @@ Task examples (with explanations in '#' comments):
 ""
 - "https://nutritionj.biomedcentral.com/articles/10.1186/s12937-017-0269-y"
 ""
-- "https://nymag.com/news/features/synthetic-drugs-2013-4/"
-2013-04-05
+- "https://nymag.com/news/features/synthetic-drugs-2013-4/" # 2013-04-05
+2013-04
 - "https://www.reddit.com/r/thisisthewayitwillbe/comments/e02gtg/ai_and_neuroscience_main2019_patrick_mineaults/" # 2019-11-22
 ""
 - "https://onlinelibrary.wiley.com/doi/10.1111/acel.13294"
@@ -326,8 +296,6 @@ Task examples (with explanations in '#' comments):
 - "https://onlinelibrary.wiley.com/doi/10.1111/acel.13344"
 ""
 - "https://onlinelibrary.wiley.com/doi/10.1111/rati.12233"
-""
-- "https://onlinelibrary.wiley.com/doi/abs/10.1111/rda.13358"
 ""
 - "https://onlinelibrary.wiley.com/doi/abs/10.1111/rda.13358"
 ""
@@ -347,13 +315,11 @@ Task examples (with explanations in '#' comments):
 ""
 - "https://psychiatryonline.org/doi/10.1176/appi.ajp-rj.2021.170105"
 ""
-- "https://publicdomainreview.org/blog/2021/12/all-sound-recordings-prior-to-1923-will-enter-the-us-public-domain-in-2022/"
-2021-12-07
+- "https://publicdomainreview.org/blog/2021/12/all-sound-recordings-prior-to-1923-will-enter-the-us-public-domain-in-2022/" # 2021-12-07
+2021-12
 - "https://publicdomainreview.org/collection/chladni-figures-1787/"
 ""
 - "https://publicdomainreview.org/collection/examples-of-chinese-ornament-1867/"
-""
-- "https://pubs.acs.org/doi/full/10.1021/acsptsci.0c00099"
 ""
 - "https://publicdomainreview.org/collection/glossary-of-censored-words-from-a-1919-book-on-love/"
 ""
@@ -383,15 +349,11 @@ Task examples (with explanations in '#' comments):
 ""
 - "https://academic.oup.com/ajcn/article/110/3/583/5512180"
 ""
-- "https://academic.oup.com/aje/article/156/11/985/80696"
-""
 - "https://academic.oup.com/cercor/article/28/12/4136/4560155"
 ""
 - "https://academic.oup.com/jhered/article/112/7/569/6412509"
 ""
 - "https://academic.oup.com/jn/article/135/6/1347/4663828"
-""
-- "https://academic.oup.com/molehr/article/24/3/135/4829657"
 ""
 - "https://acamh.onlinelibrary.wiley.com/doi/10.1111/jcpp.13528"
 ""
@@ -407,41 +369,29 @@ Task examples (with explanations in '#' comments):
 ""
 - "Christmas 2024"
 2024-12-25
-- "https://arxiv.org/abs/2404.11018#google"
-2024-04-17
-- "The 3rd Thursday of the month after next year after 2024’s vernal equinox"
-2025-03
-- "https://www.nature.com/articles/s41586-023-06185-3"
-""
-- "Pi Day five years from the last leap year"
-2029-03-14
-- "The 100th day of the Chinese Year of the Dragon in the 2020s"
-2024-04-09
-- "Election Day 2028 in the United States"
-2028-11-07
-- "The day Halley’s Comet is next expected to be visible from Earth"
-2061-06
-- "https://en.wikipedia.org/wiki/Year_2038_problem"
-2038-01-19
-- "The 250th anniversary of the signing of the Declaration of Independence"
-2026-07-04
+- "https://www.nature.com/articles/s41586-021-03819-2#deepmind" # 2021-07-15
+2021
+- "https://doi.org/10.1038/s41586-021-03819-2" # 2021-07-15; clearly a Nature DOI, so we know '021' = '2021'
+2021
+- "https://www.nature.com/articles/s41586-023-06185-3" # 2023-07-05
+2023
+- "The 240th anniversary of the signing of the Declaration of Independence"
+2016-07-04
 - "Last business day of Q3 2025"
 2025-09-30
-- "Ramadan start date in 2030"
-2030-01-05
 - "The day after tomorrow, three years ago"
 ""
 - "https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=42s"
 ""
-- "2012-21-01, https://www.sciencedirect.com/science/article/pii/S0032579119394003, 25 years of selection for improved leg health in purebred broiler lines and underlying genetic parameters"
+- "2012-12-01, https://www.sciencedirect.com/science/article/pii/S0032579119394003, 25 years of selection for improved leg health in purebred broiler lines and underlying genetic parameters"
 2012-12-01
-- "2020-05-1, https://www.sciencedirect.com/science/article/pii/S1053811920301786, Educational attainment polygenic scores are associated with cortical total surface area and regions important for language and memory"
+- "2020-05-15, https://www.sciencedirect.com/science/article/pii/S1053811920301786, Educational attainment polygenic scores are associated with cortical total surface area and regions important for language and memory"
 2020-05-15
-- "2023-009-04, https://www.frontiersin.org/journals/psychiatry/articles/10.3389/fpsyt.2023.1246149/full, Modafinil's effects on cognition and sleep quality in affectively-stable patients with bipolar disorder: a pilot study"
-2023-09-03
-- "2023-112-08, https://www.reuters.com/world/uk/uk-antitrust-regulator-considering-microsoft-openai-partnership-2023-12-08/, Microsoft, OpenAI tie-up comes under antitrust scrutiny"
+- "2023-12-08, https://www.reuters.com/world/uk/uk-antitrust-regulator-considering-microsoft-openai-partnership-2023-12-08/, Microsoft, OpenAI tie-up comes under antitrust scrutiny"
 2023-12-08
-- "2022-010-17, https://osf.io/preprints/psyarxiv/tnyda/, Does the mere presence of a smartphone impact cognitive performance? A meta-analysis of the brain drain effect"
+- "2022-010-17, https://osf.io/preprints/psyarxiv/tnyda/, Does the mere presence of a smartphone impact cognitive performance? A meta-analysis of the brain drain effect" # fix typos when unambiguous. '010' obviously means '10', but '13' or '00' would be unfixable
+2022-10-17
+- "02022-010-017, https://osf.io/preprints/psyarxiv/tnyda/, Does the mere presence of a smartphone impact cognitive performance? A meta-analysis of the brain drain effect"
 2022-10-17
 - "2024-06-7, https://www.newyorker.com/culture/the-front-row/flipside-is-a-treasure-trove-of-music-and-memory, <em>Flipside</em> Is a Treasure Trove of Music and Memory: Chris Wilcha's documentary explores life, love, and art through his connection to a venerable record store"
 2024-06-07
@@ -453,10 +403,8 @@ Task examples (with explanations in '#' comments):
 2022-03-11
 - "Apple WWDC 2023 Keynote: iOS 17, macOS 14, and More"
 2023-06-05
-- "SpaceX's Starship: From Prototype to Orbit (2019-2023)"
+- "SpaceX's Starship: From Prototype to Orbit (2019-2023)" # this could not have been published in 2019, so it was probably published in 2023
 2023
-- "https://doi.org/10.1038/s41586-021-03819-2"
-""
 - "Last updated: 2023-09-15T14:30:00Z - Company Blog"
 2023-09-15
 - "The Best Movies of the '90s: A Nostalgic Journey"
@@ -519,276 +467,26 @@ Task examples (with explanations in '#' comments):
 ""
 - "https://www.lesswrong.com/posts/e8BNKGEgmCeowtRWS/how-different-llms-answered-philpapers-2020-survey How different LLMs answered PhilPapers 2020 survey"
 ""
-- "https://arxiv.org/abs/2308.04445" # 2023-07-31
-2023-07
-- "https://arxiv.org/abs/1809.00946" # 2018-08-26
-2018-08
-- "https://arxiv.org/abs/1907.07174" # 2020-01-08
-2020-01
-- "https://arxiv.org/abs/2009.03300" # 2020-09-07
-2020-09
-- "https://arxiv.org/abs/2010.14571#google" # 2020-10-27
-2020
-- "https://arxiv.org/abs/2205.04596#google" # 2022-05-09
-2022
-- "https://arxiv.org/abs/2205.09073#google" # 2022-05-18
-2022
-- "https://arxiv.org/abs/1808.03715#google" # 2018-08-10
-2018
-- "https://arxiv.org/abs/2206.04658#nvidia" # 2022-06-09
-2022
-- "https://arxiv.org/abs/1710.05941#google" # 2017-10-16
-2017
-- "https://arxiv.org/abs/1805.08974#google" # 2018-05-23
-2018-05
-- "https://arxiv.org/abs/1808.08866" # 2018-08-27
-2018-08
-- "https://arxiv.org/abs/1809.01694" # 2018-09-05
-2018-09
-- "https://arxiv.org/abs/1909.07528#openai" # 2019-09-17
-2019-09
-- "https://colah.github.io/posts/2014-03-NN-Manifolds-Topology/"
-2014-04-06
-- "https://arxiv.org/abs/2006.07733#deepmind" # 2020-06-13
-2020-06
-- "https://arxiv.org/abs/2012.13349#deepmind" # 2020-12-23
-2020-12
+- "https://colah.github.io/posts/2014-03-NN-Manifolds-Topology/" # actually 2014-04-06 since "Posted on April 6, 2014", but that was an update and there is no way to guess it from the URL
+2014-03
 - "https://www.nature.com/articles/s41598-020-79310-1" # 2021-01-11
-2021-01
-- "https://arxiv.org/abs/2103.04689" # 2021-03-08
-2021-03
-- "https://arxiv.org/abs/1609.01596" # 2016-09-06
-2016-09
-- "https://arxiv.org/abs/1703.03664#deepmindopenai" # 2017-03-10
-2017-03
-- "https://arxiv.org/abs/1703.06870#facebook" # 2017-03-20
-2017-03
-- "https://arxiv.org/abs/1802.06416#huawei" # 2018-02-18
-2018-02
-- "https://arxiv.org/abs/1910.11015" # 2019-11-07
-2019-11
-- "https://arxiv.org/abs/2003.02139" # 2020-03-04
-2020-03
-- "https://arxiv.org/abs/2003.10580#google" # 2021-01-05
-2021-01
-- "https://arxiv.org/abs/2004.10802" # 2020-04-22
-2020-04
-- "https://arxiv.org/abs/2006.10029#google" # 2020-06-17
-2020-06
-- "https://arxiv.org/abs/2006.11239" # 2020-06-19
-2020-06
-- "https://arxiv.org/abs/2007.08558#google" # 2020-07-16
-2020-07
-- "https://arxiv.org/abs/2008.09037" # 2020-08-20
-2020-08
-- "https://arxiv.org/abs/2102.09672#openai" # 2021-02-18
-2021-02
-- "https://arxiv.org/abs/2103.06877#facebook" # 2021-03-11
-2021-03
-- "https://arxiv.org/abs/2105.05233#openai" # 2021-05-11
-2021-05
-- "https://arxiv.org/abs/2211.01324#nvidia" # 2022-11-02
-2022-11
-- "https://arxiv.org/abs/2311.09257#google" # 2023-11-14
-2023-11
-- "https://arxiv.org/pdf/2307.01952#page=3&org=stability" # 2023-07-04
-2023-07
+""
 - "https://www.biorxiv.org/content/10.1101/2021.02.02.429430.full" # 2021-04-29
-2021-04
-- "https://arxiv.org/abs/1610.09027#deepmind" # 2016-10-27
-2016-10
-- "https://arxiv.org/abs/1611.02779#openai" # 2016-11-09
-2016-11
-- "https://arxiv.org/abs/1711.06744" # 2017-11-17
-2017-11
-- "https://arxiv.org/abs/1804.01118#deepmind" # 2018-04-03
-2018-04
-- "https://arxiv.org/abs/1804.07209" # 2018-04-19
-2018-04
-- "https://arxiv.org/abs/1806.04498" # 2018-06-12
-2018-06
-- "https://arxiv.org/abs/1810.01365" # 2018-10-02
-2018-10
-- "https://arxiv.org/abs/1812.02353#google" # 2018-12-06
-2018-12
-- "https://arxiv.org/abs/1905.12616#allen" # 2019-05-29
-2019-05
-- "https://arxiv.org/abs/1907.07171" # 2019-07-16
-2019-07
-- "https://arxiv.org/abs/1909.01387#deepmind" # 2019-09-03
-2019-09
-- "https://arxiv.org/abs/1909.05858#salesforce" # 2019-09-11
-2019-09
-- "https://arxiv.org/abs/1911.08265#deepmind" # 2019-11-19
-2019-11
-- "https://arxiv.org/abs/2001.08361#openai" # 2020-01-23
-2020-01
-- "https://arxiv.org/abs/2002.08909#google" # 2020-02-10
-2020-02
-- "https://arxiv.org/abs/2004.10450#google" # 2020-04-22
-2020-04
-- "https://arxiv.org/abs/2006.04768#facebook" # 2020-06-08
-2020-06
-- "https://arxiv.org/abs/2006.06676#nvidia" # 2020-06-11
-2020-06
-- "https://arxiv.org/abs/2006.10738" # 2020-06-18
-2020-06
-- "https://arxiv.org/abs/2006.15720" # 2020-06-28
-2020-06
-- "https://arxiv.org/abs/2007.13657" # 2020-07-27
-2020-07
-- "https://arxiv.org/abs/2010.05315" # 2020-10-11
-2020-10
-- "https://arxiv.org/abs/2101.04702#google" # 2021-01-12
-2021-01
-- "https://arxiv.org/abs/2103.03206#deepmind" # 2021-03-04
-2021-03
-- "https://arxiv.org/abs/2104.14830#google" # 2021-04-30
-2021-04
-- "https://arxiv.org/abs/2106.06981" # 2021-06-13
-2021-06
-- "https://arxiv.org/abs/2106.07477#baidu" # 2021-06-14
-2021-06
-- "https://arxiv.org/abs/2106.09488#amazon" # 2021-06-11
-2021-06
-- "https://arxiv.org/abs/2106.12423#nvidia" # 2021-06-23
-2021-06
-- "https://arxiv.org/abs/2107.01294#allen" # 2021-07-02
-2021-07
-- "https://arxiv.org/abs/2107.07566#facebook" # 2021-07-15
-2021-07
-- "https://arxiv.org/abs/2107.14795#deepmind" # 2021-07-30
-2021-07
-- "https://arxiv.org/abs/2108.07732#google" # 2021-08-16
-2021-08
-- "https://arxiv.org/abs/2203.08913#google" # 2021-10-05
-2021-10
-- "https://arxiv.org/abs/2207.10551#google" # 2022-07-21
-2022-07
-- "https://arxiv.org/pdf/1606.03498#page=3&org=openai" # 2016-06-10
-2016-06
-- "https://arxiv.org/pdf/1809.11096#page=6&org=deepmind" # 2019-08-26
-2019-08
-- "https://arxiv.org/pdf/1809.11096#page=8&org=deepmind" # 2018-09-28
-2018-09
+2021
 - "https://web.archive.org/web/20230101012202/https://thispersondoesnotexist.com/" # 2019-02-12
 2019
 - "https://www.nature.com/articles/s41467-018-04316-3" # 2018-06-19
 ""
-- "https://arxiv.org/abs/1810.01398" # 2018-10-02
-2018-10
-- "https://arxiv.org/abs/2002.12327" # 2020-11-09
-2020-11
-- "https://arxiv.org/abs/2012.12877#facebook" # 2020-12-23
-2020-12
-- "https://arxiv.org/abs/2106.05237#google" # 2021-06-09
-2021-06
-- "https://arxiv.org/abs/1802.02271" # 2018-02-07
-2018-02
-- "https://arxiv.org/abs/1908.10396#google" # 2019-08-27
-2019-08
-- "https://arxiv.org/abs/1910.01055#google" # 2019-10-02
-2019-10
-- "https://arxiv.org/abs/2002.05645#microsoft" # 2020-10-16
-2020-10
-- "https://arxiv.org/abs/2101.03961#google" # 2021-01-11
-2021-01
-- "https://arxiv.org/abs/2104.05158#facebook" # 2021-04-12
-2021-04
-- "https://arxiv.org/abs/1801.10447" # 2018-01-31
-2018-01
-- "https://arxiv.org/abs/2010.10499#amazon" # 2020-10-20
-2020-10
-- "https://arxiv.org/abs/2004.03720" # 2020-04-07
-2020-04
-- "https://arxiv.org/abs/2105.13626#google" # 2021-05-28
-2021-05
-- "https://arxiv.org/abs/2108.11193" # 2021-08-25
-2021-08
-- "https://arxiv.org/pdf/2204.06125#page=16&org=openai" # 2022-04-13
-2022-04
-- "https://arxiv.org/abs/2207.06991" # 2022-07-14
-2022-07
-- "https://arxiv.org/abs/2307.03381" # 2023-07-07
-2023-07
-- "https://arxiv.org/abs/1908.04577#alibaba" # 2019-08-13
-2019-08
-- "https://arxiv.org/abs/2005.12872#facebook" # 2020-05-26
-2020-05
-- "https://arxiv.org/abs/2008.02217" # 2020-07-16
-2020-07
-- "https://arxiv.org/abs/2011.13729#tencent" # 2020-11-27
-2020-11
-- "https://arxiv.org/abs/2012.08508#deepmind" # 2020-12-15
-2020-12
-- "https://arxiv.org/abs/2101.11986" # 2021-01-28
-2021-01
-- "https://arxiv.org/abs/2111.12233#microsoft" # 2021-11-24
-2021-11
-- "https://arxiv.org/abs/1904.10509#openai" # 2019-04-23
-2019-04
-- "https://arxiv.org/abs/1907.00235" # 2019-06-29
-2019-06
-- "https://arxiv.org/abs/1911.04070" # 2019-11-11
-2019-11
-- "https://arxiv.org/abs/2001.04451#google" # 2020-01-13
-2020-01
-- "https://arxiv.org/abs/2003.05997#google" # 2020-03-12
-2020-03
-- "https://arxiv.org/abs/2005.08100#google" # 2020-05-16
-2020-05
-- "https://arxiv.org/abs/2005.14165#openai" # 2020-05-28
-2020-05
-- "https://arxiv.org/abs/2007.14062#google" # 2020-07-28
-2020-07
-- "https://arxiv.org/abs/2009.06732#google" # 2020-09-14
-2020-09
-- "https://arxiv.org/abs/2009.14794#google" # 2020-09-30
-2020-09
-- "https://arxiv.org/abs/2010.10504#google" # 2020-10-20
-2020-10
-- "https://arxiv.org/abs/2010.11929#google" # 2020-09-28
-2020-09
-- "https://arxiv.org/abs/2012.07436" # 2020-12-14
-2020-12
-- "https://arxiv.org/abs/2012.11346" 2020-12-21
-2020-12
-- "https://arxiv.org/abs/2105.12723" 2021-05-26
-2021-05
-- "https://arxiv.org/abs/2106.12566" # 2021-06-23
-2021-06
-- "https://arxiv.org/abs/2107.05768#google" 2021-07-12
-2021-07
-- "https://arxiv.org/abs/2204.05927" # 2022-07-04
-2022-07
-- "https://arxiv.org/pdf/1706.03741#page=15&org=openai"
-2017-06-12
-- "https://arxiv.org/abs/1909.08053#nvidia" # 2019-09-17
-2019-09
-- "https://arxiv.org/abs/1908.09203#openai" # 2019-11-05
-2019-11
-- "https://arxiv.org/abs/2010.14701#openai" # 2020-10-28
-2020-10
-- "https://arxiv.org/abs/2111.11904#microsoft" 2021-11-23
-2021-11
-- "/doc/ai/nn/transformer/gpt/dall-e/1/2020-chen-2.pdf#openai" 2020-06-17
+- "/doc/ai/nn/transformer/gpt/dall-e/1/2020-chen-2.pdf#openai" # 2020-06-17
 2020
 - "https://web.archive.org/web/20191127163535/http://www.aidungeon.io/2019/11/my-orc-band-and-our-quest-for-equal.html" # 2019-11-26
 2019-11
-- "https://arxiv.org/abs/2005.09980" # 2020-09-08
-2020-09
 - "https://web.archive.org/web/20210426084422/https://www.stuff.co.nz/technology/103500435/google-deepmind-founder-and-leader-in-artificial-intelligence-returns-to-hamilton" # 2018-05-07
 ""
-- "https://arxiv.org/abs/1910.02054#microsoft" # 2019-10-04
-2019-10
-- "https://distill.pub/2020/circuits/zoom-in/#openai"
-2020-03-10
+- "https://distill.pub/2020/circuits/zoom-in/#openai" # 2020-03-10
+2020
 - "/doc/ai/scaling/2020-bell.pdf#facebook"
 2020-08-22
-- "https://arxiv.org/abs/1907.10641#allen" # 2020-10-16
-2020-10
-- "https://arxiv.org/abs/2103.14586#google" # 2021-03-26
-2021-03
 - "https://web.archive.org/web/20230710000944/https://frc.ri.cmu.edu/~hpm/project.archive/general.articles/1975/Raw.Power.html" # 1975-05-12
 1975
 - "/doc/ai/scaling/hardware/2019-roy.pdf"
@@ -796,13 +494,11 @@ Task examples (with explanations in '#' comments):
 - "/doc/ai/scaling/hardware/2020-jiang.pdf"
 2020-11-04
 - "https://www.reuters.com/technology/chinas-military-government-acquire-nvidia-chips-despite-us-ban-2024-01-14/"
-2024-01-15
+2024-01-14
 - "/doc/darknet-market/2020-zhou-2.pdf"
 2020-02-01
 - "https://web.archive.org/web/20190130223039/http://www.animenewsservice.com/archives-dec13/" # 1999-12-20
 1999-12
-- "https://arxiv.org/abs/1104.4322" # 2011-03-17
-2011-03
 - "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0134152"
 2015-08-12
 - "https://msutoday.msu.edu/news/2016/got-kidney-stones-ride-a-roller-coaster"
@@ -823,8 +519,6 @@ Task examples (with explanations in '#' comments):
 2020-01-08
 - "https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2022.941163/full"
 2022-08-05
-- "https://arxiv.org/abs/2308.04445" # 2023-07-31
-2023-07
 - "/doc/ai/anime/danbooru/2018-zhang-2.pdf"
 2018
 - "/doc/ai/anime/danbooru/2019-lee-2.pdf"
@@ -849,24 +543,16 @@ Task examples (with explanations in '#' comments):
 2020-11-04
 - "/doc/ai/nn/cnn/2018-choi.pdf"
 2018-02-22
-- "/doc/ai/nn/cnn/2018-choi.pdf"
-2018-02-22
 - "/doc/ai/nn/cnn/2020-leipheimer.pdf"
 2020-01-22
 - "https://distill.pub/2020/growing-ca/#google"
 2020-02-11
-- "https://arxiv.org/abs/2003.10580#google" # 2021-01-05
-2021-01
 - "/doc/ai/nn/fully-connected/2020-bao.pdf"
 2020-06-03
-- "https://arxiv.org/abs/1703.06676" # 2017-03-20
-2017-03
 - "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7861215/"
 2019-07-21
 - "/doc/darknet-market/dnm-archive/2020-zhang.pdf"
 2020-12-01
-- "https://arxiv.org/pdf/1809.11096#page=8&org=deepmind" 2018-09-28
-2018-09
 - "https://www.justinpinkney.com/blog/2020/stylegan-network-blending/"
 2020-08-25
 - "/doc/ai/nn/gan/stylegan/anime/2022-endo.pdf"
@@ -875,36 +561,20 @@ Task examples (with explanations in '#' comments):
 2021-07-01
 - "/doc/ai/nn/sparsity/knowledge-distillation/2016-luo.pdf"
 2016-03-05
-- "https://arxiv.org/abs/1911.04252#google" # 2019-11-11
-2019-11
-- "https://arxiv.org/abs/2101.03961#google" # 2021-01-11
-2021-01
-- "https://arxiv.org/abs/1911.02972#facebook" # 2019-11-07
-2019-11
 - "/doc/ai/nn/transformer/gpt/2/fiction/2021-davis.pdf"
 2021-04-27
-- "/doc/law/2022-arbel.pdf"
-2022-02
+- "/doc/law/2022-arbel.pdf" # 2022-02
+2022
 - "https://mededu.jmir.org/2023/1/e45312/"
 2023
-- "https://www.taxnotes.com/featured-analysis/openai-cribbed-our-tax-example-can-gpt-4-really-do-tax/2023/08/11/7h0hc"
-2023-08-14
+- "https://www.taxnotes.com/featured-analysis/openai-cribbed-our-tax-example-can-gpt-4-really-do-tax/2023/08/11/7h0hc" # unreliable URL timestamp
+2023-08
 - "/doc/ai/nn/transformer/gpt/lamda/2021-jiang-2.pdf"
 2021-09-07
-- "https://arxiv.org/abs/2111.11904#microsoft" # 2021-11-23
-2021-11
-- "https://arxiv.org/abs/1911.05289#google" 2019-11-13
-2019-11
-- "/doc/ai/scaling/2020-bell.pdf#facebook"
-2020-08-22
 - "/doc/ai/scaling/hardware/2020-jouppi.pdf#google"
 2020-06-01
-- "https://arxiv.org/abs/1104.4322" # 2011-03-17
-2011-03
 - "https://www.liebertpub.com/doi/full/10.1089/ast.2017.1783"
 2018-09-12
-- "https://www.biorxiv.org/content/10.1101/2020.11.21.392720.full"
-2020-11-22
 - "/doc/psychiatry/anxiety/lavender/2021-an.pdf"
 2021-09-14
 - "https://www.theatlantic.com/science/archive/2021/11/make-cat-hypoallergenic/620618/"
@@ -932,7 +602,7 @@ Task examples (with explanations in '#' comments):
 - "https://web.archive.org/web/20100611071828/http://online.wsj.com/article/SB10001424052748704513104575256452390636786.html" # 2010-06-08
 ""
 - "https://www.bbc.com/future/article/20160406-we-went-to-nasa-to-float-on-the-worlds-flattest-floor"
-2016-04-07
+2016-04-06
 - "https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2019.02220/full"
 2019-10-03
 - "https://www.frontiersin.org/journals/veterinary-science/articles/10.3389/fvets.2021.760845/full"
@@ -955,8 +625,6 @@ Task examples (with explanations in '#' comments):
 2021-01-30
 - "https://arstechnica.com/gadgets/2023/01/google-announces-official-android-support-for-risc-v/"
 2023-01-03
-- "https://arxiv.org/abs/1904.09828" # 2019-03-24
-2019-03
 - "https://gki.informatik.uni-freiburg.de/papers/lindner-mattmueller-nebel-xaip2018.pdf"
 2019-07-17
 - "https://googleprojectzero.blogspot.com/2021/12/a-deep-dive-into-nso-zero-click.html"
@@ -977,12 +645,12 @@ Task examples (with explanations in '#' comments):
 ""
 - "https://link.springer.com/article/10.1007/s10508-019-01624-7 How Large Are Gender Differences in Toy Preferences? A Systematic Review and Meta-Analysis of Toy Preference Research"
 2020-01-27
-- "https://www.nature.com/articles/s41598-023-39304-1"
-2023-07-26
+- "https://www.nature.com/articles/s41598-023-39304-1" # 2023-07-26
+2023
+- "https://www.nature.com/articles/s44220-025-00390-x" # 2025-02-13
+2025
 - "/doc/cs/2014-deoliveira.pdf"
 2014
-- "https://www.nature.com/articles/s44220-025-00390-x" # 2025-02-13
-""
 - "/doc/dual-n-back/2016-foroughi.pdf"
 2016-07-05
 - "https://iclr-blogposts.github.io/2024/blog/what-exactly-has-tabpfn-learned-to-do/ What exactly has TabPFN learned to do?"
@@ -999,8 +667,8 @@ Task examples (with explanations in '#' comments):
 2020-06-12
 - "https://www.theparisreview.org/blog/2016/05/17/the-musicians-day/"
 2016-05-17
-- "https://notes.stlartsupply.com/the-golden-age-of-japanese-pencils-1952-1967/ The Golden Age of Japanese Pencils, 1952–1967"
-2022-03-02
+- "https://notes.stlartsupply.com/the-golden-age-of-japanese-pencils-1952-1967/ The Golden Age of Japanese Pencils, 1952–1967" # 2022-03-02; a web page could not have been published in 1952 or 1967!
+""
 - "https://www.trendingbuffalo.com/life/uncle-steves-buffalo/everything-from-1991-radio-shack-ad-now/"
 2014-01-14
 - "https://awards.acm.org/about/2024-turing"
@@ -1017,14 +685,6 @@ Task examples (with explanations in '#' comments):
 2010-12-20
 - "https://80000hours.org/podcast/episodes/joan-rohlfing-avoiding-catastrophic-nuclear-blunders/#the-interaction-between-nuclear-weapons-and-cybersecurity-011018"
 2022-03-29
-- "https://arxiv.org/abs/1903.03423" # 2019-02-28
-2019-02
-- "https://arxiv.org/abs/2101.03958#google" # 2021-01-08
-2021-01
-- "https://arxiv.org/abs/2102.04881" # 2020-09-28
-2020-09
-- "https://arxiv.org/abs/2105.13445" # 2021-04-08
-2021-04
 - "https://www.nature.com/articles/s42256-025-01019-5"
 2025-03-31
 - "https://www.sfsite.com/fsf/2007/gwma0704.htm"
@@ -1033,10 +693,10 @@ Task examples (with explanations in '#' comments):
 2024-06-21
 - "https://www.modelshipsinthecinema.com/2016/12/hunt-for-red-october-1990.html"
 2016-12
-- "https://research.google/blog/all-our-n-gram-are-belong-to-you/ All Our <em>n</em>-gram are Belong to You"
-2006-08-03
-- "https://www.nature.com/articles/s41467-025-58271-x"
-2025-04-15
+- "https://research.google/blog/all-our-n-gram-are-belong-to-you/ All Our <em>n</em>-gram are Belong to You" # 2006-08-03
+""
+- "https://www.nature.com/articles/s41467-025-58271-x" # 2025-04-15
+2025
 - "https://theonion.com/area-man-consults-internet-whenever-possible-1819565463/"
 2000-01-26
 - "https://pmc.ncbi.nlm.nih.gov/articles/PMC8188931/"
@@ -1045,30 +705,30 @@ Task examples (with explanations in '#' comments):
 2025-04-07
 - "https://www.wired.com/story/beijing-half-marathon-humanoid-robots/" # 2025-04-19
 ""
-- "https://www.lesswrong.com/posts/KRKnFdECZMu3Ej3z6/can-llms-learn-steganographic-reasoning-via-rl"
-2025-04-11
-- "https://apnews.com/article/wisconsin-supreme-court-elon-musk-81f71cdda271827ae281a77072a26bad"
-2025-04-02
-- "https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3002205"
-2024-02-01
-- "https://news.ycombinator.com/item?id=35560022"
-2023-04-13
+- "https://www.lesswrong.com/posts/KRKnFdECZMu3Ej3z6/can-llms-learn-steganographic-reasoning-via-rl" # 2025-04-11
+""
+- "https://apnews.com/article/wisconsin-supreme-court-elon-musk-81f71cdda271827ae281a77072a26bad" # 2025-04-02
+""
+- "https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3002205" # 2024-02-01
+""
+- "https://news.ycombinator.com/item?id=35560022" # 2023-04-13
+""
 - "https://scholar.google.com/citations?user=iyD9aw8AAAAJ&hl=en&oi=ao"
 ""
-- "https://www.argmin.net/p/rossis-metallic-rules"
-2025-04-22
+- "https://www.argmin.net/p/rossis-metallic-rules" # 2025-04-22
+""
 - "https://www.cs.cmu.edu/~junyanz/"
 ""
 - "https://en.wikipedia.org/wiki/Digital_dark_age"
 ""
 - "https://en.wikipedia.org/wiki/Special_interest_(autism)"
 ""
-- "https://www.nature.com/articles/d41586-025-01266-x"
-2025-04-25
-- "https://www.newyorker.com/culture/the-weekend-essay/will-the-humanities-survive-artificial-intelligence"
-2025-04-26
-- "https://pmc.ncbi.nlm.nih.gov/articles/PMC10700140/"
-2023-11-22
+- "https://www.nature.com/articles/d41586-025-01266-x" # 2025-04-25
+2025
+- "https://www.newyorker.com/culture/the-weekend-essay/will-the-humanities-survive-artificial-intelligence" # 2025-04-26
+""
+- "https://pmc.ncbi.nlm.nih.gov/articles/PMC10700140/" # 2023-11-22
+""
 - "https://en.wikipedia.org/wiki/Buffalo_Bill%27s"
 ""
 - "https://en.wikipedia.org/wiki/David_Baker_(biochemist)"
@@ -1083,7 +743,7 @@ Task examples (with explanations in '#' comments):
 ""
 - "https://mathshistory.st-andrews.ac.uk/Biographies/Dase/ Zacharias Dase (1824—1861)—Biography—MacTutor History of Mathematics"
 ""
-- https://smoothbrains.net/posts/2025-04-29-xenon-and-nitrous-oxide.html
+- "https://smoothbrains.net/posts/2025-04-29-xenon-and-nitrous-oxide.html"
 2025-04-29
 - "https://pmc.ncbi.nlm.nih.gov/articles/PMC9331065/ Tool Use in Horses" # 2022-07-22
 ""
@@ -1151,7 +811,7 @@ Task examples (with explanations in '#' comments):
 ""
 - "https://researchers.mgh.harvard.edu/profile/13438682/Andrea-Ganna"
 ""
-- https://nospank.net/adah1.htm Adah Maurer (1905–1998): A Remembrance" # 1998-03
+- "https://nospank.net/adah1.htm Adah Maurer (1905–1998): A Remembrance" # 1998-03
 ""
 - "https://www.rifters.com/crawl/?p=11511" # 2025-05-12
 ""
@@ -1179,7 +839,7 @@ Task examples (with explanations in '#' comments):
 ""
 - "https://www.nature.com/articles/s41366-025-01795-5" # 2025-05-11
 ""
-- https://robhorning.substack.com/p/font-activations # 2025-05-16
+- "https://robhorning.substack.com/p/font-activations" # 2025-05-16
 ""
 - "https://suberic.net/~dmm/projects/mystical/README.html" # 2025-05-16
 ""
@@ -1297,12 +957,10 @@ Task examples (with explanations in '#' comments):
 ""
 - "https://www.lesswrong.com/posts/Bt53XFaMYTseq7oMH/i-have-decided-to-stop-lying-to-americans-about-9-11" # 2025-09-29
 ""
-- "https://www.anthropic.com/news/claude-sonnet-4-5"
-2025-09-30
+- "https://www.anthropic.com/news/claude-sonnet-4-5" # 2025-09-30
+""
 - "https://webkit.org/blog/17285/rolling-the-dice-with-css-random/" # 2025-08-21
-2025
-- "today is 2025-09-30; posted 8 days ago"
-2025-09-22
+""
 - "https://www.nature.com/articles/s41467-025-63454-7" # 2025-09-30
 ""
 - "https://www.lesswrong.com/posts/j3gp8tebQiFJqzBgg/how-the-nanogpt-speedrun-wr-dropped-by-20-in-3-months" # 2025-10-04
@@ -1324,9 +982,9 @@ Task examples (with explanations in '#' comments):
 - "https://tonsky.me/blog/syntax-highlighting/" # 2025-10-15
 ""
 - "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0269544" # 2022-07-14
-"2022"
+2022
 - "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1002894" # 2013-01-31
-"2013"
+2013
 - "https://www.lesswrong.com/posts/EKhTrhrCz2rNg7FmG/learning-to-interpret-weight-differences-in-language-models-1" # 2025-10-06
 ""
 - "https://www.cremieux.xyz/p/ozempic-and-muscle-mass" # 2025-05-08
@@ -1338,29 +996,29 @@ Task examples (with explanations in '#' comments):
 - "https://www.stafforini.com/blog/summary-of-clear-and-simple-as-the-truth/ Summary of <em>Clear and Simple as the Truth</em>, by Francis-Noël Thomas & Mark Turner" # 2013-06-26
 ""
 - "https://cacm.acm.org/opinion/retrospective-an-axiomatic-basis-for-computer-programming/" # 2009-10-01
-2009
+""
 - "https://www.lesswrong.com/posts/eQvNBwaxyqQ5GAdyx/some-data-from-leelapieceodds" # 2025-10-28
 ""
-- https://www.lesswrong.com/posts/qvWP3aBDBaqXvPNhS/gpt-2-s-positional-embedding-matrix-is-a-helix # 2023-07-20; GPT-2 was announced in 2019-02, so references to it cannot predate 2019
+- "https://www.lesswrong.com/posts/qvWP3aBDBaqXvPNhS/gpt-2-s-positional-embedding-matrix-is-a-helix" # 2023-07-20; note GPT-2 was announced in 2019-02, so references to it cannot predate 2019
 ""
 - "https://camilleberger.substack.com/p/your-movielike-ai-assistant-will" # 2025-11-04
 ""
 - "https://moonshotai.github.io/Kimi-K2/thinking.html" # 2025-11-06
-"2025"
+2025
 - "https://psychotechnology.substack.com/p/a-love-song-to-nicotine-630" # 2025-11-06
 ""
 - "https://pmc.ncbi.nlm.nih.gov/articles/PMC12129667/" # 2025-06-03
-"2025"
+""
 - "https://www.rferl.org/a/kremlin-trickery-putin-offices-secrecy-investigation/33586451.html" # 2025-11-11
 ""
 - "https://blog.google/products/gemini/gemini-3/" # 2025-11-18; but you should know Google Gemini-2.5 was 2024–2025, and Gemini-4 would be ~2026, so Gemini-3 must be 2025
-"2025"
+2025
 - "https://www.lesswrong.com/posts/Nr4Mca2WGhv4jyvfh/literacy-is-decreasing-among-the-intellectual-class Literacy is Decreasing Among the Intellectual Class" # 2025-11-22
 ""
 - "https://www.anthropic.com/news/claude-opus-4-5" # 2025-11-24
-"2025"
+2025
 - "https://theonion.com/more-u-s-children-being-diagnosed-with-youthful-tenden-1819565754/" # 2000-09-27
-"2000"
+2000
 - "https://www.lesswrong.com/posts/xEPiojzEzQexafcBR/information-hygiene" # 2025-11-26
 ""
 - "https://futuring.substack.com/p/wearing-dresses-is-cheating-an-experiment" # 2025-11-13
@@ -1368,27 +1026,27 @@ Task examples (with explanations in '#' comments):
 - "https://research.swtch.com/nih" # 2023-10-25
 ""
 - "https://www.nature.com/articles/s41586-025-09761-x#deepmind" # 2025-10-22
-"2025"
+2025
 - "https://www.sciencedirect.com/science/article/pii/S016748701630277X" # 2017-12
 ""
 - "https://www.lesswrong.com/posts/vpNG99GhbBoLov9og/claude-4-5-opus-soul-document" # 2025-11-28
-"2025"
+2025
 - "https://www.pnas.org/doi/10.1073/pnas.2415254122" # 2025-03-24
 ""
 - "https://www.lesswrong.com/posts/u6Lacc7wx4yYkBQ3r/insights-into-claude-opus-4-5-from-pokemon" # 2025-12-04
-"2025"
+2025
 - "https://journals.sagepub.com/doi/10.1177/25152459231213375" # 2024-02-05
 ""
 - "https://journals.sagepub.com/doi/full/10.1177/09567976251392219" # 2025-11-21
 ""
 - "https://www.sciencedirect.com/science/article/pii/S0960982221008769" # 2021-09-13
-"2021"
+""
 - "https://vimeo.com/41669642 Postcard From 1952" # 2012-05-06
 ""
 - "https://blog.google/products/gemini/updated-image-editing-model/" # 2025-08-26
-"2025"
+2025
 - "https://blog.google/technology/ai/nano-banana-pro/" # 2025-11-20
-"2025"
+2025
 - "https://pmc.ncbi.nlm.nih.gov/articles/PMC3311762/" # 2013-03-20
 ""
 - "https://go.dev/blog/go-fonts" # 2016-11-16
@@ -1396,11 +1054,11 @@ Task examples (with explanations in '#' comments):
 - "https://time.com/archive/6732124/of-headless-mice-and-men/" # 1998-01-19
 ""
 - "https://pmc.ncbi.nlm.nih.gov/articles/PMC6743687/" # 2019-03-26
-"2019"
+2019
 - "https://pmc.ncbi.nlm.nih.gov/articles/PMC8723833/" # 2022-05-12
-"2022"
+2022
 - "https://openai.com/index/introducing-gpt-5-2/" # 2025-12-11; GPT-5 was introduced in 2025, so it must be ≥2025
-"2025"
+2025
 - "https://www.lesswrong.com/posts/ThST9njmesR9BkoWq/book-review-orality-and-literacy-the-technologizing-of-the" # 2023-10-28
 ""
 - "https://www.sanity.io/blog/you-should-never-build-a-cms" # 2025-12-14
@@ -1408,7 +1066,7 @@ Task examples (with explanations in '#' comments):
 - "https://github.com/ctrlcctrlv/kjv1611 ctrlcctrlv/kjv1611: A complete digital OpenType font restoration of the typeface found in the 1611 King James Bible" # 2018-03-27
 ""
 - "https://pmc.ncbi.nlm.nih.gov/articles/PMC2790397/" # 2010-10
-"2010"
+2010
 - "https://marcusolang.substack.com/p/im-kenyan-i-dont-write-like-chatgpt" # 2025-07-08; but could've been written any time after 2022-11...
 ""
 - "https://ashvardanian.com/posts/search-utf8/" # 2025-12-15
@@ -1420,13 +1078,13 @@ Task examples (with explanations in '#' comments):
 - "https://wang-kevin3290.github.io/scaling-crl/"
 ""
 - "https://www.pnas.org/doi/abs/10.1073/pnas.2413064122"
-"2025-03-31"
+2025-03-31
 - "https://www.science.org/doi/full/10.1126/scirobotics.adu8009" # 2025-12-10
 ""
 - "https://github.com/DGoettlich/history-llms" # 2025-12-18
 ""
 - "https://openai.com/index/introducing-gpt-5-2-codex/" # 2025-12-18
-"2025"
+2025
 - "https://www.lesswrong.com/posts/qwAiKvomuAm5ekC4D/subliminal-learning-transmitting-misalignment-via" # 2025-12-17
 ""
 - "https://www.wired.com/story/hearing-aid-startup-ai-fortell/" # 2025-12-03
@@ -1436,7 +1094,7 @@ Task examples (with explanations in '#' comments):
 - "https://www.youtube.com/watch?v=cDA3_5982h8" # 2017-01-26
 ""
 - "https://pmc.ncbi.nlm.nih.gov/articles/PMC12086928/" # 2025-05-15
-"2025"
+""
 - "https://onlinelibrary.wiley.com/doi/full/10.1002/oby.70058" # 2025-10-02
 ""
 - "https://www.novonordisk.com/content/nncorp/global/en/news-and-media/news-and-ir-materials/news-details.html?id=916472" # 2025-12-22
@@ -1471,21 +1129,25 @@ Task examples (with explanations in '#' comments):
 ""
 - "https://pmc.ncbi.nlm.nih.gov/articles/PMC4743270/" # 2016-01-28
 ""
+- "https://pmc.ncbi.nlm.nih.gov/articles/PMC11846834/" # 2025-02-22
+""
+- "https://pmc.ncbi.nlm.nih.gov/articles/PMC11485236/" # 2024-10-09
+""
 
 Task:
 
 - """ + target + "\n"
 
     completion = client.chat.completions.create(
-        model="gpt-4.1-mini",
+        model="gpt-5-mini",
         messages=[
             {"role": "system", "content": "You are a researcher and web developer, compiling a bibliography."},
             {"role": "user", "content": prompt}
         ],
-        temperature=0,          # deterministic extraction of dates
+        temperature=1,          ## temperature=0, # deterministic extraction of dates
         top_p=1,
-        max_tokens=11,          # you only need one short token sequence like 'YYYY-MM-DD\n'
-        stop=["\n"]             # stop at first newline; discourages rambles
+        ## max_completion_tokens=11,          # you only need one short token sequence like 'YYYY-MM-DD\n'
+        ## stop=["\n"]             # stop at first newline; discourages rambles
     )
 
     date_str = completion.choices[0].message.content.strip()
@@ -1507,4 +1169,3 @@ Task:
 
 if __name__ == "__main__":
     main()
-
