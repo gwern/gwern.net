@@ -859,10 +859,12 @@ canonicals = M.fromList
   , ("anthropic", "Anthropic")
   , ("openAI", "OpenAI")
   , ("SE Baumeister", "Sebastian-Edgar Baumeister")
+  , ("Sebastian E. Baumeister", "Sebastian-Edgar Baumeister")
   , ("S. Sanchez-Roige", "Sandra Sanchez-Roige")
   , ("S Sanchez-Roige", "Sandra Sanchez-Roige")
   , ("Hans-J. Boehm", "Hans-Juergen Boehm")
   , ("Hans-J Boehm", "Hans-Juergen Boehm")
+  , ("Dave Akin", "David L. Akin")
   ]
 
 -- tests: unique
@@ -2065,7 +2067,7 @@ authorLinkDB = M.fromList $
     , ("Serena Sanna", "https://scholar.google.com/citations?user=6hjWp7sAAAAJ")
     , ("Simon Kornblith", "https://www.zotero.org/simon/cv")
     , ("Karthik Rajagopal Narasimhan", "https://karthikncode.github.io/")
-    , ("Sebastian-Edgar Baumeister", "https://scholar.google.com/citations?user=mymsjo8AAAAJ&hl=en&oi=ao")
+    , ("Sebastian-Edgar Baumeister", "https://scholar.google.com/citations?user=mymsjo8AAAAJ")
     , ("Sandra Sanchez-Roige", "https://www.sanchezroigelab.org/")
     , ("Robert C. Kaplan", "https://www.fredhutch.org/en/faculty-lab-directory/kaplan-robert.html")
     , ("Richard N. Bergman", "https://researchers.cedars-sinai.edu/Richard.Bergman")
@@ -2073,6 +2075,10 @@ authorLinkDB = M.fromList $
     , ("Ek Type", "https://ektype.in/")
     , ("Hans-Juergen Boehm", "https://www.hboehm.info/")
     , ("Zhengdong Wang", "https://zhengdongwang.com/")
+    , ("Daan Wierstra", "https://scholar.google.com/citations?user=aDbsf28AAAAJ")
+    , ("Piotr Bojanowski", "https://scholar.google.com/citations?user=lJ_oh2EAAAAJ&hl=en&oi=ao")
+    , ("Qiang Liu", "https://www.cs.utexas.edu/~lqiang/")
+    , ("Cliff Jones", "https://en.wikipedia.org/wiki/Cliff_Jones_(computer_scientist)")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3359,4 +3365,6 @@ authorWpLinkDB =
     , "J Strother Moore", "Matt Kaufmann", "Ilka Agricola", "Lisanne Bainbridge", "Daniel H. Janzen", "Rachel Aviv"
     , "Oliver Sacks", "Keiichi Matsuura", "Aleksandra Faust", "Samuel S. Wilks", "Kenneth Lee Pike", "Josh Lerner"
     , "Robert Hayden", "Michael Ondaatje", "Galway Kinnell", "Li-Young Lee", "Douwe Kiela", "Richmond Lattimore", "William T. Vollmann"
-    , "Laurence Perrine", "John Milton", "Ted Hughes", "Hunter S. Thompson", "Kevin D. Williamson", "Martin Ellison", "David E. Hoffman", "Paul Ginsparg", "Wojciech Kopczuk", "Highway to Hitler"]
+    , "Laurence Perrine", "John Milton", "Ted Hughes", "Hunter S. Thompson", "Kevin D. Williamson", "Martin Ellison"
+    , "David E. Hoffman", "Paul Ginsparg", "Wojciech Kopczuk", "Robert J. White", "Dines Bjørner", "Hans-Joachim Voth"
+    , "Friedrich Nietzsche"]

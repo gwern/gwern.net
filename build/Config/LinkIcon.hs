@@ -819,7 +819,7 @@ linkIconTestUnitsText =
          , ("https://docs.google.com/document/d/1MhA3M5ucBD7ZXcWk57_MKZ5jEgPX6_YiKye_EFP-adg/edit",  "word-doc","svg", blueG)
          , ("https://research.com/u/gudmar-thorleifsson-1",  "google-scholar","svg", blueG)
          , ("https://scholar.google.com/citations?user=9hEhCHYAAAAJ",  "google-scholar","svg", blueG)
-         , ("https://arxiv.org/pdf/2009.06732#org=google&page=6",  "alphabet","svg", blueG)
+         , ("https://arxiv.org/pdf/2009.06732#page=6&org=google",  "alphabet","svg", blueG)
          , ("https://arxiv.org/abs/1706.04972#google",  "alphabet","svg", blueG)
          , ("https://gwern.net/doc/cs/hardware/2015-kanev.pdf#google",  "alphabet","svg", blueG)
          , ("https://about.google/",  "alphabet","svg", blueG)

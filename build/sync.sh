@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-12-30 19:46:29 gwern"
+# When:  Time-stamp: "2026-01-02 13:41:49 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -156,7 +156,7 @@ else
           s 'src="doc/' 'src="/doc/'; s 'href="doc/' 'href="/doc/';
           s 'link-icon-not' 'icon-not'; s '<!--<p>' '<!-- <p>'; s '</p>-->' '</p> -->';
           s '](W!' '](!W'; s '<em>𝛽</em>' '<em>β</em>'; s '𝛽' '<em>β</em>'; s 'class="table-simple' 'class="table-small';
-          s ' > > ' ' >> '; s '</pan>' '</span>'; s 'display:none;' 'display: none;';
+          s ' > > ' ' >> '; s '</pan>' '</span>'; s 'display:none;' 'display: none;'; s '</spam>' '</span>';
 
           ## TODO: duplicate HTML classes from Pandoc reported as issue #8705 & fixed; fix should be in >pandoc 3.1.1 (2023-03-05), so can remove these two rewrites once I upgrade past that:
           s 'class="odd odd' 'class="odd'; s 'class="even even' 'class="even';
@@ -596,7 +596,7 @@ else
     find ./_site/metadata/ -type f -name "*.html" | parallel --max-args=500 cleanClasses || true
 
     # HACK: still haven't figured out how these keep getting reintroduced when the titlecase code responsible should be fixing them automatically now. So hack around by replacing them manually...
-    (s 'cite-author-Plural' 'cite-author-plural' ; s 'Date-Range' 'date-range' ; s 'Inflation-Adjusted' 'inflation-adjusted' ; s 'Logotype-Latex-A' 'logotype-latex-a' ; s 'Logotype-Latex-E' 'logotype-latex-e' ; s 'SUbsup' 'subsup'; s 'Cite-Joiner' 'cite-joiner';) &> /dev/null;
+    (s 'cite-author-Plural' 'cite-author-plural' ; s 'Date-Range' 'date-range' ; s 'Inflation-Adjusted' 'inflation-adjusted' ; s 'Logotype-Latex-A' 'logotype-latex-a' ; s 'Logotype-Latex-E' 'logotype-latex-e' ; s 'SUbsup' 'subsup'; s 'Cite-Joiner' 'cite-joiner'; s '<span class="Poem"' '<span class="poem"'; s '<div class="Poem"' '<div class="poem"'; ) &> /dev/null;
     wait;
 
   if [ "$SLOW" ]; then
@@ -670,7 +670,7 @@ else
             "cite-author-plural" "cite-date" "date" "display" "email" "external-page-embed"
             "id-not" "inflation-adjusted" "logotype-tex" "logotype-latex" "logotype-latex-a" "logotype-latex-e"
             "link-annotated" "link-annotated-not" "link-annotated-partial" "link-live" "link-page" "link-page-not" "link-tag" "link-tags"
-            "image-annotated" "image-annotated-not" "image-annotated-partial"
+            "image-annotated" "image-annotated-not" "image-annotated-partial" "image-modified-recently"
             "cite" "cite-joiner" "collapse" "collapse-small" "columns" "directory-indexes-downwards" "directory-indexes-upwards"
             "epigraph" "even" "figures" "float-right" "float-left" "logo" "footer-logo" "footnote-ref" "full-width"
             "haskell" "header" "heading" "horizontal-rule-nth-1" "horizontal-rule-nth-2" "horizontal-rule-nth-3" "icon-not" "icon-special"
@@ -811,13 +811,13 @@ else
              gfv -e 'web.archive.org' -e 'https-everywhere' -e 'check_cookie.html' -e 'translate.goog' -e 'archive.md' -e 'webarchive.loc.gov' -e 'https://http.cat/' -e '//)' -e 'https://esolangs.org/wiki////' -e 'https://ansiwave.net/blog/sqlite-over-http.html' -e 'addons.mozilla.org/en-US/firefox/addon/' -e 'httparchive.org/' -e 'github.com/phiresky/' -e 'github.com/psanford/' -e 'stackoverflow.com/questions/' -e 'https://www.latent.space/p/sim-ai#%C2%A7websim-httpswebsimai';
          ge 'https://web.archive.org/web/[0-9]+/https?://web.archive.org/http' ./metadata/archive.hs ./metadata/backlinks.hs ./metadata/sites.hs;
          gf -e '#org=' ./metadata/archive.hs ./metadata/backlinks.hs ./metadata/sites.hs | ge -e 'page=[0-9]+'; # check for unnecessary 'org=' uses like 'https://arxiv.org/abs/2507.20534#org=moonshot', which should just be '#moonshot'
-         gf -e \\ ./metadata/archive.hs ./metadata/backlinks.hs ./metadata/sites.hs; }
+         ge -e 'http[[:alnum:]]+\\' -- ./metadata/archive.hs ./metadata/backlinks.hs ./metadata/sites.hs; }
     wrap λ "Bad URL links in archive database (and perhaps site-wide?)."
 
     λ(){ echo "$PAGES_ALL" | xargs grep --fixed-strings --with-filename --color=always -e '<div>' -e '<div class="horizontal-rule-nth-1" />' -e '<div class="horizontal-rule-nth-2" />' -e '<div class="horizontal-rule-nth-3" />' -e ':::' | gfv -e 'I got around this by adding in the Hakyll template an additional'; }
     wrap λ "Stray <div>?"
 
-    λ(){ echo "$PAGES_ALL" | xargs --max-args=500 grep --fixed-strings --with-filename --color=always -e 'invertible-not' -e 'invertible-auto' -e '.invertible' -e '.invertibleNot' -e '.invertible-Not' -e '{.Smallcaps}' -e '{.sallcaps}' -e '{.mallcaps}' -e '{.small}' -e '{.invertible-not}' -e 'no-image-focus' -e 'no-outline' -e 'idNot' -e 'backlinksNot' -e 'abstractNot' -e 'displayPopNot' -e 'small-table' -e '{.full-width' -e 'collapseSummary' -e 'collapse-summary' -e 'tex-logotype' -e ' abstract-not' -e 'localArchive' -e 'backlinks-not' -e '{.}' -e "bookReview-title" -e "bookReview-author" -e "bookReview-date" -e "bookReview-rating" -e 'class="epigraphs"' -e 'data-embedding-distance' -e 'data-embeddingdistance' -e 'data-linktags' -e 'link-auto-first' -e 'link-auto-skipped' -e 'local-archive-link' -e 'drop-caps-de-kanzlei' -e '.backlink-not)' -e 'link-annotated link-annotated-partial' -e 'link-annotated-partial link-annotated' -e '{.margin-note}' -e '{. ' -e 'collapse}' -e 'interview}' -e 'cssExtension' -e 'thumbnailText' -e 'thumbnailCSS' -e '!Margin' -e '{.include-annotation' -e ' .backlink-not ' -e '<div id="abstract">' -e '<div class="display-random">'; }
+    λ(){ echo "$PAGES_ALL" | xargs --max-args=500 grep --fixed-strings --with-filename --color=always -e 'invertible-not' -e 'invertible-auto' -e '.invertible' -e '.invertibleNot' -e '.invertible-Not' -e '{.Smallcaps}' -e '{.sallcaps}' -e '{.mallcaps}' -e '{.small}' -e '{.invertible-not}' -e 'no-image-focus' -e 'no-outline' -e 'idNot' -e 'backlinksNot' -e 'abstractNot' -e 'displayPopNot' -e 'small-table' -e '{.full-width' -e 'collapseSummary' -e 'collapse-summary' -e 'tex-logotype' -e ' abstract-not' -e 'localArchive' -e 'backlinks-not' -e '{.}' -e "bookReview-title" -e "bookReview-author" -e "bookReview-date" -e "bookReview-rating" -e 'class="epigraphs"' -e 'data-embedding-distance' -e 'data-embeddingdistance' -e 'data-linktags' -e 'link-auto-first' -e 'link-auto-skipped' -e 'local-archive-link' -e 'drop-caps-de-kanzlei' -e '.backlink-not)' -e 'link-annotated link-annotated-partial' -e 'link-annotated-partial link-annotated' -e '{.margin-note}' -e '{. ' -e 'interview}' -e 'cssExtension' -e 'thumbnailText' -e 'thumbnailCSS' -e '!Margin' -e '{.include-annotation' -e ' .backlink-not ' -e '<div id="abstract">' -e '<div class="display-random">'; }
     wrap λ "Misspelled/outdated classes in HTML."
 
     λ(){
@@ -1003,7 +1003,7 @@ else
             -e '[12][0-9][0-9][0-9]—[12][0-9][0-9][0-9]' -e '[\[( ~#"][12][0-9][0-9][0-9]-[12][0-9][0-9][0-9]' \
             -e ' -\$[1-9][0-9]+' -e ' -\$[1-9][0-9][0-9]' -e ' -\$[1-9][0-9][0-9]+' -e ' \$[0-9][0-9][0-9][0-9]' -e ' \$[0-9][0-9][0-9][0-9][0-9]' -e ' \$[1-9][0-9][0-9][0-9]' -e '[^=]\$[1-9][0-9][0-9][0-9][^)>kmg"]' -e '\$[0-9][0-9][0-9][0-9][0-9]' -e '\[\$[12][0-9][0-9][0-9]' \
             -e '[12][0-9][0-9][0-9]-[012][0-9]-[12][0-9][0-9][0-9]-[012][0-9]' -e '[0-9][0-9]−[0-9][0-9]' \
-            -e '<p>\.\.[A-Z]' -- ./metadata/*.gtx;
+            -e '<p>\.\.[A-Z]' -e '^p>' -e '^hr>' -e '^ol>' -e '^ul>' -e '^li>' -e '^figure>' -e '^code>' -e '^blockquote>' -e '^div>' -e '^div class=.*>' -- ./metadata/*.gtx;
          ge -e ' I[0-9][0-9][0-9]' -e '</span> <[A-Z]' -- ./metadata/*.gtx | gfv ' I432'; }
     wrap λ "Check possible syntax errors in GTX metadata database (regexp matches)." &
 
@@ -1043,7 +1043,7 @@ else
             -e '%7E' -e '<p>. ' -e '<p>, ' -e '<p>; ' -e '= ~' -e 'data-cites="' \
             -e '=“”' -e '““{' -e '““}' -e '““[' -e '““]' -e 'Ã' -e '’S ' -e '<span id="#' -e 'href=/' -e 'href=http' \
             -e '<n/em>' -e '!=' -e '%3Cem%3E' -e '%3C/em%3E' -e '%3Cstrong%3E' -e '%3C/strong%3E' \
-            -e ' r-squared' -e ' R-squared' -e '&gt ' -e '&lt ' -e '&lte ' -e '&gte ' -- ./metadata/*.gtx | \
+            -e ' r-squared' -e ' R-squared' -e '&gt ' -e '&lt ' -e '&lte ' -e '&gte ' -e 'Error occurred. Exception: ' -e '"editorial"[' -- ./metadata/*.gtx | \
              gfv -e 'popular_shelves' -e 'Le corps dans les étoiles: l’homme zodiacal';
          gf -e ' TeX' -e ' LaTeX' -e '>><' -e '</>' -- ./metadata/*.gtx | gfv -e 'logotype-';
        }

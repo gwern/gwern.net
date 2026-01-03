@@ -2715,7 +2715,6 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
           , ("King_Joe_(Ultra_monster)", "Ultraman")
           , ("Kingdom_Of_Loathing", "Kingdom_of_Loathing")
           , ("Kinki_University", "Kindai_University")
-          , ("Klaiber's_law", "Klaiber%27s_law")
           , ("Klein_bottles", "Klein_bottle")
           , ("Kleine-Levin_syndrome", "Kleine%E2%80%93Levin_syndrome")
           , ("Kleinfelter's_syndrome", "Klinefelter_syndrome")
@@ -6004,4 +6003,6 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("Donne", "John_Donne")
         , ("Defoe", "Daniel_Defoe")
         , ("Bedlam", "Bethlem_Royal_Hospital")
+        , ("Apollo_Smintheus", "Hamaxitus#Apollo_Smintheus")
+        , ("Klaiber's_law", "https://web.archive.org/web/20230320024813/https://en.wikipedia.org/wiki/Klaiber's_law")
         ]

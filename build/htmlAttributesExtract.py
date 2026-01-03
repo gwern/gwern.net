@@ -3,7 +3,7 @@
 # htmlAttributesExtract.py: extract all CSS classes, data-attribute keys, and IDs from HTML files
 # Author: Gwern Branwen
 # Date: 2022-09-10
-# When:  Time-stamp: "2025-11-27 22:59:06 gwern"
+# When:  Time-stamp: "2026-01-02 10:01:31 gwern"
 # License: CC-0
 #
 # BeautifulSoup utility to parse HTML & print all HTML classes, data-attribute keys, and IDs.
@@ -77,7 +77,7 @@ for val in sorted(class_list):
 for attr in sorted(data_attr_list):
     print(f"{attr}")
 
-# print("\nIDs:")
-for id_val in sorted(id_list):
-    print(f"id:{id_val}")
+## print("\nIDs:")
+# for id_val in sorted(id_list):
+#     print(f"id:{id_val}")
 

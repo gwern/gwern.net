@@ -266,7 +266,8 @@ titlecase' t = let t' = titlecase $ titlecase'' t
          cleanTitlecase = replaceMany [("<span Class=\"SMallcaps\">", "<span class=\"smallcaps\">"), ("<span class=\"SMallcaps\">", "<span class=\"smallcaps\">"), ("<span class=\"Smallcaps\">", "<span class=\"smallcaps\">")
                                        , ("=\"Logotype-tex\">", "=\"logotype-tex\">"), ("=\"Logotype-Latex\">", "=\"logotype-latex\">"), ("<span Class=\"Logotype-Tex\">", "<span class=\"logotype-tex\">"), ("<span class=\"Logotype-Tex\">", "<span class=\"logotype-tex\">")
                                        , ("class=\"Cite\"", "class=\"cite\""), ("Cite-author", "cite-author"), ("Cite-Author", "cite-author"), ("Cite-date", "cite-date"), ("Cite-Date", "cite-date"), ("Cite-joiner", "cite-joiner")
-                                       , ("Class=","class="), ("<span class=\"Date-Range\">", "<span class=\"date-range\">")]
+                                       , ("Class=","class="), ("<span class=\"Date-Range\">", "<span class=\"date-range\">")
+                                       , ("<span class=\"Poem\"", "<span class=\"poem\""), ("<div class=\"Poem\"", "<div class=\"poem\"")]
 
 capitalizeAfterHyphen :: String -> String -> String
 capitalizeAfterHyphen _ "" = ""

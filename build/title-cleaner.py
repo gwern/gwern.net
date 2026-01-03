@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2025-12-30 21:34:10 gwern"
+# When:  Time-stamp: "2026-01-01 11:22:44 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -833,6 +833,10 @@ Selection vs. Rejection"
 - "Disney Imagineering Reveals Robotic OlafCharacter"
 "Disney Imagineering Reveals Robotic Olaf Character"
 - "http://www.ldysinger.com/ThM_599d_Beg/08_exp-fet_neon/01_anenceph-donor_missed.htm <em>Virgin and Child</em>"
+""
+- "https://rajeeshknambiar.wordpress.com/2025/12/27/a-font-with-built-in-tex-syntax-highlighting/ A font with built-in <span class="logotype-tex">T<sub>e</sub>X</span> syntax highlighting—<em>Soliloquies</em>"
+"A font with built-in <span class="logotype-tex">T<sub>e</sub>X</span> syntax highlighting"
+- "Why It’s So Rare for a Wife to Be Taller Than Her Husband - The Atlantic"
 ""
 
 Task:

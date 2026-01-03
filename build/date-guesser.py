@@ -4,7 +4,7 @@
 # date-guesser.py: extract recent dates in YYYY[[-MM]-DD] format from natural language inputs or structured text like URLs
 # Author: Gwern Branwen
 # Date: 2024-08-21
-# When:  Time-stamp: "2025-12-30 14:33:48 gwern"
+# When:  Time-stamp: "2026-01-02 12:00:25 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo 'https://erikbern.com/2016/04/04/nyc-subway-math' | python date-guesser.py
@@ -1458,6 +1458,18 @@ Task examples (with explanations in '#' comments):
 - "https://www.nature.com/articles/s41562-025-02359-3" # 2025-12-23
 2025
 - "https://samuelalbanie.substack.com/p/reflections-on-2025" # 2025-12-30 but 'Reflections on $YEAR" could be published at any time during or after that $YEAR, so can't guess either 2025 *or* 2026 etc...
+""
+- "https://journals.plos.org/plosbiology/article?id=10.1371%2Fjournal.pbio.2001402" # 2017-01-12
+""
+- "https://pmc.ncbi.nlm.nih.gov/articles/PMC5116034/" # 2016-10-14
+""
+- "https://pmc.ncbi.nlm.nih.gov/articles/PMC3546926/" # 2013-01-16
+""
+- "https://craftsmanship.substack.com/p/620-draft-calligraphys-magicians" # 2025-06-20
+""
+- "https://pmc.ncbi.nlm.nih.gov/articles/PMC6911682/" # 2019-12-06
+""
+- "https://pmc.ncbi.nlm.nih.gov/articles/PMC4743270/" # 2016-01-28
 ""
 
 Task:

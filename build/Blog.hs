@@ -67,7 +67,7 @@ writeOutBlogEntries md =
 
      let idents = map (\(u,mi) -> T.unpack $ metadataItem2ID md u mi) writings
      let identsInvalid = filter (not . checkIdent) idents
-     unless (null identsInvalid) $ error $ "Blog.writeOutBlogEntries: invalid IDs which can’t be turned into good /blog/YYYY/slug paths. Offending entries: " ++ show identsInvalid ++ ". Expected format: 'gwern-YYYY/slug' or 'gwern-YYYY-slug'."
+     unless (null identsInvalid) $ error $ "Blog.writeOutBlogEntries: invalid IDs which can’t be turned into good /blog/YYYY/slug paths. Offending entries: " ++ show identsInvalid ++ ". Expected format: 'gwern-YYYY/slug' or 'gwern-YYYY-slug'. All IDs: " ++ show (zip idents writings)
 
      -- Construct paths like 'blog/YYYY/slug.md' regardless of input ID format
      let paths = isUniqueList $ map (\ident ->

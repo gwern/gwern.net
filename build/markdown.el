@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2025-12-29 10:40:33 gwern"
+;;; When:  Time-stamp: "2026-01-02 12:25:17 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1593,6 +1593,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
 
        ; '§ SECTION SIGN' is better than writing out '<strong>Section N</strong>' everywhere. It's much shorter, we already use SECTION SIGN heavily, it reduces overuse of bold, is easier to grep for, and it saves a bit of time formatting annotations (because of the lack of lookahead/lookbehind in these regexp rewrites, 'Section N' will match every time, even if it's already wrapped in <strong></strong>/**bolding**, and I have to waste time skipping them). It would be nice to symbolize Figure/Table/Experiment/Data as well, but there's no widely-understood symbol which could be used, and usually no abbreviation either. (Perhaps 'Supplement.*' could be replaced by just 'S' and 'Figure' by 'Fig.' at some point…)
        (query-replace-regexp "[Ss]ection ?\\([0-9.]+[a-hA-H]*\\)"  "§\\1" nil begin end) ; 'Section 9' → '§9', 'section 9' → '§9'
+       (query-replace-regexp "[Ss]ect\\. ?\\([0-9.]+[a-hA-H]*\\)"  "§\\1" nil begin end) ; 'Sect. 9' → '§9', 'sect. 9' → '§9'
        (query-replace-regexp "Part ?\\([0-9.]+[a-hA-H]*\\)"  "§\\1" nil begin end) ; 'Part 9' → '§9'
        (query-replace-regexp "[Ss]ections ?\\([0-9.]+[a-hA-H]*\\) and \\([0-9.]+[a-hA-H]*\\)"  "§\\1 & §\\2" nil begin end) ; 'Sections 1 and 2' → '§1 & §2'
 
@@ -2440,8 +2441,8 @@ See also margin-notes (‘html-insert-margin-note’, ‘markdown-insert-margin-
                      (buffer-substring-no-properties (region-beginning) (region-end))
                    (thing-at-point 'word t))))
     (if (and (string-prefix-p "[" content) (string-suffix-p "]" content))
-        (surround-region-or-word "<span class=\"editorial\">" "</span>")
-      (surround-region-or-word "<span class=\"editorial\">[" "]</span>"))))
+        (surround-region-or-word "<span class=editorial>" "</span>") ; NOTE: we skip quotes to make it litt safer for use in annotations given that they get substituted into figure captions sometimes
+      (surround-region-or-word "<span class=editorial>[" "]</span>"))))
 
 ;; keybindings:
 ;;; Markdown:
