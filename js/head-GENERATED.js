@@ -5207,8 +5207,9 @@ function processMainContentAndAddRewriteProcessor(processorName, processor) {
  */
 function atomicDOMUpdate(element, f) {
 	let doc = newDocument(element);
-	f(doc.firstElementChild);
+	let retval = f(doc.firstElementChild);
 	element.replaceWith(doc);
+	return retval;
 }
 
 
