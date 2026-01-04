@@ -19563,8 +19563,14 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 
 		//	The collapse block might already be prepared.
 		if (collapseBlock.classList.containsAnyOf([ "collapse-block", "collapse-inline" ])) {
-			if (isCollapsed(collapseBlock) == startExpanded)
+			if (isCollapsed(collapseBlock) == startExpanded) {
 				collapseBlock.swapClasses([ "expanded", "expanded-not" ], startExpanded ? 0 : 1);
+
+				GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", {
+					source: "prepareCollapseBlocks",
+					collapseBlock: collapseBlock
+				});
+			}
 
 			return;
 		}
@@ -19739,7 +19745,7 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 
 		//  Inject the disclosure button(s).
 		if (collapseWrapper.classList.contains("collapse-inline")) {
-			let collapseContentWrappers = Array.from(collapseWrapper.childNodes).filter(childNode => childNode.matches?.(".collapse-content-wrapper"));
+			let collapseContentWrappers = Array.from(collapseWrapper.childNodes).filter(childNode => childNode.matches(".collapse-content-wrapper"));
 			collapseContentWrappers.forEach(collapseContentWrapper => {
 				//	Additional wrapper for inline collapses.
 				wrapElement(collapseContentWrapper, "span.collapse-content-outer-wrapper");
