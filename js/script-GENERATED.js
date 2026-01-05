@@ -16348,61 +16348,67 @@ addContentLoadHandler(GW.contentLoadHandlers.processPoems = (eventInfo) => {
 	//	(This is a pre-processing step.)
 	let enjambmentSeparatorRegExp = new RegExp("^(.*?) \/ (.*)$", "s");
 	eventInfo.container.querySelectorAll("div.poem:not(.poem-html)").forEach(poem => {
-		for (let textNode of poem.textNodes) {
-			let match;
-			while (match = textNode.textContent.match(enjambmentSeparatorRegExp)) {
-				[ document.createTextNode(match[1]),
-				  newElement("BR"),
-				  newElement("SPAN", { class: "enjambment-spacer" }),
-				  document.createTextNode(match[2])
-				  ].forEach(newNode => {
-				  	textNode.parentElement.insertBefore(newNode, textNode);
-				});
-				textNode = textNode.previousSibling;
-				textNode.parentElement.removeChild(textNode.nextSibling);
+		atomicDOMUpdate(poem, (poem) => {
+			for (let textNode of poem.textNodes) {
+				let match;
+				while (match = textNode.textContent.match(enjambmentSeparatorRegExp)) {
+					[ document.createTextNode(match[1]),
+					  newElement("BR"),
+					  newElement("SPAN", { class: "enjambment-spacer" }),
+					  document.createTextNode(match[2])
+					  ].forEach(newNode => {
+						textNode.parentElement.insertBefore(newNode, textNode);
+					});
+					textNode = textNode.previousSibling;
+					textNode.parentElement.removeChild(textNode.nextSibling);
+				}
 			}
-		}
+		});
 	});
 
 	//	Separate poems into stanzas, each line a <p>.
 	eventInfo.container.querySelectorAll(".poem p").forEach(graf => {
-		if (graf.closest(".stanza"))
+		if (graf.closest(".stanza") != null)
 			return;
 
-		//	Rewrap paragraph in a div.graf.stanza .
-		let stanza = rewrapContents(graf, "div.graf.stanza");
+		let poem = graf.closest(".poem");
 
-		//	Save styling wrappers and unwrap.
-		let possibleStylingTags = [ "em" ];
-		let stylingTags = [ ];
-		while (   stanza.children.length > 0
-			   && isOnlyChild(stanza.firstElementChild)
-			   && possibleStylingTags.includes(stanza.firstElementChild.tagName.toLowerCase())) {
-			stylingTags.unshift(stanza.firstElementChild.tagName.toLowerCase());
-			unwrap(stanza.firstElementChild);
-		}
+		atomicDOMUpdate(graf, (graf) => {
+			//	Rewrap paragraph in a div.graf.stanza .
+			let stanza = rewrapContents(graf, "div.graf.stanza");
 
-		//	Paragraphize lines of stanza.
-		paragraphizeTextNodesOfElementRetainingMetadata(stanza, {
-			trimWhitespaceFromEachParagraph: (stanza.closest(".poem").classList.contains("poem-html") == false)
-		});
+			//	Save styling wrappers and unwrap.
+			let possibleStylingTags = [ "em" ];
+			let stylingTags = [ ];
+			while (   stanza.children.length > 0
+				   && isOnlyChild(stanza.firstElementChild)
+				   && possibleStylingTags.includes(stanza.firstElementChild.tagName.toLowerCase())) {
+				stylingTags.unshift(stanza.firstElementChild.tagName.toLowerCase());
+				unwrap(stanza.firstElementChild);
+			}
 
-		//	Re-apply styling wrappers (if need be).
-		for (let stylingTag of stylingTags) {
-			stanza.querySelectorAll("p").forEach(graf => {
-				let wrapper = newElement(stylingTag);
-				wrapper.append(...(graf.childNodes));
-				graf.appendChild(wrapper);
+			//	Paragraphize lines of stanza.
+			paragraphizeTextNodesOfElementRetainingMetadata(stanza, {
+				trimWhitespaceFromEachParagraph: (poem.classList.contains("poem-html") == false)
 			});
-		}
 
-		//	Apply class(es).
-		if (isNodeEmpty(stanza)) {
-			stanza.classList.add("empty-stanza");
-		} else {
-			stanza.querySelector("p:first-of-type").classList.add("first-line");
-			stanza.querySelector("p:last-of-type").classList.add("last-line");
-		}
+			//	Re-apply styling wrappers (if need be).
+			for (let stylingTag of stylingTags) {
+				stanza.querySelectorAll("p").forEach(graf => {
+					let wrapper = newElement(stylingTag);
+					wrapper.append(...(graf.childNodes));
+					graf.appendChild(wrapper);
+				});
+			}
+
+			//	Apply class(es).
+			if (isNodeEmpty(stanza)) {
+				stanza.classList.add("empty-stanza");
+			} else {
+				stanza.querySelector("p:first-of-type").classList.add("first-line");
+				stanza.querySelector("p:last-of-type").classList.add("last-line");
+			}
+		});
 	});
 
 	//	Prevent single words (“orphans” or w/e) from being alone after a line 
@@ -16410,17 +16416,19 @@ addContentLoadHandler(GW.contentLoadHandlers.processPoems = (eventInfo) => {
 	//	(Like that ^ .)
 	let lastWordRegExp = new RegExp("(.*) (\\S*)$", "s");
 	eventInfo.container.querySelectorAll(".poem p").forEach(graf => {
-		let lastTextNode = graf.lastTextNode;
-		let match = lastTextNode.textContent.match(lastWordRegExp);
-		if (match) {
-			[ document.createTextNode(match[1]),
-			  document.createTextNode("\u{00A0}"), // non-breaking space
-			  document.createTextNode(match[2])
-			  ].forEach(newNode => {
-				lastTextNode.parentElement.insertBefore(newNode, lastTextNode);
-			});
-			lastTextNode.remove();
-		}
+		atomicDOMUpdate(graf, (graf) => {
+			let lastTextNode = graf.lastTextNode;
+			let match = lastTextNode.textContent.match(lastWordRegExp);
+			if (match) {
+				[ document.createTextNode(match[1]),
+				  document.createTextNode("\u{00A0}"), // non-breaking space
+				  document.createTextNode(match[2])
+				  ].forEach(newNode => {
+					lastTextNode.parentElement.insertBefore(newNode, lastTextNode);
+				});
+				lastTextNode.remove();
+			}
+		});
 	});
 
 	//	Render enjambment in non-preformatted block poems, indicated by “ / ”.
@@ -16455,12 +16463,14 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapSlashesInPoems = (eventInfo) =>
     GWLog("wrapSlashesInPoems", "rewrite.js", 1);
 
 	eventInfo.container.querySelectorAll(".poem").forEach(poem => {
-		poem.querySelectorAll("wbr").forEach(wbr => {
-			let precedingNode = wbr.previousSibling;
-			if (precedingNode?.textContent.endsWith(" /")) {
-				precedingNode.textContent = precedingNode.textContent.slice(0, -1);
-				precedingNode.parentElement.insertBefore(elementFromHTML(`<span class="slash">/</span>`), wbr);
-			}
+		atomicDOMUpdate(poem, (poem) => {
+			poem.querySelectorAll("wbr").forEach(wbr => {
+				let precedingNode = wbr.previousSibling;
+				if (precedingNode?.textContent.endsWith(" /")) {
+					precedingNode.textContent = precedingNode.textContent.slice(0, -1);
+					precedingNode.parentElement.insertBefore(elementFromHTML(`<span class="slash">/</span>`), wbr);
+				}
+			});
 		});
 	});
 }, ">rewrite");
@@ -16473,19 +16483,21 @@ addContentLoadHandler(GW.contentLoadHandlers.wrapCaesuraMarksInPoems = (eventInf
 
 	let caesuraMarkRegExp = new RegExp("^(.*? )\\|\\|( .*)$", "s");
 	eventInfo.container.querySelectorAll(".poem").forEach(poem => {
-		for (let textNode of poem.textNodes) {
-			let match;
-			while (match = textNode.textContent.match(caesuraMarkRegExp)) {
-				[ document.createTextNode(match[1]),
-				  newElement("SPAN", { class: "caesura-mark" }, { innerHTML: "||" }),
-				  document.createTextNode(match[2])
-				  ].forEach(newNode => {
-				  	textNode.parentElement.insertBefore(newNode, textNode);
-				});
-				textNode = textNode.previousSibling;
-				textNode.parentElement.removeChild(textNode.nextSibling);
+		atomicDOMUpdate(poem, (poem) => {
+			for (let textNode of poem.textNodes) {
+				let match;
+				while (match = textNode.textContent.match(caesuraMarkRegExp)) {
+					[ document.createTextNode(match[1]),
+					  newElement("SPAN", { class: "caesura-mark" }, { innerHTML: "||" }),
+					  document.createTextNode(match[2])
+					  ].forEach(newNode => {
+						textNode.parentElement.insertBefore(newNode, textNode);
+					});
+					textNode = textNode.previousSibling;
+					textNode.parentElement.removeChild(textNode.nextSibling);
+				}
 			}
-		}
+		});
 	});
 }, ">rewrite");
 
