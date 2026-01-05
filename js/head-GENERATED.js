@@ -5203,7 +5203,8 @@ function processMainContentAndAddRewriteProcessor(processorName, processor) {
 
 	At this point, all layout processing and rendering will be done at once.
 
-	The function `f` takes a single Element and returns nothing.
+	The function `f` takes a single Element. Its return value (which can be
+	whatever) will be returned from the atomicDOMUpdate() function itself.
  */
 function atomicDOMUpdate(element, f) {
 	let doc = newDocument(element);
