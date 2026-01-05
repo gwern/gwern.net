@@ -354,7 +354,7 @@ GW.specialOccasionTestPageNamePrefix = "test-";
 GW.specialOccasions = [
     [ "halloween", isItHalloween, () => {
         //  Default to dark mode during Halloween.
-        DarkMode.defaultMode = "dark";
+        DarkMode.pageDefaultMode = "dark";
 
         //  Different special styles for light and dark mode.
         document.body.classList.remove("special-halloween-dark", "special-halloween-light");

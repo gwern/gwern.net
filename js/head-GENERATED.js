@@ -6051,7 +6051,7 @@ GW.specialOccasionTestPageNamePrefix = "test-";
 GW.specialOccasions = [
     [ "halloween", isItHalloween, () => {
         //  Default to dark mode during Halloween.
-        DarkMode.defaultMode = "dark";
+        DarkMode.pageDefaultMode = "dark";
 
         //  Different special styles for light and dark mode.
         document.body.classList.remove("special-halloween-dark", "special-halloween-light");
@@ -6419,9 +6419,9 @@ DarkMode = {
 		"light": "not all"
 	},
 
-	/*	Overridable default mode. (This is not a configuration parameter!)
+	/*	Page default mode. (This is not a configuration parameter!)
 	 */
-	defaultMode: "auto",
+	pageDefaultMode: null,
 
     /*  Returns current mode (light, dark, or auto).
      */
@@ -6432,7 +6432,7 @@ DarkMode = {
     },
 
 	//	Called by: DarkMode.setMode
-	saveMode: (newMode = DarkMode.currentMode()) => {
+	saveMode: (newMode) => {
 		GWLog("DarkMode.saveMode", "dark-mode-initial.js", 1);
 
 		if (newMode == "auto")
@@ -6446,19 +6446,28 @@ DarkMode = {
 		Called by: this file (immediately upon load)
 		Called by: DarkMode.modeSelectButtonClicked (dark-mode.js)
 	 */
-	setMode: (selectedMode = DarkMode.defaultMode) => {
+	setMode: (selectedMode, save = false) => {
 		GWLog("DarkMode.setMode", "dark-mode-initial.js", 1);
+
+		//	Don’t try to set an undefined mode.
+		if (selectedMode == undefined)
+			return;
 
 		//	Remember previous mode.
 		let previousMode = DarkMode.currentMode();
 
-		//	Save the new setting.
-		DarkMode.saveMode(selectedMode);
+		//	If we’re trying to set the already-set mode, do nothing.
+		if (selectedMode == previousMode)
+			return;
 
 		//	Set ‘media’ attribute of dark mode elements to match requested mode.
 		document.querySelectorAll(DarkMode.switchedElementsSelector).forEach(element => {
-			element.media = DarkMode.mediaAttributeValues[selectedMode];
+			element.media = DarkMode.mediaAttributeValues[selectedMode ?? "auto"];
 		});
+
+		//	Save, if needed.
+		if (save == true)
+			DarkMode.saveMode(selectedMode);
 
 		//	Fire event.
 		GW.notificationCenter.fireEvent("DarkMode.didSetMode", { previousMode: previousMode });
@@ -6478,14 +6487,17 @@ DarkMode = {
 };
 
 //	Activate saved mode.
-DarkMode.setMode();
+DarkMode.setMode(localStorage.getItem("dark-mode-setting"));
 
 //  Once the <body> element is loaded (and classes known), set specified mode.
 doWhenBodyExists(() => {
 	if (document.body.classList.contains("dark-mode"))
-		DarkMode.defaultMode = "dark";
+		DarkMode.pageDefaultMode = "dark";
 
-	DarkMode.setMode();
+	//	Page default mode takes effect if the user hasn’t picked a mode.
+	if (   DarkMode.currentMode() == "auto"
+		&& DarkMode.pageDefaultMode != null)
+		DarkMode.setMode(DarkMode.pageDefaultMode);
 });
 
 //	Set up mode change events.

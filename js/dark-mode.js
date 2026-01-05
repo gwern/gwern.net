@@ -146,11 +146,11 @@ DarkMode = { ...DarkMode,
 
 				GW.pageToolbar.expandToolbarFlashWidgetDoThing("dark-mode-selector", () => {
 					//	Actually change the mode.
-					DarkMode.setMode(selectedMode);
+					DarkMode.setMode(selectedMode, true);
 				});
 			} else {
 				//	Actually change the mode.
-				DarkMode.setMode(selectedMode);
+				DarkMode.setMode(selectedMode, true);
 			}
 		}, DarkMode, "modeSelectorInteractable");
 	},
@@ -262,15 +262,10 @@ DarkMode = { ...DarkMode,
 	spawnObservers: () => {
 		GWLog("DarkMode.spawnObserver", "dark-mode.js", 2);
 
-		let darkenIfNeeded = (entries) => {
-			if (DarkMode.currentMode() != "dark") {
-				DarkMode.defaultMode = "dark";
-				DarkMode.setMode();
-			}
-		};
-
 		document.querySelectorAll(DarkMode.activateTriggerElementsSelector).forEach(element => {
-			lazyLoadObserver(darkenIfNeeded, element, { threshold: 1.0 });
+			lazyLoadObserver((entries) => {
+				DarkMode.setMode("dark");
+			}, element, { threshold: 1.0 });
 		});
 	}
 };
