@@ -21,7 +21,7 @@ module Blog (writeOutBlogEntries) where
 
 import Data.Char (isAlphaNum)
 import Control.Monad (when, unless)
-import Data.List (isPrefixOf)
+import Data.List (isPrefixOf, isSuffixOf)
 import Data.Containers.ListUtils (nubOrd)
 import Data.Maybe (fromMaybe)
 import qualified Data.Map.Strict as M (toList, filterWithKey)
@@ -124,6 +124,7 @@ filterForAuthoredAnnotations :: Metadata -> MetadataList
 filterForAuthoredAnnotations md =
   M.toList $ M.filterWithKey (\url (_,aut,_,_,_,_,abst) ->
                                  (head url /= '/' || "/blog/" `isPrefixOf` url) &&
+                                 not ("/index" `isSuffixOf` url) &&
                                   authorU `isPrefixOf` aut &&
                                   length abst > lengthMin)
   md

@@ -865,6 +865,8 @@ canonicals = M.fromList
   , ("Hans-J. Boehm", "Hans-Juergen Boehm")
   , ("Hans-J Boehm", "Hans-Juergen Boehm")
   , ("Dave Akin", "David L. Akin")
+  , ("Komura Settai", "Settai Komura")
+  , ("Text Encoding Initiative Consortium", "TEI")
   ]
 
 -- tests: unique
@@ -2079,6 +2081,7 @@ authorLinkDB = M.fromList $
     , ("Piotr Bojanowski", "https://scholar.google.com/citations?user=lJ_oh2EAAAAJ&hl=en&oi=ao")
     , ("Qiang Liu", "https://www.cs.utexas.edu/~lqiang/")
     , ("Cliff Jones", "https://en.wikipedia.org/wiki/Cliff_Jones_(computer_scientist)")
+    , ("TEI", "https://en.wikipedia.org/wiki/Text_Encoding_Initiative")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3367,4 +3370,4 @@ authorWpLinkDB =
     , "Robert Hayden", "Michael Ondaatje", "Galway Kinnell", "Li-Young Lee", "Douwe Kiela", "Richmond Lattimore", "William T. Vollmann"
     , "Laurence Perrine", "John Milton", "Ted Hughes", "Hunter S. Thompson", "Kevin D. Williamson", "Martin Ellison"
     , "David E. Hoffman", "Paul Ginsparg", "Wojciech Kopczuk", "Robert J. White", "Dines Bjørner", "Hans-Joachim Voth"
-    , "Friedrich Nietzsche"]
+    , "Friedrich Nietzsche", "William Bialek", "E. E. Cummings"]
