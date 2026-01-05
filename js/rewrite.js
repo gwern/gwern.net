@@ -1624,10 +1624,14 @@ addContentLoadHandler(GW.contentLoadHandlers.processPoems = (eventInfo) => {
 		atomicDOMUpdate(poem, (poem) => {
 			for (let textNode of poem.textNodes) {
 				let match;
+				let step = 1;
 				while (match = textNode.textContent.match(enjambmentSeparatorRegExp)) {
 					[ document.createTextNode(match[1]),
 					  newElement("BR"),
-					  newElement("SPAN", { class: "enjambment-spacer" }),
+					  newElement("SPAN", {
+					  	class: "enjambment-spacer",
+					  	style: `--enjambment-step: ${step++}`
+					  }),
 					  document.createTextNode(match[2])
 					  ].forEach(newNode => {
 						textNode.parentElement.insertBefore(newNode, textNode);
