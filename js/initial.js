@@ -299,6 +299,9 @@ GW.notificationCenter = {
                 event is passed; the handler function is called if (and only if)
                 the condition returns true.
 
+			- ‘name’ (key) [optional]
+				Name of the handler. Used for debugging purposes.
+
             - ‘once’ (key) [optional]
                 Boolean value; if true, the handler will be removed after the
                 handler function is called once (note that if there is a
@@ -446,7 +449,8 @@ GW.notificationCenter = {
 		options = Object.assign({
 			condition: null,
 			once: false,
-			phase: ""
+			phase: "",
+			name: null
 		}, options);
 
         /*  If this event is currently firing, do not add the handler yet.
@@ -771,7 +775,14 @@ GW.notificationCenter = {
                 /*  If the condition function evaluated true, or if no condition
                     function was provided, we call the handler.
                  */
-                handler.f(eventInfo);
+                if (GW.logLevel == -1) {
+                	if (handler.options.name != null)
+	                	console.log(`${handler.options.name}: ` + GWTimer(handler.f, eventInfo));
+                	else
+	                	console.log(GWTimer(handler.f, eventInfo));
+                } else {
+	                handler.f(eventInfo);
+	            }
 
                 /*  If the handler options specified a true value for the ‘once’
                     key, we unregister this handler after having called it once.
@@ -920,14 +931,27 @@ GW.notificationCenter = {
 
 GW.contentLoadHandlers = { };
 
-/*  Add content load handler (i.e., an event handler for the GW.contentDidLoad
-    event). (Convenience function.)
+/*  Add content load handler (i.e., an event handler for the 
+	GW.contentDidLoad event). (Convenience function.)
+
+	If the ‘handler’ argument is an array, it’s assumed to contain the handler
+	name and the handler function, in that order. In that case, the handler
+	function is added to the GW.contentLoadHandlers dictionary under the given
+	name.
  */
 function addContentLoadHandler(handler, phase = "", condition = null, once = false) {
+	let handlerName = null;
+	if (handler instanceof Array)
+		[ handlerName, handler ] = handler;
+
+	if (handlerName != null)
+		GW.contentLoadHandlers[handlerName] = handler;
+
     GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", handler, {
     	phase: phase,
     	condition: condition,
-    	once: once
+    	once: once,
+    	name: handlerName
     });
 }
 
@@ -935,12 +959,25 @@ GW.contentInjectHandlers = { };
 
 /*  Add content inject handler (i.e., an event handler for the
     GW.contentDidInject event). (Convenience function.)
+
+	If the ‘handler’ argument is an array, it’s assumed to contain the handler
+	name and the handler function, in that order. In that case, the handler
+	function is added to the GW.contentInjectHandlers dictionary under the given
+	name.
  */
 function addContentInjectHandler(handler, phase = "", condition = null, once = false) {
+	let handlerName = null;
+	if (handler instanceof Array)
+		[ handlerName, handler ] = handler;
+
+	if (handlerName != null)
+		GW.contentInjectHandlers[handlerName] = handler;
+
     GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", handler, {
     	phase: phase,
     	condition: condition,
-    	once: once
+    	once: once,
+    	name: handlerName
     });
 }
 
@@ -957,7 +994,7 @@ GW.contentDidInjectEventFlags = {
     stripCollapses:     1 << 1,
     fullWidthPossible:  1 << 2,
     localize:           1 << 3,
-    mergeFootnotes:     1 << 4
+    mergeFoonotes:      1 << 4
 };
 
 /*  Event-specific pre-fire processing for the ‘GW.contentDidInject’ event.
