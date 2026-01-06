@@ -2671,8 +2671,7 @@ GW.contentDidInjectEventFlags = {
     clickable:          1 << 0,
     stripCollapses:     1 << 1,
     fullWidthPossible:  1 << 2,
-    localize:           1 << 3,
-    mergeFoonotes:      1 << 4
+    localize:           1 << 3
 };
 
 /*  Event-specific pre-fire processing for the ‘GW.contentDidInject’ event.
