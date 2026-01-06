@@ -1697,12 +1697,9 @@ addContentLoadHandler(GW.contentLoadHandlers.processPoems = (eventInfo) => {
 			let lastTextNode = graf.lastTextNode;
 			let match = lastTextNode.textContent.match(lastWordRegExp);
 			if (match) {
-				[ document.createTextNode(match[1]),
-				  document.createTextNode("\u{00A0}"), // non-breaking space
-				  document.createTextNode(match[2])
-				  ].forEach(newNode => {
-					lastTextNode.parentElement.insertBefore(newNode, lastTextNode);
-				});
+				lastTextNode.parentElement.insertBefore(document.createTextNode(
+						match[1] + "\u{00A0}" + match[2] // non-breaking space
+					), lastTextNode);
 				lastTextNode.remove();
 			}
 		});
@@ -1718,17 +1715,54 @@ addContentLoadHandler(GW.contentLoadHandlers.processPoems = (eventInfo) => {
 		});
 	});
 
-	//	Compensate for HTML in enjambed lines in preformatted poems.
-	eventInfo.container.querySelectorAll("div.poem-html").forEach(poem => {
-		poem.querySelectorAll("p").forEach(graf => {
-			//	Adjustment for HTML tags.
-			//	EXPERIMENTAL/TEMPORARY CODE.
-			if (graf.firstTextNode.textContent.startsWith("  ") == false)
+	//	Compensate for HTML in preformatted poems.
+	let inlineElementTags = [
+		"a",
+		"em",
+		"strong",
+		"i",
+		"b",
+		"code",
+		"sup",
+		"sub",
+		"span"
+	];
+	let padForHTML = (element) => {
+		element.childNodes.forEach(node => {
+			if (node.nodeType != Node.ELEMENT_NODE)
 				return;
 
-			let result = graf.innerHTML.match(/^\s+(<.+?>)/);
-			if (result)
-				graf.firstTextNode.textContent += "".padStart(result.last.length, " ");
+			//	Recurse to contains elements.
+			padForHTML(node);
+
+			//	Handle this element.
+			if (inlineElementTags.includes(node.tagName.toLowerCase())) {
+				//	Pad for end tag.
+				let endTagLength = `</${node.tagName}>`.length;
+				let insertEndPaddingWhere = node;
+				while (   insertEndPaddingWhere.parentElement.firstChild == insertEndPaddingWhere
+					   && inlineElementTags.includes(insertEndPaddingWhere.parentElement.tagName.toLowerCase()))
+					   insertEndPaddingWhere = insertEndPaddingWhere.parentElement;
+
+				insertEndPaddingWhere.parentElement.insertBefore(document.createTextNode("".padStart(endTagLength, " ")), insertEndPaddingWhere.nextSibling);
+
+				//	Pad for start tag.
+				let startTagLength = (node.outerHTML.length - node.innerHTML.length) - endTagLength;
+				let insertStartPaddingWhere = node;
+				while (   insertStartPaddingWhere.parentElement.lastChild == insertStartPaddingWhere
+					   && inlineElementTags.includes(insertStartPaddingWhere.parentElement.tagName.toLowerCase()))
+					   insertStartPaddingWhere = insertStartPaddingWhere.parentElement;
+
+				insertStartPaddingWhere.parentElement.insertBefore(document.createTextNode("".padStart(startTagLength, " ")), insertStartPaddingWhere);
+			}
+
+			//	Trim trailing whitespace.
+			element.trimWhitespaceFromEnd({ trimWithinNodes: true });
+		});
+	};
+	eventInfo.container.querySelectorAll("div.poem-html").forEach(poem => {
+		atomicDOMUpdate(poem, (poem) => {
+			poem.querySelectorAll("p").forEach(padForHTML);
 		});
 	});
 }, "rewrite");
