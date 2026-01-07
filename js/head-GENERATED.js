@@ -6440,6 +6440,12 @@ DarkMode = {
 		return Object.keys(DarkMode.mediaAttributeValues).find(key => switchedElement.media == DarkMode.mediaAttributeValues[key]);
     },
 
+	/*	Returns saved mode (light, dark, or auto).
+	 */
+	savedMode: () => {
+		return (localStorage.getItem("dark-mode-setting") ?? "auto");
+	},
+
 	//	Called by: DarkMode.setMode
 	saveMode: (newMode) => {
 		GWLog("DarkMode.saveMode", "dark-mode-initial.js", 1);
@@ -6482,9 +6488,13 @@ DarkMode = {
 		GW.notificationCenter.fireEvent("DarkMode.didSetMode", { previousMode: previousMode });
 	},
 
-	/*	Returns currently active color mode (light or dark).
-		Based on saved selector mode, plus system setting (if selected mode is
-		‘auto’).
+	/*	If called with no arguments, returns currently active color mode (light 
+		or dark), based on saved selector mode, plus system setting (if selected
+		mode is ‘auto’).
+
+		Can instead be called to determine computed mode for an arbitrary
+		combination of selected mode and a true/false value for whether the 
+		system dark mode is active.
 	 */
 	computedMode: (modeSetting = DarkMode.currentMode(), systemDarkModeActive = GW.mediaQueries.systemDarkModeActive.matches) => {
 		return ((   modeSetting == "dark" 
@@ -6496,7 +6506,7 @@ DarkMode = {
 };
 
 //	Activate saved mode.
-DarkMode.setMode(localStorage.getItem("dark-mode-setting"));
+DarkMode.setMode(DarkMode.savedMode());
 
 //  Once the <body> element is loaded (and classes known), set specified mode.
 doWhenBodyExists(() => {

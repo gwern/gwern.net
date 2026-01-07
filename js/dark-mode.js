@@ -36,7 +36,8 @@ DarkMode = { ...DarkMode,
 	/*****************/
 	/*	Configuration.
 	 */
-	activateTriggerElementsSelector: ".dark-mode-enable-when-here",
+	enableDarkModeTriggerElementsSelector: ".dark-mode-enable-when-here",
+	reEnableLightModeTriggerElementsSelector: ".light-mode-re-enable-when-here",
 
 	modeOptions: [
 		[ "auto", "Auto", "Auto Light/Dark", "Auto Light/Dark", "Set light or dark mode automatically, according to system-wide setting (Win: Start → Personalization → Colors; Mac: Apple → System-Preferences → Appearance; iOS: Settings → Display-and-Brightness; Android: Settings → Display)", "adjust-solid" ],
@@ -260,9 +261,21 @@ DarkMode = { ...DarkMode,
 
 	//	Called by: DarkMode.setup
 	spawnObservers: () => {
-		GWLog("DarkMode.spawnObserver", "dark-mode.js", 2);
+		GWLog("DarkMode.spawnObservers", "dark-mode.js", 2);
 
-		document.querySelectorAll(DarkMode.activateTriggerElementsSelector).forEach(element => {
+		/*	Only re-enable light mode if the user’s mode setting (ignoring
+			page-level overrides) is such that the site is currently set to 
+			light mode (i.e., the user has either picked light mode, or else
+			they have picked ‘auto’ and their browser/system is in light mode).
+		 */
+		document.querySelectorAll(DarkMode.reEnableLightModeTriggerElementsSelector).forEach(element => {
+			lazyLoadObserver((entries) => {
+				if (DarkMode.computedMode(DarkMode.savedMode()) == "light")
+					DarkMode.setMode("light");
+			}, element, { threshold: 1.0 });
+		});
+
+		document.querySelectorAll(DarkMode.enableDarkModeTriggerElementsSelector).forEach(element => {
 			lazyLoadObserver((entries) => {
 				DarkMode.setMode("dark");
 			}, element, { threshold: 1.0 });
