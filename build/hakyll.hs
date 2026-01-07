@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2025-06-03 10:10:46 gwern"
+When: Time-stamp: "2026-01-06 19:02:16 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -17,9 +17,9 @@ Demo command (for the full script, with all static checks & generation & optimiz
 
 import Control.Monad (when, unless, (<=<))
 import Data.Char (toLower)
-import Data.List (intercalate, isInfixOf, isSuffixOf, group, sort)
-import qualified Data.Map.Strict as M (lookup) -- keys
-import Data.Maybe (fromMaybe)
+import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf, group, sort)
+import qualified Data.Map.Strict as M (lookup)
+import Data.Maybe (isNothing, fromMaybe)
 import System.Environment (getArgs, withArgs, lookupEnv)
 import Hakyll (compile, composeRoutes, constField, fromGlob,
                symlinkFileCompiler, copyFileCompiler, dateField, defaultContext, defaultHakyllReaderOptions, field, getMetadata, getMetadataField, lookupString,
@@ -27,6 +27,7 @@ import Hakyll (compile, composeRoutes, constField, fromGlob,
                loadAndApplyTemplate, match, modificationTimeField, mapContext,
                pandocCompilerWithTransformM, route, setExtension, pathField, preprocess, boolField, toFilePath,
                templateCompiler, version, Compiler, Context, Item, unsafeCompiler, noResult, getUnderlying, escapeHtml, (.&&.), complement)
+import qualified Hakyll (Metadata)
 import Text.Pandoc (nullAttr, runPure, runWithDefaultPartials, compileTemplate,
                     def, pandocExtensions, readerExtensions, readMarkdown, writeHtml5String,
                     Block(..), HTMLMathMethod(MathJax), defaultMathJaxURL, Inline(..),
@@ -35,11 +36,12 @@ import Text.Pandoc.Shared (stringify)
 import Text.Pandoc.Walk (walk, walkM, query)
 import Network.HTTP (urlEncode)
 import System.IO.Unsafe (unsafePerformIO)
+import System.Directory (doesFileExist)
 
 import qualified Data.Text as T (append, filter, isInfixOf, pack, unpack, length, strip)
 
 -- local custom modules:
-import Image (imageMagickDimensions, addImgDimensions, imageLinkHeightWidthSet)
+import Image (imageMagickDimensions, addImgDimensions, imageLinkHeightWidthSet, isImageFilename)
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks)
 import LinkArchive (localizeLink, readArchiveMetadataAndCheck, ArchiveMetadata)
@@ -49,10 +51,10 @@ import LinkMetadata (addPageLinkWalk, readLinkMetadataSlow, writeAnnotationFragm
 import LinkMetadataTypes (Metadata, SizeDB)
 import Tags (tagsToLinksDiv)
 import Typography (linebreakingTransform, typographyTransformTemporary, titlecaseInline, completionProgressHTML)
-import Utils (printGreen, replace, deleteMany, replaceChecked, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines, delete, toHTML, getMostRecentlyModifiedDir)
+import Utils (printGreen, printRed, replace, deleteMany, replaceChecked, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines, delete, toHTML, getMostRecentlyModifiedDir)
 import Test (testAll)
-import qualified Config.Misc as C (cd, currentYear, todayDayStringUnsafe, isOlderThan, isNewWithinNDays)
-import Metadata.Date (dateRangeDuration)
+import qualified Config.Misc as C (cd, currentYear, todayDayStringUnsafe, isOlderThan, isNewWithinNDays, pageMetadataFieldsMandatory, pageTitleMaxWords, pageDescriptionMaxLength, pageDescriptionMinLength, yamlValidStatuses, yamlValidConfidences, yamlValidCssExtensions)
+import Metadata.Date (dateRangeDuration, isDate, isDatePossibleGwernnet)
 import LinkID (writeOutID2URLdb)
 import Blog (writeOutBlogEntries)
 
@@ -108,8 +110,10 @@ main =
                      let readerOptions = defaultHakyllReaderOptions
                      compile $ do
                                 ident <- getUnderlying
+                                hakyllMeta <- getMetadata ident
                                 indexpM <- getMetadataField ident "index"
                                 let indexp = fromMaybe "" indexpM
+                                unsafeCompiler $ validateYAMLMetadata hakyllMeta (toFilePath ident)
                                 pandocCompilerWithTransformM readerOptions woptions (unsafeCompiler . pandocTransform meta am sizes indexp)
                                   >>= loadAndApplyTemplate "static/template/default.html" (postCtx meta timestamp)
                                   >>= imgUrls
@@ -366,15 +370,90 @@ pandocTransform md adb sizes indexp' p = -- linkAuto needs to run before `conver
      let pbth = wrapInParagraphs $ addPageLinkWalk $ walk headerSelflinkAndSanitize pbt
      walkM (addCanPrefetch <=< imageLinkHeightWidthSet) pbth
 
--- check that a Gwern.net Pandoc Markdown file has the mandatory metadata fields (title, created, status, confidence), and does not have any unknown fields:
--- checkEssayPandocMetadata :: Pandoc -> IO ()
--- checkEssayPandocMetadata (Pandoc meta _) = let fields = M.keys (unMeta meta)
---                                                mandatoryFields = ["title", "created", "status", "confidence", "importance"]
---                                                permittedFields = ["modified", "thumbnail", "thumbnail-text", "thumbnail-css", "description", "css-extension" ] ++ mandatoryFields
---                                            in
---                                              if not (all (`elem` fields) mandatoryFields) then error $ "hakyll.checkEssayPandocMetadata: mandatory fields were not present in essay Pandoc YAML metadata field? Meta was: " ++ show meta
---                                              else if not (all (`elem` fields) permittedFields) then error $ "hakyll.checkEssayPandocMetadata: unknown fields were present in essay Pandoc YAML metadata field? Meta was: " ++ show meta
---                                              else return ()
+-- | Validate YAML metadata for Gwern.net essays.
+-- Checks: mandatory fields present, field value constraints, no unknown fields.
+-- See <https://gwern.net/style-guide#page-metadata>
+--
+-- NOTE: We use Hakyll's Metadata (not Pandoc's Meta) because Hakyll strips YAML
+-- before passing documents to Pandoc.
+validateYAMLMetadata :: Hakyll.Metadata -> FilePath -> IO ()
+validateYAMLMetadata hakyllMeta filepath = do
+  let getString :: String -> Maybe String
+      getString = flip lookupString hakyllMeta
+
+      -- NOTE: unknown field checking not implemented; would require extracting keys from Hakyll.Metadata
+
+      missingMandatory = filter (isNothing . getString) C.pageMetadataFieldsMandatory
+
+  unless (null missingMandatory || "/index.md" `isSuffixOf` filepath || "/abstract.md" `isSuffixOf` filepath) $
+    printRed $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): missing mandatory fields: " ++ show missingMandatory ++ "; metadata was: " ++ show hakyllMeta
+
+  case getString "title" of
+    Nothing -> return ()
+    Just title -> do
+      let wordCount = length $ words $ simplifiedHTMLString title
+      when (wordCount >= C.pageTitleMaxWords) $
+        printRed $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'title' must be <"++ show C.pageTitleMaxWords++" words, got " ++ show wordCount ++ ": " ++ title
+
+  -- description: length range limits
+  case getString "description" of
+    Nothing -> return ()
+    -- /blog/ posts are deliberate exceptions to the description rule, because they exist to be 'lightweight' pages which skip polish like descriptions. It would be nice if all blog posts had descriptions, and maybe at some point I'll make a LLM pass for that, but they don't.
+    Just desc -> unless ("blog/" `isPrefixOf` filepath || "newsletter/20"`isPrefixOf`filepath || "/index.md" `isSuffixOf` filepath || "/abstract.md" `isSuffixOf` filepath) $ do
+      when (length desc > C.pageDescriptionMaxLength) $
+        printRed $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'description' should be <"++show C.pageDescriptionMaxLength++" characters, was " ++ show (length desc) ++ " characters; string: " ++ show desc
+      when (length desc < C.pageDescriptionMinLength) $
+        printRed $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'description' should be >"++show C.pageDescriptionMinLength++" characters: " ++ show desc
+
+  -- created: YYYY-MM-DD or N/A
+  case getString "created" of
+    Nothing -> return ()
+    Just created -> unless ((isDate created && isDatePossibleGwernnet created) || created == "N/A") $
+      printRed $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'created' must be a plausible YYYY-MM-DD, got: " ++ created
+
+  -- modified: YYYY-MM-DD (optional field)
+  case getString "modified" of
+    Nothing -> return ()
+    Just modified -> unless ((isDate modified && isDatePossibleGwernnet modified) || modified == "N/A") $
+      printRed $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'modified' must be a plausible YYYY-MM-DD, got: " ++ modified
+
+  -- status: enumerated
+  case getString "status" of
+    Nothing -> return ()
+    Just status -> unless (status `elem` C.yamlValidStatuses) $
+      printRed $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'status' must be one of " ++ show C.yamlValidStatuses ++ ", got: " ++ status
+
+  -- confidence: Kesselman estimative word
+  case getString "confidence" of
+    Nothing -> return ()
+    Just conf -> unless (conf `elem` C.yamlValidConfidences) $
+      printRed $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'confidence' must be a Kesselman word from " ++ show C.yamlValidConfidences ++ ", got: " ++ conf
+
+  -- importance: 0-10
+  case getString "importance" of
+    Nothing -> return ()
+    Just imp -> case reads imp of
+      [(n, "")] | n >= (0 :: Int) && n <= 10 -> return ()
+      _ -> printRed $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'importance' must be 0-10, got: " ++ imp
+
+  -- css-extension: known classes only
+  case getString "css-extension" of
+    Nothing -> return ()
+    Just cssExt -> do
+      let classes = words cssExt
+          unknown = filter (`notElem` C.yamlValidCssExtensions) classes
+      unless (null unknown) $
+        printRed $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'css-extension' has unknown classes: " ++ show unknown
+
+  -- thumbnail: absolute path
+  case getString "thumbnail" of
+    Nothing -> return ()
+    Just thumb -> do
+      unless (not (null thumb) && head thumb == '/') $
+        printRed $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'thumbnail' must start with /, got: " ++ thumb
+      existsp <- System.Directory.doesFileExist (tail thumb)
+      unless (existsp && Image.isImageFilename thumb) $
+        printRed $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'thumbnail' filename either not an image filename or doesn't exist, got: " ++ thumb
 
 -- | Make headers into links to themselves, so they can be clicked on or copy-pasted easily. Put the displayed text into title-case if not already.
 --
@@ -422,3 +501,4 @@ duplicateTopHeaders = duplicates . query topHeaderTexts
 
     duplicates :: Ord a => [a] -> [a]
     duplicates = map head . filter ((>1) . length) . group . sort
+

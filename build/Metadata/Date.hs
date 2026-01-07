@@ -13,7 +13,7 @@ import Text.Regex.TDFA (Regex, makeRegex, match)
 import Data.Time (parseTimeM, defaultTimeLocale, Day)
 
 import Utils (sed, split, trim, printRed, delete, formatIntWithCommas, calculateDateSpan, formatDaysInLargestUnit)
-import qualified Config.Misc as CD (cd)
+import qualified Config.Misc as CD (cd, tomorrowDayStringUnsafe)
 import qualified Config.Typography as C (dateRangeDurationTestCases, minRange, minDuration, maxDateSecond, minDateFirst)
 
 dateTruncateBad :: String -> String
@@ -28,6 +28,10 @@ isDate d = case length (split "-" d) of
     2 -> (length d == 7)  && isValidDate "%Y-%m"    d
     3 -> (length d == 10) && isValidDate "%Y-%m-%d" d
     _ -> False
+
+-- verify that a supposed Gwern.net page creation date is not too far in the past, nor too far in the future
+isDatePossibleGwernnet :: String -> Bool
+isDatePossibleGwernnet d = isDate d && "2008-01-01" < d && CD.tomorrowDayStringUnsafe > d
 
 isYear :: String -> Bool
 isYear "" = True

@@ -186,7 +186,7 @@ generateDirectoryBlog targets = do
                        , "description: 'Index of my shorter or off-site writings, presented as annotations. (Sorted in reverse chronological order.)'"
                        , "created: 2009-01-27"
                        , "modified: " ++ lastEntryDate
-                       , "status: log"
+                       , "status: finished"
                        , "importance: 0"
                        , "css-extension: dropcap-not toc-not"
                        , "backlink: False"
@@ -252,7 +252,7 @@ generateDirectoryBlogSimplified items =
      let header = unlines ["---", "title: Recent Blog Posts"
                           , "description: 'Index of my most recent longer off-site writings, presented as annotations. (Sorted in reverse chronological order. Intended for transclusion onto the homepage index.)'"
                           , "created: 2009-01-27", "modified: " ++ lastEntryDate
-                          , "status: log", "importance: 0", "confidence: log", "css-extension: dropcaps-de-zs"
+                          , "status: finished", "importance: 0", "confidence: log", "css-extension: dropcaps-de-zs"
                           , "backlink: False", "placeholder: False", "index: True"
                           , "...\n"]
      let body = Div ("newest-list",["columns"],[]) [

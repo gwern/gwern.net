@@ -6,10 +6,9 @@ import qualified Data.Text as T (head, takeWhile, Text)
 import System.Directory (setCurrentDirectory, getHomeDirectory)
 import System.IO.Unsafe (unsafePerformIO)
 
-import Data.Time.Calendar (toModifiedJulianDay, toGregorian, addDays)
+import Data.Time.Calendar (addDays, diffDays, toModifiedJulianDay, toGregorian, Day)
 import Data.Time.Clock (getCurrentTime)
 import Data.Time (utcToLocalTime, localDay, localTimeOfDay, getCurrentTimeZone, todHour)
-import Data.Time.Calendar (Day, diffDays)
 import Data.Time.Format   (formatTime, defaultTimeLocale, parseTimeOrError)
 
 import Utils (anyInfixT, anyPrefixT)
@@ -23,6 +22,31 @@ root = unsafePerformIO getHomeDirectory ++ "/wiki/"
 
 cd :: IO ()
 cd = setCurrentDirectory root
+
+pageMetadataFieldsMandatory :: [String]
+pageMetadataFieldsMandatory = ["title", "description", "created", "status"]
+
+pageTitleMaxWords, pageDescriptionMaxLength, pageDescriptionMinLength :: Int
+pageTitleMaxWords = 13
+pageDescriptionMaxLength = 650
+pageDescriptionMinLength = 20
+-------------------
+-- YAML METADATA --
+-------------------
+-- for documentation of valid metadata enumerations, see </style-guide#page-metadata>.
+yamlValidStatuses, yamlValidConfidences, yamlValidCssExtensions :: [String]
+yamlValidStatuses = ["finished", "in progress", "draft", "notes", "abandoned", "obsolete"]
+-- Kesselman estimative words + custom extensions. See: <https://en.wikipedia.org/wiki/Words_of_estimative_probability>
+yamlValidConfidences = ["certain", "highly likely", "likely", "possible", "unlikely"
+                       , "highly unlikely", "remote", "impossible"
+                       , "log", "emotional", "fiction"]
+-- site-specific extensions:
+yamlValidCssExtensions = ["dark-mode", "dropcap-not", "dropcaps-cheshire", "dropcaps-de-zs"
+                         , "dropcaps-dropcat", "dropcaps-gene-wolfe", "dropcaps-goudy"
+                         , "dropcaps-kanzlei", "dropcaps-yinit", "extract-not", "index"
+                         , "reader-mode", "test-april-fools-2024", "test-april-fools-2025"
+                         , "test-april-fools-2026", "test-christmas", "test-easter"
+                         , "test-halloween", "toc-not"]
 
 -- NOTE: all time operations are done in the local timezone, unless otherwise specified.
 currentYear :: Int
@@ -72,6 +96,9 @@ todayDayStringUnsafe = unsafePerformIO $ dayStringFromToday 0
 
 yesterdayDayString :: IO String
 yesterdayDayString = dayStringFromToday (-1)
+
+tomorrowDayStringUnsafe :: String
+tomorrowDayStringUnsafe = unsafePerformIO $ dayStringFromToday 1
 
 -- | True when (later − earlier) > n days.
 --   Example:  isOlderThan 90 "2025-01-01" "2025-06-02"  == True
