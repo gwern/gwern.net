@@ -15140,6 +15140,7 @@ function updateBacklinksCountDisplay(backlinksBlock) {
 /*	Add within-page section backlinks.
  */
 addContentInjectHandler("addWithinPageBacklinksToSectionBacklinksBlocks", (eventInfo) => {
+	//	Some pages should not have section backlinks at all.
 	let excludedPageBodyClasses = [
 		"page-placeholder",
 		"page-404"
@@ -15152,6 +15153,10 @@ addContentInjectHandler("addWithinPageBacklinksToSectionBacklinksBlocks", (event
 		|| baseLocationForDocument(eventInfo.document)?.pathname.endsWithAnyOf(excludedPathnameSuffixes))
 		return;
 
+	/*	Content loaded in certain auxiliary content containers (sidenotes, 
+		aux-links lists) does not trigger reconstruction of within-page
+		section backlinks.
+	 */
 	let excludedContainersSelector = [
 		".sidenote-column",
 		".aux-links-list"
@@ -15159,16 +15164,21 @@ addContentInjectHandler("addWithinPageBacklinksToSectionBacklinksBlocks", (event
 	if (eventInfo.container.closest(excludedContainersSelector) != null)
 		return;
 
+	//	Links *in* these containers don’t get within-page backlinks.
 	let excludedLinkContainersSelector = [
 		"#page-metadata",
 		".aux-links-append"
 	].join(", ");
+	//	Links *to anchors in* these containers don’t get within-page backlinks.
 	let excludedTargetContainersSelector = [
 		"#backlinks-section",
 		"#similars-section",
 		"#link-bibliography-section"
 	].join(", ");
 
+	/*	Construct the mapping of section/footnote IDs that have links to them
+		(or to targets within them), to arrays of said links.
+	 */
 	let backlinksBySectionId = { };
 	let mainContentContainer = eventInfo.document.querySelector("#markdownBody") ?? eventInfo.document.querySelector(".markdownBody");
 	mainContentContainer.querySelectorAll("a.link-self").forEach(link => {
@@ -15185,6 +15195,7 @@ addContentInjectHandler("addWithinPageBacklinksToSectionBacklinksBlocks", (event
 		}
 	});
 
+	//	Construct and inject the backlinks.
 	let pageTitle = Content.referenceDataForLink(eventInfo.loadLocation).pageTitle;
 	for (let [ targetBlock, linksToTargetBlock ] of Object.values(backlinksBySectionId)) {
 		if (targetBlock.matches("li.footnote")) {
@@ -15210,11 +15221,21 @@ addContentInjectHandler("addWithinPageBacklinksToSectionBacklinksBlocks", (event
 				lastCitationBackLink.parentElement.appendChild(newCitationBackLink);
 			}
 		} else {
+			/*	Get the section backlinks block for this section. (If it didn’t
+				exist, this will have constructed it.)
+			 */
 			let sectionBacklinksBlock = getBacklinksBlockForSectionOrFootnote(targetBlock, eventInfo.document);
+
+			/*	If the backlinks block pre-existed, this will be null; if it was
+				just now created, this will be non-null (and will need to be
+				unwrapped, after we are finished constructing and injecting the
+				backlinks).
+			 */
 			let sectionBacklinksBlockIncludeWrapper = sectionBacklinksBlock.closest(".section-backlinks-include-wrapper");
 
 			//	Inject the backlink entries...
 			for (let link of linksToTargetBlock) {
+				//	Construct the backlink entry.
 				let backlinkEntry = elementFromHTML(  `<li><p class="backlink-source">`
 													+ `<a
 														href="${link.pathname}"
@@ -15234,13 +15255,16 @@ addContentInjectHandler("addWithinPageBacklinksToSectionBacklinksBlocks", (event
 													+ `</p></blockquote>`
 													+ `</li>`);
 
-				/*	If we are injecting into an existing section backlinks block,
-					then a separate inject event must be fired for the created
-					backlink.
+				/*	If we are injecting into an existing section backlinks 
+					block, then a separate inject event must be fired for the 
+					created backlink.
 				 */
 				if (sectionBacklinksBlockIncludeWrapper == null) {
+					//	Wrap in include-wrapper.
 					let backlinkEntryIncludeWrapper = newElement("DIV", { "class": "include-wrapper" });
 					backlinkEntryIncludeWrapper.append(backlinkEntry);
+
+					//	Inject wrapper.
 					sectionBacklinksBlock.querySelector(".backlinks-list").append(backlinkEntryIncludeWrapper);
 
 					//	Clear loading state of all include-links.
@@ -15259,8 +15283,13 @@ addContentInjectHandler("addWithinPageBacklinksToSectionBacklinksBlocks", (event
 						flags: flags
 					});
 
+					//	Unwrap wrapper.
 					unwrap(backlinkEntryIncludeWrapper);
 				} else {
+					/*	No need for separate include wrapper, since the whole,
+						just-created, section backlinks block is wrapped in an
+						include wrapper.
+					 */
 					sectionBacklinksBlock.querySelector(".backlinks-list").append(backlinkEntry);
 				}
 			}
@@ -15268,6 +15297,7 @@ addContentInjectHandler("addWithinPageBacklinksToSectionBacklinksBlocks", (event
 			//	Update displayed count.
 			updateBacklinksCountDisplay(sectionBacklinksBlock);
 
+			//	Fire events.
 			if (sectionBacklinksBlockIncludeWrapper != null) {
 				//	Fire load event.
 				GW.notificationCenter.fireEvent("GW.contentDidLoad", {
@@ -15291,6 +15321,7 @@ addContentInjectHandler("addWithinPageBacklinksToSectionBacklinksBlocks", (event
 					flags: flags
 				});
 
+				//	Unwrap wrapper.
 				unwrap(sectionBacklinksBlockIncludeWrapper);
 			}
 		}
@@ -19100,7 +19131,7 @@ if (GW.collapse.hoverEventsEnabled) {
 	 */
 	GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", GW.collapse.addDisableHoverEventsOnScrollListenerOnPopupSpawned = (eventInfo) => {
 		addScrollListener(GW.collapse.disableCollapseHoverEventsOnScroll, {
-			target: info.popup.scrollView
+			target: eventInfo.popup.scrollView
 		}, { name: "Collapse.addDisableHoverEventsOnScrollListenerOnPopupSpawned" });
 	});
 
