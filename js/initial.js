@@ -775,14 +775,8 @@ GW.notificationCenter = {
                 /*  If the condition function evaluated true, or if no condition
                     function was provided, we call the handler.
                  */
-                if (GW.logLevel == -1) {
-                	if (handler.options.name != null)
-	                	console.log(`${handler.options.name}: ` + GWTimer(handler.f, eventInfo));
-                	else
-	                	console.log(GWTimer(handler.f, eventInfo));
-                } else {
-	                handler.f(eventInfo);
-	            }
+				let runtime = GWTimer(handler.f, eventInfo);
+				GWLog(`\t${eventName}\t${(handler.options.name ?? "UNKNOWN_HANDLER")}\t${runtime}`, "", (handler.options.once ? 2 : 1));
 
                 /*  If the handler options specified a true value for the ‘once’
                     key, we unregister this handler after having called it once.
@@ -934,24 +928,17 @@ GW.contentLoadHandlers = { };
 /*  Add content load handler (i.e., an event handler for the 
 	GW.contentDidLoad event). (Convenience function.)
 
-	If the ‘handler’ argument is an array, it’s assumed to contain the handler
-	name and the handler function, in that order. In that case, the handler
-	function is added to the GW.contentLoadHandlers dictionary under the given
-	name.
+	Also adds the handler to the GW.contentLoadHandlers dictionary, under the
+	given name.
  */
-function addContentLoadHandler(handler, phase = "", condition = null, once = false) {
-	let handlerName = null;
-	if (handler instanceof Array)
-		[ handlerName, handler ] = handler;
-
-	if (handlerName != null)
-		GW.contentLoadHandlers[handlerName] = handler;
+function addContentLoadHandler(name, handler, phase = "", condition = null, once = false) {
+	GW.contentLoadHandlers[name] = handler;
 
     GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", handler, {
     	phase: phase,
     	condition: condition,
     	once: once,
-    	name: handlerName
+    	name: name
     });
 }
 
@@ -960,24 +947,17 @@ GW.contentInjectHandlers = { };
 /*  Add content inject handler (i.e., an event handler for the
     GW.contentDidInject event). (Convenience function.)
 
-	If the ‘handler’ argument is an array, it’s assumed to contain the handler
-	name and the handler function, in that order. In that case, the handler
-	function is added to the GW.contentInjectHandlers dictionary under the given
-	name.
+	Also adds the handler to the GW.contentInjectHandlers dictionary, under the
+	given name.
  */
-function addContentInjectHandler(handler, phase = "", condition = null, once = false) {
-	let handlerName = null;
-	if (handler instanceof Array)
-		[ handlerName, handler ] = handler;
-
-	if (handlerName != null)
-		GW.contentInjectHandlers[handlerName] = handler;
+function addContentInjectHandler(name, handler, phase = "", condition = null, once = false) {
+	GW.contentInjectHandlers[name] = handler;
 
     GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", handler, {
     	phase: phase,
     	condition: condition,
     	once: once,
-    	name: handlerName
+    	name: name
     });
 }
 

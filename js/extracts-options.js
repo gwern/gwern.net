@@ -132,7 +132,7 @@ Extracts = { ...Extracts,
 		//	Register event handler to update mode selector state.
 		GW.notificationCenter.addHandlerForEvent("Extracts.didSetMode", (info) => {
 			Extracts.updateModeSelectorState(modeSelector);
-		});
+		}, { name: "Extracts.updateModeSelectorStateOnSetMode" });
 
 		//	Update state now.
 		Extracts.updateModeSelectorState(modeSelector);

@@ -112,11 +112,11 @@ doWhenBodyExists(() => {
 });
 
 //	Set up mode change events.
-GW.notificationCenter.addHandlerForEvent("DarkMode.didSetMode", (info) => {
-	let previousComputedMode = DarkMode.computedMode(info.previousMode, GW.mediaQueries.systemDarkModeActive.matches);
+GW.notificationCenter.addHandlerForEvent("DarkMode.didSetMode", (eventInfo) => {
+	let previousComputedMode = DarkMode.computedMode(eventInfo.previousMode, GW.mediaQueries.systemDarkModeActive.matches);
 	if (previousComputedMode != DarkMode.computedMode())	
 		GW.notificationCenter.fireEvent("DarkMode.computedModeDidChange");
-});
+}, { name: "DarkMode.fireComputedModeDidChangeEventIfNeededOnSetMode" });
 doWhenMatchMedia(GW.mediaQueries.systemDarkModeActive, {
 	name: "DarkMode.fireComputedModeDidChangeEventForSystemDarkModeChange",
 	ifMatchesOrAlwaysDo: (mediaQuery) => {

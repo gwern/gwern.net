@@ -29,10 +29,10 @@ if (GW.collapse.hoverEventsEnabled) {
 	/*	Add event handler to add scroll listener to spawned popups, to
 		disable hover events when scrolling within a popup.
 	 */
-	GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", GW.collapse.addDisableHoverEventsOnScrollListenerOnPopupSpawned = (info) => {
+	GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", GW.collapse.addDisableHoverEventsOnScrollListenerOnPopupSpawned = (eventInfo) => {
 		addScrollListener(GW.collapse.disableCollapseHoverEventsOnScroll, {
 			target: info.popup.scrollView
-		});
+		}, { name: "Collapse.addDisableHoverEventsOnScrollListenerOnPopupSpawned" });
 	});
 
 	//	Enable on mousemove.
@@ -260,9 +260,7 @@ function newDisclosureButton(options) {
 	well-meaning but misguided Pandoc HTML structure rectification (namely, 
 	wrapping a span.collapse in a <p>) applied to such cases.
  */
-addContentLoadHandler(GW.contentLoadHandlers.preprocessMismatchedCollapseHTML = (eventInfo) => {
-	GWLog("preprocessMismatchedCollapseHTML", "collapse.js", 1);
-
+addContentLoadHandler("preprocessMismatchedCollapseHTML", (eventInfo) => {
 	let possiblyMismatchedAbstractCollapseBlockTags = [
 		"div",
 		"section"
@@ -285,9 +283,7 @@ addContentLoadHandler(GW.contentLoadHandlers.preprocessMismatchedCollapseHTML = 
 /***********************************************************************/
 /*  Inject disclosure buttons and otherwise prepare the collapse blocks.
  */
-addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo) => {
-	GWLog("prepareCollapseBlocks", "collapse.js", 1);
-
+addContentLoadHandler("prepareCollapseBlocks", (eventInfo) => {
 	//  Construct all collapse blocks (in correct final state).
 	eventInfo.container.querySelectorAll(".collapse").forEach(collapseBlock => {
 		//	Compensate for Pandoc putting .collapse class on headings.
@@ -531,9 +527,7 @@ addContentLoadHandler(GW.contentLoadHandlers.prepareCollapseBlocks = (eventInfo)
 /*	Ensure that top part of disclosure button (including chevron icon) matches
 	height of section heading text, for section collapses.
  */
-addContentInjectHandler(GW.contentInjectHandlers.rectifySectionCollapseLayout = (eventInfo) => {
-	GWLog("rectifySectionCollapseLayout", "collapse.js", 1);
-
+addContentInjectHandler("rectifySectionCollapseLayout", (eventInfo) => {
 	eventInfo.container.querySelectorAll("section.collapse").forEach(section => {
 		section.style.removeProperty("--collapse-toggle-top-height");
 		section.style.removeProperty("--collapse-toggle-top-icon-size");
@@ -563,9 +557,7 @@ addContentInjectHandler(GW.contentInjectHandlers.rectifySectionCollapseLayout = 
 	which have already been expanded, but which we do not want to be expanded
 	when the sections containing them appear in a new context.)
  */
-addContentInjectHandler(GW.contentInjectHandlers.collapseExpandedCollapseBlocks = (eventInfo) => {
-	GWLog("collapseExpandedCollapseBlocks", "collapse.js", 1);
-
+addContentInjectHandler("collapseExpandedCollapseBlocks", (eventInfo) => {
 	eventInfo.container.querySelectorAll(".collapse.expanded:not(.start-expanded)").forEach(collapseCollapseBlock);
 }, "<eventListeners");
 
@@ -770,9 +762,7 @@ function toggleCollapseBlockState(collapseBlock, expanding, options) {
 /*************************************************/
 /*  Add event listeners to the disclosure buttons.
  */
-addContentInjectHandler(GW.contentInjectHandlers.activateCollapseBlockDisclosureButtons = (eventInfo) => {
-	GWLog("activateCollapseBlockDisclosureButtons", "collapse.js", 1);
-
+addContentInjectHandler("activateCollapseBlockDisclosureButtons", (eventInfo) => {
     //  Add listeners to collapse block disclosure buttons.
 	eventInfo.container.querySelectorAll(".disclosure-button").forEach(disclosureButton => {
 		if (disclosureButton.actionHandler)
@@ -957,9 +947,7 @@ function expandLockCollapseBlock(collapseBlock) {
 /**********************************************************/
 /*	Removes disclosure buttons and expands collapse blocks.
  */
-addContentInjectHandler(GW.contentInjectHandlers.expandLockCollapseBlocks = (eventInfo) => {
-	GWLog("expandLockCollapseBlocks", "collapse.js", 2);
-
+addContentInjectHandler("expandLockCollapseBlocks", (eventInfo) => {
 	//  Permanently expand collapse blocks (by making them into regular blocks).
 	eventInfo.container.querySelectorAll(".collapse").forEach(expandLockCollapseBlock);
 }, "<rewrite", (info) => info.stripCollapses);
@@ -1080,17 +1068,13 @@ function revealTarget(options) {
 /***************************************************************/
 /*	On load and on hash change, reveal element targeted by hash.
  */
-GW.notificationCenter.addHandlerForEvent("GW.hashHandlingSetupDidComplete", GW.revealTargetOnPageLayoutComplete = (info) => {
-    GWLog("GW.revealTargetOnPageLayoutComplete", "collapse.js", 1);
-
+GW.notificationCenter.addHandlerForEvent("GW.hashHandlingSetupDidComplete", (eventInfo) => {
 	revealTarget();
 
-	GW.notificationCenter.addHandlerForEvent("GW.hashDidChange", GW.revealTargetOnHashChange = (info) => {
- 		GWLog("GW.revealTargetOnHashChange", "collapse.js", 1);
-
+	GW.notificationCenter.addHandlerForEvent("GW.hashDidChange", (info) => {
 		revealTarget();
-	});
-});
+	}, { name: "revealTargetOnHashChange" });
+}, { name: "revealTargetOnPageLayoutComplete" });
 
 /*******************************************************************************/
 /*	What happens when a user C-fs on a page and there is a hit *inside* a
@@ -1121,7 +1105,7 @@ document.addEventListener("selectionchange", GW.selectionChangedRevealElement = 
 	content being injected), schedule an iceberg indicator update for any
 	containing collapse blocks of the changed content.
  */
-GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", GW.collapse.updateIcebergIndicatorsOnContentChangeWithinCollapseBlocks = (eventInfo) => {
+GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", (eventInfo) => {
 	let where = eventInfo.where;
 	if (where == null)
 		return;
@@ -1133,4 +1117,4 @@ GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", GW.collapse
 
 		where = containingCollapseBlock.parentElement;
 	}
-});
+}, { name: "Collapse.updateIcebergIndicatorsOnContentChangeWithinCollapseBlocks" });

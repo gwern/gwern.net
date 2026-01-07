@@ -181,7 +181,7 @@ DarkMode = { ...DarkMode,
 		//	Register event handler to update mode selector state.
 		GW.notificationCenter.addHandlerForEvent("DarkMode.didSetMode", (info) => {
 			DarkMode.updateModeSelectorState(modeSelector);
-		});
+		}, { name: "DarkMode.updateModeSelectorStateOnSetMode" });
 
 		/*	Add active media query to update mode selector state when system dark
 			mode setting changes. (This is relevant only for the ‘auto’ setting.)

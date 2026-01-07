@@ -1091,6 +1091,7 @@ function processContainerNowAndAfterBlockLayout(container, callback) {
 	GW.notificationCenter.addHandlerForEvent("Layout.layoutProcessorDidComplete", (layoutEventInfo) => {
 		callback(container);
 	}, {
+		name: "processContainerAfterBlockLayout",
 		condition: (layoutEventInfo) => (   layoutEventInfo.container == container
 										 && layoutEventInfo.processorName == "applyBlockLayoutClassesInContainer")
 	});
@@ -1517,9 +1518,7 @@ addLayoutProcessor("applyBlockSpacingInContainer", (blockContainer) => {
 	is necessary in browsers that delay MutationObserver firing until after
 	DOMContentLoaded.)
  */
-addContentLoadHandler(GW.contentLoadHandlers.applyBlockLayoutClassesInMainDocument = (eventInfo) => {
-    GWLog("applyBlockLayoutClassesInMainDocument", "layout.js", 1);
-
+addContentLoadHandler("applyBlockLayoutClassesInMainDocument", (eventInfo) => {
 	eventInfo.container.querySelectorAll(".markdownBody").forEach(blockContainer => {
 		GW.layout.applyBlockLayoutClassesInContainer(blockContainer);
 	});
@@ -1529,9 +1528,7 @@ addContentLoadHandler(GW.contentLoadHandlers.applyBlockLayoutClassesInMainDocume
 /*	Fire “page layout complete event” on the next animation frame after the 
 	end of all rewrites triggered directly by the DOMContentLoaded event.
  */
-addContentInjectHandler(GW.contentInjectHandlers.completePageLayout = (eventInfo) => {
-    GWLog("completePageLayout", "layout.js", 1);
-
+addContentInjectHandler("completePageLayout", (eventInfo) => {
 	requestAnimationFrame(() => {
 		GW.layout.initialPageLayoutComplete = true;
 		GW.notificationCenter.fireEvent("Layout.initialPageLayoutDidComplete");
@@ -1542,9 +1539,7 @@ addContentInjectHandler(GW.contentInjectHandlers.completePageLayout = (eventInfo
 /*	Apply block layout classes to a document fragment, to make them available
 	to any other load handlers (rewrite functions).
  */
-addContentLoadHandler(GW.contentLoadHandlers.applyBlockLayoutClassesInDocumentFragment = (eventInfo) => {
-    GWLog("applyBlockLayoutClassesInDocumentFragment", "layout.js", 1);
-
+addContentLoadHandler("applyBlockLayoutClassesInDocumentFragment", (eventInfo) => {
 	GW.layout.applyBlockLayoutClassesInContainer(eventInfo.container);
 }, "<rewrite", (info) => (info.container instanceof DocumentFragment));
 
@@ -1552,10 +1547,8 @@ addContentLoadHandler(GW.contentLoadHandlers.applyBlockLayoutClassesInDocumentFr
 /*	Apply block spacing in collapse block when collapse state changes.
  */
 GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", (eventInfo) => {
-	GWLog("applyBlockSpacingInCollapseBlockOnStateChange", "layout.js", 2);
-
 	GW.layout.applyBlockSpacingInContainer(eventInfo.collapseBlock);
-});
+}, { name: "applyBlockSpacingInCollapseBlockOnStateChange" });
 
 /*************************************************/
 /*	Activate dynamic layout for the main document.

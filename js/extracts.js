@@ -236,15 +236,13 @@ Extracts = {
             add hover/click event listeners to annotated targets, to load
             annotations (fragments).
          */
-        addContentInjectHandler(Extracts.processTargetsOnContentInject = (eventInfo) => {
-            GWLog("Extracts.processTargetsOnContentInject", "extracts.js", 2);
-
+        addContentInjectHandler("Extracts.processTargetsOnContentInject", Extracts.processTargetsOnContentInject = (eventInfo) => {
             Extracts.processTargetsInContainer(eventInfo.container);
         }, "eventListeners");
 
 		//	Add handler to prevent “phantom” popins.
 		if (Extracts.popFrameProvider == Popins) {
-			addContentInjectHandler((eventInfo) => {
+			addContentInjectHandler("Extracts.cleanPopinsFromContainerOnContentInject", (eventInfo) => {
 				//	Clean any existing popins.
 				Popins.cleanPopinsFromContainer(eventInfo.container);
 			}, "rewrite");

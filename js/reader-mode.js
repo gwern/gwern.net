@@ -230,9 +230,9 @@ ReaderMode = { ...ReaderMode,
 		let updateModeSelectorStateHandler = (info) => {
 			ReaderMode.updateModeSelectorState(modeSelector);
 		};
-		GW.notificationCenter.addHandlerForEvent("ReaderMode.didSetMode", updateModeSelectorStateHandler);
-		GW.notificationCenter.addHandlerForEvent("ReaderMode.didActivate", updateModeSelectorStateHandler);
-		GW.notificationCenter.addHandlerForEvent("ReaderMode.didDeactivate", updateModeSelectorStateHandler);
+		GW.notificationCenter.addHandlerForEvent("ReaderMode.didSetMode", updateModeSelectorStateHandler, { name: "ReaderMode.updateModeSelectorStateOnSetMode" });
+		GW.notificationCenter.addHandlerForEvent("ReaderMode.didActivate", updateModeSelectorStateHandler, { name: "ReaderMode.updateModeSelectorStateOnActivate" });
+		GW.notificationCenter.addHandlerForEvent("ReaderMode.didDeactivate", updateModeSelectorStateHandler, { name: "ReaderMode.updateModeSelectorStateOnDeactivate" });
 
 		//	Update state now.
 		ReaderMode.updateModeSelectorState(modeSelector);

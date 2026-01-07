@@ -142,9 +142,7 @@ ImageFocus = {
         ImageFocus.galleryImagesSelector = suffixedSelector(ImageFocus.contentImagesSelector, ".gallery-image");
 
         //  Add handler to set up events for images in injected content.
-        addContentInjectHandler(ImageFocus.processImagesOnContentInject = (eventInfo) => {
-            GWLog("ImageFocus.processImagesOnContentInject", "image-focus.js", 2);
-
+        addContentInjectHandler("ImageFocus.processImagesOnContentInject", ImageFocus.processImagesOnContentInject = (eventInfo) => {
             ImageFocus.processImagesWithin(eventInfo.container);
 
             //  If this content is (or is being loaded into) the main page...
@@ -167,7 +165,7 @@ ImageFocus = {
         //  Add handler to focus image on hashchange event.
         GW.notificationCenter.addHandlerForEvent("GW.hashDidChange", (info) => {
             ImageFocus.focusImageSpecifiedByURL();
-        });
+        }, { name: "ImageFocus.focusImageSpecifiedByURLOnHashChange" });
 
         //  Fire setup-complete event.
         GW.notificationCenter.fireEvent("ImageFocus.setupDidComplete");

@@ -1903,7 +1903,7 @@ GW.pageToolbar = {
 
 				GW.notificationCenter.addHandlerForEvent("GW.pageToolbarCollapseStateDidChange", (eventInfo) => {
 					widget.classList.toggle("toolbar-collapsed", eventInfo.collapse);
-				});
+				}, { name: "pageToolbarWidgetUpdateCollapseClassOnToolbarCollapseStateChange" });
 			});
 		});
 
@@ -2085,14 +2085,12 @@ if (GW.isMobile() == false) doWhenPageLoaded(() => {
 /***********************************************************/
 /*	Rewrite footer logo link to also link to #top on /index.
  */
-addContentLoadHandler(GW.contentLoadHandlers.rewriteIndexFooterLogoLinkHref = (eventInfo) => {
-    GWLog("rewriteIndexFooterLogoLinkHref", "misc.js", 1);
-
+addContentLoadHandler("rewriteIndexFooterLogoLinkHref", (eventInfo) => {
     eventInfo.container.querySelectorAll("#footer-decoration-container .footer-logo").forEach(footerLogo => {
         footerLogo.href = "#top";
     });
 }, "rewrite", (info) => (   info.container == document.main
-                         && /\/(index)?$/.test(location.pathname)));
+						 && /\/(index)?$/.test(location.pathname)));
 
 
 /*******************/

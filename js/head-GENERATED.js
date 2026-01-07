@@ -2453,14 +2453,8 @@ GW.notificationCenter = {
                 /*  If the condition function evaluated true, or if no condition
                     function was provided, we call the handler.
                  */
-                if (GW.logLevel == -1) {
-                	if (handler.options.name != null)
-	                	console.log(`${handler.options.name}: ` + GWTimer(handler.f, eventInfo));
-                	else
-	                	console.log(GWTimer(handler.f, eventInfo));
-                } else {
-	                handler.f(eventInfo);
-	            }
+				let runtime = GWTimer(handler.f, eventInfo);
+				GWLog(`\t${eventName}\t${(handler.options.name ?? "UNKNOWN_HANDLER")}\t${runtime}`, "", (handler.options.once ? 2 : 1));
 
                 /*  If the handler options specified a true value for the ‘once’
                     key, we unregister this handler after having called it once.
@@ -2612,24 +2606,17 @@ GW.contentLoadHandlers = { };
 /*  Add content load handler (i.e., an event handler for the 
 	GW.contentDidLoad event). (Convenience function.)
 
-	If the ‘handler’ argument is an array, it’s assumed to contain the handler
-	name and the handler function, in that order. In that case, the handler
-	function is added to the GW.contentLoadHandlers dictionary under the given
-	name.
+	Also adds the handler to the GW.contentLoadHandlers dictionary, under the
+	given name.
  */
-function addContentLoadHandler(handler, phase = "", condition = null, once = false) {
-	let handlerName = null;
-	if (handler instanceof Array)
-		[ handlerName, handler ] = handler;
-
-	if (handlerName != null)
-		GW.contentLoadHandlers[handlerName] = handler;
+function addContentLoadHandler(name, handler, phase = "", condition = null, once = false) {
+	GW.contentLoadHandlers[name] = handler;
 
     GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", handler, {
     	phase: phase,
     	condition: condition,
     	once: once,
-    	name: handlerName
+    	name: name
     });
 }
 
@@ -2638,24 +2625,17 @@ GW.contentInjectHandlers = { };
 /*  Add content inject handler (i.e., an event handler for the
     GW.contentDidInject event). (Convenience function.)
 
-	If the ‘handler’ argument is an array, it’s assumed to contain the handler
-	name and the handler function, in that order. In that case, the handler
-	function is added to the GW.contentInjectHandlers dictionary under the given
-	name.
+	Also adds the handler to the GW.contentInjectHandlers dictionary, under the
+	given name.
  */
-function addContentInjectHandler(handler, phase = "", condition = null, once = false) {
-	let handlerName = null;
-	if (handler instanceof Array)
-		[ handlerName, handler ] = handler;
-
-	if (handlerName != null)
-		GW.contentInjectHandlers[handlerName] = handler;
+function addContentInjectHandler(name, handler, phase = "", condition = null, once = false) {
+	GW.contentInjectHandlers[name] = handler;
 
     GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", handler, {
     	phase: phase,
     	condition: condition,
     	once: once,
-    	name: handlerName
+    	name: name
     });
 }
 
@@ -4139,6 +4119,7 @@ function processContainerNowAndAfterBlockLayout(container, callback) {
 	GW.notificationCenter.addHandlerForEvent("Layout.layoutProcessorDidComplete", (layoutEventInfo) => {
 		callback(container);
 	}, {
+		name: "processContainerAfterBlockLayout",
 		condition: (layoutEventInfo) => (   layoutEventInfo.container == container
 										 && layoutEventInfo.processorName == "applyBlockLayoutClassesInContainer")
 	});
@@ -4565,9 +4546,7 @@ addLayoutProcessor("applyBlockSpacingInContainer", (blockContainer) => {
 	is necessary in browsers that delay MutationObserver firing until after
 	DOMContentLoaded.)
  */
-addContentLoadHandler(GW.contentLoadHandlers.applyBlockLayoutClassesInMainDocument = (eventInfo) => {
-    GWLog("applyBlockLayoutClassesInMainDocument", "layout.js", 1);
-
+addContentLoadHandler("applyBlockLayoutClassesInMainDocument", (eventInfo) => {
 	eventInfo.container.querySelectorAll(".markdownBody").forEach(blockContainer => {
 		GW.layout.applyBlockLayoutClassesInContainer(blockContainer);
 	});
@@ -4577,9 +4556,7 @@ addContentLoadHandler(GW.contentLoadHandlers.applyBlockLayoutClassesInMainDocume
 /*	Fire “page layout complete event” on the next animation frame after the 
 	end of all rewrites triggered directly by the DOMContentLoaded event.
  */
-addContentInjectHandler(GW.contentInjectHandlers.completePageLayout = (eventInfo) => {
-    GWLog("completePageLayout", "layout.js", 1);
-
+addContentInjectHandler("completePageLayout", (eventInfo) => {
 	requestAnimationFrame(() => {
 		GW.layout.initialPageLayoutComplete = true;
 		GW.notificationCenter.fireEvent("Layout.initialPageLayoutDidComplete");
@@ -4590,9 +4567,7 @@ addContentInjectHandler(GW.contentInjectHandlers.completePageLayout = (eventInfo
 /*	Apply block layout classes to a document fragment, to make them available
 	to any other load handlers (rewrite functions).
  */
-addContentLoadHandler(GW.contentLoadHandlers.applyBlockLayoutClassesInDocumentFragment = (eventInfo) => {
-    GWLog("applyBlockLayoutClassesInDocumentFragment", "layout.js", 1);
-
+addContentLoadHandler("applyBlockLayoutClassesInDocumentFragment", (eventInfo) => {
 	GW.layout.applyBlockLayoutClassesInContainer(eventInfo.container);
 }, "<rewrite", (info) => (info.container instanceof DocumentFragment));
 
@@ -4600,10 +4575,8 @@ addContentLoadHandler(GW.contentLoadHandlers.applyBlockLayoutClassesInDocumentFr
 /*	Apply block spacing in collapse block when collapse state changes.
  */
 GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", (eventInfo) => {
-	GWLog("applyBlockSpacingInCollapseBlockOnStateChange", "layout.js", 2);
-
 	GW.layout.applyBlockSpacingInContainer(eventInfo.collapseBlock);
-});
+}, { name: "applyBlockSpacingInCollapseBlockOnStateChange" });
 
 /*************************************************/
 /*	Activate dynamic layout for the main document.
@@ -6537,11 +6510,11 @@ doWhenBodyExists(() => {
 });
 
 //	Set up mode change events.
-GW.notificationCenter.addHandlerForEvent("DarkMode.didSetMode", (info) => {
-	let previousComputedMode = DarkMode.computedMode(info.previousMode, GW.mediaQueries.systemDarkModeActive.matches);
+GW.notificationCenter.addHandlerForEvent("DarkMode.didSetMode", (eventInfo) => {
+	let previousComputedMode = DarkMode.computedMode(eventInfo.previousMode, GW.mediaQueries.systemDarkModeActive.matches);
 	if (previousComputedMode != DarkMode.computedMode())	
 		GW.notificationCenter.fireEvent("DarkMode.computedModeDidChange");
-});
+}, { name: "DarkMode.fireComputedModeDidChangeEventIfNeededOnSetMode" });
 doWhenMatchMedia(GW.mediaQueries.systemDarkModeActive, {
 	name: "DarkMode.fireComputedModeDidChangeEventForSystemDarkModeChange",
 	ifMatchesOrAlwaysDo: (mediaQuery) => {

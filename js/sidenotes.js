@@ -894,9 +894,7 @@ Sidenotes = { ...Sidenotes,
 		/*	Add event handler to update margin note style in transcluded content
 			and pop-frames.
 		 */
-		addContentInjectHandler(GW.contentInjectHandlers.setMarginNoteStyle = (eventInfo) => {
-			GWLog("setMarginNoteStyle", "sidenotes.js", 1);
-
+		addContentInjectHandler("Sidenotes.setMarginNoteStyle", (eventInfo) => {
 			/*	Set margin notes to ‘inline’ or ‘sidenote’ style, depending on
 				what mode the page is in (based on viewport width), whether each
 				margin note is in a constrained block, and whether it’s on the
@@ -913,13 +911,11 @@ Sidenotes = { ...Sidenotes,
 		/*	When the main content loads, update the margin note style; and add
 			event listener to re-update it when the viewport width changes.
 		 */
-		addContentLoadHandler(GW.contentLoadHandlers.addUpdateMarginNoteStyleForCurrentModeActiveMediaQuery = (eventInfo) => {
-			GWLog("addUpdateMarginNoteStyleForCurrentModeActiveMediaQuery", "sidenotes.js", 1);
-
+		addContentLoadHandler("Sidenotes.addUpdateMarginNoteStyleForCurrentModeActiveMediaQuery", (eventInfo) => {
 			doWhenMatchMedia(Sidenotes.mediaQueries.marginNoteViewportWidthBreakpoint, {
 				name: "Sidenotes.updateMarginNoteStyleForCurrentMode",
 				ifMatchesOrAlwaysDo: (mediaQuery) => {
-					GW.contentInjectHandlers.setMarginNoteStyle(eventInfo);
+					GW.contentInjectHandlers["Sidenotes.setMarginNoteStyle"](eventInfo);
 				},
 				callWhenAdd: true
 			});
@@ -931,7 +927,7 @@ Sidenotes = { ...Sidenotes,
 			properly when that happens. (No ‘hashchange’ event is fired in this
 			case, so we cannot depend on the ‘GW.hashDidChange’ event handler.)
 		 */
-		addContentInjectHandler(Sidenotes.addFauxHashChangeEventsToNoteMetaLinks = (eventInfo) => {
+		addContentInjectHandler("Sidenotes.addFauxHashChangeEventsToNoteMetaLinks", Sidenotes.addFauxHashChangeEventsToNoteMetaLinks = (eventInfo) => {
 			GWLog("addFauxHashChangeEventsToNoteMetaLinks", "sidenotes.js", 1);
 
 			let selector = [
@@ -980,7 +976,7 @@ Sidenotes = { ...Sidenotes,
 			callWhenAdd: true
 		});
 
-		addContentLoadHandler(Sidenotes.rewriteCitationTargetsInLoadedContent = (eventInfo) => {
+		addContentLoadHandler("Sidenotes.rewriteCitationTargetsInLoadedContent", Sidenotes.rewriteCitationTargetsInLoadedContent = (eventInfo) => {
 			GWLog("rewriteCitationTargetsInLoadedContent", "sidenotes.js", 1);
 
 			document.querySelectorAll("a.footnote-ref").forEach(citation => {
@@ -995,16 +991,14 @@ Sidenotes = { ...Sidenotes,
 			sidenote or footnote or citation? We need to scroll appropriately,
 			and do other adjustments, just as we do when the hash updates.
 		 */
-		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", Sidenotes.updateHashTargetedElementStateAfterSidenotesDidConstruct = (eventInfo) => {
+		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", (eventInfo) => {
 			GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotePositionsDidUpdate", (eventInfo) => {
 				Sidenotes.updateStateAfterHashChange();
 			}, { once: true });
-		});
+		}, { name: "Sidenotes.updateHashTargetedElementStateAfterSidenotesDidConstruct" });
 
 		//	Add listener to update sidenote positions when media loads.
-		addContentInjectHandler(GW.contentInjectHandlers.addMediaElementLoadEventsInSidenotes = (eventInfo) => {
-			GWLog("addMediaElementLoadEventsInSidenotes", "sidenotes.js", 1);
-
+		addContentInjectHandler("Sidenotes.addMediaElementLoadEventsInSidenotes", (eventInfo) => {
 			eventInfo.container.querySelectorAll("figure img, figure video").forEach(mediaElement => {
 				mediaElement.addEventListener("load", (event) => {
 					doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
@@ -1022,7 +1016,7 @@ Sidenotes = { ...Sidenotes,
 					Also, if the hash points to a sidenote whose citation is in a
 					collapse block, expand it and all collapse blocks enclosing it.
 				 */
-				GW.notificationCenter.addHandlerForEvent("GW.hashDidChange", Sidenotes.updateStateAfterHashChange);
+				GW.notificationCenter.addHandlerForEvent("GW.hashDidChange", Sidenotes.updateStateAfterHashChange, { name: "Sidenotes.updateStateAfterHashChange" });
 
 				/*	Add event handler to (asynchronously) recompute sidenote positioning
 					when full-width media lazy-loads.
@@ -1032,7 +1026,7 @@ Sidenotes = { ...Sidenotes,
 						return;
 
 					doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
-				});
+				}, { name: "Sidenotes.updateSidenotePositionsAfterFullWidthMediaDidLoad" });
 
 				/*	Add event handler to (asynchronously) recompute sidenote positioning
 					when collapse blocks are expanded/collapsed.
@@ -1047,6 +1041,7 @@ Sidenotes = { ...Sidenotes,
 						doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
 					}
 				}, {
+					name: "Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange",
 					condition: (info) => (info.collapseBlock.closest("#markdownBody") != null)
 				});
 
@@ -1063,6 +1058,7 @@ Sidenotes = { ...Sidenotes,
 						doWhenPageLayoutComplete(Sidenotes.updateSidenotePositionsIfNeeded);
 					}
 				}, {
+					name: "Sidenotes.updateSidenotePositionsAfterContentDidChange",
 					condition: (info) => (   info.document == document
 										  && info.source == "transclude")
 				});
@@ -1081,7 +1077,7 @@ Sidenotes = { ...Sidenotes,
 				/*	Add handler to bind more sidenote-slide events if more
 					citations are injected (e.g., in a popup).
 				 */
-				addContentInjectHandler(Sidenotes.bindAdditionalSidenoteSlideEvents = (eventInfo) => {
+				addContentInjectHandler("Sidenotes.bindAdditionalSidenoteSlideEvents", Sidenotes.bindAdditionalSidenoteSlideEvents = (eventInfo) => {
 					GWLog("bindAdditionalSidenoteSlideEvents", "sidenotes.js", 3);
 
 					eventInfo.container.querySelectorAll("a.footnote-ref").forEach(citation => {
@@ -1151,7 +1147,7 @@ Sidenotes = { ...Sidenotes,
 
 					//	Update sidenote positions.
 					Sidenotes.updateSidenotePositionsIfNeeded();
-				});
+				}, { name: "Sidenotes.updateSidenotePositionsIfNeededAfterConstructSidenotes" });
 
 				/*	Add listener to lay out sidenotes when additional layout is
 					done in the main document.
@@ -1160,6 +1156,7 @@ Sidenotes = { ...Sidenotes,
 					//	Update sidenote positions.
 					Sidenotes.updateSidenotePositionsIfNeeded();
 				}, {
+					name: "Sidenotes.updateSidenotePositionsIfNeededAfterLayoutProcessorComplete",
 					condition: (info) => (   info.processorName == "applyBlockSpacingInContainer"
 										  && info.container == document.main
 										  && info.blockContainer.closest(".sidenote-column") == null)
@@ -1170,9 +1167,7 @@ Sidenotes = { ...Sidenotes,
 		/*  Construct the sidenotes whenever content is injected into the main
 			page (including the initial page load).
 		 */
-		addContentInjectHandler(GW.contentInjectHandlers.constructSidenotesWhenMainPageContentDidInject = (eventInfo) => {
-			GWLog("constructSidenotesWhenMainPageContentDidInject", "sidenotes.js", 1);
-
+		addContentInjectHandler("Sidenotes.constructSidenotesWhenMainPageContentDidInject", (eventInfo) => {
 			if (eventInfo.willUpdateFootnotes == true) {
 				GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (footnotesInjectEventInfo) => {
 					Sidenotes.constructSidenotes(eventInfo);
@@ -1189,15 +1184,13 @@ Sidenotes = { ...Sidenotes,
 		}, ">rewrite", (info) => (   info.document == document
 								  && info.container.closest(".sidenote") == null
 								  && (   (   info.localize == true
-								 		  && info.container.querySelector("a.footnote-ref") != null)
-								 	  || info.container.closest("li.footnote") != null)));
+								  		  && info.container.querySelector("a.footnote-ref") != null)
+								  	  || info.container.closest("li.footnote") != null)));
 
 		/*	Invalidate cached notes for the base location pathname of the
 			injected content when a sidenote loads.
 		 */
-		addContentInjectHandler(GW.contentInjectHandlers.invalidateNotesForCitationWhenSidenoteDidInject = (eventInfo) => {
-			GWLog("invalidateNotesForCitationWhenSidenoteDidInject", "sidenotes.js", 1);
-
+		addContentInjectHandler("Sidenotes.invalidateNotesForCitationWhenSidenoteDidInject", (eventInfo) => {
 			if (eventInfo.container.querySelector(".footnote-back") != null)
 				Notes.invalidateCachedNotesForPathname(eventInfo.loadLocation.pathname);
 		}, "<rewrite", (info) => (   info.document == document

@@ -2438,9 +2438,7 @@ Transclude = {
 /****************************/
 /*  Process transclude-links.
  */
-addContentLoadHandler(GW.contentLoadHandlers.handleTranscludes = (eventInfo) => {
-    GWLog("handleTranscludes", "transclude.js", 1);
-
+addContentLoadHandler("handleTranscludes", (eventInfo) => {
     Transclude.allIncludeLinksInContainer(eventInfo.container).forEach(includeLink => {
 		//	Store a reference to the load event info.
 		includeLink.eventInfo = eventInfo;
@@ -2453,7 +2451,7 @@ addContentLoadHandler(GW.contentLoadHandlers.handleTranscludes = (eventInfo) => 
 /*************************************************************/
 /*	Re-process when injecting. (Necessary for cloned content.)
  */
-addContentInjectHandler(GW.contentInjectHandlers.handleTranscludes = GW.contentLoadHandlers.handleTranscludes, "rewrite");
+addContentInjectHandler("handleTranscludes", GW.contentLoadHandlers["handleTranscludes"], "rewrite");
 
 /******************************************/
 /*	Add various include-link alias classes.
