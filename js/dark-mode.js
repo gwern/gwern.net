@@ -67,13 +67,15 @@ DarkMode = { ...DarkMode,
 		DarkMode.injectModeSelector();
 
 		//	Spawn observers for activate-on-scroll-down.
-		doWhenPageFullyLoaded(DarkMode.spawnObservers);
+		processMainContentAndAddRewriteProcessor("DarkMode.spawnObserversForTriggerElementsInLoadedContent", (container) => {
+			DarkMode.spawnObservers(container);
+		});
 
 		/*	Inject inline mode selectors in already-loaded content, and add
 			rewrite processor to inject any inline selectors in subsequently
 			loaded content.
 		 */
-		processMainContentAndAddRewriteProcessor("addInlineDarkModeSelectorsInLoadedContent", (container) => {
+		processMainContentAndAddRewriteProcessor("DarkMode.addInlineSelectorsInLoadedContent", (container) => {
 			container.querySelectorAll(".dark-mode-selector-inline").forEach(DarkMode.injectModeSelector);
 			container.querySelectorAll(".dark-mode-selector").forEach(DarkMode.activateModeSelector);
 		});
@@ -260,7 +262,7 @@ DarkMode = { ...DarkMode,
 	},
 
 	//	Called by: DarkMode.setup
-	spawnObservers: () => {
+	spawnObservers: (container = document.body) => {
 		GWLog("DarkMode.spawnObservers", "dark-mode.js", 2);
 
 		/*	Only re-enable light mode if the user’s mode setting (ignoring
@@ -268,14 +270,14 @@ DarkMode = { ...DarkMode,
 			light mode (i.e., the user has either picked light mode, or else
 			they have picked ‘auto’ and their browser/system is in light mode).
 		 */
-		document.querySelectorAll(DarkMode.reEnableLightModeTriggerElementsSelector).forEach(element => {
+		container.querySelectorAll(DarkMode.reEnableLightModeTriggerElementsSelector).forEach(element => {
 			lazyLoadObserver((entries) => {
 				if (DarkMode.computedMode(DarkMode.savedMode()) == "light")
 					DarkMode.setMode("light");
 			}, element, { threshold: 1.0 });
 		});
 
-		document.querySelectorAll(DarkMode.enableDarkModeTriggerElementsSelector).forEach(element => {
+		container.querySelectorAll(DarkMode.enableDarkModeTriggerElementsSelector).forEach(element => {
 			lazyLoadObserver((entries) => {
 				DarkMode.setMode("dark");
 			}, element, { threshold: 1.0 });

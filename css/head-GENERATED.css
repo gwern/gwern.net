@@ -1296,9 +1296,15 @@ p.empty-graf {
 	padding-left: var(--text-indent);
 }
 
+/*	NOTE: Disabling this, because it causes problems with e.g. dark mode switch
+	trigger elements in empty poem stanzas. Must watch out for problems caused
+	by having empty stanzas not hidden.
+		—SA 2026-01-08
+/* 
 .poem .stanza.empty-stanza {
 	display: none;
 }
+ */
 
 .poem .enjambed-line {
 	white-space: pre;
