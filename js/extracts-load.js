@@ -16,7 +16,9 @@ Extracts.config = {
 
 	/*	Selector for targets.
 	 */
-	targetElementsSelector: "a[href]",
+	targetElementsSelector: [
+		"a[href]"
+	].join(", "),
 
 	/*	Elements that shouldn’t be targets.
 	 */

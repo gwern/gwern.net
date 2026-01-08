@@ -1327,6 +1327,12 @@ audio {
     --dark-mode-invert-filter: invert(1) brightness(1.5) contrast(1.5);
 }
 
+/*	Annotated media elements.
+ */
+.link-annotated-media-wrapper .image-wrapper::after {
+	text-shadow: none;
+}
+
 
 /**********/
 /* EMBEDS */

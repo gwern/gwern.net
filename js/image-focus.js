@@ -190,7 +190,8 @@ ImageFocus = {
             small to show the usual “Click to enlarge” overlay.
          */
         container.querySelectorAll(ImageFocus.contentImagesSelector).forEach(image => {
-            if (image.closest(ImageFocus.excludedContainerElementsSelector))
+            if (   image.closest(ImageFocus.excludedContainerElementsSelector)
+            	&& image.classList.contains("image-focus-exclude-not") == false)
                 return;
 
             image.classList.add("focusable");

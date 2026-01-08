@@ -1354,6 +1354,45 @@ addContentLoadHandler("wrapFigures", (eventInfo) => {
     });
 }, "rewrite");
 
+/**************************************************************************/
+/*	Wrap annotated media in a.link-annotated, for easy integration into the
+	extracts system.
+ */
+addContentLoadHandler("addAnnotatedMediaLinkWrappers", (eventInfo) => {
+	let annotatedMediaSelector = [
+		".image-annotated"
+	].join(", ");
+
+	eventInfo.container.querySelectorAll(annotatedMediaSelector).forEach(mediaElement => {
+		if (mediaElement.closest(".link-annotated-media-wrapper") != null)
+			return;
+
+		//	Wrap the media element (or its wrapper, if present).
+		let elementToWrap = mediaElement.closest(".image-wrapper") ?? mediaElement;
+		let wrapperLink = wrapElement(elementToWrap, "a.link-annotated.link-annotated-media-wrapper");
+		wrapperLink.href = mediaElement.src;
+
+		//	Move ‘title’ attribute to the wrapper.
+		wrapperLink.title = mediaElement.title;
+		mediaElement.removeAttribute("title");
+	});
+}, "rewrite");
+
+/****************************************************************************/
+/*	Disable click events on desktop clients (i.e., those that use popups) for
+	the links that wrap annotated media elements. (On mobile clients, i.e. 
+	those that use popovers, click behavior should be taken care of by the
+	popover system itself.)
+ */
+addContentInjectHandler("disableAnnotatedMediaLinkWrapperClickEvents", (eventInfo) => {
+	eventInfo.container.querySelectorAll(".link-annotated-media-wrapper").forEach(wrapperLink => {
+		wrapperLink.onclick = () => false;
+
+		//	Normally, images in links are unfocusable. Disable that exclusion.
+		wrapperLink.querySelector("img")?.classList.add("image-focus-exclude-not");
+	});
+}, "eventListeners", (info) => (Extracts.popFrameProvider == Popups));
+
 /***************************************************************************/
 /*	Designate whether the media element backdrop should be inverted (back to
 	a light color) in dark mode.
