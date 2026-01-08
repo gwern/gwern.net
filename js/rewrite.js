@@ -3940,7 +3940,7 @@ addContentInjectHandler("activateDynamicGraphicalDropcaps", (eventInfo) => {
                 return;
 
             //  Add event handler to switch image when mode changes.
-            GW.notificationCenter.addHandlerForEvent(dropcapImage.modeChangeHandler = "DarkMode.computedModeDidChange", (info) => {
+            GW.notificationCenter.addHandlerForEvent("DarkMode.computedModeDidChange", dropcapImage.modeChangeHandler = (info) => {
                 //  Clear disabled flag, if any.
                 dropcapBlock.classList.remove("disable-dropcap");
 
