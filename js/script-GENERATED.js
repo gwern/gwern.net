@@ -6924,7 +6924,8 @@ Content = {
         media.classList.remove("icon-not", "link-page", "link-live",
             "link-annotated", "link-annotated-partial", "link-annotated-not",
             "has-annotation", "has-annotation-partial", "has-content",
-            "has-icon", "has-indicator-hook", "spawns-popup", "spawns-popin");
+            "has-icon", "has-indicator-hook", "indicator-hook-not",
+            "spawns-popup", "spawns-popin");
 
         //  Remove all `include-` classes.
         media.classList.remove(...(Array.from(media.classList).filter(x => x.startsWith("include-"))));
@@ -11502,6 +11503,9 @@ Extracts = {
 			(See links.css for how these are used.)
 		 */
 		container.querySelectorAll(".has-content").forEach(link => {
+			if (link.classList.contains("indicator-hook-not"))
+				return;
+
 			if (link.closest(Extracts.config.hooklessLinksContainersSelector) != null)
 				return;
 
@@ -12005,9 +12009,8 @@ Extracts = {
         Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, 
         	"uri", "has-annotation", "has-annotation-partial", "has-content", 
         	"link-self", "link-annotated", "link-page",
-        	"has-icon", "icon-not", "has-indicator-hook", "decorate-not",
-        	"spawns-popup", "spawns-popin",
-        	"widget-button");
+        	"has-icon", "icon-not", "has-indicator-hook", "indicator-hook-not", 
+        	"decorate-not", "spawns-popup", "spawns-popin", "widget-button");
 
 		//	Import classes from include-link.
 		if (popFrame.body.firstElementChild.dataset.popFrameClasses > "")
@@ -16092,23 +16095,40 @@ addContentLoadHandler("wrapFigures", (eventInfo) => {
     });
 }, "rewrite");
 
-/**************************************************************************/
-/*	Wrap annotated media in a.link-annotated, for easy integration into the
-	extracts system.
+/******************************************************************************/
+/*	Some media elements should have popups/popovers (e.g., annotated images). 
+	We wrap those media elements in a.link-media-wrapper, for easy integration 
+	into the extracts system.
  */
-addContentLoadHandler("addAnnotatedMediaLinkWrappers", (eventInfo) => {
-	let annotatedMediaSelector = [
-		".image-annotated"
+addContentLoadHandler("addMediaLinkWrappers", (eventInfo) => {
+	let linkWrappedMediaSelector = [
+		".image-annotated",
+		"video"
 	].join(", ");
 
-	eventInfo.container.querySelectorAll(annotatedMediaSelector).forEach(mediaElement => {
-		if (mediaElement.closest(".link-annotated-media-wrapper") != null)
+	eventInfo.container.querySelectorAll(linkWrappedMediaSelector).forEach(mediaElement => {
+		if (mediaElement.closest(".link-media-wrapper") != null)
 			return;
 
 		//	Wrap the media element (or its wrapper, if present).
 		let elementToWrap = mediaElement.closest(".image-wrapper") ?? mediaElement;
-		let wrapperLink = wrapElement(elementToWrap, "a.link-annotated.link-annotated-media-wrapper");
-		wrapperLink.href = mediaElement.src;
+		let wrapSpec = [ 
+			"a",
+			".link-media-wrapper",
+			".decorate-not",
+			".icon-not",
+			".indicator-hook-not"
+		].join("");
+		if (mediaElement.matches(".image-annotated"))
+			wrapSpec += ".link-annotated";
+		let wrapperLink = wrapElement(elementToWrap, wrapSpec);
+
+		//	Set wrapper link href.
+		if (mediaElement.matches(".image-annotated")) {
+			wrapperLink.href = mediaElement.src;
+		} else if (mediaElement.matches("video")) {
+			wrapperLink.href = videoPosterURL(mediaElement).pathname.replace("-poster.jpg", "-poster-large.jpg");
+		}
 
 		//	Move ‘title’ attribute to the wrapper.
 		wrapperLink.title = mediaElement.title;
@@ -16118,12 +16138,12 @@ addContentLoadHandler("addAnnotatedMediaLinkWrappers", (eventInfo) => {
 
 /****************************************************************************/
 /*	Disable click events on desktop clients (i.e., those that use popups) for
-	the links that wrap annotated media elements. (On mobile clients, i.e. 
-	those that use popovers, click behavior should be taken care of by the
-	popover system itself.)
+	the links that wrap media elements (such as videos, or annotated images).
+	(On mobile clients, i.e. those that use popovers, click behavior should be 
+	 taken care of by the popover system itself.)
  */
 addContentInjectHandler("disableAnnotatedMediaLinkWrapperClickEvents", (eventInfo) => {
-	eventInfo.container.querySelectorAll(".link-annotated-media-wrapper").forEach(wrapperLink => {
+	eventInfo.container.querySelectorAll(".link-media-wrapper").forEach(wrapperLink => {
 		wrapperLink.onclick = () => false;
 
 		//	Normally, images in links are unfocusable. Disable that exclusion.
@@ -16263,15 +16283,42 @@ addContentInjectHandler("prepareFullWidthFigures", (eventInfo) => {
     });
 }, "rewrite", (info) => info.fullWidthPossible);
 
+/***********************************************/
+/*	Returns the URL of a video’s poster, if any.
+ */
+function videoPosterURL(video) {
+	return URLFromString((() => {
+		if (video.poster > "")
+			return video.poster;
+
+		if (video.dataset.videoPoster > "")
+			return video.dataset.videoPoster;
+
+    	let videoURL = URLFromString(video.querySelector("source").src);
+    	if (videoURL.hostname == location.hostname)
+    		return videoURL.pathname + "-poster.jpg";
+
+		return null;
+	})());
+}
+
+/***************************************************************************/
+/*	Automatically set video poster URL from the video URL, for local videos.
+ */
+addContentLoadHandler("setVideoPosters", (eventInfo) => {
+	eventInfo.container.querySelectorAll("video:not([data-video-poster])").forEach(video => {
+    	let videoURL = URLFromString(video.querySelector("source").src);
+    	if (videoURL.hostname == location.hostname)
+    		video.dataset.videoPoster = videoURL.pathname + "-poster.jpg";
+	});
+}, "rewrite");
+
 /******************************************************************************/
 /*  There is no browser native lazy loading for <video> tag `poster` attribute,
     so we implement it ourselves.
  */
 addContentInjectHandler("lazyLoadVideoPosters", (eventInfo) => {
     eventInfo.container.querySelectorAll("video:not([poster])").forEach(video => {
-    	let videoURL = URLFromString(video.querySelector("source").src);
-    	if (videoURL.hostname == location.hostname)
-    		video.dataset.videoPoster = videoURL.pathname + "-poster.jpg";
     	if (video.dataset.videoPoster > "") {
 			lazyLoadObserver(() => {
 				video.poster = video.dataset.videoPoster;

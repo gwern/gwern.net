@@ -1329,11 +1329,8 @@ audio {
 
 /*	Annotated media elements.
  */
-.link-annotated-media-wrapper {
+.link-media-wrapper {
 	cursor: inherit;
-}
-.link-annotated-media-wrapper .image-wrapper::after {
-	text-shadow: none;
 }
 
 

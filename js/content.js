@@ -326,7 +326,8 @@ Content = {
         media.classList.remove("icon-not", "link-page", "link-live",
             "link-annotated", "link-annotated-partial", "link-annotated-not",
             "has-annotation", "has-annotation-partial", "has-content",
-            "has-icon", "has-indicator-hook", "spawns-popup", "spawns-popin");
+            "has-icon", "has-indicator-hook", "indicator-hook-not",
+            "spawns-popup", "spawns-popin");
 
         //  Remove all `include-` classes.
         media.classList.remove(...(Array.from(media.classList).filter(x => x.startsWith("include-"))));

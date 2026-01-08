@@ -129,6 +129,9 @@ Extracts = {
 			(See links.css for how these are used.)
 		 */
 		container.querySelectorAll(".has-content").forEach(link => {
+			if (link.classList.contains("indicator-hook-not"))
+				return;
+
 			if (link.closest(Extracts.config.hooklessLinksContainersSelector) != null)
 				return;
 
@@ -632,9 +635,8 @@ Extracts = {
         Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, 
         	"uri", "has-annotation", "has-annotation-partial", "has-content", 
         	"link-self", "link-annotated", "link-page",
-        	"has-icon", "icon-not", "has-indicator-hook", "decorate-not",
-        	"spawns-popup", "spawns-popin",
-        	"widget-button");
+        	"has-icon", "icon-not", "has-indicator-hook", "indicator-hook-not", 
+        	"decorate-not", "spawns-popup", "spawns-popin", "widget-button");
 
 		//	Import classes from include-link.
 		if (popFrame.body.firstElementChild.dataset.popFrameClasses > "")
