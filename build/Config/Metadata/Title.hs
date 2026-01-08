@@ -74,7 +74,7 @@ badStrings = ["", " ", "Quanta Magazine", "OSF", "CAIDA Resource Catalog", "Blog
      , "No Moods, Ads or Cutesy Fucking Icons", "Bloomberg", "PROSPERO", "archive.is", "Notion", "Yahoo", "inc.com"
      , "Colin Woodbury", "Machine Learning", "Discovery", "Client Challenge", "X Cancelled", "Minusx", "Mariano Gappa’s Blog"
      , "HAMIDI USA", "Shtetl-Optimized", "Signals and Threads", "The Yale Review", "archive.ph", "Renato Athaydes", "Rate limit"
-     , "The Anime Cafe", "life in a monospace typeface", "News Details", "GlyphDrawing.Club -blog", "Informasi Resmi Game Online Terkini Cuan", "Zotero", "Sign in - Google Accounts", "Virgin and Child"]
+     , "The Anime Cafe", "life in a monospace typeface", "News Details", "GlyphDrawing.Club -blog", "Informasi Resmi Game Online Terkini Cuan", "Zotero", "Sign in - Google Accounts", "Virgin and Child", "Michael Wolf", "L.B.Stanza"]
 
 -- A list of bad substrings to remove. Note this is used with `Utils.deleteMixedMany` to specialize down to either prefix or suffix deletion based on the trailing vs leading space (respectively). This should greatly reduce the risk of unintended deletions.
 -- testing: unique list
@@ -183,4 +183,4 @@ stringDelete = [" - The Public Domain Review"
             , " - Dmitry Brant", "Geoff Greer’s site: ", "Wes McKinney - ", " - an article by Chris Morgan", "First Known When Lost: "
             , " - by Bryan Caplan", "Tom Lehman - ", "small clever rooms: ", "research!rsc: ", " - Debbie Maddy"
             , " - Keith Woods", " - by Zachary Brown", " - Anime News Network", " -blog", " - by JP Aumasson - bfSwA"
-            , "MindAndMuscle.net - ", " \\ Anthropic", " (Maurycy's blog)", " - Soliloquies"]
+            , "MindAndMuscle.net - ", " \\ Anthropic", " (Maurycy's blog)", " - Soliloquies", " - iA"]

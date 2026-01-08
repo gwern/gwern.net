@@ -80,7 +80,8 @@ cleanAuthorsFixedRewrites = [(". . ", ". "), ("?",""), (",,", ","), (", ,", ", "
 authorLinkBlacklist :: [T.Text]
 authorLinkBlacklist = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"] ++
                     ["1890\8211\&1974", "1902","1906","1916","1922","1928",":", "English Wikipedia", "Wiel", "Word", "Rau", "Qi"
-                    , "Pontifex", "Postma", "Poinar", "Pier", "Pika", "van Buuren","van Os","van den Hurk", "van der Ploeg", "Anonymous"]
+                    , "Pontifex", "Postma", "Poinar", "Pier", "Pika", "van Buuren","van Os","van den Hurk", "van der Ploeg"
+                    , "Anonymous", "Et al", "et al"]
 
 -- Odd author names which look like a typo or error, but are real or the best that can be done. Used in `LinkMetadata.readLinkMetadataAndCheck`.
 -- Config tests: unique list
@@ -867,6 +868,7 @@ canonicals = M.fromList
   , ("Dave Akin", "David L. Akin")
   , ("Komura Settai", "Settai Komura")
   , ("Text Encoding Initiative Consortium", "TEI")
+  , ("S Abbas Raza", "S. Abbas Raza")
   ]
 
 -- tests: unique
@@ -916,7 +918,8 @@ canonicalsWithInitials =
   , "Douglas F. Levinson", "Blair H. Smith", "Michael J. Wreen", "Andreas J. Forstner", "Clair L. Stong"
   , "Charles Allen Moser", "John A. Leslie", "Robert D. Putnam", "Joel D. Cooper", "Duane A. Compton"
   , "Timo E. Saaristo", "Arthur L. Caplan", "Robert T. Croyle", "Barbara K. Rimer", "Walter J. Ong"
-  , "Samuel S. Wilks", "Kenneth Lee Pike", "Richard E. Turner", "Phil Hyoun Lee", "Karthik Rajagopal Narasimhan", "Hunter S. Thompson", "Robert C. Kaplan", "Richard N. Bergman"]
+  , "Samuel S. Wilks", "Kenneth Lee Pike", "Richard E. Turner", "Phil Hyoun Lee", "Karthik Rajagopal Narasimhan"
+  , "Hunter S. Thompson", "Robert C. Kaplan", "Richard N. Bergman", "Philip B. Mitchell", "Peter S. Chines", "Patrick S. Li"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -2078,10 +2081,20 @@ authorLinkDB = M.fromList $
     , ("Hans-Juergen Boehm", "https://www.hboehm.info/")
     , ("Zhengdong Wang", "https://zhengdongwang.com/")
     , ("Daan Wierstra", "https://scholar.google.com/citations?user=aDbsf28AAAAJ")
-    , ("Piotr Bojanowski", "https://scholar.google.com/citations?user=lJ_oh2EAAAAJ&hl=en&oi=ao")
+    , ("Piotr Bojanowski", "https://scholar.google.com/citations?user=lJ_oh2EAAAAJ")
     , ("Qiang Liu", "https://www.cs.utexas.edu/~lqiang/")
     , ("Cliff Jones", "https://en.wikipedia.org/wiki/Cliff_Jones_(computer_scientist)")
     , ("TEI", "https://en.wikipedia.org/wiki/Text_Encoding_Initiative")
+    , ("Will Boyd", "https://codersblock.com/about/")
+    , ("iA", "https://ia.net/about-us")
+    , ("Dave Bonta", "https://www.vianegativa.us/2010/06/how-to-format-poetry-on-the-web-an-incomplete-guide/")
+    , ("Philip B. Mitchell", "https://scholar.google.com/citations?user=RO7OANoAAAAJ")
+    , ("Peter S. Chines", "https://scholar.google.com/scholar?q=Peter%20S.%20Chines")
+    , ("Oleksandr Frei", "https://www.med.uio.no/klinmed/english/people/aca/oleksanf/")
+    , ("Steven Byrnes", "https://www.lesswrong.com/users/steve2152")
+    , ("S. Abbas Raza", "https://3quarksdaily.com/about-the-editors")
+    , ("Michael Wolf", "https://wol.fm/index.html")
+    , ("Patrick S. Li", "http://patricksli.com/")
     ]
 
 -- config tests: none, tested via `authorLinkDB` as a whole
@@ -3370,4 +3383,4 @@ authorWpLinkDB =
     , "Robert Hayden", "Michael Ondaatje", "Galway Kinnell", "Li-Young Lee", "Douwe Kiela", "Richmond Lattimore", "William T. Vollmann"
     , "Laurence Perrine", "John Milton", "Ted Hughes", "Hunter S. Thompson", "Kevin D. Williamson", "Martin Ellison"
     , "David E. Hoffman", "Paul Ginsparg", "Wojciech Kopczuk", "Robert J. White", "Dines Bjørner", "Hans-Joachim Voth"
-    , "Friedrich Nietzsche", "William Bialek", "E. E. Cummings"]
+    , "Friedrich Nietzsche", "William Bialek", "E. E. Cummings", "Simon Willison", "Karen Greenlee"]

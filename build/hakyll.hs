@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2026-01-06 19:02:16 gwern"
+When: Time-stamp: "2026-01-07 10:20:12 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -51,7 +51,7 @@ import LinkMetadata (addPageLinkWalk, readLinkMetadataSlow, writeAnnotationFragm
 import LinkMetadataTypes (Metadata, SizeDB)
 import Tags (tagsToLinksDiv)
 import Typography (linebreakingTransform, typographyTransformTemporary, titlecaseInline, completionProgressHTML)
-import Utils (printGreen, printRed, replace, deleteMany, replaceChecked, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines, delete, toHTML, getMostRecentlyModifiedDir)
+import Utils (printGreen, replace, deleteMany, replaceChecked, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines, delete, toHTML, getMostRecentlyModifiedDir)
 import Test (testAll)
 import qualified Config.Misc as C (cd, currentYear, todayDayStringUnsafe, isOlderThan, isNewWithinNDays, pageMetadataFieldsMandatory, pageTitleMaxWords, pageDescriptionMaxLength, pageDescriptionMinLength, yamlValidStatuses, yamlValidConfidences, yamlValidCssExtensions)
 import Metadata.Date (dateRangeDuration, isDate, isDatePossibleGwernnet)
@@ -385,15 +385,15 @@ validateYAMLMetadata hakyllMeta filepath = do
 
       missingMandatory = filter (isNothing . getString) C.pageMetadataFieldsMandatory
 
-  unless (null missingMandatory || "/index.md" `isSuffixOf` filepath || "/abstract.md" `isSuffixOf` filepath) $
-    printRed $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): missing mandatory fields: " ++ show missingMandatory ++ "; metadata was: " ++ show hakyllMeta
+  unless (null missingMandatory || "/index.md" `isSuffixOf` filepath || "/abstract.md" `isSuffixOf` filepath || "newsletter/20"`isPrefixOf`filepath) $
+    error $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): missing mandatory fields: " ++ show missingMandatory ++ "; metadata was: " ++ show hakyllMeta
 
   case getString "title" of
     Nothing -> return ()
     Just title -> do
       let wordCount = length $ words $ simplifiedHTMLString title
       when (wordCount >= C.pageTitleMaxWords) $
-        printRed $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'title' must be <"++ show C.pageTitleMaxWords++" words, got " ++ show wordCount ++ ": " ++ title
+        error $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'title' must be <"++ show C.pageTitleMaxWords++" words, got " ++ show wordCount ++ ": " ++ title
 
   -- description: length range limits
   case getString "description" of
@@ -401,40 +401,40 @@ validateYAMLMetadata hakyllMeta filepath = do
     -- /blog/ posts are deliberate exceptions to the description rule, because they exist to be 'lightweight' pages which skip polish like descriptions. It would be nice if all blog posts had descriptions, and maybe at some point I'll make a LLM pass for that, but they don't.
     Just desc -> unless ("blog/" `isPrefixOf` filepath || "newsletter/20"`isPrefixOf`filepath || "/index.md" `isSuffixOf` filepath || "/abstract.md" `isSuffixOf` filepath) $ do
       when (length desc > C.pageDescriptionMaxLength) $
-        printRed $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'description' should be <"++show C.pageDescriptionMaxLength++" characters, was " ++ show (length desc) ++ " characters; string: " ++ show desc
+        error $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'description' should be <"++show C.pageDescriptionMaxLength++" characters, was " ++ show (length desc) ++ " characters; string: " ++ show desc
       when (length desc < C.pageDescriptionMinLength) $
-        printRed $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'description' should be >"++show C.pageDescriptionMinLength++" characters: " ++ show desc
+        error $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'description' should be >"++show C.pageDescriptionMinLength++" characters: " ++ show desc
 
   -- created: YYYY-MM-DD or N/A
   case getString "created" of
     Nothing -> return ()
     Just created -> unless ((isDate created && isDatePossibleGwernnet created) || created == "N/A") $
-      printRed $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'created' must be a plausible YYYY-MM-DD, got: " ++ created
+      error $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'created' must be a plausible YYYY-MM-DD, got: " ++ created
 
   -- modified: YYYY-MM-DD (optional field)
   case getString "modified" of
     Nothing -> return ()
     Just modified -> unless ((isDate modified && isDatePossibleGwernnet modified) || modified == "N/A") $
-      printRed $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'modified' must be a plausible YYYY-MM-DD, got: " ++ modified
+      error $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'modified' must be a plausible YYYY-MM-DD, got: " ++ modified
 
   -- status: enumerated
   case getString "status" of
     Nothing -> return ()
     Just status -> unless (status `elem` C.yamlValidStatuses) $
-      printRed $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'status' must be one of " ++ show C.yamlValidStatuses ++ ", got: " ++ status
+      error $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'status' must be one of " ++ show C.yamlValidStatuses ++ ", got: " ++ status
 
   -- confidence: Kesselman estimative word
   case getString "confidence" of
     Nothing -> return ()
     Just conf -> unless (conf `elem` C.yamlValidConfidences) $
-      printRed $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'confidence' must be a Kesselman word from " ++ show C.yamlValidConfidences ++ ", got: " ++ conf
+      error $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'confidence' must be a Kesselman word from " ++ show C.yamlValidConfidences ++ ", got: " ++ conf
 
   -- importance: 0-10
   case getString "importance" of
     Nothing -> return ()
     Just imp -> case reads imp of
       [(n, "")] | n >= (0 :: Int) && n <= 10 -> return ()
-      _ -> printRed $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'importance' must be 0-10, got: " ++ imp
+      _ -> error $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'importance' must be 0-10, got: " ++ imp
 
   -- css-extension: known classes only
   case getString "css-extension" of
@@ -443,17 +443,17 @@ validateYAMLMetadata hakyllMeta filepath = do
       let classes = words cssExt
           unknown = filter (`notElem` C.yamlValidCssExtensions) classes
       unless (null unknown) $
-        printRed $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'css-extension' has unknown classes: " ++ show unknown
+        error $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'css-extension' has unknown classes: " ++ show unknown
 
   -- thumbnail: absolute path
   case getString "thumbnail" of
     Nothing -> return ()
     Just thumb -> do
       unless (not (null thumb) && head thumb == '/') $
-        printRed $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'thumbnail' must start with /, got: " ++ thumb
+        error $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'thumbnail' must start with /, got: " ++ thumb
       existsp <- System.Directory.doesFileExist (tail thumb)
       unless (existsp && Image.isImageFilename thumb) $
-        printRed $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'thumbnail' filename either not an image filename or doesn't exist, got: " ++ thumb
+        error $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'thumbnail' filename either not an image filename or doesn't exist, got: " ++ thumb
 
 -- | Make headers into links to themselves, so they can be clicked on or copy-pasted easily. Put the displayed text into title-case if not already.
 --
