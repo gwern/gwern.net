@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-01-07 21:43:19 gwern"
+# When:  Time-stamp: "2026-01-07 21:57:40 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -343,6 +343,11 @@ else
     #
     # For very short videos (<1s), we fall back to a single enlarged frame since there's
     # insufficient temporal content for meaningful sampling.
+    #
+    # TODO: turn into regular annotations and use video LLMs to transcribe & summarize video content using full Gwern.net context.
+    # As a medium-term hack, the frontend JS will special-case knowledge of "$VIDEO-poster-large.jpg", but the right thing long-term
+    # would be to make videos annotated (ie. `.video-annotated` etc) and then on hover simply pops up the annotation, which happens
+    # to transclude a filmstrip, as well as everything else like ffmpeg-sourced metadata, summary, transcription of audio etc.
     generate_large_poster() {
         set -e
         local VIDEO="$1"

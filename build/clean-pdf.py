@@ -4,7 +4,7 @@
 # clean-pdf.py: fix formatting & spelling errors in malformatted text (especially PDFs)
 # Author: Gwern Branwen
 # Date: 2020-07-03
-# When:  Time-stamp: "2025-12-30 21:57:20 gwern"
+# When:  Time-stamp: "2026-01-05 14:23:35 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XYZ" xclip -o | python clean-pdf.py
@@ -205,8 +205,10 @@ The intensity of the child’s fear depends for the most part upon the family re
 Brianna I. Flynn, Emily M. Javan, Eugenia Lin, Zoe Trutner, Karl Koenig, Kenoma O. Anighoro, Eucharist Kun, Alaukik Gupta, Tarjinder Singh, Prakash Jayakumar, Vagheesh M. Narasimhan
 - <text>Nakagawa, Thomas1; Zollinger, Chuck2; Chao, Jeff3; Hill, Rebecca4; Angle, Sara2; Pilot, Markeith4</text>
 Thomas Nakagawa, Chuck Zollinger, Jeff Chao, Rebecca Hill, Sara Angle, Markeith Pilot
+- <text>Proportionalfontsinpretagsdonotpreservewysiwygwhitespaceorverticalalignment</text>
+Proportional fonts in <code>pre</code> tags do not preserve WYSIWYG whitespace or vertical alignment
 
-[End of examples. Reminder: your job is to clean PDF copy-pastes of cruft and garbage.]
+[End of examples. Reminder: your job is to clean PDF copy-pastes of cruft and garbage, and fix their formatting.]
 
 Input:
 <text>{target}</text>

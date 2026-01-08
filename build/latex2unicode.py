@@ -4,7 +4,7 @@
 # latex2unicode.py: Convert a simple inline TeX/LaTeX (aimed at ArXiv abstracts) into Unicode+HTML+CSS, using the OA API.
 # Author: Gwern Branwen
 # Date: 2023-06-28
-# When:  Time-stamp: "2026-01-02 11:31:39 gwern"
+# When:  Time-stamp: "2026-01-05 09:28:51 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python latex2unicode.py
@@ -266,6 +266,10 @@ DyT(<em>x</em>) = tanh(α<em>x</em>)
 <em>E</em> ∈ ℝ<sup><em>m</em> × <em>n</em></sup>
 - 'z = \\frac{147.21 - 147.64}{0.145} = -2.96'
 <em>z</em> = (147.21 − 147.64)⧸0.145 = −2.96
+- '$12,087$'
+12,087
+- '1,600'
+1,600
 
 Task:
 
