@@ -16431,6 +16431,9 @@ addContentLoadHandler("processPoems", (eventInfo) => {
 	eventInfo.container.querySelectorAll(".poem p").forEach(graf => {
 		atomicDOMUpdate(graf, (graf) => {
 			let lastTextNode = graf.lastTextNode;
+			if (lastTextNode == null)
+				return;
+
 			let match = lastTextNode.textContent.match(lastWordRegExp);
 			if (match) {
 				lastTextNode.parentElement.insertBefore(document.createTextNode(
