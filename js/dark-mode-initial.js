@@ -134,5 +134,5 @@ doWhenMatchMedia(GW.mediaQueries.systemDarkModeActive, {
 		if (previousComputedMode != DarkMode.computedMode())
 			GW.notificationCenter.fireEvent("DarkMode.computedModeDidChange");
 	},
-	callWhenAdd: true
+	callWhenAdd: false
 });
