@@ -37,6 +37,7 @@ Typography = {
 		}
 		return specifiedReplacements;
 	},
+
 	replacementTypes: {
 		NONE:			0x0000,
 		QUOTES:			0x0001,
@@ -51,6 +52,7 @@ Typography = {
 		SYMBOLS:        0x0200,
 		CLEAN: 			(0x0040 + 0x0080 + 0x0100)
 	},
+
 	replacementDefinitionGroups: {
 		quotes: [
 			// triple prime
@@ -135,6 +137,9 @@ Typography = {
 			[ /\u2731/, '*' ]
 		]
 	},
+
+	separatorsRegExp: null,
+
 	processString: (str, replacementTypes = Typography.replacementTypes.NONE, segments = null) => {
 		if (segments == null)
 			segments = [ str.length ];
@@ -176,8 +181,11 @@ Typography = {
 
 		return str;
 	},
+
 	excludedTags: [ 'PRE', 'SCRIPT', 'STYLE', 'NOSCRIPT' ],
+
 	unmodifiedTags: [ 'CODE '],
+
 	processElement: (element, replacementTypes = Typography.replacementTypes.NONE, rectifyWordBreaks = true) => {
 		if (Typography.excludedTags.includes(element.nodeName))
 			return null;
@@ -219,17 +227,24 @@ Typography = {
 
 		return text;
 	},
+
 	rectifyWordBreaks: (element) => {
 		let replacements = [ ];
 		for (let node of element.childNodes) {
 			if (node.nodeType === Node.ELEMENT_NODE) {
 				Typography.rectifyWordBreaks(node);
 			} else if (node.nodeType === Node.TEXT_NODE) {
-				let sepRegExp = new RegExp(Typography.replacementDefinitionGroups.separators.map(x => x[0].source).join("|"), "g");
+				//	Construct the regexp, if needed.
+				if (Typography.separatorsRegExp == null)
+					Typography.separatorsRegExp = new RegExp(Typography.replacementDefinitionGroups.separators.map(x => x[0].source).join("|"), "g");
+
+				//	Reset the regexp object.
+				Typography.separatorsRegExp.lastIndex = 0;
+
 				let parts = [ ];
 				let start = 0;
 				let match = null;
-				while (match = sepRegExp.exec(node.textContent)) {
+				while (match = Typography.separatorsRegExp.exec(node.textContent)) {
 					parts.push([ start, match.index ]);
 					start = match.index + match[0].length;
 				}
