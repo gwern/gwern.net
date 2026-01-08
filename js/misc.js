@@ -1354,7 +1354,7 @@ function resetDropcapInBlock(block) {
     let dropcapImage = block.querySelector("img.dropcap");
     if (dropcapImage) {
         //  Remove mode change handler.
-        GW.notificationCenter.removeHandlerForEvent(dropcapImage.modeChangeHandler, "DarkMode.computedModeDidChange");
+        GW.notificationCenter.removeHandlerForEvent("DarkMode.computedModeDidChange", dropcapImage.modeChangeHandler);
 
         //  Remove graphical dropcap.
         dropcapImage.remove();
