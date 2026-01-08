@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-01-06 22:49:24 gwern"
+# When:  Time-stamp: "2026-01-07 21:43:19 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -105,7 +105,7 @@ else
           ## NOTE: domains which are bad or unfixable are handled by a later lint. This is only for safe rewrites.
 
           ## link cruft rewrites:
-          s '&hl=en&oi=ao' ''; s '&hl=en' ''; s '?hl=en&' '?'; s '?hl=en' ''; s '?usp=sharing' ''; s '?via%3Dihub' ''; s '.html?pagewanted=all' '.html'; s '&feature=youtu.be' ''; s '?app=desktop&' '?'; s ':443/' '/'; s ':80/' '/'; s '?s=r' ''; s '?s=61' ''; s '?sd=pf' ''; s '?ref=The+Browser-newsletter' ''; s '?ref=thebrowser.com' ''; s '?ignored=irrelevant' ''; s '](/docs/' '](/doc/'; s 'href="/docs/' 'href="/doc/'; s '.pdf#pdf' '.pdf'; s '#fromrss' ''; s '&amp;hl=en' ''; s '?rss=1' ''; s '/doc/statistics/decision-theory' '/doc/statistics/decision'; s '?ref=quillette.com' ''; s '?login=false' ''; s '?open=false#' '#'; s 'https://amp.theguardian.com/' 'https://theguardian.com/';
+          s '&hl=en&oi=ao' ''; s '&hl=en' ''; s '?hl=en&' '?'; s '?hl=en' ''; s '?usp=sharing' ''; s '?via%3Dihub' ''; s '.html?pagewanted=all' '.html'; s '&feature=youtu.be' ''; s '?app=desktop&' '?'; s ':443/' '/'; s ':80/' '/'; s '?s=r' ''; s '?s=61' ''; s '?sd=pf' ''; s '?ref=The+Browser-newsletter' ''; s '?ref=thebrowser.com' ''; s '?ignored=irrelevant' ''; s '](/docs/' '](/doc/'; s 'href="/docs/' 'href="/doc/'; s '.pdf#pdf' '.pdf'; s '#fromrss' ''; s '&amp;hl=en' ''; s '?rss=1' ''; s '/doc/statistics/decision-theory' '/doc/statistics/decision'; s '?ref=quillette.com' ''; s '?login=false' ''; s '?open=false#' '#'; s 'https://amp.theguardian.com/' 'https://theguardian.com/'; s '?wprov=sfti1' '';
           stringReplace '&oi=ao' '' ./static/build/Config/Metadata/Author.hs; stringReplace '&hl=en' '' ./static/build/Config/Metadata/Author.hs; stringReplace '&oi=sra' '' ./static/build/Config/Metadata/Author.hs; stringReplace '?hl=en&' '?' ./static/build/Config/Metadata/Author.hs
 
           ## name/entity consistency & fixing common spelling errors:
@@ -325,6 +325,138 @@ else
             compressJPG "$POSTER";
         fi
     done &
+
+    # Make sure all videos have 5×5 filmstrip 'large poster' hover images, which provide more frames & detailed metadata.
+    #
+    # Problem: the 3×3 poster provides a preview and fixes layout shift, but on hover users may want
+    # more detail before committing to all the time watching & downloading a (potentially large) video file.
+    #
+    # Solution: generate a larger 5×5 filmstrip (25 frames vs 9) with video file textual metadata overlay.
+    # This "$VIDEO-poster-large.jpg" is loaded on hover via JS, giving users:
+    # - Better temporal coverage of video content (25 samples vs 9)
+    # - Larger thumbnails for detail visibility (350px cells vs original⧸3)
+    # - Metadata bar showing: filepath, duration, dimensions, file size, codec, bitrate, audio presence
+    #
+    # Unlike the regular poster, the large poster doesn't need to match original video dimensions
+    # (no layout shift concern on hover), so we use a fixed ~1750px width for comfortable viewing.
+    # High-FPS (≥48) is noted; standard frame-rates are omitted as unremarkable.
+    #
+    # For very short videos (<1s), we fall back to a single enlarged frame since there's
+    # insufficient temporal content for meaningful sampling.
+    generate_large_poster() {
+        set -e
+        local VIDEO="$1"
+        local POSTER="${VIDEO}-poster-large.jpg"
+
+        [[ -f "$POSTER" ]] && return 0
+
+        # Extract all metadata in one jq call
+        local PROBE
+        PROBE=$(ffprobe -v error -show_format -show_streams -select_streams v:0 -of json "$VIDEO" 2>/dev/null)
+
+        read -r DURATION WIDTH HEIGHT CODEC BITRATE FPS < <(echo "$PROBE" | jq -r '
+            [.format.duration // "",
+             .streams[0].width // "",
+             .streams[0].height // "",
+             .streams[0].codec_name // "",
+             .format.bit_rate // "",
+             .streams[0].r_frame_rate // ""] | @tsv')
+
+        local HAS_AUDIO
+        HAS_AUDIO=$(ffprobe -v error -select_streams a -show_entries stream=codec_type -of csv=p=0 "$VIDEO" 2>/dev/null | head -1)
+
+        local FILESIZE
+        FILESIZE=$(stat --printf="%s" "$VIDEO" 2>/dev/null || stat -f%z "$VIDEO" 2>/dev/null)
+
+        # Format duration
+        local DUR_FMT="?"
+        if [[ -n "$DURATION" ]]; then
+            local SECS=${DURATION%.*}
+            (( SECS >= 60 )) && DUR_FMT="$((SECS / 60)):$(printf '%02d' $((SECS % 60)))" || DUR_FMT="${SECS}s"
+        fi
+
+        # Format file size
+        local SIZE_FMT="?"
+        if [[ -n "$FILESIZE" ]]; then
+            if (( FILESIZE >= 1073741824 )); then
+                printf -v SIZE_FMT "%.0fGB" "$(bc <<< "scale=1; $FILESIZE/1073741824")"
+            elif (( FILESIZE >= 1048576 )); then
+                printf -v SIZE_FMT "%.0fMB" "$(bc <<< "scale=1; $FILESIZE/1048576")"
+            else
+                printf -v SIZE_FMT "%.0fKB" "$(bc <<< "scale=0; $FILESIZE/1024")"
+            fi
+        fi
+
+        # Format bitrate (if available)
+        local BITRATE_FMT=""
+        if [[ -n "$BITRATE" ]]; then
+            printf -v BITRATE_FMT "%.1fMbps" "$(bc <<< "scale=1; $BITRATE/1000000")"
+        fi
+
+        # Format FPS (only if ≥48)
+        local FPS_FMT=""
+        if [[ -n "$FPS" && "$FPS" != "0/0" ]]; then
+            local FPS_NUM=$(awk -F'/' '{print ($2>0 ? int($1/$2) : $1)}' <<< "$FPS")
+            (( FPS_NUM >= 48 )) && FPS_FMT="${FPS_NUM}fps"
+        fi
+
+        # Prettify codec name
+        local CODEC_FMT="$CODEC"
+        case "$CODEC" in
+            h264|avc1) CODEC_FMT="H.264" ;;
+            hevc|h265) CODEC_FMT="H.265" ;;
+            vp[89]|av1) CODEC_FMT="${CODEC^^}" ;;
+        esac
+
+        # Build metadata string
+        local FILEPATH="/${VIDEO#./}"
+        (( ${#FILEPATH} > 80 )) && FILEPATH="...${FILEPATH: -77}"
+
+        local AUDIO_FMT
+        [[ -n "$HAS_AUDIO" ]] && AUDIO_FMT="sound" || AUDIO_FMT="no sound"
+
+        local META_LINE="${FILEPATH}  |  ${DUR_FMT}  |  ${AUDIO_FMT}  |  ${WIDTH}×${HEIGHT}  |  ${SIZE_FMT}  |  ${CODEC_FMT}"
+        [[ -n "$BITRATE_FMT" ]] && META_LINE+="  |  ${BITRATE_FMT}"
+        [[ -n "$FPS_FMT" ]] && META_LINE+="  |  ${FPS_FMT}"
+
+        # Cell dimensions (5×5 grid ≈ 1750px wide)
+        local CELL_WIDTH=350
+        local CELL_HEIGHT
+        if [[ -n "$WIDTH" && -n "$HEIGHT" && "$HEIGHT" -gt 0 ]]; then
+            CELL_HEIGHT=$(( CELL_WIDTH * HEIGHT / WIDTH ))
+        else
+            CELL_HEIGHT=197  # default 16:9
+        fi
+
+        local TMPSTRIP
+        TMPSTRIP=$(mktemp --suffix=.jpg)
+
+        if [[ -n "$DURATION" ]] && (( $(bc <<< "$DURATION > 1") )); then
+            local SAMPLE_FPS=$(bc <<< "scale=6; 26 / $DURATION")
+            ffmpeg -y -i "$VIDEO" \
+                -vf "fps=$SAMPLE_FPS,scale=iw*sar:ih,setsar=1,scale=${CELL_WIDTH}:${CELL_HEIGHT},tile=5x5:nb_frames=25:padding=3:color=black" \
+                -frames:v 1 "$TMPSTRIP" 2>/dev/null
+        else
+            ffmpeg -y -i "$VIDEO" \
+                -vf "select=eq(n\\,0),scale=iw*sar:ih,setsar=1,scale=$((CELL_WIDTH * 5)):$((CELL_HEIGHT * 5))" \
+                -vframes 1 "$TMPSTRIP" 2>/dev/null
+        fi
+
+        convert "$TMPSTRIP" \
+            -gravity North \
+            -background '#000000' \
+            -splice 0x60 \
+            -font IBM-Plex-Mono-Bold \
+            -pointsize 24 \
+            -fill white \
+            -annotate +0+13 "$META_LINE" \
+            "$POSTER"
+        compressJPG "$POSTER"
+        rm -f "$TMPSTRIP"
+    }
+    for VIDEO in $(find . -type f \( -name "*.mp4" -o -name "*.webm" -o -name "*.avi" \) | gfv "doc/www/" | sort); do
+        generate_large_poster "$VIDEO" &
+    done
 
     # for use in popups, as an optimization, we provide 256px-width thumbnails of all Gwern.net locally-hosted essay/annotation JPGs/PNGs.
     # (More exotic image formats like AVIF/WebP/JPEG XL/etc are banned, and we exclude mirrors like Rotten.com or the WWW local archives as they are not browsed via popups; and we do not attempt to generate thumbnails for hotlinked images, because hotlinked images are banned and supposed to be localized.)
