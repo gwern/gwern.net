@@ -16461,13 +16461,9 @@ addContentLoadHandler("processPoems", (eventInfo) => {
 				});
 			}
 
-			//	Apply class(es).
-			if (isNodeEmpty(stanza)) {
+			//	Designate empty stanzas.
+			if (isNodeEmpty(stanza))
 				stanza.classList.add("empty-stanza");
-			} else {
-				stanza.querySelector("p:first-of-type").classList.add("first-line");
-				stanza.querySelector("p:last-of-type").classList.add("last-line");
-			}
 		});
 	});
 
@@ -16617,6 +16613,16 @@ addContentLoadHandler("rewriteCenteredPoemThingies", (eventInfo) => {
 
 			stanza.classList.add("layout-special-center");
 		});
+	});
+}, ">rewrite");
+
+/**************************************************************************/
+/*	Add .first-line and .last-line to lines (<p> elements) of poem stanzas.
+ */
+addContentLoadHandler("designateFirstAndLastLinesInPoemStanzas", (eventInfo) => {
+	eventInfo.container.querySelectorAll(".poem .stanza:not(.empty-stanza)").forEach(stanza => {
+		stanza.querySelector("p:first-of-type").classList.add("first-line");
+		stanza.querySelector("p:last-of-type").classList.add("last-line");
 	});
 }, ">rewrite");
 
