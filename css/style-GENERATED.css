@@ -6731,10 +6731,10 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*│ Annotation popins. │*/
 /*└────────────────────┘*/
 
-.popin-body.annotation .data-field.title .title-link {
+.popin-body.annotation > .annotation > .data-field.title .title-link {
     --link-underline-gradient-line-color: var(--popframe-title-link-color, currentColor);
 }
-.popin-body.annotation .data-field.title .title-link .link-icon-hook::after {
+.popin-body.annotation > .annotation > .data-field.title .title-link .link-icon-hook::after {
     --dark-mode-invert-filter: none;
 
     background-image: var(--link-icon-url-hover, var(--link-icon-url));
