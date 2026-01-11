@@ -153,10 +153,20 @@ div#masked-links-key-toggle-info-alert img {
     filter: drop-shadow(0 0 3px var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color));
 }
 
-/*  Recently-modified icon, manicule
+/*  Recently-modified icon, manicule.
  */
 .has-recently-modified-icon .recently-modified-icon-hook::before,
 .manicule svg {
     filter: invert(1);
 }
 
+/*	Poem caesura marks.
+ */
+div.poem span.caesura-mark {
+	opacity: 0.3;
+}
+@media all and (max-width: 649px) {
+	div.poem span.caesura-mark {
+		opacity: 0.4;
+	}
+}
