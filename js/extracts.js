@@ -909,7 +909,14 @@ Extracts = {
     preparePopup: (popup) => {
         GWLog("Extracts.preparePopup", "extracts.js", 2);
 
-        let target = popup.spawningTarget;
+		let target = popup.spawningTarget;
+
+		/*	Never spawn a popup of any kind from a video that is currently
+			playing.
+		 */
+		if (   target.classList.contains("link-media-wrapper") == true
+			&& target.querySelector("video")?.classList.contains("playing") == true)
+			return null;
 
         /*  If a popup already exists that matches the target, do not spawn a
             new popup; just use the existing popup.

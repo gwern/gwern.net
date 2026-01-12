@@ -12292,7 +12292,14 @@ Extracts = {
     preparePopup: (popup) => {
         GWLog("Extracts.preparePopup", "extracts.js", 2);
 
-        let target = popup.spawningTarget;
+		let target = popup.spawningTarget;
+
+		/*	Never spawn a popup of any kind from a video that is currently
+			playing.
+		 */
+		if (   target.classList.contains("link-media-wrapper") == true
+			&& target.querySelector("video")?.classList.contains("playing") == true)
+			return null;
 
         /*  If a popup already exists that matches the target, do not spawn a
             new popup; just use the existing popup.
@@ -16348,16 +16355,24 @@ addContentInjectHandler("lazyLoadVideoPosters", (eventInfo) => {
 
 /******************************************************************************/
 /*  Enable clicking anywhere on a video (that has not yet loaded and started to
-    play) to load it and start playing it. (Otherwise, only clicking the ‘play’
-    button causes the video to load and play.)
+    play) to load it and start playing it, or to pause playback. (Otherwise, 
+    only clicking the ‘play’ button causes the video to load/play/pause.)
  */
 addContentInjectHandler("enableVideoClickToPlay", (eventInfo) => {
     eventInfo.container.querySelectorAll("video").forEach(video => {
         video.addEventListener("click", video.clickToPlayEvent = (event) => {
-            video.play();
-            video.removeEventListener("click", video.clickToPlayEvent);
-            video.clickToPlayEvent = null;
+        	if (video.classList.contains("playing"))
+	            video.pause();
+	        else
+	        	video.play();
         });
+
+		video.addEventListener("play", (event) => {
+			video.classList.add("playing");
+		});
+		video.addEventListener("pause", (event) => {
+			video.classList.remove("playing");
+		});
     });
 }, "eventListeners");
 
