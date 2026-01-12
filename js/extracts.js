@@ -875,6 +875,9 @@ Extracts = {
             return (   target.closest("li") != null
                     && target.closest(".columns") == null);
         };
+		target.positionFromSpawnPoint = () => {
+			return (target.classList.contains("link-media-wrapper"));
+		};
     },
 
 	//	Called by: Extracts.preparePopFrame (as Extracts[`pop${suffix}TitleBarContents`])

@@ -1670,6 +1670,11 @@ Popups = {
         return (target.preferPopupSidePositioning?.() ?? false);
     },
 
+	//	See also: extracts.js
+	positionFromSpawnPoint: (target) => {
+        return (target.positionFromSpawnPoint?.() ?? false);
+	},
+
     //  See also: misc.js
     cancelPopupOnClick: (target) => {
         return (target.cancelPopupOnClick?.() ?? true);
@@ -1745,6 +1750,10 @@ Popups = {
                                                     rect.height + 1.0)
                                     ).find(rect => pointWithinRect(spawnPoint, rect))
                                  ?? target.getBoundingClientRect();
+		//	If the target is 
+		if (   spawnPoint != null
+			&& Popups.positionFromSpawnPoint(target) == true)
+			targetViewportRect = new DOMRect(spawnPoint.x, spawnPoint.y, 0, 0);
 
 		if (   options.reset
 			&& Popups.popupIsPinned(popup) == false)
