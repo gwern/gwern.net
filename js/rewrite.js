@@ -1599,13 +1599,33 @@ addContentInjectHandler("lazyLoadVideoPosters", (eventInfo) => {
     only clicking the ‘play’ button causes the video to load/play/pause.)
  */
 addContentInjectHandler("enableVideoClickToPlay", (eventInfo) => {
+	let toggleVideoPlayingStatus = (video) => {
+		if (video.classList.contains("playing"))
+			video.pause();
+		else
+			video.play();
+	};
+
     eventInfo.container.querySelectorAll("video").forEach(video => {
-        video.addEventListener("click", video.clickToPlayEvent = (event) => {
-        	if (video.classList.contains("playing"))
-	            video.pause();
-	        else
-	        	video.play();
-        });
+		if ("ontouchstart" in document.documentElement) {
+			video.addEventListener("touchstart", (event) => {
+				video.isBeingTouched = true;
+			});
+			document.addEventListener("touchend", (event) => {
+				if (   event.target == video
+					&& video.isBeingTouched == true)
+					toggleVideoPlayingStatus(video);
+
+				video.isBeingTouched = false;
+			});
+			document.addEventListener("touchmove", (event) => {
+				video.isBeingTouched = false;
+			});
+		} else {
+			video.addEventListener("click", video.clickToPlayEvent = (event) => {
+				toggleVideoPlayingStatus(video);
+			});
+		}
 
 		video.addEventListener("play", (event) => {
 			video.classList.add("playing");
