@@ -1361,9 +1361,13 @@ addContentLoadHandler("wrapFigures", (eventInfo) => {
  */
 addContentLoadHandler("addMediaLinkWrappers", (eventInfo) => {
 	let linkWrappedMediaSelector = [
-		".image-annotated",
-		"video"
-	].join(", ");
+		".image-annotated"
+	];
+	//	Mobile shouldn’t get popovers for video.
+	if (GW.isMobile() == false) {
+		linkWrappedMediaSelector.push("video");
+	}
+	linkWrappedMediaSelector = linkWrappedMediaSelector.join(", ");
 
 	eventInfo.container.querySelectorAll(linkWrappedMediaSelector).forEach(mediaElement => {
 		if (mediaElement.closest(".link-media-wrapper") != null)
