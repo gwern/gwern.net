@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2026-01-12 18:13:35 gwern"
+# When:  Time-stamp: "2026-01-13 15:33:37 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -43,9 +43,9 @@ _upload() {
   ## TODO: allow an override `--force` option: in the case of large-files, we have no easy way to 'manually' add files, we're supposed to always go through `upload.sh`.
   EXT="${FILENAME##*.}"
   ext_lower=$(echo "$EXT" | tr '[:upper:]' '[:lower:]')
-  ALLOWED_EXTENSIONS=$(find ~/wiki/ -type f -printf '%f\n' \
-                        | awk --field-separator '.' 'NF>1 {print $NF}' \
-                        | sort --ignore-case --unique | tr '[:upper:]' '[:lower:]')
+  ALLOWED_EXTENSIONS=$(find ~/wiki/ -type f -not -path '*/metadata/annotation/*' -not -path '*/.git/*' -printf '%f\n' \
+                    | awk --field-separator '.' 'NF>1 {print $NF}' \
+                    | sort --ignore-case --unique | tr '[:upper:]' '[:lower:]')
 
   if ! echo "$ALLOWED_EXTENSIONS" | grep --word-regexp --quiet "$ext_lower"; then
     red "Error: Unsupported file extension '.$EXT' in file '$FILENAME'?"

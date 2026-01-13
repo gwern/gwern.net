@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-01-07 11:47:15 gwern"
+# When:  Time-stamp: "2026-01-13 17:26:08 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -838,6 +838,10 @@ About Us
 ""
 - "https://lbstanza.org/purpose_of_programming_languages.html L.B.Stanza"
 ""
+- "https://axiommath.ai/territory/from-seeing-why-to-checking-everything Axiom"
+""
+- https://tinyhack.com/2014/03/12/implementing-a-web-server-in-a-single-printf-call/ Implementing a web server in a single printf() call - Tinyhack.com"
+"Implementing a web server in a single printf() call"
 
 Task:
 

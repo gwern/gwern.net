@@ -869,6 +869,9 @@ canonicals = M.fromList
   , ("Komura Settai", "Settai Komura")
   , ("Text Encoding Initiative Consortium", "TEI")
   , ("S Abbas Raza", "S. Abbas Raza")
+  , ("Ianthi Maria Tsimpli", "Ianthi-Maria Tsimpli")
+  , ("dbohdan", "D. Bohdan")
+  , ("dbotdan", "D. Bohdan")
   ]
 
 -- tests: unique
@@ -919,7 +922,7 @@ canonicalsWithInitials =
   , "Charles Allen Moser", "John A. Leslie", "Robert D. Putnam", "Joel D. Cooper", "Duane A. Compton"
   , "Timo E. Saaristo", "Arthur L. Caplan", "Robert T. Croyle", "Barbara K. Rimer", "Walter J. Ong"
   , "Samuel S. Wilks", "Kenneth Lee Pike", "Richard E. Turner", "Phil Hyoun Lee", "Karthik Rajagopal Narasimhan"
-  , "Hunter S. Thompson", "Robert C. Kaplan", "Richard N. Bergman", "Philip B. Mitchell", "Peter S. Chines", "Patrick S. Li"]
+  , "Hunter S. Thompson", "Robert C. Kaplan", "Richard N. Bergman", "Philip B. Mitchell", "Peter S. Chines", "Patrick S. Li", "Noah D. Goodman", "Nitish Shirish Keskar", "Clint M. Sergi"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1969,6 +1972,7 @@ authorLinkDB = M.fromList $
     , ("Hao Wang", "https://en.wikipedia.org/wiki/Hao_Wang_(academic)")
     , ("Colin Leroy-Mira", "https://www.colino.net/wordpress/en/system-devops-engineer/")
     , ("Claude-Sonnet-4.5", "https://www.anthropic.com/news/claude-sonnet-4-5")
+    , ("Claude Code", "https://code.claude.com/docs/en/overview")
     , ("Kat Slota", "https://www.katslota.com/")
     , ("Micah Ulrich", "https://www.micahulrichart.com/")
     , ("Zane Fix", "https://www.zanefix.com/biography.html")
@@ -2095,9 +2099,21 @@ authorLinkDB = M.fromList $
     , ("S. Abbas Raza", "https://3quarksdaily.com/about-the-editors")
     , ("Michael Wolf", "https://wol.fm/index.html")
     , ("Patrick S. Li", "http://patricksli.com/")
+    , ("Noah D. Goodman", "https://scholar.google.com/citations?user=OUpIbcQAAAAJ")
+    , ("Nitish Shirish Keskar", "https://keskarnitish.github.io/")
+    , ("Nicholas Joseph", "https://scholar.google.com/citations?user=Z5NeEv4AAAAJ")
+    , ("Naman Goyal", "https://namangoyal.com/")
+    , ("Neil Smith", "https://en.wikipedia.org/wiki/Neil_Smith_(linguist)")
+    , ("Clint M. Sergi", "https://scholar.google.com/scholar?q=author%3Aclint+m+sergi")
+    , ("Robert R. Jackson", "https://www.jumping-spiders.com/nav_partner/partner.php?id=21")
+    , ("Mor Geva Pipek", "https://mega002.github.io/")
+    , ("Momoko Horikoshi", "https://www.riken.jp/en/careers/diversity/leader/momoko_horikoshi/")
+    , ("Mohammad Shoeybi", "https://scholar.google.com/citations?user=62ElavIAAAAJ")
+    , ("Mehdi Mirza", "https://scholar.google.com/citations?user=c646VbAAAAAJ")
+    , ("D. Bohdan", "https://dbohdan.com/")
     ]
 
--- config tests: none, tested via `authorLinkDB` as a whole
+-- Config tests: none, tested via `authorLinkDB` as a whole
 authorWpLinkDB :: [T.Text]
 authorWpLinkDB =
     ["A. A. Brill", "A. Bradford Hill", "A. C. Littleton", "A. G. W. Cameron", "Russell Impagliazzo"
@@ -3067,7 +3083,7 @@ authorWpLinkDB =
     ,"Robert Leeper", "Robert Lerner", "Robert M. Bond", "Robert M. Hauser", "Robert M. May"
     ,"Robert M. Solow", "Robert M. Thorndike", "Robert M. Yerkes", "Robert Maier", "Robert Mankoff"
     ,"Robert Martinson", "Robert Meier", "Robert Metcalfe", "Robert Mullins", "Robert P. Abelson"
-    ,"Robert Plomin", "Robert R. Jackson", "Robert R. Sears", "Robert Ralston", "Robert Root-Bernstein"
+    ,"Robert Plomin", "Robert R. Sears", "Robert Ralston", "Robert Root-Bernstein"
     ,"Robert Rudolf", "Robert S. Rosenson", "Robert S. Woodworth", "Robert Schlaifer", "Robert Schweitzer"
     ,"Robert Scoble", "Robert Seamans", "Robert Slimbach", "Robert Stickgold", "Robert T. Knight"
     ,"Robert T. Pennock", "Robert Tibshirani", "Robert W. Brooks", "Robert W. Cox", "Robert W. McCarley"
@@ -3383,4 +3399,5 @@ authorWpLinkDB =
     , "Robert Hayden", "Michael Ondaatje", "Galway Kinnell", "Li-Young Lee", "Douwe Kiela", "Richmond Lattimore", "William T. Vollmann"
     , "Laurence Perrine", "John Milton", "Ted Hughes", "Hunter S. Thompson", "Kevin D. Williamson", "Martin Ellison"
     , "David E. Hoffman", "Paul Ginsparg", "Wojciech Kopczuk", "Robert J. White", "Dines Bjørner", "Hans-Joachim Voth"
-    , "Friedrich Nietzsche", "William Bialek", "E. E. Cummings", "Simon Willison", "Karen Greenlee"]
+    , "Friedrich Nietzsche", "William Bialek", "E. E. Cummings", "Simon Willison", "Karen Greenlee"
+    , "Constance Reid", "Julia Robinson", "Ianthi-Maria Tsimpli", "Graeme Mitchison"]

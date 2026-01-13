@@ -629,6 +629,7 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
           , ("Base_pairs", "Base_pair")
           , ("Base_rates", "Base_rate")
           , ("Bash_%28Unix_shell%29", "Bash_(Unix_shell)")
+          , ("Bash", "Bash_(Unix_shell)")
           , ("Basic_income_guarantee", "Universal_basic_income")
           , ("Basilica_of_San_Marco", "St_Mark%27s_Basilica")
           , ("Basis_functions", "Basis_function")
@@ -6005,4 +6006,6 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("Bedlam", "Bethlem_Royal_Hospital")
         , ("Apollo_Smintheus", "Hamaxitus#Apollo_Smintheus")
         , ("Klaiber's_law", "https://web.archive.org/web/20230320024813/https://en.wikipedia.org/wiki/Klaiber's_law")
+        , ("Jones_act", "Merchant_Marine_Act_of_1920")
+        , ("Jones_Act", "Merchant_Marine_Act_of_1920")
         ]
