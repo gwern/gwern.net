@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # download-title.sh
 # Author: Gwern Branwen
 # Date: 2024-06-10
@@ -16,7 +16,7 @@
 
 set -euo pipefail
 
-if [ $# -lt 1 ]; then echo "download-title.sh: Error: Not enough arguments" && exit 1; fi
+if (( $# < 1 )); then echo "download-title.sh: Error: Not enough arguments" && exit 1; fi
 
 # make sure xmllint is available for HTML parsing:
 if ! command -v xmllint > /dev/null; then

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # gwa: convenience wrapper around `annotation-dump` - case-insensitive strings do not need to be quoted on the CLI
 # so one can run '$ gwa foo bar' for the equivalent of 'gwa | egrep --ignore-case "foo bar"`
@@ -8,11 +8,11 @@
 # License: CC-0
 
 QUERY="$(echo $* | sed -e 's/^https:\/\/gwern\.net//g' -e 's/^\///' -e 's/^https\?//g')" # strip the leading '/' because that is syntax-highlighted in the 'annotation-dump' format now
-if [ $# != 1 ]; then
+if (( $# != 1 )); then
     # paste into a single string, so we can drop the need to quote everything
     echo "" | annotation-dump | grep -E --ignore-case "$QUERY";
 else
-    if [ $# == 1 ]; then
+    if (( $# == 1 )); then
         # unless of course it's already quoted or is a single word
         echo "" | annotation-dump | grep -E --ignore-case "$QUERY";
     else # $# == 0

@@ -1,5 +1,5 @@
-#!/bin/bash
-# When:  Time-stamp: "2025-03-06 20:33:58 gwern"
+#!/usr/bin/env bash
+# When:  Time-stamp: "2026-01-12 15:11:23 gwern"
 # see https://gwern.net/about#markdown-checker
 
 set +x
@@ -11,8 +11,8 @@ wrap() { OUTPUT=$($1 2>&1)
              echo -e "\e[41m$WARN\e[0m":
              echo -e "$OUTPUT";
          fi; }
-fgp () { grep -F --context=1 --line-number --color=always "$@"; }
-egp () { grep -E --ignore-case --context=1 --line-number --color=always "$@"; }
+fgp () { grep --fixed-strings --context=1 --line-number --color=always "$@"; }
+egp () { grep --extended-regexp --ignore-case --context=1 --line-number --color=always "$@"; }
 
 for PAGE in "$@"
 do
@@ -63,12 +63,12 @@ do
                   -e '#close' -e '#page=page' -e '.pdf#section' -e '.pdf#subsection' -e '^<sup>' -e '<sup>^' -e '^</sup>' -e '</sup>^' -e ' : ' -e ']^[' -- "$PAGE"; }
         wrap λ "look for broken syntax in original Markdown: (NOTE: footnotes should not be linked to because they are unstable; they should either be sections/appendices, or given a stable permanent span ID)"
 
-        λ(){ grep -F '~~~{.' -- "$PAGE" | tr -d '{}~' | tr ' ' '\n' | \
-                 grep -F -v -e '.R' -e '.collapse' -e '.Haskell' -e '.Bash' -e '.Diff' -e '.Javascript' -e '.numberLines' \
+        λ(){ grep --fixed-strings '~~~{.' -- "$PAGE" | tr -d '{}~' | tr ' ' '\n' | \
+                 grep --fixed-strings -v -e '.R' -e '.collapse' -e '.Haskell' -e '.Bash' -e '.Diff' -e '.Javascript' -e '.numberLines' \
                        -e '.Python' -e '.C ' -e '.CPO' -e '.SQL' -e '.Bibtex' -e '.HTML' -e '.CSS'; }
         wrap λ "look for potentially broken syntax-highlighting classes"
 
-        λ(){ grep -E --invert-match '[[:space:]]*>' -- "$PAGE" | fgp -e ' significant ' -e ' significantly ' -e ' obvious' -e 'basically' -e ' the the ' -e 'reproducibility crisis' -e 'replicability crisis'; } # WARNING: can't use 'egp' for some reason
+        λ(){ grep --extended-regexp --invert-match '[[:space:]]*>' -- "$PAGE" | fgp -e ' significant ' -e ' significantly ' -e ' obvious' -e 'basically' -e ' the the ' -e 'reproducibility crisis' -e 'replicability crisis'; } # WARNING: can't use 'egp' for some reason
         wrap λ "look for personal uses of illegitimate statistics & weasel words, but filter out blockquotes"
 
         λ(){ fgp -e ' feet' -e ' foot ' -e ' pound ' -e ' mile ' -e ' miles ' -e ' inch' -- "$PAGE";
@@ -81,16 +81,16 @@ do
         λ(){ egp -e '[a-zA-Z]- '  -- "$PAGE"; }
         wrap λ "Write out shortcuts"
 
-        [ "$(grep -E '^title: '       "$PAGE" | wc --char)" -le 10 ] && echo -e '\e[41mWARNING\e[0m: "title:" metadata too short.'
-        [ "$(grep -E '^title: '       "$PAGE" | wc --char)" -ge 60 ] && echo -e '\e[41mWARNING\e[0m: "title:" metadata too long.'
-        [ "$(grep -E '^description: ' "$PAGE" | wc --char)" -le 90 ] && echo -e '\e[41mWARNING\e[0m: "description:" metadata too short.'
-        [ "$(grep -E '^description: ' "$PAGE" | wc --char)" -ge 320 ] && echo -e '\e[41mWARNING\e[0m: "description:" metadata too long.'
-        [ "$(grep -E '^next: '        "$PAGE" | wc --char)" -eq  0 ] && echo -e '\e[41mWARNING\e[0m: "next:" metadata is missing.'
-        [ "$(grep -E '^previous: '    "$PAGE" | wc --char)" -eq  0 ] && echo -e '\e[41mWARNING\e[0m: "previous:" metadata is missing.'
-        [ "$(grep -E '^thumbnail: '   "$PAGE" | wc --char)" -le 20 ] && echo -e '\e[41mWARNING\e[0m: No thumbnail/illustration defined.'
+        [ "$(grep --extended-regexp '^title: '       "$PAGE" | wc --char)" -le 10 ] && echo -e '\e[41mWARNING\e[0m: "title:" metadata too short.'
+        [ "$(grep --extended-regexp '^title: '       "$PAGE" | wc --char)" -ge 60 ] && echo -e '\e[41mWARNING\e[0m: "title:" metadata too long.'
+        [ "$(grep --extended-regexp '^description: ' "$PAGE" | wc --char)" -le 90 ] && echo -e '\e[41mWARNING\e[0m: "description:" metadata too short.'
+        [ "$(grep --extended-regexp '^description: ' "$PAGE" | wc --char)" -ge 320 ] && echo -e '\e[41mWARNING\e[0m: "description:" metadata too long.'
+        [ "$(grep --extended-regexp '^next: '        "$PAGE" | wc --char)" -eq  0 ] && echo -e '\e[41mWARNING\e[0m: "next:" metadata is missing.'
+        [ "$(grep --extended-regexp '^previous: '    "$PAGE" | wc --char)" -eq  0 ] && echo -e '\e[41mWARNING\e[0m: "previous:" metadata is missing.'
+        [ "$(grep --extended-regexp '^thumbnail: '   "$PAGE" | wc --char)" -le 20 ] && echo -e '\e[41mWARNING\e[0m: No thumbnail/illustration defined.'
 
         # skip on newsletters since their URLs are always being modified:
-        [[ ! $PAGE =~ "newsletter/" ]] && [ "$(grep -E '^modified: 20'  "$PAGE" | wc --char)" -eq  0 ] && echo -e '\e[41mWARNING\e[0m: "modified:" metadata is missing.'
+        [[ ! $PAGE =~ "newsletter/" ]] && [ "$(grep --extended-regexp '^modified: 20'  "$PAGE" | wc --char)" -eq  0 ] && echo -e '\e[41mWARNING\e[0m: "modified:" metadata is missing.'
 
         λ() { markdown-length-checker.hs "$PAGE";}
         wrap λ "Source code line lengths"
@@ -100,11 +100,11 @@ do
 
         ## reused later as well:
         HTML=$(mktemp  --suffix=".html")
-        cat "$PAGE" | pandoc --metadata lang=en --metadata title="Test" --mathml --to=html5 --standalone --number-sections --toc --reference-links --css=https://gwern.net/static/css/default.css -f markdown+smart --template=/home/gwern/bin/bin/pandoc-template-html5-articleedit.html5 - --output="$HTML"
+        cat "$PAGE" | pandoc --metadata lang=en --metadata title="Test" --mathml --to=html5 --standalone --number-sections --toc --reference-links --css=https://gwern.net/static/css/default.css --from=markdown+smart --template=/home/gwern/bin/bin/pandoc-template-html5-articleedit.html5 - --output="$HTML"
 
-        λ() {  COLLAPSED=$(cat "$HTML" | grep -E --after-context=3 '<h[0-7] class="collapse"')
-               COLLAPSED_SECTION_COUNT=$(echo "$COLLAPSED" | grep -E '<h[0-7] class="collapse"' | wc --lines)
-               COLLAPSED_SUMMARY_COUNT=$(echo "$COLLAPSED" | grep -F '<div class="abstract-collapse">' | wc --lines)
+        λ() {  COLLAPSED=$(cat "$HTML" | grep --extended-regexp --after-context=3 '<h[0-7] class="collapse"')
+               COLLAPSED_SECTION_COUNT=$(echo "$COLLAPSED" | grep --extended-regexp '<h[0-7] class="collapse"' | wc --lines)
+               COLLAPSED_SUMMARY_COUNT=$(echo "$COLLAPSED" | grep --fixed-strings '<div class="abstract-collapse">' | wc --lines)
                MISSING=$(( COLLAPSED_SECTION_COUNT - COLLAPSED_SUMMARY_COUNT ))
                if [[ $MISSING != 0 ]];
                then echo "Missing collapsed section summaries?"
@@ -123,10 +123,10 @@ do
                         -e '**'; }
         wrap λ "look for syntax errors making it to the final HTML output"
 
-        λ(){ runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | grep -E -v -e "^http" -e '^!Wikipedia' -e '^#' -e '^/' -e '^\!' -e  '^\$'; }
+        λ(){ runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | grep --extended-regexp -v -e "^http" -e '^!Wikipedia' -e '^#' -e '^/' -e '^\!' -e  '^\$'; }
         wrap λ "special syntax shouldn't make it to the compiled HTML"
 
-        λ() { runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | grep -E -v -e '^\!' -e  '^\$' | sort | uniq --count | sort --numeric-sort | grep -E -v -e '.* 1 '; }
+        λ() { runghc -i/home/gwern/wiki/static/build/ ~/wiki/static/build/link-extractor.hs "$PAGE" | grep --extended-regexp -v -e '^\!' -e  '^\$' | sort | uniq --count | sort --numeric-sort | grep --extended-regexp -v -e '.* 1 '; }
         wrap λ "Duplicate links"
 
     fi

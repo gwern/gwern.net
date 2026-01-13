@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # compressJPG.sh: compress a JPG with mozjpeg if the savings are worthwhile.
 # Author: Gwern Branwen
@@ -8,7 +8,7 @@
 
 set -e
 
-if [ $# -eq 0 ]; then
+if (( $# == 0 )); then
     echo "Error: No arguments given!"
     exit -1;
 else
@@ -34,5 +34,5 @@ else
     rm "$JPG" "$TMP" &> /dev/null || true
 
     shift;
-    if [ $# -eq 0 ]; then exit 0; else compressJPG "$@"; fi;
+    if (( $# == 0 )); then exit 0; else compressJPG "$@"; fi;
 fi

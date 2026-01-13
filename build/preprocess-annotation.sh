@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Read from stdin and process the input suitable for feeding into an Emacs buffer for editing & storing in full/half.gtx.
 cat - | ~/wiki/static/build/preprocess-markdown # | \

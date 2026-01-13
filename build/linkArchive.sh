@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
@@ -40,7 +40,7 @@ URL=""
 CHECK=0
 NO_PREVIEW=0
 
-if [[ $# != 1 && $# != 2 ]]; then
+if (( $# != 1 && $# != 2 )); then
     echo "Must have either 1 or 2 arguments (ie. 'url', '--check url', '--no-preview url', or '--dry-run url'), one of which is a URL. Received: $*" && exit 98
 fi
 
@@ -75,7 +75,7 @@ TARGET=""
 ## But we still need to return it as part of the final rewritten path/URL.
 HASH="$(echo -n "$URL" | sed -e 's/^\///' | cut -d '#' -f 1 | sha1sum - | cut -d ' ' -f 1)"
 DOMAIN="$(echo "$URL" | awk -F[/:] '{print $4}')"
-if [[ -n $(echo "$URL" | grep -F '#') ]]; then
+if [[ -n $(echo "$URL" | grep --fixed-strings '#') ]]; then
     ANCHOR="#$(echo -n "$URL" | cut -d '#' -f 2)"
 fi
 
@@ -110,7 +110,7 @@ else
                 TARGET=/tmp/"$HASH".pdf
                 ## sometimes servers lie or a former PDF URL has linkrotted or changed to a HTML landing page, so we need to check
                 ## that we actually got a real PDF file:
-                MIME_LOCAL=$(file "$TARGET" | grep -F 'PDF document, version ') || true
+                MIME_LOCAL=$(file "$TARGET" | grep --fixed-strings 'PDF document, version ') || true
 
                 if [[ -f "$TARGET" ]] && [[ -n "$MIME_LOCAL" ]] && [[ ! "$MIME_REMOTE" =~ .*"text/html".* ]] || \
                        [[ "$MIME_REMOTE" =~ "application/pdf".*  || "$MIME_REMOTE" =~ "application/octet-stream".* ]] || \
@@ -132,7 +132,7 @@ else
                 # Some websites break snapshots if any JS is left in them: the content will display briefly, but then the JS will refresh to an error page. This can be poorly written JS or deliberate anti-archiving. For such websites, we need single-file to remove JS from the snapshot entirely.
                 # However, we cannot simply match on the domain, because a major offender here is Substack, which is often used under a custom domain and not just 'foo.substack.com' subdomains.
                 # So we must do a quick cheap fingerprint check.
-                if curl --max-filesize 200000000 --silent "$URL" | grep -F --quiet -e "https://substackcdn.com" -e "https://your.substack.com" || [[ "$URL" == *".substack.com"* ]]; then
+                if curl --max-filesize 200000000 --silent "$URL" | grep --fixed-strings --quiet -e "https://substackcdn.com" -e "https://your.substack.com" || [[ "$URL" == *".substack.com"* ]]; then
                     REMOVE_SCRIPTS="true"
                 else
                     REMOVE_SCRIPTS="false"
@@ -159,7 +159,7 @@ else
 
                 if [[ -n "$TARGET" && $(stat -c%s "$TARGET") -ge 1024 && -f "$TARGET" ]]; then
                     ## Check for error pages which nevertheless returned validly:
-                    ERROR_404=$(grep -F -e '403 Forbidden' -e '404 Not Found' -e 'Download Limit Exceeded' -e 'Access Denied' -e 'Instance has been rate limited' -e 'Token is required' -- "$TARGET")
+                    ERROR_404=$(grep --fixed-strings -e '403 Forbidden' -e '404 Not Found' -e 'Download Limit Exceeded' -e 'Access Denied' -e 'Instance has been rate limited' -e 'Token is required' -- "$TARGET")
                     if [[ -z "$ERROR_404" ]]; then
                         mkdir "./doc/www/$DOMAIN/" &> /dev/null || true # assume that ./doc/www/ exists; if it doesn't we may be in the wrong place.
                         mv "$TARGET" "./doc/www/$DOMAIN/$HASH.html"

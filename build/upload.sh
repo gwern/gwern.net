@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2025-12-24 21:11:21 gwern"
+# When:  Time-stamp: "2026-01-12 18:13:35 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -21,14 +21,14 @@
 . ~/wiki/static/build/bash.sh
 
 set -e
-
+set -x
 if [ ! -f "$1" ] || [ ! -s "$1" ]; then red "l25: '$1' is not a file or is empty‽" && exit 1; fi
 
 # Check for required dependencies upfront
 for cmd in firefox chromium exiftool fold rsync curl git compressPdf cloudflare-expire png2JPGQualityCheck convert locate; do
     command -v "$cmd" >/dev/null 2>&1 || { missing="${missing:+$missing, }$cmd"; }
 done
-[ -n "$missing" ] && { red "Missing required tools: $missing"; exit 10; }
+[ -n "$missing" ] && { red "Missing required tools: $missing"; exit 2; }
 
 # the fundamental function which does all the real work. Jump to the bottom for the actual argument-handling loop of `upload`.
 _upload() {
@@ -50,7 +50,7 @@ _upload() {
   if ! echo "$ALLOWED_EXTENSIONS" | grep --word-regexp --quiet "$ext_lower"; then
     red "Error: Unsupported file extension '.$EXT' in file '$FILENAME'?"
     bold "This extension has never been used before. Please manually add it, to verify that this is a new but valid extension."
-    exit 1
+    exit 3
   fi
 
   # we don't want to try to compile random Markdown snippets, so rename to `.txt` which will be treated as a static asset:
@@ -114,7 +114,7 @@ _upload() {
     # if filename after possible renaming does not exist, that means we're using a new filename
     if [[ ! -e "$filename" ]]; then
       red "Error: File '$filename' could not be renamed. Please check for possible issues." >&2
-      return 1
+      return 6
     fi
 
     FILENAME="$filename"
@@ -126,7 +126,7 @@ _upload() {
   # Firefox is the default browser, but we only want to use FF if it is already running. We don't want to boot up a fresh FF session just to look at an upload. (FF was presumably killed or shut down for a reason, like OOMing!) If FF is unavailable, we use an alternative 'temporary' browser, like Chromium.
   if [ -n "$(pgrep firefox)" ]; then BROWSER="firefox"; else BROWSER=${BROWSER:-$(command -v chromium google-chrome brave-browser | head --lines=1)}; fi
 
-  if [[ $# -eq 1 || "$2" == "" ]]; then
+  if (( $# == 1 )) || [[ "$2" == "" ]]; then
       # convenience function: timestamps are useful for files, but it's annoying to manually add the date. We can't assume that a regular file was created 'today' because it is usually a historical paper or something, but temporary files are almost always just-created, and even if not, it's useful to know *when* it was uploaded.
       if ! [[ "$FILENAME" =~ ^20[2-4][0-9]-[0-9][0-9]-[0-9][0-9] ]]; then
           DIRNAME=$(dirname "$FILENAME")  # Extract the directory path
@@ -150,10 +150,10 @@ _upload() {
       if [[ "$FILENAME" =~ .*\.md || "$FILENAME" =~ .*\.txt ]]; then fold --spaces --width=80 "$FILENAME" >> "$TEMPFILE" && mv "$TEMPFILE" "$FILENAME"; fi
 
       mv "$FILENAME" ~/wiki/doc/www/misc/
-      cd ~/wiki/ || exit
+      cd ~/wiki/ || exit 4
       TARGET2="./doc/www/misc/$TARGET"
-      rsync --chmod='a+r' -q "$TARGET2" gwern@176.9.41.242:"/home/gwern/gwern.net/doc/www/misc/" || \
-          rsync --chmod='a+r' -v "$TARGET2" gwern@176.9.41.242:"/home/gwern/gwern.net/doc/www/misc/"
+      rsync --chmod='a+r' --quiet "$TARGET2" gwern@176.9.41.242:"/home/gwern/gwern.net/doc/www/misc/" || \
+          rsync --chmod='a+r' --verbose "$TARGET2" gwern@176.9.41.242:"/home/gwern/gwern.net/doc/www/misc/"
       URL="https://gwern.net/doc/www/misc/$TARGET"
       echo "$URL" && "$BROWSER" "$URL" 2> /dev/null &
   else
@@ -167,7 +167,7 @@ _upload() {
               # the guess failed too, so bail out entirely:
               ls ~/wiki/"$TARGET_DIR" ~/wiki/doc/"$GUESS"/
               red "$FILENAME; Directory $TARGET_DIR $2 (and fallback guess $GUESS) does not exist?"
-              return 2
+              return 8
           else
               # restart with fixed directory
               bold "Retrying as \"upload $FILENAME $GUESS\"…"
@@ -195,7 +195,7 @@ _upload() {
               # to prevent accidental duplicates.
               if [ ! -e ~/wiki/"$TARGET" ]; then
                   mv "$FILE" ~/wiki/"$TARGET"
-                  cd ~/wiki/ || return 3
+                  cd ~/wiki/ || return 9
                   chmod a+r "$TARGET"
                   if [[ "$TARGET" =~ .*\.pdf ]]; then
                       METADATA=$(crossref "$TARGET") && echo "$METADATA" & # background for speed, but print it out mostly-atomically to avoid being mangled & impeding copy-paste of the annotation metadata
@@ -205,7 +205,7 @@ _upload() {
                   fi
                   # Large file strategy: naively checking in large files like multi-gigabyte `.pkl` files is a recipe for degrading the git repo. However, we do not *really* need to track their histories (as they are usually WORM/archival files), we have plenty of disk space & bandwidth on the dedicated server, and we want to otherwise treat large files identically to smaller ones in terms of hosting on Gwern.net, including in tag-directories, file icons, and so on. So, using git-annex or git-lfs is overkill and doesn't offer any functionality we need. Instead, we simply make heavier use of `.gitignore`: large files are added to the appropriate directory in `/docs/`, and then simply ignored by git. This is toil if we do it by hand, but we add files using `upload`, so we can simply automate the addition of a file-specific ignore line (if that is necessary).
                   # Check file size and add to '.gitignore' if large.
-                  FILESIZE=$(stat -c%s "$TARGET")
+                  FILESIZE=$(stat --format=%s "$TARGET")
                   SIZE_THRESHOLD=200000000  # 200MB; TODO: maybe lower this to 100MB to mirror Github's longstanding (and much copied) blob-filesize limit?
                   IS_SMALL_FILE=$([[ "$FILESIZE" -le "$SIZE_THRESHOLD" ]] && echo true || echo false)
                   $IS_SMALL_FILE && (git add "$TARGET" &) || {
@@ -218,8 +218,8 @@ _upload() {
                       bold "Added large file /$TARGET to '.gitignore' (size: $(numfmt --to=iec-i --suffix=B $FILESIZE))"
                   }
 
-                  (rsync --chmod='a+r' --mkpath -q "$TARGET" gwern@176.9.41.242:"/home/gwern/gwern.net/$TARGET_DIR/" || \
-                      rsync --chmod='a+r' --mkpath -v "$TARGET" gwern@176.9.41.242:"/home/gwern/gwern.net/$TARGET_DIR/"
+                  (rsync --chmod='a+r' --mkpath --quiet "$TARGET" gwern@176.9.41.242:"/home/gwern/gwern.net/$TARGET_DIR/" || \
+                      rsync --chmod='a+r' --mkpath --verbose "$TARGET" gwern@176.9.41.242:"/home/gwern/gwern.net/$TARGET_DIR/"
                   URL="https://gwern.net/$TARGET_DIR/$(basename "$FILE")"
                   curl --head --max-filesize 200000000 "$URL" > /dev/null # verify it's downloadable
                   echo ""
@@ -236,10 +236,10 @@ _upload() {
               else red "Error: ~/wiki/$TARGET already exists at this exact path & filename! Will not try to automatically rename & upload, as this may be a duplicate: the user must check & rename manually to override."
                    echo
                    crossref "$TARGET" # print out the metadata for the user to sanity-check & modify
-                   return 4
+                   return 10
               fi
           else red "First argument $FILENAME is not a file?"
-               return 1
+               return 11
           fi
       fi
   fi

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # crossref: query a PDF for its metadata, reformat it, strip encryption,
 # check if Crossref can provide a useful abstract, and print out available metadata in the format of a Gwern.net annotation GTX entry,
@@ -13,7 +13,7 @@
 
 set -e
 
-if [ $# != 1 ]; then echo -e "crossref fatal error: Exactly 1 argument is required.\nReceived $# arguments, as \"$*\"" >&2 && exit 1; fi
+if (( $# != 1 )); then echo -e "crossref fatal error: Exactly 1 argument is required.\nReceived $# arguments, as \"$*\"" >&2 && exit 1; fi
 
 . ~/wiki/static/build/bash.sh # for path2file
 
@@ -74,7 +74,7 @@ if [ "${*##*.}" = "pdf" ]; then
         echo ""
 
             ( if [ -z "$(pgrep annotation-dump)" ]; then
-                  if [[ -n "$TITLE" ]]; then gwa | grep -F -e "$URL" -e "$TITLE" || true;
+                  if [[ -n "$TITLE" ]]; then gwa | grep --fixed-strings -e "$URL" -e "$TITLE" || true;
                   else gwa "$URL" || true;
                   fi;
               fi; ) &

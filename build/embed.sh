@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # similar.sh: get a neural net summary (embedding) of a text string (usually an annotation)
 # Author: Gwern Branwen
 # Date: 2021-12-05
-# When:  Time-stamp: "2024-08-29 12:24:30 gwern"
+# When:  Time-stamp: "2026-01-12 15:10:29 gwern"
 # License: CC-0
 #
 # Shell script to pass a document into the OpenAI API Embedding endpoint ( https://beta.openai.com/docs/api-reference/embeddings
@@ -44,13 +44,13 @@
 #
 # Requires: curl, jq, valid API key defined in `$OPENAI_API_KEY`
 
-# set -e
+set -e
 set -x
 
 # Input: X BPEs of text
-# Output: <https://beta.openai.com/docs/guides/embeddings/types-of-embedding-models>
+# Output: <https://platform.openai.com/docs/guides/embeddings>
 # 'text-embedding-3' models can be truncated to smaller dimensions which retain most performance, using a `dimension` argument.
-# <https://openai.com/index/new-embedding-models-and-api-updates/> <https://platform.openai.com/docs/guides/embeddings/use-cases>
+# <https://openai.com/index/new-embedding-models-and-api-updates/>
 
 ENGINE="text-embedding-3-large"
 ENGINE_DIMENSION="512"
@@ -61,11 +61,11 @@ TRUNCATED=0
 
 while [ $TEXT_LENGTH -gt 0 ]; do
 
-    RESULT="$(curl --silent "https://api.openai.com/v1/engines/$ENGINE/embeddings" -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" \
-         -d "{\"input\": \"$TEXT\", \"dimensions\": $ENGINE_DIMENSION}")"
+    RESULT="$(curl --silent "https://api.openai.com/v1/engines/$ENGINE/embeddings" --header "Content-Type: application/json" --header "Authorization: Bearer $OPENAI_API_KEY" \
+         --data "{\"input\": \"$TEXT\", \"dimensions\": $ENGINE_DIMENSION}")"
     PARSED="$(echo "$RESULT" | jq --raw-output '.model, .data[0].embedding')"
 
-    if [ "$(echo "$PARSED" | grep -F 'exceeded your current quota' | wc --char)" != 0 ]; then
+    if [ "$(echo "$PARSED" | grep --fixed-strings -- 'exceeded your current quota' | wc --char)" != 0 ]; then
         echo "Quota exceeded!" >> /dev/stderr
         echo "$RESULT" >> /dev/stderr
         exit 1

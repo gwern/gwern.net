@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # openReviewAbstract.sh: scrape paper metadata from OpenReview
 # Author: Gwern Branwen
@@ -33,9 +33,9 @@
 
 JSON=$(curl --silent --location "$@" | \
     # normalizing with Tidy puts the JSON object on a single line, which we can then grep out without full-blown HTML parsing:
-    tidy -quiet 2>/dev/null | grep -F "pageProps")
+    tidy -quiet 2>/dev/null | grep --fixed-strings "pageProps")
 PARSED=""
-if [[ $(echo "$JSON" | grep -F '"value":') ]]; then
+if [[ $(echo "$JSON" | grep --fixed-strings '"value":') ]]; then
    PARSED=$(echo "$JSON" |
     jq --raw-output '(.props.pageProps.forumNote.content.title.value),
        (.props.pageProps.forumNote.content.authors.value | join(", ")),
