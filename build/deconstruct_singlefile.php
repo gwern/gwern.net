@@ -2,12 +2,11 @@
 
 ## Usage (default 1024MB memory limit, 5M backtrack limit):
 ##   php deconstruct_singlefile.php foo.html
-##   php deconstruct_singlefile.php -m 2048M -b 10000000 foo.html
-##   php deconstruct_singlefile.php --memory-limit 2048M --backtrack-limit 10000000 foo.html
+##   php deconstruct_singlefile.php --memory-limit 2048M --backtrack-limit 10000000 --jpg-quality 85% foo.html
 
 $args = [ ];
 for ($i = 1; $i < $argc; $i++) {
-	if (str_starts_with($argv[$i], '-')) {
+	if (str_starts_with($argv[$i], '--')) {
 		if (isset($argv[$i + 1])) {
 			$args[$argv[$i]] = $argv[++$i];
 		} else {
@@ -19,11 +18,16 @@ for ($i = 1; $i < $argc; $i++) {
 	}
 }
 
-$memory_limit = $args['-m'] ?? $args['--memory-limit'] ?? '1024M';
+## PHP memory limit.
+$memory_limit = $args['--memory-limit'] ?? '1024M';
 @ini_set('memory_limit', $memory_limit);
 
-$backtrack_limit = $args['-b'] ?? $args['--backtrack-limit'] ?? '5000000';
+## PCRE backtracking limit.
+$backtrack_limit = $args['--backtrack-limit'] ?? '5000000';
 @ini_set('pcre.backtrack_limit', $backtrack_limit);
+
+## JPEG output quality (for converting PNGs).
+$jpg_quality = $args['--jpg-quality'] ?? '80%';
 
 $input_file_path = $args['file'];
 $input_file = file_get_contents($input_file_path);
@@ -158,6 +162,7 @@ $asset_count = 0;
 $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([A-Za-z0-9+\/=]+)(\1)/', function ($m) {
 	global $asset_type_map, $image_file_extensions;
 	global $input_file_path, $asset_directory, $asset_base_name, $asset_count;
+	global $jpg_quality;
 
 	$type = $m[2];
 	$data = $m[3];
@@ -182,7 +187,7 @@ $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([
 
 	## Check a PNG to see if it can be turned into a JPG with minimal quality 
 	## loss (according to the ImageMagick PSNR perceptual loss); for PNGs that 
-	## should be JPGs, often the JPG will be a third the size or less, which 
+	## should be JPEGs, often the JPEG will be a third the size or less, which 
 	## (particularly for large images like sample-grids) makes for more pleasant
 	## web browsing.
 	if ($asset_extension == 'png') {
@@ -190,7 +195,7 @@ $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([
 		$quality_threshold = 31; # decibels
 		$size_reduction_threshold = 30; # %
 
-		## Create the JPG.
+		## Create the JPEG.
 		$alt_asset_extension = 'jpg';
 		$alt_asset_name = "{$asset_base_name}{$asset_suffix}.{$alt_asset_extension}";
 		$alt_asset_path = "{$asset_directory}/{$alt_asset_name}";
@@ -208,13 +213,16 @@ $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([
 			## Check if size reduction and quality measure up.
 			if (   $psnr > $quality_threshold
 				&& $size_reduction > $size_reduction_threshold) {
+				## Create the full-quality JPEG.
+				`convert {$asset_path} -quality {$jpg_quality} {$alt_asset_path} 2>&1`;
+
 				## Delete the PNG.
 				unlink($asset_path);
 
-				## We’ll write out the JPG’s path to the HTML file.
+				## We’ll write out the JPEG’s path to the HTML file.
 				$asset_name = $alt_asset_name;
 			} else {
-				## Delete the JPG.
+				## Delete the test JPEG.
 				unlink($alt_asset_path);
 			}
 		}
