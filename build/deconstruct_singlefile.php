@@ -2,7 +2,7 @@
 
 ## Usage (default 1024MB memory limit, 5M backtrack limit):
 ##   php deconstruct_singlefile.php foo.html
-##   php deconstruct_singlefile.php --memory-limit 2048M --backtrack-limit 10000000 --jpg-quality 85% foo.html
+##   php deconstruct_singlefile.php --memory-limit 2048M --backtrack-limit 10000000 --jpg-quality 85% --debug 1 foo.html
 
 $args = [ ];
 for ($i = 1; $i < $argc; $i++) {
@@ -28,6 +28,9 @@ $backtrack_limit = $args['--backtrack-limit'] ?? '5000000';
 
 ## JPEG output quality (for converting PNGs).
 $jpg_quality = $args['--jpg-quality'] ?? '80%';
+
+## Debug mode.
+$debug = ($args['--debug'] == '1');
 
 $input_file_path = $args['file'];
 $input_file = file_get_contents($input_file_path);
@@ -163,6 +166,7 @@ $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([
 	global $asset_type_map, $image_file_extensions;
 	global $input_file_path, $asset_directory, $asset_base_name, $asset_count;
 	global $jpg_quality;
+	global $debug;
 
 	$type = $m[2];
 	$data = $m[3];
@@ -178,7 +182,7 @@ $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([
 	## Check image file integrity with ImageMagick.
 	## If file is bad, delete it, and leave the asset as base64.
 	if (in_array($asset_extension, $image_file_extensions)) {
-		$im_identify_result = `identify {$asset_path} 2>&1`;
+		$im_identify_result = `identify "{$asset_path}" 2>&1`;
 		if (strpos($im_identify_result, 'error') !== false) {
 			unlink($asset_path);
 			return $m[0];
@@ -199,7 +203,7 @@ $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([
 		$alt_asset_extension = 'jpg';
 		$alt_asset_name = "{$asset_base_name}{$asset_suffix}.{$alt_asset_extension}";
 		$alt_asset_path = "{$asset_directory}/{$alt_asset_name}";
-		`convert {$asset_path} -quality 15% {$alt_asset_path} 2>&1`;
+		`convert "{$asset_path}" -quality 15% "{$alt_asset_path}" 2>&1`;
 
 		if (file_exists($alt_asset_path)) {
 			## Measure size reduction.
@@ -208,13 +212,13 @@ $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([
 			$size_reduction = (1 - ($jpg_size / $png_size)) * 100;
 
 			## Measure quality.
-			$psnr = explode(' ', `compare -metric PSNR {$asset_path} {$alt_asset_path} null: 2>&1`)[0];
+			$psnr = explode(' ', `compare -metric PSNR "{$asset_path}" "{$alt_asset_path}" null: 2>&1`)[0];
 
 			## Check if size reduction and quality measure up.
 			if (   $psnr > $quality_threshold
 				&& $size_reduction > $size_reduction_threshold) {
 				## Create the full-quality JPEG.
-				`convert {$asset_path} -quality {$jpg_quality} {$alt_asset_path} 2>&1`;
+				`convert "{$asset_path}" -quality {$jpg_quality} "{$alt_asset_path}" 2>&1`;
 
 				## Delete the PNG.
 				unlink($asset_path);
@@ -222,13 +226,26 @@ $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([
 				## We’ll write out the JPEG’s path to the HTML file.
 				$asset_name = $alt_asset_name;
 			} else {
+				if ($debug) {
+					echo "PNG [{$asset_path}] unsuitable for JPEG conversion (";
+					$reasons = [ ];
+					if (!($psnr > $quality_threshold))
+						$reasons[] = "PSNR too low ({$psnr})";
+					if (!($size_reduction > $size_reduction_threshold))
+						$reasons[] = "Insufficient size reduction ({$size_reduction}%)";
+					echo implode('; ', $reasons);
+					echo ")\n";
+				}
+
 				## Delete the test JPEG.
 				unlink($alt_asset_path);
 			}
+		} else if ($debug) {
+			echo "Could not create JPEG from PNG: {$asset_path}\n";
 		}
 	}
 
-	return "{$quote}{$asset_base_name}/{$asset_name}{$quote}";
+	return ($quote . urlencode($asset_base_name) . '/' . urlencode($asset_name) . $quote);
 }, $input_file);
 if (preg_last_error() != PREG_NO_ERROR)
 	die;
