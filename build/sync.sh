@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-01-07 21:57:40 gwern"
+# When:  Time-stamp: "2026-01-12 17:18:34 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -94,7 +94,7 @@ else
     if [ "$SLOW" ]; then (cd ~/wiki/ && git status) || true; fi # quickly summarize pending changes
     bold "Pulling infrastructure updates…"
     # pull from Said Achmiz's repo, with his edits overriding mine in any conflict (`-Xtheirs`) & auto-merging with the default patch text (`--no-edit`), to make sure we have the latest JS/CSS. (This is a bit tricky because the use of versioning in the includes means we get a lot of merge conflicts, for some reason.)
-    (cd ./static/ && git status && timeout 5m git pull -Xtheirs --no-edit --verbose 'https://gwern.obormot.net/static/.git/' master) || true
+    (cd ./static/ && git status && timeout 5m git pull --strategy-option=theirs --no-edit --verbose 'https://gwern.obormot.net/static/.git/' master) || true
 
 
     if [ "$SLOW" ]; then
@@ -129,11 +129,11 @@ else
           ### WARNING: when using `+` in sed, by default, it is treated as an ordinary literal. It MUST be escaped to act as a regexp! Whereas in `grep --extended-regexp`, it's the opposite. So remember: `\+` in sed, and `+` in grep.
           ### WARNING: remember that `sed -i` modifies the last-modified timestamp of all files it runs on, even when the file was not, in fact, modified!
           for file in $(find . -type f -name "*.md" -or -name "*.gtx"); do
-              if grep -E --quiet "[A-Z][a-z]+ et al \([1-2][0-9]{3}[a-z]?\)" "$file"; then
+              if grep --extended-regexp --quiet "[A-Z][a-z]+ et al \([1-2][0-9]{3}[a-z]?\)" "$file"; then
                   sed -i -e 's/\([A-Z][a-z]\+\) et al (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 et al \2/g' "$file"
               fi
 
-              if grep -E --quiet "[A-Z][a-z]+ and [A-Z][a-z]+ \([1-2][0-9]{3}[a-z]?\)" "$file"; then
+              if grep --extended-regexp --quiet "[A-Z][a-z]+ and [A-Z][a-z]+ \([1-2][0-9]{3}[a-z]?\)" "$file"; then
                   sed -i -e 's/\([A-Z][a-z]\+\) and \([A-Z][a-z]\+\) (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 \& \2 \3/g' "$file"
               fi
           done
@@ -156,7 +156,7 @@ else
           s 'src="doc/' 'src="/doc/'; s 'href="doc/' 'href="/doc/';
           s 'link-icon-not' 'icon-not'; s '<!--<p>' '<!-- <p>'; s '</p>-->' '</p> -->';
           s '](W!' '](!W'; s '<em>𝛽</em>' '<em>β</em>'; s '𝛽' '<em>β</em>'; s 'class="table-simple' 'class="table-small';
-          s ' > > ' ' >> '; s '</pan>' '</span>'; s 'display:none;' 'display: none;'; s '</spam>' '</span>';
+          s ' > > ' ' >> '; s '</pan>' '</span>'; s 'display:none;' 'display: none;'; s '</spam>' '</span>'; s '\U0001D4AA' '𝒪̃';
 
           ## TODO: duplicate HTML classes from Pandoc reported as issue #8705 & fixed; fix should be in >pandoc 3.1.1 (2023-03-05), so can remove these two rewrites once I upgrade past that:
           s 'class="odd odd' 'class="odd'; s 'class="even even' 'class="even';
@@ -457,7 +457,7 @@ else
             -annotate +0+13 "$META_LINE" \
             "$POSTER"
         compressJPG "$POSTER"
-        rm -f "$TMPSTRIP"
+        rm --force"$TMPSTRIP"
     }
     for VIDEO in $(find . -type f \( -name "*.mp4" -o -name "*.webm" -o -name "*.avi" \) | gfv "doc/www/" | sort); do
         generate_large_poster "$VIDEO" &
@@ -662,7 +662,7 @@ else
         fi
     }
     export -f cleanCodeblockSelflinks
-    echo "$PAGES_ALL" | parallel --max-args=500 cleanCodeblockSelflinks || truec
+    echo "$PAGES_ALL" | parallel --max-args=500 cleanCodeblockSelflinks || true
 
     # reformat the JSON ID database to be more readable
     for JSON in ./metadata/annotation/id/*.json; do
@@ -905,7 +905,7 @@ else
         # eg. like '.link-live turning into 'data-link-live' (for class → data) or 'data-filesize-bytes' turning into '.data-filesize-bytes', (data → class).
         # TODO: this is wrong and incomplete
         # collision_check=$(echo "$PAGES_ALL" | xargs --max-procs=0 --max-args=500 ./static/build/htmlAttributesExtract.py | \
-        #                       while read -r line; do
+        #                       while IFS= read -r line; do
         #                           # Split each line into individual classes/attributes
         #                           echo "$line" | tr ' ' '\n'
         #                       done | sort | uniq --count | sort --reverse --numeric | awk '$1 > 1 {print $1 " occurrences: " $2}')
@@ -1003,7 +1003,7 @@ else
     λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 ge --with-filename --color=always -e 'pdf#page[0-9]' -e 'pdf#pg[0-9]'; }
     wrap λ "Incorrect PDF page links in Markdown."
 
-    λ(){ echo "$PAGES_ALL" | xargs grep -E -e '\#[a-z]+\#[a-z]+' | gfv -e '/index#newest#statistics'; }
+    λ(){ echo "$PAGES_ALL" | xargs grep --extended-regexp -e '\#[a-z]+\#[a-z]+' | gfv -e '/index#newest#statistics'; }
     wrap λ "Broken HTML: double-anchor hash links? While valid HTML5, this is likely an error; if it's intentional range-transclusion, whitelist it."
 
     λ(){ find ./ -type f -name "*.md" -type f -exec grep --extended-regexp -e 'css-extension:' {} \; | \
@@ -1167,7 +1167,7 @@ else
             -e '[12][0-9][0-9][0-9]—[12][0-9][0-9][0-9]' -e '[\[( ~#"][12][0-9][0-9][0-9]-[12][0-9][0-9][0-9]' \
             -e ' -\$[1-9][0-9]+' -e ' -\$[1-9][0-9][0-9]' -e ' -\$[1-9][0-9][0-9]+' -e ' \$[0-9][0-9][0-9][0-9]' -e ' \$[0-9][0-9][0-9][0-9][0-9]' -e ' \$[1-9][0-9][0-9][0-9]' -e '[^=]\$[1-9][0-9][0-9][0-9][^)>kmg"]' -e '\$[0-9][0-9][0-9][0-9][0-9]' -e '\[\$[12][0-9][0-9][0-9]' \
             -e '[12][0-9][0-9][0-9]-[012][0-9]-[12][0-9][0-9][0-9]-[012][0-9]' -e '[0-9][0-9]−[0-9][0-9]' \
-            -e '<p>\.\.[A-Z]' -e '^p>' -e '^hr>' -e '^ol>' -e '^ul>' -e '^li>' -e '^figure>' -e '^code>' -e '^blockquote>' -e '^div>' -e '^div class=.*>' -- ./metadata/*.gtx;
+            -e '<p>\.\.[A-Z]' -e '^p>' -e '^hr>' -e '^ol>' -e '^ul>' -e '^li>' -e '^figure>' -e '^code>' -e '^blockquote>' -e '^div>' -e '^div class=.*>' -e '\. [A-Z]</p>' -- ./metadata/*.gtx;
          ge -e ' I[0-9][0-9][0-9]' -e '</span> <[A-Z]' -- ./metadata/*.gtx | gfv ' I432'; }
     wrap λ "Check possible syntax errors in GTX metadata database (regexp matches)." &
 
@@ -1374,7 +1374,7 @@ else
                        tidy -quiet -errors --fix-style-tags no --doctype html5 - 2>&1 | \
                        gfv \
                                   -e '<link> proprietary attribute ' \
-                                   \ # -e 'Warning: trimming empty <span>' \
+                                  `# -e 'Warning: trimming empty <span>'` \
                                   -e "Error: missing quote mark for attribute value" \
                                   -e 'Warning: <img> proprietary attribute "loading"' \
                                   -e 'Warning: <svg> proprietary attribute "alt"' \
@@ -1456,7 +1456,7 @@ else
    CHECKED_URLS_FILE="./metadata/urls-linkchecker-checked.txt"
    # Filter URLs: Exclude URLs present in the checked list:
    FILTERED_PAGES=$(echo "$PAGES" | gfv -e '/fulltext' -e '/lorem' -e '/secret/' -e '/confidential/' -e '/private/' | sed -e 's/\.md$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' \
-                        | while read -r URL; do
+                        | while IFS= read -r URL; do
                         if ! grep --fixed-strings --line-regexp --quiet "$URL" "$CHECKED_URLS_FILE"; then
                             echo "$URL"
                         fi
@@ -1468,7 +1468,7 @@ else
 
    FILTERED_ANNOTATIONS=$(find metadata/annotation/ -maxdepth 1 -name "*.html" -type f -size +2k \
                  | sed -e 's/metadata\/annotation\/\(.*\)/\1/' \
-                 | while read -r ANNOTATION_URL; do
+                 | while IFS= read -r ANNOTATION_URL; do
                      if ! grep --fixed-strings --line-regexp --quiet "$ANNOTATION_URL" "$CHECKED_URLS_FILE"; then
                        echo "$ANNOTATION_URL"
                      fi
@@ -1666,11 +1666,11 @@ else
 
     wait;
     ## check that the robots-headers are being set appropriately:
-    curl --silent --head "https://gwern.net/doc/www/www.usagi.org/4b4194c682efeeab1f37fd9956dff3fc3807e3c8.html"  "https://gwern.net/doc/www/www.usagi.org/df4966e6908602944e3f0f22e9a818ffbfe09086.html" | ge -q "^x-robots-tag: " || red "/doc/www/ paths missing robots tag! ✗" # these mirrors are chosen to trigger SSI errors, if SSI processing is incorrectly happening on /doc/www/ files
-    curl --silent --head "https://gwern.net/doc/index" | ge -q "^x-robots-tag: " && red "/doc/index has robots tag! ✗"
+    curl --silent --head "https://gwern.net/doc/www/www.usagi.org/4b4194c682efeeab1f37fd9956dff3fc3807e3c8.html"  "https://gwern.net/doc/www/www.usagi.org/df4966e6908602944e3f0f22e9a818ffbfe09086.html" | ge --quiet "^x-robots-tag: " || red "/doc/www/ paths missing robots tag! ✗" # these mirrors are chosen to trigger SSI errors, if SSI processing is incorrectly happening on /doc/www/ files
+    curl --silent --head "https://gwern.net/doc/index" | ge --quiet "^x-robots-tag: " && red "/doc/index has robots tag! ✗"
 
     ## check that all tag shortcuts are working, and create missing ones:
-    ( find ./doc/ -type f -name "index.md" | sort | while read -r file; do
+    ( find ./doc/ -type f -name "index.md" | sort | while IFS= read -r file; do
         dir=$(basename "$(dirname "$file")")
         fullpath="$(echo "${file#./}" | sed 's/\.md$//')"
         url="https://gwern.net/$dir"
@@ -1773,7 +1773,7 @@ else
     λ(){ find ./ -type f | gf -e ".pkl.xz" -e ".h5.xz" -e ".weights.xz" -e ".t7.xz"; }
     wrap λ "There is no point in XZ-compressing these sorts of binary archives."
 
-    λ(){ find ./ -type f -name "*.mp3" | parallel 'output=$(mp3val {} 2>&1); if echo "$output" | gf -q "ERROR"; then echo "Corrupt file: {}"; echo "$output" | gf "ERROR"; fi'; }
+    λ(){ find ./ -type f -name "*.mp3" | parallel 'output=$(mp3val {} 2>&1); if echo "$output" | gf --quiet "ERROR"; then echo "Corrupt file: {}"; echo "$output" | gf "ERROR"; fi'; }
     wrap λ "Corrupted MP3 files detected! Maybe try fixing in-place with 'mp3val -f'?"
 
     λ(){ find . -type f -name "*.txt" -or -type f -name "*.md" | parallel file | awk '/ CRLF/ || !/:.*text/'; }
@@ -2002,7 +2002,7 @@ else
                   file_url="${BASE_URL}/${example_rel}"
 
                   # Step 4: Get Content-Type via curl
-                  mime_type=$(curl --fail -s -L --max-time 10 -o /dev/null -w '%{content_type}' "$file_url")
+                  mime_type=$(curl --fail --silent --location --max-time 10 --output /dev/null --write-out '%{content_type}' "$file_url")
                   curl_status=$?
 
                   if [[ "$curl_status" -ne 0 ]]; then

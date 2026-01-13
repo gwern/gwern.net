@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
@@ -20,7 +20,7 @@ wrap() { OUTPUT=$($1 2>&1)
              echo -e "$OUTPUT";
          fi; }
 
-λ() { grep -F -- '](/' "$NEWSLETTER"; }
+λ() { grep --fixed-strings -- '](/' "$NEWSLETTER"; }
 wrap λ "Local link detected in newsletter (needs to be absolute full URL to avoid breaking in email)"
 
 linkchecker --no-status --check-extern --threads=1 --timeout=20 -r1 "https://gwern.net/newsletter/$1"

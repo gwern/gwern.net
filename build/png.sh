@@ -1,5 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
+
+N="14"
 
 # do a mix of lossless then lossy optimization:
 pngOne () {
@@ -25,7 +27,7 @@ pngOne () {
         else
             echo "Optimized file $optimized_file doesn't exist. Leaving the original file untouched."
         fi
-        rm -f "$temp_file" "$optimized_file"
+        rm --force"$temp_file" "$optimized_file"
     else
         echo "File $1 is not a PNG. Skipping."
     fi
@@ -36,6 +38,6 @@ for item in "$@"; do
     if [ -f "$item" ]; then
         pngOne "$item" &
     elif [ -d "$item" ]; then
-        find "$item" -type f -name "*.png" | sort | parallel pngOne
+        find "$item" -type f -name "*.png" | sort | parallel --jobs "$@N" -- pngOne
     fi
 done

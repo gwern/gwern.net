@@ -1,14 +1,14 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Do fixed-string rewrites across the Gwern.net source corpus, inclusive of both code & generated snippets & GTX & Markdown.
 # Needs to handle a number of special cases like affiliation anchors.
 
-if [[ $# -eq 4 && "$2" == "redirected" && "$3" == "to" ]]; then
+if (( $# == 4 )) && [[ "$2" == "redirected" && "$3" == "to" ]]; then
     # special-case https://validator.w3.org output of the form
     # "http://haskell.org/haskellwiki/Xmonad/Config_archive/Gwern's_xmonad.hs redirected to https://wiki.haskell.org/Xmonad/Config_archive/Gwern's_xmonad.hs"
     gwsed "$1" "$4"
 else
-    if [ $# -eq 2 ] && [ "$1" != "$2" ]; then
+    if (( $# == 2 )) && [ "$1" != "$2" ]; then
         LENGTH1=$(echo -e "$1" | wc --lines)
         LENGTH2=$(echo -e "$2" | wc --lines)
         if [ "$LENGTH1" != "1" ] || [ "$LENGTH2" != "1" ]; then
@@ -35,8 +35,8 @@ else
             # proceed with trying to do a normal site-wide replacement:
             FILES=$( (ls ~/*.md; find ~/wiki/ -type f -name "*.md"; find ~/wiki/metadata/ ~/wiki/haskell/ ~/wiki/static/ \
                                                        -name "*.gtx" -or -name "*.hs" -or -name "*.html"; ) | \
-                        grep -F -v "${EXCLUDE_SEARCH_AND_REPLACE[@]}" | \
-                        xargs grep -F --files-with-matches -- "$1" | sort)
+                        grep --fixed-strings -v "${EXCLUDE_SEARCH_AND_REPLACE[@]}" | \
+                        xargs grep --fixed-strings --files-with-matches -- "$1" | sort)
 
             if [ -z "$FILES" ]; then
                 echo "No matches; exiting while doing nothing." 1>&2
@@ -49,8 +49,8 @@ else
                           find ~/wiki/metadata/ ~/wiki/haskell/ -type f -name "*.hs" -or -name "*.gtx"
                           find ~/wiki/static/ -type f -name "*.js" -or -name "*.css" -or -name "*.hs" -or -name "*.conf" -or -name "*.gtx"
                           find ~/wiki/ -type f -name "*.html" -not -wholename "*/doc/*" ) | \
-                            grep -F -v "${EXCLUDE_SEARCH[@]}" | \
-                            sort --unique  | xargs grep -F --ignore-case --color=always --with-filename "$@" | cut --characters=1-2548; } # NOTE: case-insensitive so we can see any variants we might've missed
+                            grep --fixed-strings -v "${EXCLUDE_SEARCH[@]}" | \
+                            sort --unique  | xargs grep --fixed-strings --ignore-case --color=always --with-filename "$@" | cut --characters=1-2548; } # NOTE: case-insensitive so we can see any variants we might've missed
                 gw "$1";
 
                 # special-case cleanup: if adding an affiliation, we need to clean up inconsistent doubled

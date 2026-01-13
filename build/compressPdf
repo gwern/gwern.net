@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # compressPdf: convenience script for running PDFs through `ocrmypdf`. PDFs are only modified if there is meaningful space savings or if the OCF seems suspiciously bad (in which case a contemporary tesseract run will be useful).
 #

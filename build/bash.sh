@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2025-09-30 17:34:03 gwern"
+# When:  Time-stamp: "2026-01-12 19:43:17 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -10,7 +10,9 @@
 #
 # Helper functions include: website cache invalidation; PDF metadata query & editing; tab-completion for tag/directory names; querying the newsletters, filenames, annotation database, website, and IRC (in increasing generality); site-wide string search-and-replace (including a HTTP→HTTPS special-case which comes up a lot fixing redirects); functions to rename files & directories; and a `gwtag` CLIcommand which create new annotations (if there is a usable annotation source, such as being an Arxiv link) or add/remove tags from specified files/URLs.
 #
-# See also: /static/build/{upload, gwa, crossref, compressJpg2}
+# For a detailed style guide & documentation of our Bash code, see <https://gwern.net/style-guide#bash>.
+#
+# See also: </static/build/{upload, gwa, crossref, compressJpg2}>
 
 source /usr/share/bash-completion/bash_completion || true # useful for better `upload` tab-completion
 
@@ -37,8 +39,8 @@ yellow () {
   echo -e "\e[33m$@\e[0m"
 }
 ## function to wrap checks and print red-highlighted warning if non-zero output (self-documenting):
-wrap () { OUTPUT=$($1 2>&1)
-          WARN="$2"
+wrap () { local OUTPUT=$($1 2>&1)
+          local WARN="$2"
           if [ -n "$OUTPUT" ]; then
               echo -n "Begin: "; red "$WARN";
               echo -e "$OUTPUT";
@@ -121,7 +123,7 @@ pdf-cut () { for PDF in "$@"; do
           }
 # delete the last page of the PDF, similar to `pdf-cut`:
 pdf-cut-last () {
-    if [ $# -ne 1 ]; then
+    if (( $# != 1 )); then
         red "Usage: pdf-cut-last <pdf-file>" >&2
         return 1
     fi
@@ -146,9 +148,9 @@ pdf-cut-last () {
 
     (crossref "$ORIGINAL" &)
 }
-# sometimes we want to keep the first/cover page, but still don't want to actually make it the *first* page (or work around this with the `#p[age=2` trick; so we can just rotate it to the end rather than deleting it entirely.
+# sometimes we want to keep the first/cover page, but still don't want to actually make it the *first* page (or work around this with the `#page=2` trick; so we can just rotate it to the end rather than deleting it entirely.
 alias pdfcut-append="pdf-cut-append"
-pdf-cut-append () { if [ $# -ne 1 ]; then red "Wrong number of arguments arguments; 'pdf-cut-append' moves the first page to the end. To delete the first page, use 'pdf-cut'." >&2 && return 1; fi
+pdf-cut-append () { if (( $# != 1 )); then red "Wrong number of arguments arguments; 'pdf-cut-append' moves the first page to the end. To delete the first page, use 'pdf-cut'." >&2 && return 1; fi
             ORIGINAL=$(path2File "$@")
             TARGET=$(mktemp /tmp/XXXXXX.pdf);
             pdftk "$ORIGINAL" cat 2-end 1  output "$TARGET" &&
@@ -162,14 +164,6 @@ pdf-cut-append () { if [ $# -ne 1 ]; then red "Wrong number of arguments argumen
 # This accepts Docx files as well due to their frequency in supplemental files, so `pdf-append foo.pdf supplement-1.doc supplement-2.pdf` is allowed (Docx is converted to PDF by `doc2pdf`).
 # (The appended PDFs are soft-deleted by default, by moving them to the used temporary directory, which is not removed afterwards. In case of a rare problem, they can be retrieved from there.)
 # (Assuming helper functions red, bold, path2File exist)
-#!/bin/bash
-
-# Helper function stubs (replace with your actual implementations if needed)
-# Example using tput for colors:
-red() { tput setaf 1; echo "$@" >&2; tput sgr0; }
-yellow() { tput setaf 3; echo "$@" >&2; tput sgr0; }
-bold() { tput bold; echo "$@" >&2; tput sgr0; }
-
 # --- pdf-append Function ---
 
 # Concatenates a set of files (PDFs, documents, spreadsheets, images) into a single PDF.
@@ -212,7 +206,7 @@ pdf-append () {
     # Enable case-insensitive matching for file extensions during processing
     shopt -s nocasematch
 
-    if [ $# -lt 2 ]; then
+    if (( $# < 2 )); then
         red "Usage: pdf-append <target_pdf> <input_file_2> [input_file_3 ...]" >&2
         shopt -u nocasematch # Restore default matching
         return 1
@@ -246,7 +240,7 @@ pdf-append () {
     TEMP_DIR="$(mktemp --directory /tmp/pdf-append-work-XXXXXX)"
 
     # Ensure temporary files/dirs are cleaned up on script exit/interrupt, unless successful
-    trap 'rm -f "$TEMP_TARGET"; rm -rf "$TEMP_DIR"' EXIT HUP INT TERM
+    trap 'rm --force"$TEMP_TARGET"; rm -rf "$TEMP_DIR"' EXIT HUP INT TERM
 
     # Array to hold paths to all PDFs ready for concatenation (originals + converted)
     local PDF_FILES=()
@@ -365,7 +359,7 @@ pdf-append () {
             # Special check: If the *first* file is unsupported, we cannot proceed meaningfully.
              if [[ "$file" == "$TARGET_DEST_PDF" ]]; then
                  red "First input file '$file' is not a PDF and is not a supported type for conversion. Cannot proceed." >&2
-                 shopt -u nocasematch; trap - EXIT HUP INT TERM; rm -f "$TEMP_TARGET"; rm -rf "$TEMP_DIR"; return 1;
+                 shopt -u nocasematch; trap - EXIT HUP INT TERM; rm --force"$TEMP_TARGET"; rm -rf "$TEMP_DIR"; return 1;
             else
                  red "Skipping unsupported file type: $file" >&2
             fi
@@ -375,12 +369,12 @@ pdf-append () {
     # --- Validation Before Concatenation ---
     if [ ${#PDF_FILES[@]} -lt 1 ]; then
         red "No PDF files available (or created) to concatenate." >&2
-        shopt -u nocasematch; trap - EXIT HUP INT TERM; rm -f "$TEMP_TARGET"; rm -rf "$TEMP_DIR"; return 1;
+        shopt -u nocasematch; trap - EXIT HUP INT TERM; rm --force"$TEMP_TARGET"; rm -rf "$TEMP_DIR"; return 1;
     fi
     # Check if only the first file remains (no new files added/valid)
      if [ ${#PDF_FILES[@]} -eq 1 ] && [ "${PDF_FILES[0]}" == "$TARGET_DEST_PDF" ]; then
          bold "Input consists only of the target file '$TARGET_DEST_PDF'. No changes needed." >&2
-         shopt -u nocasematch; trap - EXIT HUP INT TERM; rm -f "$TEMP_TARGET"; rm -rf "$TEMP_DIR"; return 0
+         shopt -u nocasematch; trap - EXIT HUP INT TERM; rm --force"$TEMP_TARGET"; rm -rf "$TEMP_DIR"; return 0
      fi
 
     # --- Concatenation ---
@@ -475,7 +469,7 @@ pdf-append () {
 }
 
 doc2pdf () {
-    [ $# -eq 0 ] && { red "Usage: doc2pdf <input_file> [output_file]"; return 1; }
+    (( $# == 0 )) && { red "Usage: doc2pdf <input_file> [output_file]"; return 1; }
     input="$1"
     output="${2:-${input%.*}.pdf}"
 
@@ -530,7 +524,7 @@ crop-pad-black () { crop "$@" && pad-black "$@"; }
 
 # convert black background to white:  `mogrify -fuzz 5% -fill white -draw "color 0,0 floodfill"`
 
-# check a PNG to see if it can be turned into a JPG with minimal quality loss (according to the ImageMagick PSNR perceptual loss); for PNGs that should be JPGs, often the JPG will be a third the size or less, which (particularly for large images like sample-grids) makes for more pleasant web browsing.
+# check a PNG to see if it can be turned into a JPG with minimal quality loss (according to the ImageMagick PSNR perceptual loss); for PNGs that should be JPGs (eg. photos are surprisingly often saved as PNGs), often the JPG will be a third the size or less, which (particularly for large images like sample-grids) makes for more pleasant web browsing.
 # (This does not rename or convert as it is still experimental and automatically renaming gwern.net files is dangerous due to the need for global search-and-replace & defining nginx redirects.)
 png2JPGQualityCheck () {
     for ARGS in "$@"; do
@@ -611,7 +605,7 @@ alias exiftool="exiftool -overwrite_original"
 # Gwern.net searches:
 ## fixed-grep gwern.net specifically:
 gw () {
-    if [ $# == 0 ]; then red "Missing search query." >&2 && return 2; fi
+    if (( $# == 0 )); then red "Missing search query." >&2 && return 2; fi
 
     QUERY=$(echo "$*" | tr -d '\n') # remove newlines, which are usually spurious (and also not supported by grep by default?) thanks to browsers injecting newlines everywhere when copy-pasting...
     RESULTS=$( (find ~/wiki/ -type f -name "*.md";
@@ -631,7 +625,7 @@ gw () {
 ## file names only (include home-directory in case of duplicate or not-yet-uploaded files)
 gwf () { (cd ~/wiki/ && (find ~/ -maxdepth 1 -type f; find . -type f) | grep --fixed-strings -v -e '.#' -e '_cache/' -e '_site/' -e '.git/' | grep --ignore-case "$@" | sed -e 's/^\.\//\//g') | sort; } # path2File?
 ## Newsletter only:
-gwn () { if [ $# != 1 ]; then QUERY="$*"; else QUERY="$@"; fi
+gwn () { if (( $# != 1 )); then QUERY="$*"; else QUERY="$@"; fi
         find ~/wiki/newsletter/ -type f -name "*.md" | \
              grep --fixed-strings -v -e '.#' |
             sort --unique  | xargs grep --extended-regexp --ignore-case --color=always --with-filename "$QUERY" | cut --characters 1-2048; }
@@ -640,13 +634,13 @@ gwn () { if [ $# != 1 ]; then QUERY="$*"; else QUERY="$@"; fi
 gwal () { gwa "$@" | less -p "$@"; }
 
 ## #lesswrong IRC logs
-gwl () { if [ $# != 1 ]; then QUERY="$*"; else QUERY="$@"; fi
+gwl () { if (( $# != 1 )); then QUERY="$*"; else QUERY="$@"; fi
          grep --extended-regexp --context=1 --text --ignore-case -- "$QUERY" ~/doc/irclogs/*/\#lesswrong.log; }
 
 # Gwern.net modifications:
 ## gwsed shortcut for the common use case of updating a domain HTTP → HTTPS; typically the URLs are otherwise unchanged, and don't need to be individually updated.
 gwhttp () {
-    if [ $# != 1 ]; then
+    if (( $# != 1 )); then
         echo "HTTP migration only works for 1 domain, did you try a regular search-and-replace?" >&2
         return 2
     else
@@ -664,10 +658,10 @@ gwmv () {
 
     # shortcut: if there's only 1 PNG argument & it's a known wiki file (ie. version-controlled in git), then that means we are converting it to JPG using `png2JPGQualityCheck`, and can skip manually setting the second argument to the `.jpg` extension.
     # (The converse currently never happens & so is unsupported.)
-if [[ $# -eq 1 && $1 =~ \.png$ && $(cd ~/wiki/ && git ls-files --error-unmatch ./"$1" 2>/dev/null) ]];
+if (( $# == 1 )) && [[ $1 =~ \.png$ && $(cd ~/wiki/ && git ls-files --error-unmatch ./"$1" 2>/dev/null) ]];
    then gwmv "$1" "${1%.png}.jpg"
 else
-    if [ $# != 2 ]; then
+    if (( $# != 2 )); then
         red "Need two arguments: OLD file and NEW file! Only got: $@" >&2
         return 2
     else
@@ -717,7 +711,7 @@ else
             red "File does not exist? $OLD (to be moved to $NEW)" >&2 && return 1;
         fi
 
-        rsync --mkpath --chmod='a+r' -q ~/wiki"$NEW" gwern@176.9.41.242:"/home/gwern/gwern.net$NEW" || red "gwmv: rsync failed?" > /dev/null &
+        rsync --mkpath --chmod='a+r' --quiet -- ~/wiki"$NEW" gwern@176.9.41.242:"/home/gwern/gwern.net$NEW" || red "gwmv: rsync failed?" > /dev/null &
         gwsed "$OLD" "$NEW"
         # there are likely many Nginx redirects pointing from an inbound path to the old original URL as as a target.
         # These look like a single line like '"~^/inbound$" "/old";'
@@ -745,13 +739,13 @@ gwmvdir () {
         NEW="${NEW:1}"
     fi
 
-    OLD="$(readlink --canonicalize "$OLD" | cut -d '/' -f 5-)"
+    OLD="$(readlink --canonicalize "$OLD" | cut --delimiter='/' --fields=5-)"
     ls "$OLD"
-    NEW="$(readlink --canonicalize "$NEW" | cut -d '/' -f 5-)"
+    NEW="$(readlink --canonicalize "$NEW" | cut --delimiter='/' --fields=5-)"
     mkdir -p "$NEW"
     git add "$NEW"
     for FILE in $(ls "$OLD"/* | grep --fixed-strings -v 'index.md'); do
-        echo $FILE
+        echo "$FILE"
         gwmv "$FILE" "$NEW/$(basename $FILE)"
     done
     rm "$OLD/index.md" || true
@@ -857,11 +851,11 @@ mvuri () {
 
         # Oldest *.html in $HOME (browser just saved)
         NEW=$(find "$HOME" -maxdepth 1 -name '*.html' -printf '%T@ %p\n' \
-              | sort --numeric-sort | cut --delimiter=' ' --fields=2- | head -n1)
+              | sort --numeric-sort | cut --delimiter=' ' --fields=2- | head --lines=1)
 
         if [[ -z "$NEW" ]]; then
             red "No freshly-saved HTML file found in \$HOME to move to $TARGET_PATH."
-            exit 3
+            return 3
         fi
 
         (cd ~/wiki/
@@ -932,14 +926,14 @@ everyNDays () {
 # so processing them first reduces latency to fix.
 sort_by_lastmodified () {
     local git_files latest_file timestamp
-    while read -r dir; do
+    while IFS= read -r dir; do
         # Change to the directory
         pushd "$dir" >/dev/null || continue
         # Get list of files not ignored by git
         git_files=$(git ls-files --exclude-standard)
         if [ -n "$git_files" ]; then
             # Find the most recently modified file among git-tracked files
-            latest_file=$(git ls-files --exclude-standard -z | xargs -0 stat -f '%m %N' 2>/dev/null | sort --reverse --numeric | head --lines=1)
+            latest_file=$(git ls-files --exclude-standard -z | xargs -0 stat --format='%m %N' 2>/dev/null | sort --reverse --numeric | head --lines=1)
         else
             # If no git-tracked files, find the most recently modified untracked file
             latest_file=$(find . -type f -not -path './.git/*' -printf '%T@ %p\n' 2>/dev/null | sort --reverse --numeric | head --lines=1)
@@ -950,7 +944,7 @@ sort_by_lastmodified () {
             echo "$timestamp $dir"
         else
             # If no files found, use the directory's modification time
-            timestamp=$(stat -f '%m' . 2>/dev/null || stat -c '%Y' .)
+            timestamp=$(stat --format='%m' . 2>/dev/null || stat -c '%Y' .)
             echo "$timestamp $dir"
         fi
         # Return to the original directory
@@ -999,7 +993,7 @@ lorem_update () {
     cd ~/wiki/
     bold "Updating snapshots…"
     mkdir -p "${SNAPSHOT_DIR}"
-    get_lorem_pages | while read -r page; do
+    get_lorem_pages | while IFS= read -r page; do
         lorem_download "${page}"
         bold "Updated snapshot for \"${page}\""
     done
