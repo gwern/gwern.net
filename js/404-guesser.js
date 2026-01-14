@@ -139,11 +139,11 @@ function boundedLevenshteinDistance(a, b, maxDistance) {
     return matrix[b.length][a.length];
 }
 
-/**********************************************************************/
-/*	Find similar URLs (with “basename”, a.k.a. last-segment, fallback).
+/******************************************/
+/*	Find similar URLs (full-path distance).
  */
 function findSimilarUrlPaths(urlPaths, targetPath, numResults, maxDistance) {
-    const uniqueSimilarUrlPaths = urlPaths.filter(
+    return urlPaths.filter(
 	    //	Quick filter based on length difference
     	urlPath => (Math.abs(urlPath.length - targetPath.length) <= maxDistance)
 // 	).unique(
@@ -165,25 +165,10 @@ function findSimilarUrlPaths(urlPaths, targetPath, numResults, maxDistance) {
     ).map(
     	item => item.pathname
     );
-
-    //	If we found good full-path matches, use them.
-    if (uniqueSimilarUrlPaths.length > 0)
-        return uniqueSimilarUrlPaths;
-    
-    //	Fallback: try matching by basename only.
-    return findSimilarByBasename(urlPaths, targetPath, numResults, Math.ceil(maxDistance * 0.5));
 }
 
 /******************************************************************************/
-/*	Find URLs with similar “basenames” (a.k.a. last segments of the pathname) 
-	(fallback for when full-path matching fails).
-
-	This catches cases like /ai-slop → /blog/ai-slop where the basename is 
-	correct but the directory path is wrong or missing.
- */
-/*	NOTE: the above example does not work because /blog/ai-slop is not actually
-	in the sitemap.
-		—SA 2025-12-17
+/*	Find URLs with similar “basenames” (a.k.a. last segments of the pathname).
  */
 function findSimilarByBasename(urlPaths, targetPath, numResults, maxDistance) {
     const targetPathLastSegment = URLFromString(targetPath).pathSegments.last; 
@@ -191,7 +176,7 @@ function findSimilarByBasename(urlPaths, targetPath, numResults, maxDistance) {
     if (targetPathLastSegment.length < 3)
     	return [];
  
-    const uniqueSimilarUrlPaths = urlPaths.map(
+    return urlPaths.map(
     	//	Get last pathname segments.
     	urlPath => ({
     		pathname: urlPath,
@@ -217,8 +202,6 @@ function findSimilarByBasename(urlPaths, targetPath, numResults, maxDistance) {
 	).map(
 		item => item.pathname
 	);
- 
-    return uniqueSimilarUrlPaths;
 }
 
 /************************************/
@@ -260,8 +243,15 @@ async function suggest404Alternatives() {
 
     const sitemapText = await fetchSitemap();
     if (sitemapText) {
+    	const maxDistance = 8; // max distance chosen heuristically
+    	const maxNumResults = 10;
+
         const urlPaths = urlPathnamesFromSitemapString(sitemapText);
-        const similarUrlPaths = findSimilarUrlPaths(urlPaths, currentPath, 10, 8); // max distance chosen heuristically
+
+		const similarUrlPaths = findSimilarByBasename(urlPaths, currentPath, maxNumResults, maxDistance * 0.5);
+		if (similarUrlPaths.length < maxNumResults)
+			similarUrlPaths.push(...(findSimilarUrlPaths(urlPaths, currentPath, maxNumResults, maxDistance).slice(0, maxNumResults - similarUrlPaths.length)));
+
         injectSuggestions(currentPath, similarUrlPaths);
     }
 }
