@@ -2381,6 +2381,7 @@ body.page-index #sidebar a.logo {
 body.page-index #markdownBody #notable {
     display: none;
 }
+
 @media all and (min-width: 961px) {
     body.page-index #markdownBody,
     div#new-popular-notable {
@@ -2433,6 +2434,13 @@ body.page-index #markdownBody #notable {
         }
     }
 }
+
+/*	Prevent empty grafs from taking up space in the layout.
+ */
+body.page-index #markdownBody > p.empty-graf {
+    display: none;
+}
+
 
 /*****************/
 /*  Link sections.
