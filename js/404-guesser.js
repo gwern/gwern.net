@@ -247,10 +247,10 @@ async function suggest404Alternatives() {
     	const maxNumResults = 10;
 
         const urlPaths = urlPathnamesFromSitemapString(sitemapText);
-
-		const similarUrlPaths = findSimilarByBasename(urlPaths, currentPath, maxNumResults, maxDistance * 0.5);
-		if (similarUrlPaths.length < maxNumResults)
-			similarUrlPaths.push(...(findSimilarUrlPaths(urlPaths, currentPath, maxNumResults, maxDistance).slice(0, maxNumResults - similarUrlPaths.length)));
+		const similarUrlPaths = findSimilarByBasename(urlPaths, currentPath, maxNumResults, maxDistance * 0.5).concat(
+									findSimilarUrlPaths(urlPaths, currentPath, maxNumResults, maxDistance)
+								).unique(
+								).slice(0, maxNumResults);
 
         injectSuggestions(currentPath, similarUrlPaths);
     }
