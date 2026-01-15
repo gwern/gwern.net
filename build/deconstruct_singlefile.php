@@ -30,7 +30,7 @@ $backtrack_limit = $args['--backtrack-limit'] ?? '5000000';
 $jpg_quality = $args['--jpg-quality'] ?? '80%';
 
 ## Debug mode.
-$debug = ($args['--debug'] == '1');
+$debug = (($args['--debug'] ?? null) == '1');
 
 $input_file_path = $args['file'];
 $input_file = file_get_contents($input_file_path);
