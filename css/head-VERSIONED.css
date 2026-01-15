@@ -1193,9 +1193,17 @@ p {
 }
 
 p.empty-graf {
+/* 
     height: 0 !important;
     margin: 0 !important;
     visibility: hidden;
+ */
+
+	/*	Let’s try removing empty grafs from the rendered page entirely, and 
+		see if anything breaks.
+			—SA 2026-01-15
+	 */
+	display: none;
 }
 
 /*  On wide screens (desktop), use fully-justified text (words get
