@@ -216,7 +216,7 @@ fileExtensionToEnglish ext = case lookup (takeWhile (/= '#') ext) extensionMappi
                                Nothing   -> ""
   where extensionMapping = map (\(a,b) -> ("."++a,b)) $ [("json", "JSON"), ("jsonl", "JSON Lines"), ("opml", "OPML"), ("md", "Markdown")
                            , ("pdf", "PDF"), ("txt", "text"), ("xml", "XML"), ("R", "R code"), ("css", "CSS")
-                           , ("hs", "Haskell"), ("js", "Javascript"), ("patch", "patch"), ("sh", "Bash")
+                           , ("hs", "Haskell"), ("js", "JavaScript"), ("patch", "patch"), ("sh", "Bash")
                            , ("php", "PHP"), ("conf", "configuration"), ("mp3", "MP3"), ("webm", "WebM")
                            , ("mp4", "MP4"), ("bmp", "bitmap"), ("gif", "GIF"), ("ico", "icon"), ("jpg", "JPG")
                            , ("png", "PNG"), ("svg", "SVG"), ("xcf", "XCF (GIMP)"), ("html", "HTML")

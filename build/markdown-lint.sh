@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# When:  Time-stamp: "2026-01-12 15:11:23 gwern"
+# When:  Time-stamp: "2026-01-14 16:45:35 gwern"
 # see https://gwern.net/about#markdown-checker
 
 set +x
@@ -64,7 +64,7 @@ do
         wrap λ "look for broken syntax in original Markdown: (NOTE: footnotes should not be linked to because they are unstable; they should either be sections/appendices, or given a stable permanent span ID)"
 
         λ(){ grep --fixed-strings '~~~{.' -- "$PAGE" | tr -d '{}~' | tr ' ' '\n' | \
-                 grep --fixed-strings -v -e '.R' -e '.collapse' -e '.Haskell' -e '.Bash' -e '.Diff' -e '.Javascript' -e '.numberLines' \
+                 grep --fixed-strings -v -e '.R' -e '.collapse' -e '.Haskell' -e '.Bash' -e '.Diff' -e '.JavaScript' -e '.numberLines' \
                        -e '.Python' -e '.C ' -e '.CPO' -e '.SQL' -e '.Bibtex' -e '.HTML' -e '.CSS'; }
         wrap λ "look for potentially broken syntax-highlighting classes"
 

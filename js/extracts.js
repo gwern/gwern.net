@@ -1,4 +1,4 @@
-// popups.js: standalone Javascript library for creating 'popups' which display link metadata (typically, title/author/date/summary), for extremely convenient reference/abstract reading.
+// popups.js: standalone JavaScript library for creating 'popups' which display link metadata (typically, title/author/date/summary), for extremely convenient reference/abstract reading.
 // Author: Said Achmiz, Shawn Presser (mobile & Youtube support)
 // Date: 2019-09-12
 // When:
@@ -68,7 +68,7 @@ Extracts = {
 					two hooks.
 				 */
 				if (indicatorHook.previousSibling?.textContent == "\u{2060}")
-					indicatorHook.previousSibling.remove();	
+					indicatorHook.previousSibling.remove();
 			} else {
 				/*	Remove U+2060 WORD JOINER from first text content of link.
 				 */
@@ -141,13 +141,13 @@ Extracts = {
 			/*	Inject indicator hook span.
 				(If the link already has a recently-modified icon hook, we must,
 				 firstly, inject the indicator hook after the recently-modified
-				 icon hook, and secondly, inject a text node containing a 
+				 icon hook, and secondly, inject a text node containing a
 				 U+2060 WORD JOINER between the two hooks. This ensures that the
-				 two link styling elements are arranged properly, and do not 
+				 two link styling elements are arranged properly, and do not
 				 span a line break.)
 			 */
 			let recentlyModifiedIconHook = link.querySelector(".recently-modified-icon-hook");
-			link.insertBefore(newElement("SPAN", { class: "indicator-hook" }), 
+			link.insertBefore(newElement("SPAN", { class: "indicator-hook" }),
 							  recentlyModifiedIconHook?.nextSibling ?? link.firstChild);
 			if (recentlyModifiedIconHook)
 				link.insertBefore(document.createTextNode("\u{2060}"), recentlyModifiedIconHook.nextSibling);
@@ -457,7 +457,7 @@ Extracts = {
     //  Called by: Extracts.preparePopin
     //  Called by: extracts-annotations.js
     popFrameHasLoaded: (popFrame) => {
-        return ((   Extracts.popFrameProvider.popFrameStateLoading(popFrame) 
+        return ((   Extracts.popFrameProvider.popFrameStateLoading(popFrame)
         		 || Extracts.popFrameProvider.popFrameStateLoadingFailed(popFrame)) == false);
     },
 
@@ -632,10 +632,10 @@ Extracts = {
         //  Import the class(es) of the target.
         Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(popFrame.spawningTarget.classList));
         //  We then remove some of the imported classes.
-        Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, 
-        	"uri", "has-annotation", "has-annotation-partial", "has-content", 
+        Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame,
+        	"uri", "has-annotation", "has-annotation-partial", "has-content",
         	"link-self", "link-annotated", "link-page",
-        	"has-icon", "icon-not", "has-indicator-hook", "indicator-hook-not", 
+        	"has-icon", "icon-not", "has-indicator-hook", "indicator-hook-not",
         	"decorate-not", "spawns-popup", "spawns-popin", "widget-button");
 
 		//	Import classes from include-link.
@@ -656,7 +656,7 @@ Extracts = {
 
         //  Special handling for certain pop-frame types.
         let targetTypeName = Extracts.targetTypeInfo(popFrame.spawningTarget).typeName;
-        let specialPrepareFunction = (   Extracts[`preparePop${suffix}_${targetTypeName}`] 
+        let specialPrepareFunction = (   Extracts[`preparePop${suffix}_${targetTypeName}`]
         							  ?? Extracts[`preparePopFrame_${targetTypeName}`]);
         if (specialPrepareFunction)
             if ((popFrame = specialPrepareFunction(popFrame)) == null)
@@ -727,7 +727,7 @@ Extracts = {
 			Extracts.postRefreshUpdatePopFrame(popFrame, true);
 
 			//	Type-specific updates.
-			(   Extracts[`updatePop${suffix}_${targetTypeName}`] 
+			(   Extracts[`updatePop${suffix}_${targetTypeName}`]
 			 ?? Extracts[`updatePopFrame_${targetTypeName}`]
 			 )?.(popFrame);
 		}, {
@@ -740,7 +740,7 @@ Extracts = {
 		//	Rewrite pop-frame content when it’s injected.
 		GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
 			//  Type-specific rewrites.
-			(   Extracts[`rewritePop${suffix}Content_${targetTypeName}`] 
+			(   Extracts[`rewritePop${suffix}Content_${targetTypeName}`]
 			 ?? Extracts[`rewritePopFrameContent_${targetTypeName}`]
 			 )?.(popFrame, info.container);
 
