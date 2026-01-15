@@ -11381,7 +11381,7 @@ Transclude.templates = {
 	</blockquote>
 </div>`,
 };
-// popups.js: standalone Javascript library for creating 'popups' which display link metadata (typically, title/author/date/summary), for extremely convenient reference/abstract reading.
+// popups.js: standalone JavaScript library for creating 'popups' which display link metadata (typically, title/author/date/summary), for extremely convenient reference/abstract reading.
 // Author: Said Achmiz, Shawn Presser (mobile & Youtube support)
 // Date: 2019-09-12
 // When:
@@ -11451,7 +11451,7 @@ Extracts = {
 					two hooks.
 				 */
 				if (indicatorHook.previousSibling?.textContent == "\u{2060}")
-					indicatorHook.previousSibling.remove();	
+					indicatorHook.previousSibling.remove();
 			} else {
 				/*	Remove U+2060 WORD JOINER from first text content of link.
 				 */
@@ -11524,13 +11524,13 @@ Extracts = {
 			/*	Inject indicator hook span.
 				(If the link already has a recently-modified icon hook, we must,
 				 firstly, inject the indicator hook after the recently-modified
-				 icon hook, and secondly, inject a text node containing a 
+				 icon hook, and secondly, inject a text node containing a
 				 U+2060 WORD JOINER between the two hooks. This ensures that the
-				 two link styling elements are arranged properly, and do not 
+				 two link styling elements are arranged properly, and do not
 				 span a line break.)
 			 */
 			let recentlyModifiedIconHook = link.querySelector(".recently-modified-icon-hook");
-			link.insertBefore(newElement("SPAN", { class: "indicator-hook" }), 
+			link.insertBefore(newElement("SPAN", { class: "indicator-hook" }),
 							  recentlyModifiedIconHook?.nextSibling ?? link.firstChild);
 			if (recentlyModifiedIconHook)
 				link.insertBefore(document.createTextNode("\u{2060}"), recentlyModifiedIconHook.nextSibling);
@@ -11840,7 +11840,7 @@ Extracts = {
     //  Called by: Extracts.preparePopin
     //  Called by: extracts-annotations.js
     popFrameHasLoaded: (popFrame) => {
-        return ((   Extracts.popFrameProvider.popFrameStateLoading(popFrame) 
+        return ((   Extracts.popFrameProvider.popFrameStateLoading(popFrame)
         		 || Extracts.popFrameProvider.popFrameStateLoadingFailed(popFrame)) == false);
     },
 
@@ -12015,10 +12015,10 @@ Extracts = {
         //  Import the class(es) of the target.
         Extracts.popFrameProvider.addClassesToPopFrame(popFrame, ...(popFrame.spawningTarget.classList));
         //  We then remove some of the imported classes.
-        Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame, 
-        	"uri", "has-annotation", "has-annotation-partial", "has-content", 
+        Extracts.popFrameProvider.removeClassesFromPopFrame(popFrame,
+        	"uri", "has-annotation", "has-annotation-partial", "has-content",
         	"link-self", "link-annotated", "link-page",
-        	"has-icon", "icon-not", "has-indicator-hook", "indicator-hook-not", 
+        	"has-icon", "icon-not", "has-indicator-hook", "indicator-hook-not",
         	"decorate-not", "spawns-popup", "spawns-popin", "widget-button");
 
 		//	Import classes from include-link.
@@ -12039,7 +12039,7 @@ Extracts = {
 
         //  Special handling for certain pop-frame types.
         let targetTypeName = Extracts.targetTypeInfo(popFrame.spawningTarget).typeName;
-        let specialPrepareFunction = (   Extracts[`preparePop${suffix}_${targetTypeName}`] 
+        let specialPrepareFunction = (   Extracts[`preparePop${suffix}_${targetTypeName}`]
         							  ?? Extracts[`preparePopFrame_${targetTypeName}`]);
         if (specialPrepareFunction)
             if ((popFrame = specialPrepareFunction(popFrame)) == null)
@@ -12110,7 +12110,7 @@ Extracts = {
 			Extracts.postRefreshUpdatePopFrame(popFrame, true);
 
 			//	Type-specific updates.
-			(   Extracts[`updatePop${suffix}_${targetTypeName}`] 
+			(   Extracts[`updatePop${suffix}_${targetTypeName}`]
 			 ?? Extracts[`updatePopFrame_${targetTypeName}`]
 			 )?.(popFrame);
 		}, {
@@ -12123,7 +12123,7 @@ Extracts = {
 		//	Rewrite pop-frame content when it’s injected.
 		GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
 			//  Type-specific rewrites.
-			(   Extracts[`rewritePop${suffix}Content_${targetTypeName}`] 
+			(   Extracts[`rewritePop${suffix}Content_${targetTypeName}`]
 			 ?? Extracts[`rewritePopFrameContent_${targetTypeName}`]
 			 )?.(popFrame, info.container);
 
@@ -22692,41 +22692,41 @@ ImageFocus.setup();
 
 //  If the URL specifies an image, focus it after the page has loaded.
 ImageFocus.focusImageSpecifiedByURL();
-// dark-mode.js: Javascript library for controlling page appearance, toggling between regular white and ‘dark mode’
+// dark-mode.js: JavaScript library for controlling page appearance, toggling between regular white and ‘dark mode’
 // Author: Said Achmiz
 // Date: 2020-03-20
-// When: Time-stamp: "2022-01-05 11:31:32 gwern"
+// When: Time-stamp: "2026-01-14 16:46:05 gwern"
 // license: PD
 
-/*	Experimental ‘dark mode’: Mac OS (Safari) lets users specify via an OS 
-	widget ‘dark’/‘light’ to make everything appear bright-white or darker (e.g. 
-	for darker at evening to avoid straining eyes & disrupting circadian 
-	rhyhms); this then is exposed by Safari as a CSS variable which can be 
-	selected on. This is also currently supported by Firefox weakly as an 
-	about:config variable. Hypothetically, iOS in the future might use its 
-	camera or the clock to set ‘dark mode’ automatically. 
+/*	Experimental ‘dark mode’: Mac OS (Safari) lets users specify via an OS
+	widget ‘dark’/‘light’ to make everything appear bright-white or darker (e.g.
+	for darker at evening to avoid straining eyes & disrupting circadian
+	rhyhms); this then is exposed by Safari as a CSS variable which can be
+	selected on. This is also currently supported by Firefox weakly as an
+	about:config variable. Hypothetically, iOS in the future might use its
+	camera or the clock to set ‘dark mode’ automatically.
 
 	https://drafts.csswg.org/mediaqueries-5/#prefers-color-scheme
 	https://webkit.org/blog/8718/new-webkit-features-in-safari-12-1/
 	https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme
 
-	Images are handled specially: images are *not* inverted/negated by default; 
-	images with a special class, `.invert-auto` (set on images by automated 
-	tools like ImageMagick scripts counting colors) or `.invert` 
-	(set manually), will be inverted. (This is intended to allow inversion of 
+	Images are handled specially: images are *not* inverted/negated by default;
+	images with a special class, `.invert-auto` (set on images by automated
+	tools like ImageMagick scripts counting colors) or `.invert`
+	(set manually), will be inverted. (This is intended to allow inversion of
 	images which would invert well, like statistical graphs or charts, which are
 	typically black-on-white, and are much more pleasant to read in dark mode
-	when inverted to white-on-black.) Inversion is removed on image hover or 
+	when inverted to white-on-black.) Inversion is removed on image hover or
 	image-focus.js click-to-zoom.
 
-	Because many users do not have access to a browser/OS which explicitly 
-	supports dark mode, cannot modify the browser/OS setting without undesired 
-	side-effects, wish to opt in only for specific websites, or simply forget 
-	that they turned on dark mode & dislike it, we make dark mode controllable 
+	Because many users do not have access to a browser/OS which explicitly
+	supports dark mode, cannot modify the browser/OS setting without undesired
+	side-effects, wish to opt in only for specific websites, or simply forget
+	that they turned on dark mode & dislike it, we make dark mode controllable
 	by providing a widget at the top of the page.
  */
 
-DarkMode = { ...DarkMode, 
+DarkMode = { ...DarkMode,
 	/*****************/
 	/*	Configuration.
 	 */
@@ -22797,7 +22797,7 @@ DarkMode = { ...DarkMode,
 			let label = inline
 						? shortLabel
 						: (name == currentMode
-						   ? selectedLabel 
+						   ? selectedLabel
 						   : unselectedLabel);
 			return `<button
 					 type="button"
@@ -22808,7 +22808,7 @@ DarkMode = { ...DarkMode,
 					 title="${desc}"
 					 >`
 						+ `<span class="icon">${(GW.svg(iconName))}</span>`
-						+ `<span 
+						+ `<span
 							class="label"
 							data-selected-label="${selectedLabel}"
 							data-unselected-label="${unselectedLabel}"
@@ -22831,9 +22831,9 @@ DarkMode = { ...DarkMode,
 		//	Determine which setting was chosen (ie. which button was clicked).
 		let selectedMode = button.dataset.name;
 
-		/*	We don’t want clicks to go through if the transition 
-			between modes has not completed yet, so we disable the 
-			button temporarily while we’re transitioning between 
+		/*	We don’t want clicks to go through if the transition
+			between modes has not completed yet, so we disable the
+			button temporarily while we’re transitioning between
 			modes.
 		 */
 		doIfAllowed(() => {
@@ -22885,7 +22885,7 @@ DarkMode = { ...DarkMode,
 		 */
 		doWhenMatchMedia(GW.mediaQueries.systemDarkModeActive, {
 			name: "DarkMode.updateModeSelectorStateForSystemDarkMode",
-			ifMatchesOrAlwaysDo: (mediaQuery) => { 
+			ifMatchesOrAlwaysDo: (mediaQuery) => {
 				DarkMode.updateModeSelectorState(modeSelector);
 			},
 			callWhenAdd: true
@@ -22944,12 +22944,12 @@ DarkMode = { ...DarkMode,
 		let buttons = Array.from(modeSelector.querySelectorAll("button"));
 		buttons[(buttons.findIndex(button => button.classList.contains("selected")) + 1) % buttons.length].accessKey = "d";
 
-		/*	Ensure the right button (light or dark) has the “currently active” 
+		/*	Ensure the right button (light or dark) has the “currently active”
 			indicator, if the current mode is ‘auto’.
 		 */
 		if (currentMode == "auto") {
-			let activeMode = GW.mediaQueries.systemDarkModeActive.matches 
-							 ? "dark" 
+			let activeMode = GW.mediaQueries.systemDarkModeActive.matches
+							 ? "dark"
 							 : "light";
 			modeSelector.querySelector(`.select-mode-${activeMode}`).classList.add("active");
 		}
@@ -22960,7 +22960,7 @@ DarkMode = { ...DarkMode,
 		GWLog("DarkMode.spawnObservers", "dark-mode.js", 2);
 
 		/*	Only re-enable light mode if the user’s mode setting (ignoring
-			page-level overrides) is such that the site is currently set to 
+			page-level overrides) is such that the site is currently set to
 			light mode (i.e., the user has either picked light mode, or else
 			they have picked ‘auto’ and their browser/system is in light mode).
 		 */

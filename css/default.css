@@ -1542,6 +1542,15 @@ ul.interview .speaker {
     bottom: -1.4em;
 }
 
+/*	Narrow poems (desktop only).
+ */
+.epigraph.poem.narrow > blockquote::before {
+	top: -0.95em;
+}
+.epigraph.poem.narrow > blockquote::after {
+	bottom: -1.3em;
+}
+
 
 /*********/
 /* POEMS */
