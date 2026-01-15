@@ -63,7 +63,7 @@ gwern md p
                      , "mp3", "mp4", "mkv", "o", "ods", "opml", "pack", "md", "patch"
                      , "php", "png", "r", "rm", "sh", "svg", "swf", "tar", "ttf", "txt"
                      , "wav", "webm", "xcf", "xls", "xlsx", "xml", "xz", "zip", "sqlite"
-                     , "par2", "pkl", "h5", "t7", "weights"
+                     , "par2", "pkl", "h5", "t7", "weights", "el"
                      ] = return (Left Permanent)
         | anyPrefix p ["metadata", "/metadata", "/blog/2", "blog/2"] ||
           anySuffix p ["#external-links", "#see-also", "#see-also", "#see-alsos", "#see-also-1"
@@ -188,7 +188,7 @@ gwernAbstract _ p' description toc f =
                          title = renderTags $ takeWhile dropToLinkEnd $ dropWhile dropToText $ drop 1 $ dropWhile dropToLink beginning
                          titleClean = trim $ sed "<span>(.*)</span>" "\\1" $ replaceMany [("\n", " "), ("<span class=\"smallcaps\">",""), ("<span class=\"link-auto-first\">","")] title
                          abstractRaw = takeWhile takeToAbstract $ dropWhile dropToAbstract $ takeWhile dropToSectionEnd $ drop 1 beginning
-                         restofpageAbstract = delete "<p><span class=\"reader-mode-note\"><strong>Note</strong>: to hide apparatus like the links, you can use reader-mode (<span class=\"reader-mode-selector-inline\"><!-- non-empty span placeholder --></span>).</div></p>" $
+                         restofpageAbstract = delete "<p><span class=\"print-mode-not reader-mode-not\"><strong>Note</strong>: to hide apparatus like the links, you can use reader-mode (<span class=\"reader-mode-selector-inline\"><!-- non-empty span placeholder --></span>).</div></p>" $
                                               trim $ renderTags $ filter filterAbstract abstractRaw
                          in (titleClean, abstractRaw, restofpageAbstract)
       abstrct'  = (if anyPrefix abstrct ["<p>", "<p>", "<figure>"] then abstrct
@@ -199,7 +199,7 @@ gwernAbstract _ p' description toc f =
                                       else if description == "" && abstrct' /= "" then abstrct'
                                            else if description /= "" && abstrct' == "" then "<p>"++description++"</p>"
                                                 else ""
-      abstrct''' = delete "<p><span class=\"reader-mode-note\"><strong>Note</strong>: to hide apparatus like the links, you can use reader-mode (<span class=\"reader-mode-selector-inline\"><!-- non-empty span placeholder --></span>).</div></p>" $
+      abstrct''' = delete "<p><span class=\"print-mode-not reader-mode-not\"><strong>Note</strong>: to hide apparatus like the links, you can use reader-mode (<span class=\"reader-mode-selector-inline\"><!-- non-empty span placeholder --></span>).</div></p>" $
                    trim $ replace "href=\"#" ("href=\"/"++baseURL++"#") abstrct'' -- turn relative anchor paths into absolute paths
       abstrct'''' = linkAutoHtml5String $ sed " id=\"fnref[0-9]+\"" "" abstrct''' -- rm footnote IDs - cause problems when transcluded
   in if (("#" `isInfixOf` p') && null abstrct) then (t,"") else

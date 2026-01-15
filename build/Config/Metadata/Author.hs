@@ -3400,4 +3400,4 @@ authorWpLinkDB =
     , "Laurence Perrine", "John Milton", "Ted Hughes", "Hunter S. Thompson", "Kevin D. Williamson", "Martin Ellison"
     , "David E. Hoffman", "Paul Ginsparg", "Wojciech Kopczuk", "Robert J. White", "Dines Bjørner", "Hans-Joachim Voth"
     , "Friedrich Nietzsche", "William Bialek", "E. E. Cummings", "Simon Willison", "Karen Greenlee"
-    , "Constance Reid", "Julia Robinson", "Ianthi-Maria Tsimpli", "Graeme Mitchison"]
+    , "Constance Reid", "Julia Robinson", "Ianthi-Maria Tsimpli", "Graeme Mitchison", "Ravi Vakil"]

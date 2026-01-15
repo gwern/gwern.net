@@ -1555,7 +1555,7 @@ ul.interview .speaker {
 	--letter-spacing: -0.3em;
 	--margin-adjustment: -0.25em;
 	--right-margin-tweak: 0.05em;
-	
+
 	opacity: 0.20;
 	letter-spacing: var(--letter-spacing);
 	margin-left: var(--margin-adjustment);
@@ -7432,7 +7432,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     #footer-decoration-container,
     .recently-modified-icon-hook,
     .markdownBody .footnotes a.footnote-back,
-    .reader-mode-note {
+    .print-mode-not {
         display: none;
     }
     #link-bibliography-section,

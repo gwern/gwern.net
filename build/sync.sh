@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-01-14 16:45:54 gwern"
+# When:  Time-stamp: "2026-01-14 17:08:55 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -849,7 +849,8 @@ else
             "TOC" "uri" "at" "bu" "c1" "c2"
             "c3" "c4" "c5" "c6" "c7" "c8"
             "c9" "c10" "cf" "co" "dv" "fu"
-            "kw" "op" "s1" "st" "reader-mode" "reader-mode-style-not" "reader-mode-not" "reader-mode-note" "reader-mode-disable-when-here" "reader-mode-disable-when-clicked"
+            "kw" "op" "s1" "st" "reader-mode" "reader-mode-style-not" "reader-mode-not" "reader-mode-disable-when-here" "reader-mode-disable-when-clicked"
+            "print-mode-not"
             "scrape-abstract-not" "abstract" "abstract-collapse" "abstract-collapse-only" "admonition" "admonition-title"
             "book-review-meta" "book-review-review" "tip" "xml" "yaml" "warning" "al" "an"
             "bn" "cn" "cv" "do" "dt" "er"

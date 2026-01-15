@@ -6008,4 +6008,6 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("Klaiber's_law", "https://web.archive.org/web/20230320024813/https://en.wikipedia.org/wiki/Klaiber's_law")
         , ("Jones_act", "Merchant_Marine_Act_of_1920")
         , ("Jones_Act", "Merchant_Marine_Act_of_1920")
+        , ("Diffs", "diff")
+        , ("DRY", "Don%27t_repeat_yourself")
         ]
