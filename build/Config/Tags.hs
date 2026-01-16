@@ -190,7 +190,7 @@ tagsShort2LongRewrites =
    , ("sunkcosts", "sunk-cost"), ("sparse", "sparsity"), ("ai/nn/transformer/attention/sparse", "ai/nn/transformer/attention/sparsity"), ("wrtigin", "writing")
    , ("star-war", "star-wars"), ("starwars", "star-wars"), ("starwar", "star-wars")
    , ("hydranencephaly", "anencephaly"), ("aencephaly", "anencephaly"), ("amencephaly", "anencephaly"), ("anancephaly", "anencephaly"), ("ancephaly", "anencephaly"), ("anecephaly", "anencephaly"), ("anecnephaly", "anencephaly"), ("anencefaly", "anencephaly"), ("anenceohalyt", "anencephaly"), ("anencepahly", "anencephaly"), ("anencepaly", "anencephaly"), ("anencephal", "anencephaly"), ("anencephaley", "anencephaly"), ("anencephalg", "anencephaly"), ("anencephalt", "anencephaly"), ("anencephay", "anencephaly"), ("anencephlay", "anencephaly"), ("anencephly", "anencephaly"), ("anencepphaly", "anencephaly"), ("anencphaly", "anencephaly"), ("anencwphaly", "anencephaly"), ("anenecephaly", "anencephaly"), ("anenecphaly", "anencephaly"), ("anenenecephaly", "anencephaly"), ("anennccephaly", "anencephaly"), ("anensefaly", "anencephaly"), ("anensephaly", "anencephaly"), ("anincephaly", "anencephaly"), ("annencephaly", "anencephaly"), ("gydrancrephaly", "anencephaly"), ("hydracephaly", "anencephaly"), ("hydrancefaly", "anencephaly"), ("hydrancepahly", "anencephaly"), ("hydrancepaly", "anencephaly"), ("hydrancephakt", "anencephaly"), ("hydrancephal", "anencephaly"), ("hydrancephaley", "anencephaly"), ("hydrancephalg", "anencephaly"), ("hydrancephay", "anencephaly"), ("hydrancephlay", "anencephaly"), ("hydrancephly", "anencephaly"), ("hydrancepphaly", "anencephaly"), ("hydrancwphaly", "anencephaly"), ("hydranecephaly", "anencephaly"), ("hydranecphaly", "anencephaly"), ("hydranephaly", "anencephaly"), ("hydrannccephaly", "anencephaly"), ("hydransefaly", "anencephaly"), ("hydransephaly", "anencephaly"), ("hydranxephaly", "anencephaly"), ("hydrnacephaly", "anencephaly"), ("hydroancephaly", "anencephaly"), ("hydrocephaly", "anencephaly"), ("hydrrancephaly", "anencephaly"), ("hyrdrancephaly", "anencephaly"), ("jydrancephaly", "anencephaly"), ("naencephaly", "anencephaly"), ("nencephaly", "anencephaly"), ("snencephaly", "anencephaly")
-   , ("physucs", "physics"), ("illusoin", "illusion"), ("opetry", "poetry"), ("poem", "poetry"), ("poet", "poetry"), ("typogrpahy", "typography")
+   , ("physucs", "physics"), ("illusoin", "illusion"), ("opetry", "poetry"), ("poem", "poetry"), ("poet", "poetry"), ("typogrpahy", "typography"), ("bipolar-energy", "bipolar/energy")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
@@ -200,7 +200,7 @@ tagsShort2Long = tagsShort2LongRewrites ++
    map (\(a,b) -> (map toLower b,a)) (filter (\(_,fancy) -> not (anyInfix fancy [" ", "<", ">", "(",")"])) tagsLong2Short)
 
 -- testing: unique list
--- 'shortTagBlacklist' is used primarily in Tags.guessTagFromShort:
+-- 'shortTagBlacklist' is used primarily in `Tags.guessTagFromShort`:
 shortTagBlacklist :: [String]
 shortTagBlacklist = ["a", "al", "an", "analysis", "and", "are", "as", "at", "be", "box", "done", "e", "error", "f",
                       "fine", "free", "g", "git", "if", "in", "is", "it", "of", "on", "option", "rm", "sed", "strong", "t",

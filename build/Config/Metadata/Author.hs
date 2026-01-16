@@ -2111,6 +2111,8 @@ authorLinkDB = M.fromList $
     , ("Mohammad Shoeybi", "https://scholar.google.com/citations?user=62ElavIAAAAJ")
     , ("Mehdi Mirza", "https://scholar.google.com/citations?user=c646VbAAAAAJ")
     , ("D. Bohdan", "https://dbohdan.com/")
+    , ("Mike Lacher", "https://www.mikelacher.com/")
+    , ("flupe", "https://acatalepsie.fr/")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3400,4 +3402,4 @@ authorWpLinkDB =
     , "Laurence Perrine", "John Milton", "Ted Hughes", "Hunter S. Thompson", "Kevin D. Williamson", "Martin Ellison"
     , "David E. Hoffman", "Paul Ginsparg", "Wojciech Kopczuk", "Robert J. White", "Dines Bjørner", "Hans-Joachim Voth"
     , "Friedrich Nietzsche", "William Bialek", "E. E. Cummings", "Simon Willison", "Karen Greenlee"
-    , "Constance Reid", "Julia Robinson", "Ianthi-Maria Tsimpli", "Graeme Mitchison", "Ravi Vakil"]
+    , "Constance Reid", "Julia Robinson", "Ianthi-Maria Tsimpli", "Graeme Mitchison", "Ravi Vakil", "Ross Koppel", "Bruce G. Lindsay", "Anne Chao"]

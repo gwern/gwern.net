@@ -563,7 +563,7 @@ linkIconRulesFiletypes "" = error "Config.LinkIcon.linkIconRulesFiletypes: passe
 linkIconRulesFiletypes u
  | iE u ["tar", "zip", "xz", "img", "bin", "pkl", "onnx", "pt", "h5", "weights", "t7", "par2", "sqlite3"] = ("archive", "svg", "")
  | iE u ["maff"] = ("archive", "svg", "#e66000") -- Mozilla Archive File Format; color: Firefox orange
- | iE u ["opml", "txt", "xml", "json", "jsonl", "md"] || u'' u "pastebin.com" = ("txt", "svg", "")
+ | iE u ["opml", "txt", "xml", "json", "jsonl", "md", "gtx"] || u'' u "pastebin.com" = ("txt", "svg", "")
  | iE u ["conf", "sh", "patch", "diff"] = ("code", "svg", "")
  | iE u ["r", "R"] = ("code", "svg", redR)
  | iE u ["py"] = ("code", "svg", "#2f6592") -- color: green, based on official Python language logo (which has yellow too but that's much less associated with pythons)
@@ -586,6 +586,7 @@ linkIconRulesFiletypes u
  | iE u ["ebt", "mdb", "mht", "ttf"] = ("misc", "svg", "")
  | iE u ["mht"] = ("misc", "svg", "") -- TODO: Microsoft
  | iE u ["epub"] = ("EPUB", "text,quad,sans", "#87ba11") -- color: neon green <https://commons.wikimedia.org/wiki/File:Epub_logo.svg>
+ | iE u ["el"] = ("emacs", "svg", "#c04c39") -- Elisp/Emacs Lisp
  | "/static/" `T.isPrefixOf` u && hasExtension ".html" u  = ("code", "svg", "")
  | isLocal u && hasExtension ".php" u                     = ("code", "svg", "#787cb4") -- color: light purple <https://commons.wikimedia.org/wiki/File:PHP-logo.svg>
  | aU' u [".pdf", ".PDF", "/pdf", "type=pdf", "pdfs.semanticscholar.org", "citeseerx.ist.psu.edu", "pdfs.semanticscholar.org", "www.semanticscholar.org"] = ("pdf", "svg", redAdobe) -- color: red (Adobe); NOTE: we do not attempt to check for PDFs very thoroughly because we assume that there are no treacherous URLs or that they are covered by LinkArchive mirroring PDFs locally by default to a '/doc/www/.../$HASH.pdf' URL which will match this reliably.

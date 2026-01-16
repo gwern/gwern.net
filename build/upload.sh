@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2026-01-13 15:33:37 gwern"
+# When:  Time-stamp: "2026-01-15 11:14:30 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -21,7 +21,7 @@
 . ~/wiki/static/build/bash.sh
 
 set -e
-set -x
+
 if [ ! -f "$1" ] || [ ! -s "$1" ]; then red "l25: '$1' is not a file or is empty‽" && exit 1; fi
 
 # Check for required dependencies upfront

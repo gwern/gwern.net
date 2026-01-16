@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2026-01-14 16:45:40 gwern"
+When:  Time-stamp: "2026-01-15 16:46:04 gwern"
 License: CC-0
 -}
 
@@ -677,7 +677,7 @@ generateAnnotationBlock md am (f, ann) blp slp lb =
            backlink = if blp=="" then [] else (if tags==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["aux-links", "link-page", "id-not", "backlinks"],[]) [Str "backlinks"] (T.pack blp, "Reverse citations for this page.")]]
            similarlinkPadding = if (blp=="" && tags==[]) || lb=="" then [] else [Str ";", Space]
            similarlink =  if slp=="" then [] else
-                            [Span ("", ["similars"], []) (similarlinkPadding ++ [Link ("",["aux-links", "link-page", "id-not", "similars"],[]) [Str "similar"] (T.pack slp, "Similar links for this link (by text embedding).")])]
+                            similarlinkPadding++[Span ("", ["similars"], []) ([Link ("",["aux-links", "link-page", "id-not", "similars"],[]) [Str "similar"] (T.pack slp, "Similar links for this link (by text embedding).")])]
            linkBibliography = if lb=="" then [] else (if blp=="" && slp=="" && tags==[] then []
                                                        else [Str ";", Space]) ++ [Span ("", ["link-bibliography"], [])
                                                                                    [Link ("",["aux-links", "link-page", "id-not", "link-bibliography"],[]) [Str "bibliography"] (T.pack lb, "Link-bibliography for this annotation (list of references/sources/links it cites).")]]
