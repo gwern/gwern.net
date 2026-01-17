@@ -155,9 +155,17 @@ main {
 
     /*  Sidebar links (not including logo).
      */
+    #sidebar .sidebar-links {
+		display: grid;
+		grid: auto-flow / 1fr 1fr 1fr;
+    }
+	@media all and (max-width: 349px) {
+		#sidebar .sidebar-links {
+			grid: auto-flow / 1fr 1fr;
+		}
+	}
     #sidebar .sidebar-links a {
         font-variant-caps: small-caps;
-        flex: 1 1 20%;
     }
 
     #sidebar .sidebar-links a.site {
