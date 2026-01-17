@@ -4,7 +4,7 @@ Author: Gwern Branwen
 Date: 2019-11-20
 When:  Time-stamp: "2025-05-04 17:01:23 gwern"
 License: CC-0
-Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
+Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc. (see `linkArchive.sh`)
 -}
 
 {- Local Mirror design: <https://gwern.net/archiving#preemptive-local-archiving>
@@ -17,7 +17,7 @@ human attention increases, if something is worth linking, it is worth hosting—
 The local mirror will be a self-contained static HTML copy which cannot linkrot (unless Gwern.net
 itself goes down in which case the issue is largely moot). The local mirrors will, aside from being
 infinitely more reliable, also be faster for the reader to load & browse, as they will be loaded
-from the current domain's CDN and are the final DOMs saved using adblock etc (benefiting the large
+from the current domain's CDN and are the final DOMs saved using adblock etc. (benefiting the large
 fraction of Gwern.net readers who do not have ad blockers installed).
 
 The implementation strategy is, similar to the [link

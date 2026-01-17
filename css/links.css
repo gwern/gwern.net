@@ -186,7 +186,7 @@ a[data-link-icon-type*='svg'][data-link-icon-type*='quad'] .link-icon-hook::afte
     background-position-y: 0.75ex;
 }
 
-/*	Quad-letter SVG icons in .editorial (set in a typewriter font, thus 
+/*	Quad-letter SVG icons in .editorial (set in a typewriter font, thus
 	different metrics).
  */
 .editorial a[data-link-icon-type*='svg'][data-link-icon-type*='quad'] .link-icon-hook::after {
@@ -988,7 +988,7 @@ a[data-link-icon='tensorflow'] {
     --link-icon-opacity: 0.6;
 }
 
-a[data-link-icon='tex'] { /* CTAN etc; TeX logotype (actually uses Source Serif) */
+a[data-link-icon='tex'] { /* CTAN etc.; TeX logotype (actually uses Source Serif) */
     --link-icon-size: 1.10em;
     --link-icon-offset-x: 0.05em;
     --link-icon-opacity: 0.85;
@@ -1122,7 +1122,7 @@ a[data-link-icon='worldcat'] {
     }
 }
 
-a[data-link-icon='caduceus'] { /* medical snake Asclepius icon for hospitals etc */
+a[data-link-icon='caduceus'] { /* medical snake Asclepius icon for hospitals etc. */
     --link-icon-size: 0.95em;
     --link-icon-offset-x: -0.15em;
     --link-icon-offset-y: 0.45em;

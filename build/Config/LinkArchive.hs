@@ -639,7 +639,7 @@ whiteListMatchesFixed = [
       , "nicovideo.jp" -- service/videos
       , "darwin-online.org.uk" -- interactive documents
       , "ncase.me" -- interactive
-      , "facebook.com" -- low quality (too JS-heavy, requires log-in etc)
+      , "facebook.com" -- low quality (too JS-heavy, requires log-in etc.)
       , "bellroy.com"
       , "mruniversity.com" -- videos
       -- , "imgur.com"

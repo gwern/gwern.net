@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-01-14 17:08:55 gwern"
+# When:  Time-stamp: "2026-01-16 16:35:20 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -112,7 +112,9 @@ else
           s 'EMBASE' 'Embase'; s 'Medline' 'MEDLINE'; s 'PsychINFO' 'PsycINFO'; s 'MSCOCO' 'MS COCO'; s 'Yann Le Cun' 'Yann LeCun'; s ' VQVAE' ' VQ-VAE'; s 'CIFAR 10' 'CIFAR-10'; s 'Jorges Luis Borges' 'Jorge Luis Borges'; s 'Rene Girard' 'René Girard'; s 'Anno Hideaki' 'Hideaki Anno'; s ' GPT2' ' GPT-2'; s ' Clinicaltrials.gov' ' ClinicalTrials.gov'; s ' clinicaltrials.gov' ' ClinicalTrials.gov'; s 'Dario Amodai' 'Dario Amodei'; s 'single nucleotide polymorph' 'single-nucleotide polymorph'; s 'Single Nucleotide Polymorph' 'Single-Nucleotide Polymorph'; s 'single nucleotide variant' 'single-nucleotide variant'; s ' CIFAR10' 'CIFAR-10'; s 'TyDi QA' 'TyDiQA'; s 'Türkiye' 'Turkey'; s ' Poincare' ' Poincaré'; s 'Francois de La Rochefoucauld' 'François de La Rochefoucauld'; s 'Moliere' 'Molière'; s 'behavioural genetic' 'behavioral genetic'; s ' gwern.net' ' Gwern.net'; s 'chain of thought' 'chain-of-thought'; s 'Chain Of Thought' 'Chain-Of-Thought'; s 'Chain of Thought' 'Chain-of-Thought'; s 'Chain of thought' 'Chain-of-thought'; s 'MS Marco' 'MS MARCO'; s 'MS-MARCO' 'MS MARCO'; s 'NLSY-79' 'NLSY79'; s 'NLSY-97' 'NLSY97'; s 'state of the art' 'state-of-the-art'; s 'State of the Art' 'State-of-the-Art'; s 'State of the art' 'State-of-the-art'; s 'State Of The Art' 'State-of-the-Art'; s 'Enwik8' 'enwik8'; s 'enwiki8' 'enwik8'; s 'G. M. Fahy' 'Gregory M. Fahy'; s 'Greg M. Fahy' 'Gregory M. Fahy'; s 'Gary Kasparov' 'Garry Kasparov'; s 'Fel D1' 'Fel D 1'; s 'Fel d1' 'Fel d 1'; s 'CIFAR10' 'CIFAR-10'; s 'ImageNet1k' 'ImageNet-1k'; s 'ImageNet21k' 'ImageNet-21k'; s ' Imagenet' ' ImageNet'; s ' LeGuin' ' Le Guin'; s 'DALL-E 1' 'DALL·E 1'; s 'DALL-E 2' 'DALL·E 2'; s 'DALLE-2 ' 'DALL·E 2 '; s 'DALL-E 3' 'DALL·E 3'; s 'FLAN-PALM' 'Flan-PaLM'; s 'GPT-4V' 'GPT-4-V'; s 'GPT-4 V' 'GPT-4-V'; s ' GPT4' ' GPT-4'; s 'drop cap' 'dropcap'; s 'Drop cap' 'Dropcap'; s 'Drop Cap' 'Dropcap'; s 'R.A. Fisher' 'R. A. Fisher'; s 'Larry Sumners' 'Larry Summers'; s ' auto-encoder' ' autoencoder'; s 'Auto-Encoder' 'Autoencoder'; s ' GPT3' ' GPT-3' ; s ' GPT4' ' GPT-4'; s 'J.R.R. Tolkien' 'J. R. R. Tolkien'; s 'F.D.A.' 'FDA'; s 'C.D.C.' 'CDC'; s 'F.B.I.' 'FBI'; s 'C.I.A.' 'CIA'; s ' Onlyfans' ' OnlyFans'; s ' A.I.' ' AI'; s ' Juergen' ' Jürgen'; s ' Godel' ' Gödel'; s ' Goedel' ' Gödel'; s 'Bryne Hobart' 'Byrne Hobart'; s 'Saigyo' 'Saigyō'; s 'John Wentsworth' 'John Wentworth'; s ' othre' ' other'; s 'edtorial' 'editorial'; s ' Javascript' ' JavaScript';
 
           ## abbreviation consistency:
-          s '(ie,' '(ie.'; s '(ie ' '(ie. '; s 'i.e.,' 'ie.'; s 'ie., ' 'ie. '; s '(i.e.' '(ie.'; s '(eg, ' '(eg. '; s ' eg ' ' eg. '; s '(eg ' '(eg. '; s '[eg ' '[eg. '; s '[Eg ' '[eg. '; s 'e.g. ' 'eg. '; s ' e.g. ' ' eg. '; s 'e.g.,' 'eg.'; s 'eg.,' 'eg.'; s 'E.g.,' 'Eg.'; s '(cf ' '(cf. '; s ' cf ' ' cf. '; s 'c.f., ' 'cf. '; s 'v.s.' 'versus'; s ' Feb ' ' February '; s ' Aug ' ' August '; s ', Jr.' ' Junior'; s ' Jr.' ' Junior'; s ', Junior' ' Junior';
+          s '(ie,' '(ie.'; s '(ie ' '(ie. '; s 'i.e.,' 'ie.'; s 'ie., ' 'ie. '; s '(i.e.' '(ie.'; s '(eg, ' '(eg. '; s ' eg ' ' eg. '; s '(eg ' '(eg. '; s '[eg ' '[eg. '; s '[Eg ' '[eg. '; s 'e.g. ' 'eg. '; s ' e.g. ' ' eg. '; s 'e.g.,' 'eg.'; s 'eg.,' 'eg.'; s 'E.g.,' 'Eg.'; s '(cf ' '(cf. '; s ' cf ' ' cf. '; s 'c.f., ' 'cf. '; s 'v.s.' 'versus';
+          s ' etc ' ' etc. '; s ' etc)' ' etc.)'; s ' etc,' ' etc.,'; s ' etc]' ' etc.]'; s ' etc’' ' etc.’'; s ' etc---' ' etc.---'; s ' etc|' ' etc.|'; s ' etc?' ' etc.?'; s ' etc;' ' etc.;'; s ' etc:' ' etc.:'; s ' etc"' ' etc."'; s ' etc[' ' etc.['; s " etc'" " etc.'"; s ' etc!' ' etc.!'; s 'etc</p>' 'etc.</p>'; s 'etc</td>' 'etc.</td>'; s ' etc—' ' etc.—'; s ' etc”' ' .etc”'; s 'etc</a>' 'etc.</a>';
+          s ' Feb ' ' February '; s ' Aug ' ' August '; s ', Jr.' ' Junior'; s ' Jr.' ' Junior'; s ', Junior' ' Junior';
           s '<sup>Th</sup>' '<sup>th</sup>'; s ' 20th' ' 20<sup>th</sup>'; s ' 21st' ' 21<sup>st</sup>';
           s ',”' '”,'; s ",’" "’,"; s '(vs. ' '(versus '; s ' vs. ' ' versus '; s ' Vs. ' ' Versus '; s 'best-of-<em>N</em>' 'best-of-<em>n</em>'; s ' Best-Of-N ' ' Best-of-<em>n</em> '; s 'Best-of-n ' 'Best-of-<em>n</em> '; s ' best-of-n' ' best-of-<em>n</em>'; s ' best-of-N' ' best-of-<em>n</em>';
 
@@ -157,6 +159,7 @@ else
           s 'link-icon-not' 'icon-not'; s '<!--<p>' '<!-- <p>'; s '</p>-->' '</p> -->';
           s '](W!' '](!W'; s '<em>𝛽</em>' '<em>β</em>'; s '𝛽' '<em>β</em>'; s 'class="table-simple' 'class="table-small';
           s ' > > ' ' >> '; s '</pan>' '</span>'; s 'display:none;' 'display: none;'; s '</spam>' '</span>'; s '\U0001D4AA' '𝒪̃';
+          s 'class="Editorial"' 'class="editorial"';
 
           ## TODO: duplicate HTML classes from Pandoc reported as issue #8705 & fixed; fix should be in >pandoc 3.1.1 (2023-03-05), so can remove these two rewrites once I upgrade past that:
           s 'class="odd odd' 'class="odd'; s 'class="even even' 'class="even';
@@ -466,7 +469,7 @@ else
     # for use in popups, as an optimization, we provide 256px-width thumbnails of all Gwern.net locally-hosted essay/annotation JPGs/PNGs.
     # (More exotic image formats like AVIF/WebP/JPEG XL/etc are banned, and we exclude mirrors like Rotten.com or the WWW local archives as they are not browsed via popups; and we do not attempt to generate thumbnails for hotlinked images, because hotlinked images are banned and supposed to be localized.)
     # They live at /metadata/thumbnail/256px/urlencoded($IMAGE_URL):
-    # eg '/doc/ai/nn/gan/stylegan/anime/2021-01-19-gwern-stylegan2ext-danbooru2019-3x10montage-3.png' → '/metadata/thumbnail/256px/%2Fdoc%2Fai%2Fnn%2Fgan%2Fstylegan%2Fanime%2F2021-01-19-gwern-stylegan2ext-danbooru2019-3x10montage-3.png' (and must be requested double-URL-encoded).
+    # eg. '/doc/ai/nn/gan/stylegan/anime/2021-01-19-gwern-stylegan2ext-danbooru2019-3x10montage-3.png' → '/metadata/thumbnail/256px/%2Fdoc%2Fai%2Fnn%2Fgan%2Fstylegan%2Fanime%2F2021-01-19-gwern-stylegan2ext-danbooru2019-3x10montage-3.png' (and must be requested double-URL-encoded).
     # Because we guarantee they will exist, we do not bother with inlining the thumbnail path into <img>/<figure> (whether by rewriting the href, adding a data-attribute, using a poster/responsive attribute, etc); the frontend JS can simply assume that one exists and try to fetch it when it needs a small version of an image, and fall back.
     generate_thumbnail() {
         local image="$1"
@@ -736,7 +739,7 @@ else
     #                           -e 's/\([a-z]\)⋯\([0-9]\)/\1⁠⋯⁠\2/g' -e 's/\([a-z]\)⋯<sub>\([0-9]\)/\1⁠⋯⁠<sub>\2/g' \
     #                           -e 's/\([a-z]\)⋱<sub>\([0-9]\)/\1⁠⋱⁠<sub>\2/g' -e 's/\([a-z]\)<sub>⋱\([0-9]\)/\1<sub>⁠⋱⁠\2/g' \
     #                           -e 's/ \+/ /g' -e 's/​​\+/​/g' -e 's/​ ​​ ​\+/​ /g' -e 's/​ ​\+/ /g' -e 's/​ ​ ​ \+/ /g' -e 's/​ ​ ​ \+/ /g' -e 's/  / /g' -e 's/​ ​​ \+​/ /g' \
-    #                           `# add HAIR SPACE to parenthetical links to avoid biting of the open-parenthesis (eg '( <a href="https://tvtropes.org...">TvTropes</a>)'); note that formatting can be *outside* the <a> as well as *inside*: ` \
+    #                           `# add HAIR SPACE to parenthetical links to avoid biting of the open-parenthesis (eg. '( <a href="https://tvtropes.org...">TvTropes</a>)'); note that formatting can be *outside* the <a> as well as *inside*: ` \
     #                           -e 's/ (<a / ( <a /g' -e 's/ (<strong><a / ( <strong><a /g' -e 's/ (<em><a / ( <em><a /g' -e 's/ (<span class="smallcaps"><a / ( <span class="smallcaps"><a /g' \
     #                           `# and similarly, '[foo](http)/[bar](http)' bites the '/':` \
     #                           -e 's/<\/a>\/<a /<\/a> \/ <a /g' \
@@ -1384,7 +1387,7 @@ else
                                   -e 'Warning: inserting implicit <body>' \
                                   -e "Warning: inserting missing 'title' element" \
                                   -e 'Warning: <img> proprietary attribute "decoding"' \
-                                  \ # -e 'Warning: <a> escaping malformed URI reference' \
+                                  `# -e 'Warning: <a> escaping malformed URI reference'` \
                                   -e 'Warning: <script> proprietary attribute "fetchpriority"' \
                                   -e 'Warning: <img> lacks "alt" attribute' \
                                   -e 'fix-style-tags: yes to move'
@@ -1778,7 +1781,7 @@ else
     wrap λ "Corrupted MP3 files detected! Maybe try fixing in-place with 'mp3val -f'?"
 
     λ(){ find . -type f -name "*.txt" -or -type f -name "*.md" | parallel file | awk '/ CRLF/ || !/:.*text/'; }
-    wrap λ "Corrupted text file (either CRLF or not a text file at all eg a misnamed PDF)? use 'file' or 'dos2unix' on it."
+    wrap λ "Corrupted text file (either CRLF or not a text file at all eg. a misnamed PDF)? use 'file' or 'dos2unix' on it."
 
     bold "Checking for PDF anomalies…"
     λ(){ BROKEN_PDFS="$(find ./ -type f -mtime -31 -name "*.pdf" -not -size 0 | parallel --max-args=500 file | \

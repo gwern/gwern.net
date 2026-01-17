@@ -238,7 +238,7 @@ fileExtensionToEnglish ext = case lookup (takeWhile (/= '#') ext) extensionMappi
 minFileSizeWarning :: Int
 minFileSizeWarning = 17
 
--- how long should a URL's annotation's abstract be if we consider it worth marking as 'annotated' and thus showing the reader & transcluding it etc?
+-- how long should a URL's annotation's abstract be if we consider it worth marking as 'annotated' and thus showing the reader & transcluding it etc.?
 minimumAnnotationLength :: Int
 minimumAnnotationLength = 250
 

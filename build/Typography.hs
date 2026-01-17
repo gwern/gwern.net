@@ -203,7 +203,7 @@ breakEquals = id
 
 -- Annotate body horizontal rulers with a div-class based on global count: '<div class="horizontal-rule-nth-1"> /
 -- <hr> / </div>' / '<div class="horizontal-rule-nth-2"> / <hr> / </div>' / '<div class="horizontal-rule-nth-3"> /
--- <hr> / </div>' etc (cycling). Allows CSS decoration of "every second ruler" or "every fourth
+-- <hr> / </div>' etc. (cycling). Allows CSS decoration of "every second ruler" or "every fourth
 -- ruler" etc. I use it for cycling rulers in 3 levels, similar to the rest of Gwern.net's visual
 -- design.
 --
@@ -267,7 +267,8 @@ titlecase' t = let t' = titlecase $ titlecase'' t
                                        , ("=\"Logotype-tex\">", "=\"logotype-tex\">"), ("=\"Logotype-Latex\">", "=\"logotype-latex\">"), ("<span Class=\"Logotype-Tex\">", "<span class=\"logotype-tex\">"), ("<span class=\"Logotype-Tex\">", "<span class=\"logotype-tex\">")
                                        , ("class=\"Cite\"", "class=\"cite\""), ("Cite-author", "cite-author"), ("Cite-Author", "cite-author"), ("Cite-date", "cite-date"), ("Cite-Date", "cite-date"), ("Cite-joiner", "cite-joiner")
                                        , ("Class=","class="), ("<span class=\"Date-Range\">", "<span class=\"date-range\">")
-                                       , ("<span class=\"Poem\"", "<span class=\"poem\""), ("<div class=\"Poem\"", "<div class=\"poem\"")]
+                                       , ("<span class=\"Poem\"", "<span class=\"poem\""), ("<div class=\"Poem\"", "<div class=\"poem\"")
+                                       , ("<span class=\"Editorial\"","<span class=\"editorial\""), ("<span class='Editorial'","<span class='editorial'"), ("<span class=Editorial","<span class=editorial")]
 
 capitalizeAfterHyphen :: String -> String -> String
 capitalizeAfterHyphen _ "" = ""

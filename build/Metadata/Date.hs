@@ -42,7 +42,7 @@ isValidDate format str = case parseTimeM True defaultTimeLocale format str :: Ma
     Just _ -> True
     Nothing -> False
 
--- If no accurate date is available, attempt to guess date from the local file schema of 'YYYY-surname-[title, disambiguation, etc].ext' or 'YYYY-MM-DD-...'
+-- If no accurate date is available, attempt to guess date from the local file schema of 'YYYY-surname-[title, disambiguation, etc.].ext' or 'YYYY-MM-DD-...'
 -- This is useful for PDFs with bad metadata, or data files with no easy way to extract metadata (like HTML files with hopelessly inconsistent dirty metadata fields like `<meta>` tags) or where it's not yet supported (image files usually have a reliable creation date).
 --  > guessDateFromLocalSchema "/doc/ai/2020-10-10-barr.png" ""
 -- → "2020-10-10"

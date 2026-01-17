@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-01-12 19:43:17 gwern"
+# When:  Time-stamp: "2026-01-16 21:18:35 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -116,8 +116,8 @@ pdf-cut () { for PDF in "$@"; do
                 TARGET=$(mktemp /tmp/XXXXXX.pdf);
                 pdftk "$ORIGINAL" cat 2-end  output "$TARGET" &&
                     # pdftk by default erases all metadata, so we need to copy it all to the new PDF:
-                    exiftool -TagsFromFile "$ORIGINAL" "$TARGET" &&
-                    mv "$TARGET" "$ORIGINAL" || rm "$TARGET";
+                    exiftool -TagsFromFile "$ORIGINAL" -- "$TARGET" &&
+                    mv -- "$TARGET" "$ORIGINAL" || rm -- "$TARGET";
                 (crossref "$ORIGINAL" &);
           done
           }
@@ -143,8 +143,8 @@ pdf-cut-last () {
     # Remove the last page
     pdftk "$ORIGINAL" cat 1-r2 output "$TARGET" &&
     # Copy metadata to the new PDF
-    exiftool -TagsFromFile "$ORIGINAL" "$TARGET" &&
-    mv "$TARGET" "$ORIGINAL" || rm "$TARGET"
+    exiftool -TagsFromFile "$ORIGINAL" -- "$TARGET" &&
+    mv -- "$TARGET" "$ORIGINAL" || rm -- "$TARGET"
 
     (crossref "$ORIGINAL" &)
 }
@@ -155,8 +155,8 @@ pdf-cut-append () { if (( $# != 1 )); then red "Wrong number of arguments argume
             TARGET=$(mktemp /tmp/XXXXXX.pdf);
             pdftk "$ORIGINAL" cat 2-end 1  output "$TARGET" &&
             # pdftk by default erases all metadata, so we need to copy it all to the new PDF:
-                exiftool -TagsFromFile "$ORIGINAL" "$TARGET" &&
-            mv "$TARGET" "$ORIGINAL" || rm "$TARGET";
+                exiftool -TagsFromFile "$ORIGINAL" -- "$TARGET" &&
+            mv -- "$TARGET" "$ORIGINAL" || rm -- "$TARGET";
           (crossref "$ORIGINAL" &);
           }
 
@@ -240,7 +240,7 @@ pdf-append () {
     TEMP_DIR="$(mktemp --directory /tmp/pdf-append-work-XXXXXX)"
 
     # Ensure temporary files/dirs are cleaned up on script exit/interrupt, unless successful
-    trap 'rm --force"$TEMP_TARGET"; rm -rf "$TEMP_DIR"' EXIT HUP INT TERM
+    trap 'rm --force "$TEMP_TARGET"; rm --recursive --force -- "$TEMP_DIR"' EXIT HUP INT TERM
 
     # Array to hold paths to all PDFs ready for concatenation (originals + converted)
     local PDF_FILES=()
@@ -280,16 +280,16 @@ pdf-append () {
                       if [[ -f "$expected_lo_output" ]]; then
                            # Rename to our predictable name if needed
                            if [[ "$expected_lo_output" != "$output_pdf" ]]; then
-                               mv "$expected_lo_output" "$output_pdf" || red "Failed to rename LO output"
+                               mv -- "$expected_lo_output" "$output_pdf" || red "Failed to rename LO output"
                            fi
                            PDF_FILES+=("$output_pdf")
                       else
                            red "LibreOffice conversion produced no output for: $file" >&2
                       fi
-                      rm -rf "${LO_USER_PROFILE#file://}"
+                      rm --recursive --force -- "${LO_USER_PROFILE#file://}"
                  else
                       red "LibreOffice conversion failed for: $file" >&2
-                      rm -rf "${LO_USER_PROFILE#file://}"
+                      rm --recursive --force -- "${LO_USER_PROFILE#file://}"
                  fi
             else
                  red "Skipping document: $file (doc2pdf or libreoffice not found)" >&2
@@ -309,7 +309,7 @@ pdf-append () {
                     if [[ -f "$expected_lo_output" ]]; then
                           # Rename to our predictable name if needed
                          if [[ "$expected_lo_output" != "$output_pdf" ]]; then
-                              mv "$expected_lo_output" "$output_pdf" || red "Failed to rename LO output"
+                              mv -- "$expected_lo_output" "$output_pdf" || red "Failed to rename LO output"
                          fi
                         PDF_FILES+=("$output_pdf")
                     else
@@ -317,16 +317,16 @@ pdf-append () {
                         local found_pdf=$(find "$TEMP_DIR" -maxdepth 1 -name '*.pdf' -newer "$file" -print -quit)
                          if [[ -n "$found_pdf" ]] && [[ -f "$found_pdf" ]]; then
                             yellow "Warning: LibreOffice created unexpected PDF name '$found_pdf' for '$file'. Using it." >&2
-                            mv "$found_pdf" "$output_pdf" || red "Failed to rename found LO output"
+                            mv -- "$found_pdf" "$output_pdf" || red "Failed to rename found LO output"
                             PDF_FILES+=("$output_pdf")
                         else
                             red "LibreOffice conversion produced no verifiable output for: $file" >&2
                         fi
                     fi
-                    rm -rf "${LO_USER_PROFILE#file://}"
+                    rm --recursive --force -- "${LO_USER_PROFILE#file://}"
                 else
                     red "LibreOffice conversion failed for: $file" >&2
-                    rm -rf "${LO_USER_PROFILE#file://}"
+                    rm --recursive --force -- "${LO_USER_PROFILE#file://}"
                 fi
             else
                 red "Skipping spreadsheet: $file (libreoffice not found)" >&2
@@ -359,7 +359,7 @@ pdf-append () {
             # Special check: If the *first* file is unsupported, we cannot proceed meaningfully.
              if [[ "$file" == "$TARGET_DEST_PDF" ]]; then
                  red "First input file '$file' is not a PDF and is not a supported type for conversion. Cannot proceed." >&2
-                 shopt -u nocasematch; trap - EXIT HUP INT TERM; rm --force"$TEMP_TARGET"; rm -rf "$TEMP_DIR"; return 1;
+                 shopt -u nocasematch; trap - EXIT HUP INT TERM; rm --force "$TEMP_TARGET"; rm --recursive --force -- "$TEMP_DIR"; return 1;
             else
                  red "Skipping unsupported file type: $file" >&2
             fi
@@ -369,12 +369,12 @@ pdf-append () {
     # --- Validation Before Concatenation ---
     if [ ${#PDF_FILES[@]} -lt 1 ]; then
         red "No PDF files available (or created) to concatenate." >&2
-        shopt -u nocasematch; trap - EXIT HUP INT TERM; rm --force"$TEMP_TARGET"; rm -rf "$TEMP_DIR"; return 1;
+        shopt -u nocasematch; trap - EXIT HUP INT TERM; rm --force"$TEMP_TARGET"; rm --recursive --force -- "$TEMP_DIR"; return 1;
     fi
     # Check if only the first file remains (no new files added/valid)
      if [ ${#PDF_FILES[@]} -eq 1 ] && [ "${PDF_FILES[0]}" == "$TARGET_DEST_PDF" ]; then
          bold "Input consists only of the target file '$TARGET_DEST_PDF'. No changes needed." >&2
-         shopt -u nocasematch; trap - EXIT HUP INT TERM; rm --force"$TEMP_TARGET"; rm -rf "$TEMP_DIR"; return 0
+         shopt -u nocasematch; trap - EXIT HUP INT TERM; rm --force --"$TEMP_TARGET"; rm --recursive --force -- "$TEMP_DIR"; return 0
      fi
 
     # --- Concatenation ---
@@ -406,14 +406,14 @@ pdf-append () {
                 bold "Metadata preserved." >&2
             else
                  # exiftool might leave a backup file on failure, try cleaning it
-                 exiftool -delete_original= "$TEMP_TARGET" &>/dev/null
+                 exiftool -delete_original= -- "$TEMP_TARGET" &>/dev/null
                  yellow "Warning: exiftool failed to preserve metadata from '$ORIGINAL_METADATA_SOURCE'. Output PDF may lack original metadata." >&2
             fi
         fi
 
         # --- Final Output ---
         bold "Moving temporary result to final destination: $TARGET_DEST_PDF" >&2
-        if mv "$TEMP_TARGET" "$TARGET_DEST_PDF"; then
+        if mv -- "$TEMP_TARGET" "$TARGET_DEST_PDF"; then
             bold "Successfully created/updated: $TARGET_DEST_PDF" >&2
 
             # --- Cleanup: Move Original Input Files (Soft Delete) ---
@@ -424,7 +424,7 @@ pdf-append () {
             for file_to_move in "${FILES_TO_MOVE[@]}"; do
                 # Check if the original file still exists at its path before moving
                 if [ -f "$file_to_move" ]; then
-                    if ! mv "$file_to_move" "$TEMP_DIR/"; then
+                    if ! mv -- "$file_to_move" "$TEMP_DIR/"; then
                         yellow "Warning: Failed to move original file '$file_to_move' to $TEMP_DIR" >&2
                     fi
                 # Optional: Could add handling here if the file_to_move is already in TEMP_DIR (e.g., was a converted file path)
@@ -449,7 +449,7 @@ pdf-append () {
             # Explicitly state that TEMP_DIR is kept:
             bold "Temporary directory $TEMP_DIR has been kept for inspection or recovery." >&2
             # To clean up automatically instead, uncomment the next line and remove the bold message above:
-            # rm -rf "$TEMP_DIR"
+            # rm --recursive --force "$TEMP_DIR"
             return 0
         else
             red "Error: Failed to move temporary file '$TEMP_TARGET' to final destination '$TARGET_DEST_PDF'." >&2
@@ -476,15 +476,15 @@ doc2pdf () {
     [[ ! -s "$input" || ! "$input" =~ \.(doc|docx|odt)$ ]] && { red "Error: Invalid or empty file: $input"; return 1; }
 
     soffice --convert-to pdf "$input" --headless --outdir "$(dirname "$output")"
-    [ "$#" -eq 2 ] && mv "${input%.*}.pdf" "$output"
+    [ "$#" -eq 2 ] && mv -- "${input%.*}.pdf" "$output"
 }
 
 
 # trim whitespace from around JPG/PNG images
 crop_one () {
     if [[ "$*" =~ .*\.(jpg|png) ]]; then
-        (( $(identify -ping -format '%[fx:w*h]' "$@") > 25000000 )) 2>/dev/null && \
-            echo "Warning: Image '$@' is larger than 5000x5000 pixels." >&2
+        (( $(identify -ping -format '%[fx:w*h]' -- "$@") > 25000000 )) 2>/dev/null && \
+            red "Warning: Image '$*' is larger than 5000×5000 pixels." >&2
         nice convert "$(path2File "$@")" \
             -crop "$(nice -n 19 ionice -c 3 convert "$@" -virtual-pixel edge -blur 0x5 -fuzz 1% -trim -format '%wx%h%O' info:)" \
             +repage "$@";
@@ -520,9 +520,249 @@ pad-black () {
 crop-pad () { crop "$@" && pad "$@"; }
 crop-pad-black () { crop "$@" && pad-black "$@"; }
 
-# function split_image () {     local image_path="$1";     local base_name=$(basename "$image_path" .png);     local height=$(identify -ping -format "%h" "$image_path");     local half_height=$((height / 2))     convert "$image_path" -crop 100%x50%+0+0 "${base_name}-1.png";     convert "$image_path" -crop 100%x50%+0+$half_height "${base_name}-2.png"; }
+# function split_image () {     local image_path="$1";     local base_name=$(basename "$image_path" .png);     local height=$(identify -ping -format "%h" -- "$image_path");     local half_height=$((height / 2))     convert "$image_path" -crop 100%x50%+0+0 "${base_name}-1.png";     convert "$image_path" -crop 100%x50%+0+$half_height "${base_name}-2.png"; }
 
 # convert black background to white:  `mogrify -fuzz 5% -fill white -draw "color 0,0 floodfill"`
+
+# Image combination utilities: use ImageMagick to stitch together sets of images horizontally, vertically, or in grids.
+#
+# Commands: 'combine', 'combiner'/'cr', 'combinev'/'cv', 'combinevr'/'cvr', 'combinev2r'/'cv2r', 'combinev2'/'cv2', 'combinev4'/'cv4', 'combineSquare', 'combine-unstack'/'combine-unstack-last'.
+# Mnemonics: 'r' for reverse command-line order ('combine 1.jpg 2.jpg' = 'combiner 2.jpg 1.jpg'); 'v' for 'stack vertically up-to-down rather than horizontally left-to-right'; '2' for '2 at a time' ('combine2 1.jpg 2.jpg 3.jpg 4.jpg ...' = 'combine 1.jpg 2.jpg && combine 3.jpg 4.jpg && ...') and '4' for '4 at a time (in a 2x2 grid). And 'combinev4' combines images intelligently, trying to combine in either 2x2 or 1x4 based on aspect ratio to achieve a square.
+#
+# So, 'cv' stands for 'combine vertically'; 'cv2' means 'combine vertically in pairs, 1x2'; 'cv4' means 'combine in a 2x2 pattern'. 'combine' means 'combine horizontally left to right'. 'combiner' means 'combine horizontally in reverse order'. 'cv2r' means 'combine vertically like cv2 but #2 is on top and #1 is on bottom'.
+# For further convenience, if image arguments are not specified, they default to combining 'all images in the working directory'.
+# And they include a safeguard against images which are still being downloaded, as when mirroring or copying multiple large images from web browsers, sometimes it can take surprisingly long to write an image out to disk and operating on them would corrupt or truncate the final result.
+#
+# These helper functions are how I make all the Gwern.net grids and combinations of screenshots and samples etc., and integrates with the other tools.
+# If I want to upload a bunch of dropcaps 8 at a time to the temp directory, say for Obormot to look at, I just do 'cv4 && cv2 && upload *.jpg'; then it'll print out a bunch of URLs which contain 4x2 grids and open them in Firefox etc.
+# If I want to save 4 newspaper comics from a paywall as a vertical strip with whitespace padding, for me it'd be something like right-click/click 4 times, `pad *.jpg && cv *.jpg && mv *.jpg 1975-berkeleybreathed-bloomcounty-unclebucktalkstotheyoungrepublicansondrugs.jpg && upload *.jpg humor`.
+
+# Helper function to get image files without white-spacing/weird characters worries (NOTE: assumes no newlines in filenames; GIF excluded due to animations):
+get_image_files () {
+    mapfile -t "$1" < <(find . -maxdepth 1 -type f \
+                             \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" -o -iname "*.avif" \) \
+                            | sort --version-sort)
+}
+get_ext () {
+    local f="$1"
+    # Check if filename contains a dot
+    if [[ "$f" != *.* ]]; then
+        red "Error: File '$f' has no extension. Cannot determine output format." >&2
+        return 1
+    fi
+    local extension="${f##*.}"
+    # Check for empty extension (e.g. "file.")
+    if [[ -z "$extension" ]]; then
+        red "Error: File '$f' has an empty extension." >&2
+        return 1
+    fi
+    echo "$extension"
+}
+
+# combine images left-right: use ImageMagick to stitch together horizontally _n_ images, overwriting the first and deleting the rest; mostly useful for concatenating two images A B = A++B.
+#
+# NOTE: no 'c' alias analogous to 'cv', because that collides with a pre-existing 'cd' alias shortcut
+combine () { local args=("$@")
+    if [ ${#args[@]} -eq 0 ]; then
+        get_image_files args
+    fi
+    if [ ${#args[@]} -lt 2 ]; then
+        red "combine: ≥2 arguments required but not supplied; erroring out." >&2 && return 1
+    else
+        for IMG in "${args[@]}"; do is_downloading "$IMG" 50 || return 2; done
+        local ext
+        ext=$(get_ext "${args[0]}") || return 1
+        local TARGET=$(mktemp "/tmp/XXXXXXX.$ext")
+        convert -background black -gravity center +append -- "${args[@]}" "$TARGET" && \
+            (mv -- "$TARGET" "${args[0]}" && rm -- "${args[@]:1}") || { rm --force -- "$TARGET"; return 3; }
+    fi; }
+# convenience: reverse of `combine`, for A B C = C++B++A
+combiner () {
+    local args=("$@")
+    if [ ${#args[@]} -eq 0 ]; then
+        get_image_files args
+    fi
+    local reversed=()
+    for ((i=${#args[@]}-1; i>=0; i--)); do
+        reversed+=("${args[i]}")
+    done
+    combine "${reversed[@]}"
+}
+alias cr="combiner"
+
+# combine vertically
+combinev () {
+ local args=("$@")
+    if [ ${#args[@]} -eq 0 ]; then
+        get_image_files args
+    fi
+    if (( ${#args[@]} < 2 )); then
+        red "Need at least 2 files, exiting."
+        return 1
+    fi
+
+    for IMG in "${args[@]}"; do is_downloading "$IMG" 50 || return 2; done
+        local ext
+        ext=$(get_ext "${args[0]}") || return 1
+        local TARGET
+        TARGET=$(mktemp "/tmp/XXXXXXX.$ext")
+    convert -background black -gravity center -append -- "${args[@]}" "$TARGET" && (mv -- "$TARGET" "${args[0]}" && rm -- "${args[@]:1}") \
+        || { rm --force -- "$TARGET"; return 3; }; }
+alias cv="combinev"
+combineSquare () {
+    local args=("$@")
+    if [ ${#args[@]} -eq 0 ]; then get_image_files args; fi
+    if [ ${#args[@]} -eq 0 ]; then red "No image arguments available! Exiting." && return 1; fi
+
+    # If < 4, we can't make a 2x2 square. Warn and exit (or you could fallback to combinev2?)
+    if [ ${#args[@]} -lt 4 ]; then
+        echo "combineSquare: ≥4 arguments required to make a square; stopping." >&2 && return 0
+    fi
+
+    for IMG in "${args[@]}"; do is_downloading "$IMG" 50 || return 2; done
+
+    # Take only the first 4 images
+    local first_four=("${args[@]:0:4}")
+    local ext
+    ext=$(get_ext "${args[0]}") || return 1
+    local TARGET
+    TARGET=$(mktemp "/tmp/XXXXXXX.$ext")
+
+    montage -background black -tile 2x2 -geometry +2+2 -- "${first_four[@]}" "$TARGET" && \
+        (mv -- "$TARGET" "${first_four[0]}" && rm -- "${first_four[@]:1}") || { rm --force -- "$TARGET"; return 3; }
+
+    # Recursion: process remaining images
+    if [ ${#args[@]} -gt 4 ]; then
+        local remaining=("${args[@]:4}")
+        combineSquare "${remaining[@]}"
+    fi
+}
+# if passed 3 images, it will combine them into a 2x2 with a lower-right black square or if all are wide, 1x3:
+combinev4 () {
+   local args=("$@")
+    if [ ${#args[@]} -eq 0 ]; then
+        get_image_files args
+    fi
+    for IMG in "${args[@]}"; do is_downloading "$IMG" 50 || return 2; done
+    if [ ${#args[@]} -eq 2 ]; then
+        combinev2 "${args[@]:0:2}"
+        return 0
+        # we may have processed all available images so we're done:
+    elif [ ${#args[@]} -lt 3 ]; then
+        echo "(Skipping final leftover images: ${args[*]})"
+        return 0
+    fi
+    # Take only the first 3–4 images
+    local first_four=("${args[@]:0:4}")
+    local ext
+    ext=$(get_ext "${args[0]}") || return 1
+    local TARGET
+    TARGET=$(mktemp "/tmp/XXXXXXX.$ext")
+
+    # Check if images are wider than they are tall
+    local is_wide=true
+    for img in "${first_four[@]}"; do
+        read -r w h < <(identify -format "%w %h" -- "$img" 2>/dev/null)
+        if [[ -z "$w" || -z "$h" ]]; then
+            red "combinev4: Failed to read dimensions of $img; this should never happen, so erroring out rather than continuing any further!" >&2
+            return 1
+        fi
+        if (( w <= h )); then
+            is_wide=false
+            break
+        fi
+    done
+
+    if $is_wide; then
+        # For wide images, combine vertically (1x4)
+        convert -background black -gravity center -append -- "${first_four[@]}" "$TARGET"
+    else
+        # For square or tall images, use the original 2x2 layout
+        montage -background black -tile 2x2 -geometry +2+2 -- "${first_four[@]}" "$TARGET"
+    fi && mv -- "$TARGET" "${first_four[0]}" &&
+        rm -- "${first_four[@]:1}" || { rm --force -- "$TARGET"; return 3; }
+    # If there are remaining arguments, call combinev4 again
+    if [ ${#args[@]} -gt 4 ]; then # WARNING: do not use `shift`!
+        local remaining=("${args[@]:4}")  # Create new array with remaining elements
+        combinev4 "${remaining[@]}"       # Pass the array elements correctly
+    fi
+}
+alias cv4="combinev4"
+
+# combine pairs of arbitrarily many images vertically in Imagemagick with no border, but if not identical width, center with a black background:
+combinev2 () {
+    local args=("$@")
+    if [ ${#args[@]} -eq 0 ]; then
+        get_image_files args
+    fi
+    if [ ${#args[@]} -eq 0 ]; then
+        red "combinev2: At least 2 images are required but received no explicit or implicit image arguments!" >&2
+        return 1
+    fi
+    if [ ${#args[@]} -eq 1 ]; then
+        echo "Only 1 image available, perhaps a left-over? Exiting."
+        return 0
+    fi
+    for IMG in "${args[@]}"; do is_downloading "$IMG" 50 || return 2; done
+    # Take only the first 2 images
+    local first_two=("${args[@]:0:2}")
+    local ext
+    ext=$(get_ext "${args[0]}") || return 1
+    local TARGET
+    TARGET=$(mktemp "/tmp/XXXXXXX.$ext")
+    convert -background black -gravity center -append -- "${first_two[@]}" "$TARGET" &&
+    (mv -- "$TARGET" "${first_two[0]}" &&
+         rm -- "${first_two[1]}") || { rm --force -- "$TARGET"; return 3; };
+    # If there are remaining arguments, call 'combinev2' again
+    if [ ${#args[@]} -gt 2 ]; then # WARNING: cannot just call `shift`
+        local remaining=("${args[@]:2}")
+        combinev2 "${remaining[@]}"
+    fi; }
+# [A,B,C,D] → [D,C,B,A]; then pairing yields (D-over-C), (B-over-A)
+combinev2r () {
+    local args=("$@")
+    if [ ${#args[@]} -eq 0 ]; then
+        get_image_files args
+    fi;
+    local reversed=()
+    for ((i=${#args[@]}-1; i>=0; i--)); do
+        reversed+=("${args[i]}")
+    done
+    combinev2 "${reversed[@]}"; }
+alias cv2="combinev2"
+alias cv2r="combinev2r"
+
+combinevr () {
+    local args=("$@")
+    [[ ${#args[@]} -eq 0 ]] && get_image_files args
+
+    local reversed=()
+    for ((i=${#args[@]}-1; i>=0; i--)); do
+        reversed+=("${args[i]}")
+    done
+    combinev "${reversed[@]}"
+}
+alias cvr="combinevr"
+
+# used in feh:
+# rotate a 2x2=4 images → 1x4
+combine-unstack () {
+    local args=("$@")
+    if [ ${#args[@]} -eq 0 ]; then
+        get_image_files args
+    fi
+
+    for IMG in "${args[@]}"; do is_downloading "$IMG" 50 || return 2; done
+    for FILE in "${args[@]}"; do mogrify -crop 50%x50% +repage -append -- "$FILE"; done; }
+# rotate, and delete the last square, under the assumption that it is a 4-square with a blank black final square:
+combine-unstack-last () {
+    local args=("$@")
+    if [ ${#args[@]} -eq 0 ]; then
+        get_image_files args
+    fi
+
+    for IMG in "${args[@]}"; do is_downloading "$IMG" 50 || return 2; done
+    for FILE in "${args[@]}"; do mogrify -crop 50%x50% +repage -delete 3 -append -- "$FILE"; done; }
 
 # check a PNG to see if it can be turned into a JPG with minimal quality loss (according to the ImageMagick PSNR perceptual loss); for PNGs that should be JPGs (eg. photos are surprisingly often saved as PNGs), often the JPG will be a third the size or less, which (particularly for large images like sample-grids) makes for more pleasant web browsing.
 # (This does not rename or convert as it is still experimental and automatically renaming gwern.net files is dangerous due to the need for global search-and-replace & defining nginx redirects.)
@@ -554,7 +794,7 @@ png2JPGQualityCheck () {
         fi
 
         # Clean up: Remove the temporary JPG file
-        rm "$JPG"
+        rm -- "$JPG"
     done
 }
 export -f png2JPGQualityCheck
@@ -574,7 +814,7 @@ e () { FILE=""
        if [[ -a "$FILE" ]]; then
            if [[ "$FILE" =~ .*\.pdf || "$FILE" =~ .*\.jpg || "$FILE" =~ .*\.png ]]; then
                if [[ "$FILE" =~ .*\.pdf ]]; then
-                   ENCRYPTION=$(exiftool -q -q -Encryption "$FILE")
+                   ENCRYPTION=$(exiftool -q -q -Encryption -- "$FILE")
                    if [ "$ENCRYPTION" != "" ]; then
                        pdftk "$FILE" input_pw output foo.pdf && mv foo.pdf "$FILE";
                    fi;
@@ -584,15 +824,15 @@ e () { FILE=""
                    TMP="$(mktemp /tmp/XXXXX.pdf)"
                    # pdftk by default erases all metadata, so we need to copy it all to the new PDF:
                    pdftk "$FILE" cat output "$TMP" && \
-                       exiftool -TagsFromFile "$FILE" "$TMP" && \
-                         mv "$TMP" "$FILE"
+                       exiftool -TagsFromFile -- "$FILE" "$TMP" && \
+                         mv -- "$TMP" "$FILE"
                fi;
                echo "$FILE"
-               exiftool -m -overwrite_original "$FILE" "$@";
+               exiftool -m -overwrite_original -- "$FILE" "$@";
                # getting very tired of these hyphen junk in my titles...
-               TITLE1="$(exiftool -printFormat '$Title' -Title "$FILE")"
+               TITLE1="$(exiftool -printFormat '$Title' -Title -- "$FILE")"
                TITLE2="$(echo "$TITLE1" | sed -e 's/‐/-/g' -e 's/^ \+//g' -e 's/ \+$//g' -e 's/\.$//' | tr '_' ':')" # WARNING: tr mangles Unicode, but sed doesn't
-               if [[ "$TITLE1" != "$TITLE2" ]]; then exiftool -overwrite_original -Title="$TITLE2" "$FILE"; fi
+               if [[ "$TITLE1" != "$TITLE2" ]]; then exiftool -overwrite_original -Title="$TITLE2" -- "$FILE"; fi
 
            else emacsclient "$FILE";
            fi;
@@ -704,7 +944,7 @@ else
             convert "$HOME/wiki$OLD" "$TMP"
             compressJPG "$TMP"
             git mv "$HOME/wiki$OLD" "$HOME/wiki${NEW%.jpg}.jpg"
-            mv "$TMP" "$HOME/wiki${NEW%.jpg}.jpg"
+            mv -- "$TMP" "$HOME/wiki${NEW%.jpg}.jpg"
         elif [[ -a ~/wiki$OLD ]]; then
             touch ~/wiki"$NEW" && rm ~/wiki"$NEW" && git mv ~/wiki"$OLD" ~/wiki"$NEW" || return 3
         else
@@ -719,7 +959,7 @@ else
         stringReplace '"'"$OLD"'";' '"'"$NEW"'";' ~/wiki/static/redirect/*.conf;
         echo '"~^'"$OLD"'.*$" "'"$NEW"'";' | tee --append ~/wiki/static/redirect/nginx.conf # 3. add a redirected old to nginx
         # 4. delete outdated annotations:
-        OLD_FILE=$(basename "$OLD"); rm "$HOME/wiki/metadata/annotation/*$OLD_FILE*" || true > /dev/null
+        OLD_FILE=$(basename "$OLD"); rm -- "$HOME/wiki/metadata/annotation/*$OLD_FILE*" || true > /dev/null
         wait
 
     set +x
@@ -748,7 +988,7 @@ gwmvdir () {
         echo "$FILE"
         gwmv "$FILE" "$NEW/$(basename $FILE)"
     done
-    rm "$OLD/index.md" || true
+    rm -- "$OLD/index.md" || true
     rmdir "$OLD"
 }
 
@@ -860,7 +1100,7 @@ mvuri () {
 
         (cd ~/wiki/
          mkdir $(dirname "$TARGET_PATH") || true
-         mv "$NEW" "$TARGET_PATH"
+         mv -- "$NEW" "$TARGET_PATH"
          ghci -istatic/build/ ./static/build/LinkArchive.hs \
               -e "LinkArchive.insertLinkIntoDB (Right (Just \"$TARGET_PATH\")) \"$1\""
         )
@@ -901,10 +1141,10 @@ mvuri () {
   is_downloading "$SOURCE" 10 # most web pages <10kb are broken or error pages
   bold "$SOURCE" "$(du -ch "$SOURCE")" "$DESTINATION"
   if [[ $(stat -c%s "$SOURCE") -ge 10000000 ]]; then # EXPERIMENTAL: optimize large HTML files (>10MB) by splitting back into separate files to avoid strict downloads
-      mv "$SOURCE" "$DESTINATION"
+      mv -- "$SOURCE" "$DESTINATION"
       php ~/wiki/static/build/deconstruct_singlefile.php "$DESTINATION"
   else
-      mv "$SOURCE" "$DESTINATION"
+      mv -- "$SOURCE" "$DESTINATION"
   fi
 
   echo -n -e '\a'; # ring bell because done
@@ -970,7 +1210,7 @@ lorem_download () {
     # we version the infrastructure files with a 10-digit seconds-level Unix timestamp to bust caches, and those will change every time those are modified, eg. to add a link-icon, and trigger spurious changes. So we used sed to remove those from both downloaded snapshots & downloaded live pages.
     curl --silent "${SITE_URL}/${page}" |
         sed 's/\.\(css\|js\|svg\)?v=[0-9]\{10\}/.\1/g' >> "$temp_file"
-    mv "$temp_file" "${output_file}"
+    mv -- "$temp_file" "${output_file}"
 }
 
 compare_page () {
@@ -986,7 +1226,7 @@ compare_page () {
         git diff --color-words "${snapshot_file}" "${temp_file}"
     fi
 
-    rm "${temp_file}"
+    rm -- "${temp_file}"
 }
 
 lorem_update () {

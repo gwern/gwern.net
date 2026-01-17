@@ -127,7 +127,7 @@ mkPattern err =
 escapeRegex :: String -> String
 escapeRegex = replaceMany
   [ ("\\", "\\\\")
-  , (".",  "\\.")
+--  , (".",  "\.")
   , ("?",  "\\?")
   , ("*",  "\\*")
   , ("+",  "\\+")
