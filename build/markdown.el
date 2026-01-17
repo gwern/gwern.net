@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2026-01-02 12:25:17 gwern"
+;;; When:  Time-stamp: "2026-01-16 23:14:46 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -2423,9 +2423,27 @@ To save typing effort, we add those as well if not present."
 (defun markdown-insert-editorial-note ()
   "Surround selected region (or word) with editorial syntax.
 Used on Gwern.net to denote ‘editorial’ insertions like commentary
-or annotations. Markdown version"
-  (interactive)
-  (surround-region-or-word "[" "]{.editorial}"))
+or annotations. Markdown version.
+For existing bracketed regions, they will be Markdown-escaped to
+reduce risk of syntax breakage from double-brackets like '\[\[';
+see </style-guide#editorial> for more discussion."
+(interactive)
+  (let* ((beg (if (use-region-p)
+                  (region-beginning)
+                (progn
+                  (skip-chars-forward " \t")
+                  (point))))
+         (end (if (use-region-p)
+                  (region-end)
+                (save-excursion (forward-word) (point))))
+         (content (buffer-substring-no-properties beg end))
+         (escaped (replace-regexp-in-string "\\]" "\\]"
+                    (replace-regexp-in-string "\\[" "\\[" content nil t) nil t)))
+    (delete-region beg end)
+    (goto-char beg)
+    (insert "[" escaped "]{.editorial}")
+    (deactivate-mark)))
+
 (defun html-insert-editorial-note ()
   "Surround selected region FOO BAR (or word FOO) with `editorial note`.
 \(Implemented as a special `<span>` HTML class.\)
