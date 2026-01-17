@@ -28,7 +28,7 @@ arxiv md url = do -- Arxiv direct PDF links are deprecated but sometimes sneak t
                  ExitFailure _ -> printRed ("Error: curl API call failed on Arxiv ID: " ++ arxivid ++ "; Result: " ++ show bs) >> return (Left Temporary)
                  _ -> do printGreen "Processing Arxiv metadata…"
                          let (tags,_) = element "entry" $ parseTags $ U.toString bs
-                         -- compile the title string because it may include math (usually a superscript, like "S$^2$-MLP: Spatial-Shift MLP Architecture for Vision" or "RL$^2$" etc)
+                         -- compile the title string because it may include math (usually a superscript, like "S$^2$-MLP: Spatial-Shift MLP Architecture for Vision" or "RL$^2$" etc.)
                          C.cd -- ensure we are in the right place to enable calling `latex2unicode.py`
                          let title = delete "<p>" $ delete "</p>" $ cleanAbstractsHTML $ processArxivAbstract $ trimTitle $ findTxt $ fst $ element "title" tags
                          let authors = cleanAuthors $ intercalate ", " $ getAuthorNames tags

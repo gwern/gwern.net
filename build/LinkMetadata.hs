@@ -1,6 +1,6 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can
                     then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts,
-                    abstracts, article introductions etc, and make life much more pleasant for the reader—hover over
+                    abstracts, article introductions etc., and make life much more pleasant for the reader—hover over
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
@@ -732,12 +732,12 @@ generateAnnotationTransclusionBlock am (f, x@(tle,_,_,_,_,_,_)) =
 
 -- transclude a *file* (or possibly a URL) directly, if possible. For example, an image will be displayed by `generateAnnotationTransclusionBlock` as a normal list item with its name & metadata as text, but then the image itself will be displayed immediately following it. `generateFileTransclusionBlock` handles the logic of transcluding each supported file type, as each file will require a different approach. (Image files are supported directly by Pandoc, but video files require raw HTML to be generated, while CSV files must be rendered to HTML etc.)
 --
--- Collapse behavior: media types are displayed by default everywhere (the user wants to see them immediately because it's easy to see an image etc, and performance-wise they are cheap, because they are either small like images or set to their equivalents of 'lazy loading' like video/audio); document types are collapsed by default everywhere (many users will have no interest and documents like PDFs or HTML can be almost arbitrarily large, like a HTML mirror of "The Forgotten Pixel Art Masterpieces of the PlayStation 1 Era" which due to the animations is fully 183MB!).
+-- Collapse behavior: media types are displayed by default everywhere (the user wants to see them immediately because it's easy to see an image etc., and performance-wise they are cheap, because they are either small like images or set to their equivalents of 'lazy loading' like video/audio); document types are collapsed by default everywhere (many users will have no interest and documents like PDFs or HTML can be almost arbitrarily large, like a HTML mirror of "The Forgotten Pixel Art Masterpieces of the PlayStation 1 Era" which due to the animations is fully 183MB!).
 -- We want to display media (particularly images) by default, so tag-directories can serve as informal 'galleries'; many images will never be seen in pages/annotations, nor do I want to constantly update a 'gallery' page with every single minimally-interesting image, and images are highly suitable for browsing very rapidly through, so it is fine to display all images for scrolling through.
 --
 -- For a list of legal Gwern.net filetypes, see </lorem-link#file-type>.
 -- Supported: documents/code (most, see `isDocumentPreviewable`/`isCodePreviewable`); images (all except PSD); audio (MP3); video (avi, MP4, WebM, YouTube, except SWF); archive/binary (none).
--- Views: for the purposes of popups & prefetches, we distinguish between a document being 'viewable' and 'previewable'. A 'viewable' document is itself, the raw original literal file, 'viewable' in-browser, like a PDF; a 'previewable' document may not be viewable (because that doesn't work at all, or it looks bad, or it is too large etc), but there is some version of it which can be 'viewable' (eg. a HTML-rendered export of a spreadsheet). A key performance difference here is that a 'viewable' file, like a PDF, can be worth prefetching, because if the reader wants to read it, that saves time; however, for a 'previewable' file, that is *not* the case---prefetching the file doesn't prefetch the preview-version and so the reader still has to wait on that.
+-- Views: for the purposes of popups & prefetches, we distinguish between a document being 'viewable' and 'previewable'. A 'viewable' document is itself, the raw original literal file, 'viewable' in-browser, like a PDF; a 'previewable' document may not be viewable (because that doesn't work at all, or it looks bad, or it is too large etc.), but there is some version of it which can be 'viewable' (eg. a HTML-rendered export of a spreadsheet). A key performance difference here is that a 'viewable' file, like a PDF, can be worth prefetching, because if the reader wants to read it, that saves time; however, for a 'previewable' file, that is *not* the case---prefetching the file doesn't prefetch the preview-version and so the reader still has to wait on that.
 generateFileTransclusionBlock :: ArchiveMetadata -> Bool -> (FilePath, MetadataItem) -> [Block]
 generateFileTransclusionBlock _  _            x@("",                _) = error $ "LM.generateFileTransclusionBlock: called with no URL? " ++ show x
 -- generateFileTransclusionBlock _ _ x@(_, ("","","","",[],[],"")) = error $ "LM.generateFileTransclusionBlock: called with a completely empty annotation? " ++ show x
@@ -771,7 +771,7 @@ generateFileTransclusionBlock am alwaysLabelP x@(f, (tle,_,_,_,_,_,_)) = if null
                                                       [Para titleCaption, Para [linkIcon $ Link ("", ["id-not", "link-annotated-not", "include-content", "include-lazy"], []) [title] (T.pack f', "")]]] -- TODO: do we need .link-annotated-not set on either of these links?
     -- image/video/audio:
     | isMediaViewable f' || "https://www.youtube.com/watch?v=" `isPrefixOf` f =
-      -- multimedia can be annotated; if it is (has a title & author etc), we don't need to display additional metadata, and we just display it immediately literally:
+      -- multimedia can be annotated; if it is (has a title & author etc.), we don't need to display additional metadata, and we just display it immediately literally:
         [Para $ (if alwaysLabelP then [Strong [Str "View ", fileDescription], Str ": "] else []) ++ [Link ("",["link-annotated-not", "include-content", "width-full"],[]) [title] (T.pack f', "")]]
     | otherwise = if not liveP then [] else
         [Div ("",["collapse"],[])

@@ -93,7 +93,7 @@ tagsToLinks ts = let tags = sort ts in
                           Link ("", ["link-tag", "link-page", "link-annotated", "icon-not"], [("rel","tag")]) [RawInline (Format "html") $ abbreviateTag tag] ("/doc/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index")
                        ) tags
 
--- if a local '/doc/*' file and no tags available, try extracting a tag from the path; eg. '/doc/ai/2021-santospata.pdf' → 'ai', '/doc/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics sociology Japanese' than 'economics sociology japanese')
+-- if a local '/doc/*' file and no tags available, try extracting a tag from the path; eg. '/doc/ai/2021-santospata.pdf' → 'ai', '/doc/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc.; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics sociology Japanese' than 'economics sociology japanese')
 tag2TagsWithDefault :: String -> String -> [String]
 tag2TagsWithDefault path tags = let tags' = map (trim . map toLower) $ split " " $ delete "," tags
                                     defTag = if ("/doc/" `isPrefixOf` path) && not (C.tagGuessBlacklist path) then tag2Default path else ""

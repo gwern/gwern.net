@@ -6011,4 +6011,5 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("Diffs", "diff")
         , ("DRY", "Don%27t_repeat_yourself")
         , ("ABC", "Approximate_Bayesian_computation")
+        , ("R", "R_(programming_language)")
         ]

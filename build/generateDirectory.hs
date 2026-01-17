@@ -290,7 +290,7 @@ listFiles m direntries' = do
 
 -- Fetch URLs/file 'tagged' with the current directory but not residing in it.
 --
--- tags are only in "doc/*", so "haskell/" etc is out. Tags drop the doc/ prefix, and we want to avoid
+-- tags are only in "doc/*", so "haskell/" etc. is out. Tags drop the doc/ prefix, and we want to avoid
 -- the actual files inside the current directory, because they'll be covered by the `listFiles` version, of course.
 listTagged :: Bool -> Metadata -> FilePath -> IO [(FilePath,MetadataItem,FilePath)]
 listTagged newestp m dir = if not ("doc/" `isPrefixOf` dir) then return [] else

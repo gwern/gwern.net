@@ -32,7 +32,7 @@ import Typography (titleCaseTest)
 import LinkMetadata (readLinkMetadata, fileTranscludesTest)
 import Metadata.Author (authorCollapseTest, cleanAuthorsTest, extractTwitterUsername, authorDB)
 
--- test the tests as configuration files for duplicates etc:
+-- test the tests as configuration files for duplicates etc.:
 import qualified Config.GenerateSimilar (blackListURLs)
 import qualified Config.Interwiki (testCases, quoteOverrides, redirectDB)
 import qualified Config.LinkArchive (whiteListMatchesFixed, localizeLinktestCases)
@@ -117,7 +117,7 @@ testConfigs = sum $ map length [isUniqueList Config.Metadata.Format.filterMetaBa
               , length $ isUniqueAll Config.LinkAuto.custom
               , length $ ensure "Test.LinkAuto.custom" "isURLAnyT" (isURLAnyT . snd) Config.LinkAuto.custom
               , length $ isUniqueAll Config.LinkID.linkIDOverrides
-              , length $ ensure "Test.linkIDOverrides" "HTML identifier lambda" (\(_,ident) -> -- NOTE: HTML identifiers *must* start with `[a-zA-Z]`, and not numbers or periods etc; they must not contain periods for CSS/JS compatibility
+              , length $ ensure "Test.linkIDOverrides" "HTML identifier lambda" (\(_,ident) -> -- NOTE: HTML identifiers *must* start with `[a-zA-Z]`, and not numbers or periods etc.; they must not contain periods for CSS/JS compatibility
                                                                                         let ident' = T.unpack ident in '.' `notElem` ident' && isAlpha (head ident'))
                 Config.LinkID.linkIDOverrides
                , length $ ensure "Test.linkIDOverrides" "URI (first), not URL (second)" (\(u,ident) -> isURLAny u && not (isURLT ident)) Config.LinkID.linkIDOverrides

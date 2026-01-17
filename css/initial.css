@@ -1174,17 +1174,17 @@ p {
 }
 
 p.empty-graf {
-/* 
+/*
     height: 0 !important;
     margin: 0 !important;
     visibility: hidden;
  */
 
-	/*	Let’s try removing empty grafs from the rendered page entirely, and 
-		see if anything breaks.
-			—SA 2026-01-15
-	 */
-	display: none;
+    /*  Let’s try removing empty grafs from the rendered page entirely, and
+        see if anything breaks.
+            —SA 2026-01-15
+     */
+    display: none;
 }
 
 /*  On wide screens (desktop), use fully-justified text (words get
@@ -1250,8 +1250,8 @@ p.empty-graf {
 /*  Exceptions.
  */
 
-/*	NOTE: .graf is a class that indicates blocks which act like <p> for styling
-	purposes, but are not <p>, such as .stanza in .poem.
+/*  NOTE: .graf is a class that indicates blocks which act like <p> for styling
+    purposes, but are not <p>, such as .stanza in .poem.
  */
 
 /*  EPITAPH (eg /LARPing)
@@ -1268,61 +1268,61 @@ p.empty-graf {
     text-indent: 0;
 }
 
-/*	POEMS
+/*  POEMS
  */
 .poem {
-	--text-alignment: left;
+    --text-alignment: left;
 
-	font-family: var(--GW-monospaced-serif-font-stack);
+    font-family: var(--GW-monospaced-serif-font-stack);
 }
 
 .poem-html {
-	white-space: pre;
+    white-space: pre;
 }
 
 .poem .stanza p {
-	text-indent: calc(-1 * var(--text-indent));
-	padding-left: var(--text-indent);
+    text-indent: calc(-1 * var(--text-indent));
+    padding-left: var(--text-indent);
 }
 
-/*	NOTE: Disabling this, because it causes problems with e.g. dark mode switch
-	trigger elements in empty poem stanzas. Must watch out for problems caused
-	by having empty stanzas not hidden.
-		—SA 2026-01-08
-/* 
+/*  NOTE: Disabling this, because it causes problems with e.g. dark mode switch
+    trigger elements in empty poem stanzas. Must watch out for problems caused
+    by having empty stanzas not hidden.
+        —SA 2026-01-08
+/*
 .poem .stanza.empty-stanza {
-	display: none;
+    display: none;
 }
  */
 
 .poem .enjambed-line {
-	white-space: pre;
+    white-space: pre;
 }
 .poem .enjambment-spacer {
-	white-space: pre;
-	padding-right: calc(var(--enjambment-step) * 0.5ch);
+    white-space: pre;
+    padding-right: calc(var(--enjambment-step) * 0.5ch);
 }
 
 .poem .text-center p {
-	padding: 0;
+    padding: 0;
 }
 
 .poem .stanza.layout-special-center p {
-	display: flex;
-	justify-content: center;
+    display: flex;
+    justify-content: center;
 }
 .poem .stanza.layout-special-center p .segment {
-	flex: 1 1 50%;
+    flex: 1 1 50%;
 }
 .poem .stanza.layout-special-center p .segment:nth-child(1) {
-	text-align: right;
+    text-align: right;
 }
 .poem .stanza.layout-special-center p .segment:nth-child(2) {
-	flex: 0 0 3ch;
-	text-align: center;
+    flex: 0 0 3ch;
+    text-align: center;
 }
 .poem .stanza.layout-special-center p .segment:nth-child(3) {
-	text-align: left;
+    text-align: left;
 }
 
 
@@ -1499,7 +1499,7 @@ ol > li::before {
 
     Manual invocation assumes writing plain `<ol>` HTML lists instead of Arabic
     numerals like `<ol type="1">`. Pandoc Markdown defaults to the latter if you
-    write '1./2.' etc, but an alternate syntax, '#.' is supported which yields a
+    write '1./2.' etc., but an alternate syntax, '#.' is supported which yields a
     plain `<ol>` which can be more easily styled.
     (See https://pandoc.org/MANUAL.html#extension-startnum .)
 */
@@ -1738,13 +1738,13 @@ figure.width-full {
     font-variant-caps: initial;
 }
 
-/*	On viewports wide enough to display margin notes, enable relative-to-graf
-	margin note positioning.
+/*  On viewports wide enough to display margin notes, enable relative-to-graf
+    margin note positioning.
  */
 @media all and (min-width: 1497px) {
-	#markdownBody p.has-margin-note {
-		position: relative;
-	}
+    #markdownBody p.has-margin-note {
+        position: relative;
+    }
 }
 
 #markdownBody .marginnote.sidenote {
@@ -1886,7 +1886,7 @@ a {
 
 /*  Tufte CSS for underlining (https://github.com/edwardtufte/tufte-css)
     The advantage of all this CSS linenoise compared to the previous 'text-decoration: none; border-bottom: 1px Solid grey;' solution from http://devhints.wordpress.com/2006/10/24/css-links-with-different-color-underlines/
-    is the 'skip-ink': when dealing with characters with 'descenders', like 'y', 'g', 'p', 'q' etc, with regular underlining the bottom stroke overlaps with the line and it's harder to read;
+    is the 'skip-ink': when dealing with characters with 'descenders', like 'y', 'g', 'p', 'q' etc., with regular underlining the bottom stroke overlaps with the line and it's harder to read;
     by adding this text-shadow stuff and backgrounding, a little break is made in the underline to add contrast and keep the descender fully visible and outlined. (The downside is that the overlapping text-shadows can also slightly damage the rendering of slashes & parentheses, which come too close and get partially erased.)
 
     Unfortunately, we don't want to add underlines to links in the TOC because it clutters it (all the lines are links and are in small font), so we have to avoid styling the TOC, which is difficult.
@@ -2220,11 +2220,11 @@ span.smallcaps {
     font-variant-caps: small-caps;
 }
 
-/*	“Editorial” insertions in [brackets], either block or inline, should be
-	styled specially.
+/*  “Editorial” insertions in [brackets], either block or inline, should be
+    styled specially.
  */
 .editorial {
-	font-family: var(--GW-monospaced-serif-font-stack);
+    font-family: var(--GW-monospaced-serif-font-stack);
 }
 
 
@@ -2232,20 +2232,20 @@ span.smallcaps {
 /* UTILITY CLASSES */
 /*******************/
 
-/*	Allow easy hiding of any element (eg. for the LinkAuto self-link 
-	suppression trick):
+/*  Allow easy hiding of any element (eg. for the LinkAuto self-link
+    suppression trick):
 
-	Just set a ‘.display-not’ class on it, which is nicer than writing 
-	something like ‘[Foo](bar){style="display: none;"}’.
+    Just set a ‘.display-not’ class on it, which is nicer than writing
+    something like ‘[Foo](bar){style="display: none;"}’.
 
-	(The ‘!important’ ensures the utility always wins over more specific 
-	 selectors—useful for a utility class meant to override anything. See also 
-	 Bootstrap's hidden utility `.d-none` <https://getbootstrap.com/docs/5.0/utilities/display/>. 
-	 Downside: makes it harder to un-hide programmatically via inline styles 
-	 if you ever need that.
+    (The ‘!important’ ensures the utility always wins over more specific
+     selectors—useful for a utility class meant to override anything. See also
+     Bootstrap's hidden utility `.d-none` <https://getbootstrap.com/docs/5.0/utilities/display/>.
+     Downside: makes it harder to un-hide programmatically via inline styles
+     if you ever need that.
  */
 .display-not {
-	display: none !important;
+    display: none !important;
 }
 
 
@@ -2424,7 +2424,7 @@ body.page-index #markdownBody #notable {
     }
 }
 
-/*	Prevent empty grafs from taking up space in the layout.
+/*  Prevent empty grafs from taking up space in the layout.
  */
 body.page-index #markdownBody > p.empty-graf {
     display: none;

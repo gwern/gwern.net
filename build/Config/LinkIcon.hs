@@ -19,7 +19,7 @@ overrideLinkIcons = [("/index#abstract", ("","",""))]
 prioritizeLinkIconMin :: Int
 prioritizeLinkIconMin = 4
 
-prioritizeLinkIconBlackList :: [T.Text] -- dead, icon-less, bad icon, overly-obscure, no real unifying nature worth knowing, etc:
+prioritizeLinkIconBlackList :: [T.Text] -- dead, icon-less, bad icon, overly-obscure, no real unifying nature worth knowing, etc.:
 prioritizeLinkIconBlackList =
   ["lilianweng.github.io", "www.smartpowders.com", "www.silverhandmeadery.com"
  , "philip.greenspun.com", "eli.thegreenplace.net", "danluu.com", "www.joelonsoftware.com"
@@ -386,7 +386,7 @@ linkIconRulesTriple u
  | u'' u "psycnet.apa.org" = ("APA", "text,tri,sans", "#2c72b7") -- APA (American Psychological Association <https://en.wikipedia.org/wiki/American_Psychological_Association>) PsycNET <https://en.wikipedia.org/wiki/PsycINFO>; the APA does have an interesting logo <https://en.wikipedia.org/wiki/File:American_Psychological_Association_logo.svg> which is a capital 'Ψ' on a lined background, but the lines would not work as a link-icon and I am doubtful anyone would recognize 'ψ' on a solid background either, while the 'APA' abbreviation is at least semi-familiar. color: blue; TODO: white-on-blue text background
  | aU'' u ["worksinprogress.co", "www.worksinprogress.news", "books.worksinprogress.co"] = ("WiP", "text,tri,mono", "") -- Works in Progress; color: none (monochrome website with occasional per-issue color theme highlights); icon: the mustached-man is unusable at favicon or link-icon scale and not particularly recognizable either IMO.
  | u'' u "digital.library.unt.edu" = ("UNT", "text,tri", "#00863c") -- University of North Texas library; logo is a <https://en.wikipedia.org/wiki/North_Texas_Mean_Green> green hawk icon, which is cool and would work as a link-icon, but I doubt even sports fans would understand it out of context compared to just the 'UNT' acronym; color: green (black outline)
- | u'' u "infoproc.blogspot.com" || u'' u "www.manifold1.com" = ("Hsu", "text,tri,sans", "") -- Steve Hsu's "Information Processing" blog (defunct) & "Manifold" podcast; no known recognizable icon ('brain network' icon of Manifold is not recognizable, wouldn't work as a link-icon, and overlaps too much with Connected Papers etc); color: none
+ | u'' u "infoproc.blogspot.com" || u'' u "www.manifold1.com" = ("Hsu", "text,tri,sans", "") -- Steve Hsu's "Information Processing" blog (defunct) & "Manifold" podcast; no known recognizable icon ('brain network' icon of Manifold is not recognizable, wouldn't work as a link-icon, and overlaps too much with Connected Papers etc.); color: none
  | u'' u "www.inverse.com" = ("INV", "text,tri,mono", "")
  | u'' u "www.rte.ie" = ("RTϵ", "text,tri,sans", "")
  | u'' u "www.chronicle.com" = ("CHE", "text,tri", "")
@@ -454,7 +454,7 @@ linkIconRulesQuad u
  | u'' u "bldgblog.com" = ("BLDG", "text,quad,mono", "") -- BLDGBLOG (“building blog”, 2004), by Geoff Manaugh <https://en.wikipedia.org/wiki/BLDGBLOG>
  | u' u "x.com/patio11" || aU'' u ["www.bitsaboutmoney.com", "training.kalzumeus.com", "www.kalzumeus.com"] = ("pt11", "text,quad,mono", bluePatio11) -- patio11 / Patrick McKenzie / Bingo Card Creator / Bits About Money / Stripe. The 'dragon' icon for Kalzumeus.com would be illegible & probably not recognizable at this point even by long-time readers, but a stripped down 'pt11' should look enough like 'patio11'...; color: blue from kalzumeus.com, echoed in Bits About Money. TODO: white-on-blue text background
  | u'' u "mathshistory.st-andrews.ac.uk" = ("M  T", "text,quad,sans", "") -- MacTutor History of Mathematics Archive: a weird one, <https://mathshistory.st-andrews.ac.uk/static/img/logo.png> - crude sans but only 2 letters kinda like a diagonal in a square or a TeX. Experiment with using EN SPACE to force a diagonal quad layout.
- | u'' u "scale.com" = ("SCLE", "text,quad,mono", "") -- Scale, a large data-labeling company heavily used behind-the-scenes by FANG & OpenAI etc for outsourcing evaluating text, labeling images, and so on.
+ | u'' u "scale.com" = ("SCLE", "text,quad,mono", "") -- Scale, a large data-labeling company heavily used behind-the-scenes by FANG & OpenAI etc. for outsourcing evaluating text, labeling images, and so on.
  | u'' u "nunosempere.com" = ("nuno", "text,quad,mono", "") -- Nuño Sempere
  | u'' u "ourworldindata.org" = ("OWID", "text,quad,mono", "") -- Our World In Data (OWID) <https://en.wikipedia.org/wiki/Our_World_in_Data>; NOTE: uses monospace because the 'W' is so wide
  | u'' u "www.cnbc.com" = ("CNBC", "text,quad,sans", "") -- CNBC: peacock logo/favicon <https://en.wikipedia.org/wiki/File:CNBC_2023.svg> doesn't seem viable as a small monochrome link-icon; TODO: color SVG icon
@@ -530,7 +530,7 @@ linkIconRulesSVG u
  | u' u "nasa.gov" = ("nasa", "svg", "#dc3329") -- NASA has way too many subdomains to try to whitelist them individually. SVG is a quad version of <https://commons.wikimedia.org/wiki/File:NASA_Worm_logo_(black).svg>; color: red (from <https://commons.wikimedia.org/wiki/Category:NASA_%22worm%22_logotype#/media/File:NASA_Worm_logo.svg>)
  | aU'' u ["link.springer.com", "rd.springer.com", "static-content.springer.com"] || u' u ".biomedcentral.com" = ("springerlink", "svg", "")  -- (♘) WHITE CHESS KNIGHT as SVG
  | u'' u "www.metaculus.com" = ("metaculus", "svg", "#001935") -- color: dark blue-black
- | u'' u "wandb.ai" = ("wandb", "svg", "#ffcc33") -- Weights & Biases/WandB: blog/podcasts, writeups etc; complicated 4-dot grid logo intended to evoke NN layers with large/small weights, <view-source:https://assets.website-files.com/5ac6b7f2924c656f2b13a88c/6066c22135b8983b61ad7939_weights-and-biases-logo.svg>; edited into BW, enlarged the large dots to make viewable as a link icon; color: yellow
+ | u'' u "wandb.ai" = ("wandb", "svg", "#ffcc33") -- Weights & Biases/WandB: blog/podcasts, writeups etc.; complicated 4-dot grid logo intended to evoke NN layers with large/small weights, <view-source:https://assets.website-files.com/5ac6b7f2924c656f2b13a88c/6066c22135b8983b61ad7939_weights-and-biases-logo.svg>; edited into BW, enlarged the large dots to make viewable as a link icon; color: yellow
  | aU'' u ["libgen.li", "libgen.org", "library.bz"] = ("raven", "svg", "") -- Libgen/Sci-Hub raven+key icon <https://en.wikipedia.org/wiki/File:Scihub_raven.png>, while pretty, is too detailed for a link-icon so fall back to just the raven. There are many LG+SH domains, but these are the only ones we link.
  | u'' u "www.hoover.org" = ("hoover-institution", "svg", "") -- <https://en.wikipedia.org/wiki/Hoover_Institution_Library_and_Archives> <https://en.wikipedia.org/wiki/Hoover_Tower> <https://en.wikipedia.org/wiki/New_Cathedral_of_Salamanca>
  | u'' u "www.statnews.com" = ("stat-news", "svg", "#008299") -- STAT News <https://en.wikipedia.org/wiki/Stat_(website)> based on <https://www.statnews.com/wp-content/themes/stat/images/stat-logo.svg>; using Unicode '𝐴' to replicate the 'A' in 'STAT' is probably unreliable cross-platform so we transform the 'STAT' logotype into a quad SVG icon instead.

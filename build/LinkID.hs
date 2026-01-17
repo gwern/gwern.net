@@ -77,7 +77,7 @@ metadataItem2ID md u (_,author,date,_,_,_,_) = generateID md u author date
 --
 -- 1. all citations like 'Foo & Bar 1990' or 'Quux et al 2020' should be hyperlinked (either as a internal anchor or fulltext link);
 -- 2. annotated links get a predictable anchor ID generated from the metadata, like '#foo-et-al-2020' (ie. grab the first 4 characters of the date, check
---    the number of commas in the author field to decide if 'foo 1990' or 'foo & bar 1990' or 'foo et al 1990' etc);
+--    the number of commas in the author field to decide if 'foo 1990' or 'foo & bar 1990' or 'foo et al 1990' etc.);
 -- 3. duplicate links will, then, generate invalid HTML as two Foo et al 2020s (which must be links per #1) will both define id='#foo-et-al-2020', and this will trigger htmltidy errors/warnings on sync; so, one of them will be manually edited to either point to another instance which
 --    is part of a larger discussion/context, or be given a manual ID like id='#foo-et-al-2020-2'. (since the annotation is based on the URL not the
 --    ID, this doesn't affect the annotations.)
@@ -146,7 +146,7 @@ authorsToCite url author date =
                                  firstAuthorSurname ++ " & " ++ secondAuthorSurname ++ " " ++ year ++ suffix'
                              else
                                firstAuthorSurname ++ " " ++ year ++ suffix'
-  where -- lazily generate all alphabetical concatenations in order: 'a'...'aa'...'zz'...'aaa' etc; this ensures we never run out of suffixes
+  where -- lazily generate all alphabetical concatenations in order: 'a'...'aa'...'zz'...'aaa' etc.; this ensures we never run out of suffixes
      acronymGenerator :: [String]
      acronymGenerator = (concatMap (flip replicateM ['a'..'z']) [1..])
 citeToID :: String -> String
