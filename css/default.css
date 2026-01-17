@@ -1,6 +1,5 @@
 @charset "UTF-8";
 
-
 /*************/
 /* VARIABLES */
 /*************/
@@ -1327,10 +1326,10 @@ audio {
     --dark-mode-invert-filter: invert(1) brightness(1.5) contrast(1.5);
 }
 
-/*	Annotated media elements.
+/*  Annotated media elements.
  */
 .link-media-wrapper {
-	cursor: inherit;
+    cursor: inherit;
 }
 
 
@@ -1542,13 +1541,13 @@ ul.interview .speaker {
     bottom: -1.4em;
 }
 
-/*	Narrow poems (desktop only).
+/*  Narrow poems (desktop only).
  */
 .epigraph.poem.narrow > blockquote::before {
-	top: -0.95em;
+    top: -0.95em;
 }
 .epigraph.poem.narrow > blockquote::after {
-	bottom: -1.3em;
+    bottom: -1.3em;
 }
 
 
@@ -1561,16 +1560,16 @@ ul.interview .speaker {
 }
 
 .poem span.caesura-mark {
-	--letter-spacing: -0.3em;
-	--margin-adjustment: -0.25em;
-	--right-margin-tweak: 0.05em;
+    --letter-spacing: -0.3em;
+    --margin-adjustment: -0.25em;
+    --right-margin-tweak: 0.05em;
 
-	opacity: 0.20;
-	letter-spacing: var(--letter-spacing);
-	margin-left: var(--margin-adjustment);
-	margin-right: calc(var(--margin-adjustment) + (-1 * var(--letter-spacing)) + var(--right-margin-tweak));
-	font-size: 1.2em;
-	line-height: 1;
+    opacity: 0.20;
+    letter-spacing: var(--letter-spacing);
+    margin-left: var(--margin-adjustment);
+    margin-right: calc(var(--margin-adjustment) + (-1 * var(--letter-spacing)) + var(--right-margin-tweak));
+    font-size: 1.2em;
+    line-height: 1;
 }
 
 .poem {

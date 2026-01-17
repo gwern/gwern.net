@@ -872,6 +872,8 @@ canonicals = M.fromList
   , ("Ianthi Maria Tsimpli", "Ianthi-Maria Tsimpli")
   , ("dbohdan", "D. Bohdan")
   , ("dbotdan", "D. Bohdan")
+  , ("Nancy J. C. Andreasen", "Nancy C. Andreasen")
+  , ("Mor Geva", "Mor Geva Pipek")
   ]
 
 -- tests: unique
@@ -922,7 +924,7 @@ canonicalsWithInitials =
   , "Charles Allen Moser", "John A. Leslie", "Robert D. Putnam", "Joel D. Cooper", "Duane A. Compton"
   , "Timo E. Saaristo", "Arthur L. Caplan", "Robert T. Croyle", "Barbara K. Rimer", "Walter J. Ong"
   , "Samuel S. Wilks", "Kenneth Lee Pike", "Richard E. Turner", "Phil Hyoun Lee", "Karthik Rajagopal Narasimhan"
-  , "Hunter S. Thompson", "Robert C. Kaplan", "Richard N. Bergman", "Philip B. Mitchell", "Peter S. Chines", "Patrick S. Li", "Noah D. Goodman", "Nitish Shirish Keskar", "Clint M. Sergi"]
+  , "Hunter S. Thompson", "Robert C. Kaplan", "Richard N. Bergman", "Philip B. Mitchell", "Peter S. Chines", "Patrick S. Li", "Noah D. Goodman", "Nitish Shirish Keskar", "Clint M. Sergi", "Mary K. Wojczynski"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -2113,6 +2115,9 @@ authorLinkDB = M.fromList $
     , ("D. Bohdan", "https://dbohdan.com/")
     , ("Mike Lacher", "https://www.mikelacher.com/")
     , ("flupe", "https://acatalepsie.fr/")
+    , ("Matthew Botvinick", "https://scholar.google.com/citations?user=eM916YMAAAAJ&hl=en&oi=ao")
+    , ("Mary K. Wojczynski", "https://orcid.org/0000-0002-2420-162X")
+    , ("Martin Farrall", "https://www.chg.ox.ac.uk/~mfarrall/research.html")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3402,4 +3407,5 @@ authorWpLinkDB =
     , "Laurence Perrine", "John Milton", "Ted Hughes", "Hunter S. Thompson", "Kevin D. Williamson", "Martin Ellison"
     , "David E. Hoffman", "Paul Ginsparg", "Wojciech Kopczuk", "Robert J. White", "Dines Bjørner", "Hans-Joachim Voth"
     , "Friedrich Nietzsche", "William Bialek", "E. E. Cummings", "Simon Willison", "Karen Greenlee"
-    , "Constance Reid", "Julia Robinson", "Ianthi-Maria Tsimpli", "Graeme Mitchison", "Ravi Vakil", "Ross Koppel", "Bruce G. Lindsay", "Anne Chao"]
+    , "Constance Reid", "Julia Robinson", "Ianthi-Maria Tsimpli", "Graeme Mitchison", "Ravi Vakil", "Ross Koppel"
+    , "Bruce G. Lindsay", "Anne Chao", "John A. Hostetler"]
