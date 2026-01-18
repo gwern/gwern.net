@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2026-01-15 11:14:30 gwern"
+# When:  Time-stamp: "2026-01-17 19:41:15 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -128,7 +128,7 @@ _upload() {
 
   if (( $# == 1 )) || [[ "$2" == "" ]]; then
       # convenience function: timestamps are useful for files, but it's annoying to manually add the date. We can't assume that a regular file was created 'today' because it is usually a historical paper or something, but temporary files are almost always just-created, and even if not, it's useful to know *when* it was uploaded.
-      if ! [[ "$FILENAME" =~ ^20[2-4][0-9]-[0-9][0-9]-[0-9][0-9] ]]; then
+      if ! [[ "$FILENAME" =~ ^20[1-9][0-9]-[0-9][0-9]-[0-9][0-9] ]]; then
           DIRNAME=$(dirname "$FILENAME")  # Extract the directory path
           BASENAME=$(basename "$FILENAME")  # Extract the filename
           TIMESTAMPED="$(date '+%F')-$BASENAME"  # Prefix the filename with the timestamp

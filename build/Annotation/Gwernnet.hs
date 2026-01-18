@@ -63,7 +63,7 @@ gwern md p
                      , "mp3", "mp4", "mkv", "o", "ods", "opml", "pack", "md", "patch"
                      , "php", "png", "r", "rm", "sh", "svg", "swf", "tar", "ttf", "txt"
                      , "wav", "webm", "xcf", "xls", "xlsx", "xml", "xz", "zip", "sqlite"
-                     , "par2", "pkl", "h5", "t7", "weights", "el"
+                     , "par2", "pkl", "h5", "t7", "weights", "el", "py"
                      ] = return (Left Permanent)
         | anyPrefix p ["metadata", "/metadata", "/blog/2", "blog/2"] ||
           anySuffix p ["#external-links", "#see-also", "#see-also", "#see-alsos", "#see-also-1"

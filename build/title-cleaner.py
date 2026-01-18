@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-01-16 21:51:03 gwern"
+# When:  Time-stamp: "2026-01-17 20:47:27 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -848,6 +848,10 @@ About Us
 "RookLift - Training my watch to track intelligence"
 - https://www.sfweekly.com/archives/the-worst-run-big-city-in-the-u-s/article_ff893b10-e35a-57cc-a52b-47162048b2c8.html The Worst-Run Big City in the US | Archives"
 "The Worst-Run Big City in the US"
+- "https://mchav.github.io/learning-better-decision-tree-splits/ Learning better decision tree splits—LLMs as Heuristics for Program Synthesis - Michael Chavinda - A collection of my thoughts on the various topics I find myself interested in."
+"Learning better decision tree splits—LLMs as Heuristics for Program Synthesis"
+- "https://secondthoughts.my/posts/projects/forecats/ second-thoughts/posts/projects/forecats/"
+""
 
 Task:
 

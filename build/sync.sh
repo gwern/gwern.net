@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-01-16 16:35:20 gwern"
+# When:  Time-stamp: "2026-01-17 20:43:03 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -53,10 +53,10 @@ if [ ${#DEPENDENCIES_MISSING[@]} -ne 0 ]; then
 fi
 
 # cleanup:
-rm --recursive --force -- ./_cache/ ./_site/
+rm --recursive --force -- ./_cache/ ./_site/ &
 ## delete Emacs temporary files which tend to break the build in unpredictable ways:
-find ./static/build/ -type f -name "flycheck_*.hs" -delete
-find ./ -type f -name "#*\.md#" -delete
+find ./static/build/ -type f -name "flycheck_*.hs" -delete &
+find ./ -type f -name "#*\.md#" -delete &
 
 MIN_GB="6"
 if [ "$(df --block-size=G ~/ | awk 'NR==2 {print $4}' | sed 's/G//')" -lt "$MIN_GB" ]; then
@@ -154,7 +154,7 @@ else
           s '</p></p>' '</p>'; s '’ ”' '’ ”'; s ' ”' ' “';
           s '[("doi","")]' ''; s '>/a>' '</a>'; s 'href="W!"' 'href="!W"'; s 'class="Logotype-Tex"' 'class="logotype-tex"'; s 'Class="Logotype-Tex"' 'class="logotype-tex"'; s '<span Class="' '<span class="';
           s '_n_th' '<em>n</em>th'; s 'thumbnailText: ' 'thumbnail-text: '; s ' — ' '—'; s '_n_=' '_n_ = ';
-          s '< a href' '<a href'; s 'modifed: 20' 'modified: 20'; s 'linklive-not' 'link-live-not'; s ' n-dimensional' ' <em>n</em>-dimensional'; s 'pdf#pg=' 'pdf#page='; s 'PDF#pg=' 'PDF#page='; s '<hr />' '<hr>'; s '</hr>' '<hr>'; s '<hr></hr>' '<hr>'; s 'confidence: highly-likely' 'confidence: highly likely'; s 'drop-caps-de-zs' 'dropcaps-de-zs'; s 'drop-caps-kanzlei' 'dropcaps-kanzlei'; s '฿' '₿'; s 'mL/kg/day' 'mL⧸kg⧸day'; s 'μg/day' 'μg⧸day'; s 'kg/day' 'kg⧸day'; s 'mg/day' 'mg⧸day'; s 'g/day' 'g⧸day'; s 'kcal/day' 'kcal⧸day'; s 'tokens/sec' 'tokens⧸sec'; s 'kg/m<sup>2</sup>' 'kg⧸m<sup>2</sup>'; s 'kg/m(2)' 'kg⧸m<sup>2</sup>'; s 'ng/mL' 'ng⧸mL'; s ' g/L' ' g⧸L'; s ' mg/L' ' mg⧸L';s ' mg/L' ' mg⧸L'; s 'μg/L' 'μg⧸L'; s 'g/cm2' 'g⧸cm<sup>2</sup>'; s ' g/d' ' g⧸d'; s 'kV/m' 'kV⧸m'; s 'μg/mL' 'μg⧸mL'; s 'muons/second' 'muons⧸second';
+          s '< a href' '<a href'; s 'modifed: 20' 'modified: 20'; s 'linklive-not' 'link-live-not'; s ' n-dimensional' ' <em>n</em>-dimensional'; s 'pdf#pg=' 'pdf#page='; s 'PDF#pg=' 'PDF#page='; s '<hr />' '<hr>'; s '</hr>' '<hr>'; s '<hr></hr>' '<hr>'; s 'confidence: highly-likely' 'confidence: highly likely'; s 'drop-caps-de-zs' 'dropcaps-de-zs'; s 'drop-caps-kanzlei' 'dropcaps-kanzlei'; s '฿' '₿'; s 'mL/kg/day' 'mL⧸kg⧸day'; s 'μg/day' 'μg⧸day'; s 'kg/day' 'kg⧸day'; s 'mg/day' 'mg⧸day'; s 'g/day' 'g⧸day'; s 'kcal/day' 'kcal⧸day'; s 'tokens/sec' 'tokens⧸sec'; s 'kg/m<sup>2</sup>' 'kg⧸m<sup>2</sup>'; s 'kg/m(2)' 'kg⧸m<sup>2</sup>'; s 'ng/mL' 'ng⧸mL'; s ' g/L' ' g⧸L'; s ' mg/L' ' mg⧸L';s ' mg/L' ' mg⧸L'; s 'μg/L' 'μg⧸L'; s 'g/cm2' 'g⧸cm<sup>2</sup>'; s ' g/d' ' g⧸d'; s 'kV/m' 'kV⧸m'; s 'μg/mL' 'μg⧸mL'; s 'muons/second' 'muons⧸second'; s 'mmol/L' 'mmol⧸L'; s 'mmol/l' 'mmol⧸L';
           s 'src="doc/' 'src="/doc/'; s 'href="doc/' 'href="/doc/';
           s 'link-icon-not' 'icon-not'; s '<!--<p>' '<!-- <p>'; s '</p>-->' '</p> -->';
           s '](W!' '](!W'; s '<em>𝛽</em>' '<em>β</em>'; s '𝛽' '<em>β</em>'; s 'class="table-simple' 'class="table-small';

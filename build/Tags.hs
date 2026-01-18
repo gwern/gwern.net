@@ -178,14 +178,20 @@ guessTagFromShort raw l s = fixedPoint (f l) (replace "=" "-" s)
                               in if not (null shortFallbacks) then fst $ head shortFallbacks else
                                    let longFallbacks = filter (t `isSuffixOf`) allTags ++ filter (t `isPrefixOf`) allTags ++ filter (t `isInfixOf`) allTags in
                                      if not (null longFallbacks) then head longFallbacks else
-                                       -- try rewriting it in various potentially-unsafe ways: (eg. a dot/slash is a common typo, but unsafe to do upfront because it breaks any URL-style tag like 'hardtruthsfromsoftcats.tumblr.com')
-                                       let fallbackRewrite = replace "." "/" s in
-                                         if s == fallbackRewrite then
-                                           -- final fallback: try edit distance matching for typos
-                                           case findClosestTagByDistance C.tagTypoMaxDistance allTags t of
-                                             Just closestTag -> closestTag
-                                             Nothing -> s
-                                         else guessTagFromShort raw l fallbackRewrite
+                                        -- try rewriting it in various potentially-unsafe ways: (eg. a dot/slash is a common typo, but unsafe to do upfront because it breaks any URL-style tag like 'hardtruthsfromsoftcats.tumblr.com')
+                                        let fallbackRewrites = [ replace "." "/"
+                                                               , replace "-" "/" -- "4-5" → "4/5"
+                                                               -- add more rewrites here
+                                                               ]
+                                            tryRewrites :: [String -> String] -> String
+                                            tryRewrites []             = case findClosestTagByDistance C.tagTypoMaxDistance allTags t of
+                                                                           Just closestTag -> closestTag
+                                                                           Nothing -> s
+                                            tryRewrites (rewrite:rest) = let rewritten = rewrite s in
+                                                                           if s == rewritten
+                                                                           then tryRewrites rest
+                                                                           else guessTagFromShort raw l rewritten
+                                        in tryRewrites fallbackRewrites
 
 shortTagTest ::[String] -> [(String, String, String)]
 shortTagTest alltags = filter (\(_, realOutput, shouldbeOutput) -> realOutput /= shouldbeOutput) $
@@ -199,4 +205,4 @@ testTags = do
               let results = shortTagTest tags
               unless (null results) $ error ("Tags.testTags: shortTagTest test suite errored out with some rewrites going awry; results `[(input, current output, intended output)]`: " ++ show results)
               let results' = isCycleLess C.tagsShort2LongRewrites
-              unless (null results) $ error ("Tags.tesTags: isCycleless test suite errored out with cycles detected in `tagsShort2Long`." ++ show results')
+              unless (null results) $ error ("Tags.testTags: isCycleless test suite errored out with cycles detected in `tagsShort2Long`." ++ show results')

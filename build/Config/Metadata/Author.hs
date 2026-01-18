@@ -2118,6 +2118,7 @@ authorLinkDB = M.fromList $
     , ("Matthew Botvinick", "https://scholar.google.com/citations?user=eM916YMAAAAJ&hl=en&oi=ao")
     , ("Mary K. Wojczynski", "https://orcid.org/0000-0002-2420-162X")
     , ("Martin Farrall", "https://www.chg.ox.ac.uk/~mfarrall/research.html")
+    , ("Jesse Ward-Bond", "https://secondthoughts.my/about/")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3408,4 +3409,4 @@ authorWpLinkDB =
     , "David E. Hoffman", "Paul Ginsparg", "Wojciech Kopczuk", "Robert J. White", "Dines Bjørner", "Hans-Joachim Voth"
     , "Friedrich Nietzsche", "William Bialek", "E. E. Cummings", "Simon Willison", "Karen Greenlee"
     , "Constance Reid", "Julia Robinson", "Ianthi-Maria Tsimpli", "Graeme Mitchison", "Ravi Vakil", "Ross Koppel"
-    , "Bruce G. Lindsay", "Anne Chao", "John A. Hostetler"]
+    , "Bruce G. Lindsay", "Anne Chao", "John A. Hostetler", "Brian Moriarty", "Archibald MacLeish"]

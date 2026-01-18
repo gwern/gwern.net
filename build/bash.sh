@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-01-16 21:18:35 gwern"
+# When:  Time-stamp: "2026-01-17 12:28:26 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -814,7 +814,7 @@ e () { FILE=""
        if [[ -a "$FILE" ]]; then
            if [[ "$FILE" =~ .*\.pdf || "$FILE" =~ .*\.jpg || "$FILE" =~ .*\.png ]]; then
                if [[ "$FILE" =~ .*\.pdf ]]; then
-                   ENCRYPTION=$(exiftool -q -q -Encryption -- "$FILE")
+                   ENCRYPTION=$(exiftool -q -q -Encryption "$FILE")
                    if [ "$ENCRYPTION" != "" ]; then
                        pdftk "$FILE" input_pw output foo.pdf && mv foo.pdf "$FILE";
                    fi;
@@ -824,11 +824,11 @@ e () { FILE=""
                    TMP="$(mktemp /tmp/XXXXX.pdf)"
                    # pdftk by default erases all metadata, so we need to copy it all to the new PDF:
                    pdftk "$FILE" cat output "$TMP" && \
-                       exiftool -TagsFromFile -- "$FILE" "$TMP" && \
+                       exiftool -TagsFromFile "$FILE" "$TMP" && \
                          mv -- "$TMP" "$FILE"
                fi;
                echo "$FILE"
-               exiftool -m -overwrite_original -- "$FILE" "$@";
+               exiftool -m -overwrite_original "$FILE" "$@";
                # getting very tired of these hyphen junk in my titles...
                TITLE1="$(exiftool -printFormat '$Title' -Title -- "$FILE")"
                TITLE2="$(echo "$TITLE1" | sed -e 's/‐/-/g' -e 's/^ \+//g' -e 's/ \+$//g' -e 's/\.$//' | tr '_' ':')" # WARNING: tr mangles Unicode, but sed doesn't

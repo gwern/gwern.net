@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2026-01-16 23:14:46 gwern"
+;;; When:  Time-stamp: "2026-01-17 18:43:46 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -584,7 +584,6 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         (" – " . "—")
                         (" − " . "—")
                         (" -> " . "→")
-                        ("->"   . "→")
                         ("~>"   . "→")
                         (" percent " . "% ")
                         (" per cent " . "% ")
@@ -1166,6 +1165,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("95% CI = \\([0-9]\\.[0-9]+\\), \\([0-9]\\.[0-9]+\\)" . "95% CI = \\1–\\2")
                         ("CI:\\([0-9]\\)" . "CI: \\1") ; "95% CI:0.01-0.99"
                         (" ~ \\([0-9]+\\)" . " ~\\1") ; "a period of ~ 20 min"
+                        ("\\([^-]\\)->"   . "\\1→") ; avoid closing HTML comment syntax false positives
                         )
                       ))
          (dolist (pair regexps)
