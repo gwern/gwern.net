@@ -1,18 +1,21 @@
 <?php
 
-## Usage (default 1024MB memory limit, 5M backtrack limit):
+## Usage (options & defaults):
 ##   php deconstruct_singlefile.php foo.html
-##   php deconstruct_singlefile.php --memory-limit 2048M --backtrack-limit 10000000 --jpg-quality 85% --debug 1 foo.html
+##     --memory-limit=1024M 
+##     --backtrack-limit=5000000 
+##     --jpg-quality=80% 
+##     --save-original [default false]
+##     --debug [default false]
 
 $args = [ ];
 for ($i = 1; $i < $argc; $i++) {
 	if (str_starts_with($argv[$i], '--')) {
-		if (isset($argv[$i + 1])) {
-			$args[$argv[$i]] = $argv[++$i];
-		} else {
-			echo "Invalid argument!\n";
-			die;
-		}
+		$parts = explode('=', $argv[$i]);
+		if (count($parts) == 2)
+			$args[$parts[0]] = $parts[1];
+		else
+			$args[$parts[0]] = true;
 	} else if (!isset($args['file'])) {
 		$args['file'] = $argv[$i];
 	}
@@ -29,16 +32,17 @@ $backtrack_limit = $args['--backtrack-limit'] ?? '5000000';
 ## JPEG output quality (for converting PNGs).
 $jpg_quality = $args['--jpg-quality'] ?? '80%';
 
+## Save original.
+$save_original = $args['--save-original'] ?? false;
+
 ## Debug mode.
-$debug = (($args['--debug'] ?? null) == '1');
+$debug = $args['--debug'] ?? false;
 
-$input_file_path = $args['file'];
-$input_file = file_get_contents($input_file_path);
+## Max number of decimal digits in a byte count/offset.
+## We support file sizes up to 99 EB (total, across all assets).
+$byte_count_max_digits = 20;
 
-preg_match('/^(.+\/)?([^\/]+)\.html$/', $input_file_path, $m);
-$asset_directory = "{$m[1]}{$m[2]}";
-$asset_base_name = $m[2];
-
+## Map of content-types to file extensions.
 $asset_type_map = [
 	'video/3gpp2'                 => '3g2',
 	'video/3gp'                   => '3gp',
@@ -113,6 +117,7 @@ $asset_type_map = [
 	'application/font-woff2'      => 'woff2',
 ];
 
+## These file types will get special ImageMagick treatment.
 $image_file_extensions = [
 	'bmp',
 	'gif',
@@ -124,7 +129,19 @@ $image_file_extensions = [
 	'webp'
 ];
 
+## Get singlefile archive.
+$input_file_path = $args['file'];
+$input_file = file_get_contents($input_file_path);
+
+## Determine singefile archive basename.
+preg_match('/^(.+\/)?([^\/]+)\.html$/', $input_file_path, $m);
+$asset_directory = "{$m[1]}{$m[2]}";
+$asset_base_name = $m[2];
+
+## Prepare to count assets and sizes (and thus byte offsets) thereof.
 $asset_count = 0;
+$byte_offset = 512; // tarball record header size
+$asset_file_paths = [ ];
 
 // $output_file = '';
 // $start_text = 'url(data:';
@@ -164,7 +181,8 @@ $asset_count = 0;
 
 $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([A-Za-z0-9+\/=]+)(\1)/', function ($m) {
 	global $asset_type_map, $image_file_extensions;
-	global $input_file_path, $asset_directory, $asset_base_name, $asset_count;
+	global $input_file_path, $asset_directory, $asset_base_name;
+	global $asset_count, $byte_offset, $asset_file_paths;
 	global $jpg_quality;
 	global $debug;
 
@@ -178,6 +196,7 @@ $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([
 	$asset_path = "{$asset_directory}/{$asset_name}";
 
 	file_force_contents($asset_path, base64_decode($data));
+	$asset_file_paths[] = $asset_path;
 
 	## Check image file integrity with ImageMagick.
 	## If file is bad, delete it, and leave the asset as base64.
@@ -225,6 +244,9 @@ $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([
 
 				## We’ll write out the JPEG’s path to the HTML file.
 				$asset_name = $alt_asset_name;
+
+				## For file size calculation.
+				$asset_path = $alt_asset_path;
 			} else {
 				if ($debug) {
 					echo "PNG [{$asset_path}] unsuitable for JPEG conversion (";
@@ -245,22 +267,83 @@ $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([
 		}
 	}
 
-	return ($quote . urlencode($asset_base_name) . '/' . urlencode($asset_name) . $quote);
+	$asset_byte_size = filesize($asset_path);
+	$byte_range_begin = zero_padded_byte_count($byte_offset);
+	$byte_range_end = zero_padded_byte_count($byte_offset + $asset_byte_size - 1);
+	$asset_url = urlencode("{$asset_base_name}")
+			   . '-'
+			   . zero_padded_byte_count('0')
+			   . '.gdat.tar' 
+			   . '?' 
+			   . "bytes={$byte_range_begin}-{$byte_range_end}"
+			   . '&'
+			   . "content-type={$type}";
+
+	$byte_offset += tarball_record_size($asset_byte_size);
+
+	return ($quote . $asset_url . $quote);
 }, $input_file);
 if (preg_last_error() != PREG_NO_ERROR)
 	die;
 
+## Make images lazy loading.
 $output_file = preg_replace('/<img/', '<img loading="lazy" decoding="async"', $output_file);
 if (preg_last_error() != PREG_NO_ERROR)
 	die;
 
-// `mv "{$input_file_path}" "{$input_file_path}.bak"`;
+## Save original singlefile, if need be.
+if ($save_original)
+	`mv "{$input_file_path}" "{$input_file_path}.bak"`;
 
+## Write out slimmed-down HTML file.
 file_put_contents($input_file_path, $output_file);
 
+## Get HTML file size.
+$output_file_size = filesize($input_file_path);
+$output_file_record_size = tarball_record_size($output_file_size);
+$output_file_byte_range_end = zero_padded_byte_count(512 + $output_file_size - 1); // tarball record header size
+
+## Update byte ranges.
+$output_file = preg_replace_callback('/-([0-9]+)\.gdat\.tar\?bytes=([0-9]+)-([0-9]+)&/', function ($m) use ($output_file_record_size, $output_file_byte_range_end) {
+	$byte_range_begin = zero_padded_byte_count(intval($m[2]) + $output_file_record_size);
+	$byte_range_end = zero_padded_byte_count(intval($m[3]) + $output_file_record_size);
+
+	return "-{$output_file_byte_range_end}.gdat.tar?bytes={$byte_range_begin}-{$byte_range_end}&";
+}, $output_file);
+
+## Write out updated HTML file.
+file_put_contents($input_file_path, $output_file);
+
+## Create tarball.
+$tarball_file_name = "{$asset_base_name}-{$output_file_byte_range_end}.gdat.tar";
+`tar --create -f {$tarball_file_name} {$input_file_path}`;
+foreach($asset_file_paths as $asset_file_path)
+	`tar --append -f {$tarball_file_name} {$asset_file_path}`;
+
+## Remove asset directory.
+`rm -r {$asset_directory}/`;
+
+## Remove HTML file.
+unlink($input_file_path);
+
+## Done.
 die;
 
 ## FUNCTIONS
+
+function tarball_record_size($file_byte_size) {
+	return (512 + round_up_to_multiple($file_byte_size, 512)); // tarball record header size, tarball record chunk size
+}
+
+function round_up_to_multiple($num, $divisor) {
+	return (ceil($num / $divisor) * $divisor);
+}
+
+function zero_padded_byte_count($byte_count) {
+	global $byte_count_max_digits;
+
+	return str_pad("{$byte_count}", $byte_count_max_digits, '0', STR_PAD_LEFT);
+}
 
 function file_force_contents($path, $contents){
 	$parts = explode('/', $path);
