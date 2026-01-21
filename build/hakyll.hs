@@ -1,11 +1,11 @@
 #!/usr/bin/env runghc
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, GeneralizedNewtypeDeriving #-}
 
 {-
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2026-01-07 10:20:12 gwern"
+When: Time-stamp: "2026-01-21 21:37:15 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -21,8 +21,8 @@ import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf, group, sort)
 import qualified Data.Map.Strict as M (lookup)
 import Data.Maybe (isNothing, fromMaybe)
 import System.Environment (getArgs, withArgs, lookupEnv)
-import Hakyll (compile, composeRoutes, constField, fromGlob,
-               symlinkFileCompiler, copyFileCompiler, dateField, defaultContext, defaultHakyllReaderOptions, field, getMetadata, getMetadataField, lookupString,
+import Hakyll (compile, composeRoutes, constField, fromGlob, -- symlinkFileCompiler,
+               copyFileCompiler, dateField, defaultContext, defaultHakyllReaderOptions, field, getMetadata, getMetadataField, lookupString,
                defaultHakyllWriterOptions, getRoute, gsubRoute, hakyll, idRoute, itemIdentifier,
                loadAndApplyTemplate, match, modificationTimeField, mapContext,
                pandocCompilerWithTransformM, route, setExtension, pathField, preprocess, boolField, toFilePath,
@@ -36,7 +36,7 @@ import Text.Pandoc.Shared (stringify)
 import Text.Pandoc.Walk (walk, walkM, query)
 import Network.HTTP (urlEncode)
 import System.IO.Unsafe (unsafePerformIO)
-import System.Directory (doesFileExist)
+import System.Directory (doesFileExist, createFileLink)
 
 import qualified Data.Text as T (append, filter, isInfixOf, pack, unpack, length, strip)
 
@@ -53,10 +53,19 @@ import Tags (tagsToLinksDiv)
 import Typography (linebreakingTransform, typographyTransformTemporary, titlecaseInline, completionProgressHTML)
 import Utils (printGreen, replace, deleteMany, replaceChecked, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines, delete, toHTML, getMostRecentlyModifiedDir)
 import Test (testAll)
-import qualified Config.Misc as C (cd, currentYear, todayDayStringUnsafe, isOlderThan, isNewWithinNDays, pageMetadataFieldsMandatory, pageTitleMaxWords, pageDescriptionMaxLength, pageDescriptionMinLength, yamlValidStatuses, yamlValidConfidences, yamlValidCssExtensions)
+import qualified Config.Misc as C (cd, currentYear, todayDayStringUnsafe, isOlderThan, isNewWithinNDays, pageMetadataFieldsMandatory, pageTitleMaxWords, pageDescriptionMaxLength, pageDescriptionMinLength, yamlValidStatuses, yamlValidConfidences, yamlValidCssExtensions, root)
 import Metadata.Date (dateRangeDuration, isDate, isDatePossibleGwernnet)
 import LinkID (writeOutID2URLdb)
 import Blog (writeOutBlogEntries)
+
+-- imports just to write 'symlinkFileCompiler':
+import Hakyll.Core.Writable (Writable(write))
+import Hakyll.Core.Item (Item(Item))
+import Hakyll.Core.Compiler (makeItem)
+import Data.Binary (Binary (..))
+import Data.Typeable (Typeable)
+import Hakyll.Core.Compiler.Internal (compilerProvider, compilerAsk)
+import Hakyll.Core.Provider (resourceFilePath)
 
 main :: IO ()
 main =
@@ -502,3 +511,15 @@ duplicateTopHeaders = duplicates . query topHeaderTexts
     duplicates :: Ord a => [a] -> [a]
     duplicates = map head . filter ((>1) . length) . group . sort
 
+--------------------------------------------------------------------------------
+-- Efficient symlink static file compilation
+-- | This will not copy a file but create a symlink, which can save space & time for static sites with many large static files which would normally be handled by `copyFileCompiler`. (Note: the user will need to make sure their sync method handles symbolic links correctly!) <https://github.com/jaspervdj/hakyll/issues/786>
+newtype SymlinkFile = SymlinkFile FilePath
+    deriving (Binary, Eq, Ord, Show, Typeable)
+instance Writable SymlinkFile where
+    write dst (Item _ (SymlinkFile src)) = createFileLink (C.root ++ src) dst
+symlinkFileCompiler :: Compiler (Item SymlinkFile)
+symlinkFileCompiler = do
+    identifier <- getUnderlying
+    provider   <- compilerProvider <$> compilerAsk
+    makeItem $ SymlinkFile $ resourceFilePath provider identifier
