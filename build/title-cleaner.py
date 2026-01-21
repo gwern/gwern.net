@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-01-17 20:47:27 gwern"
+# When:  Time-stamp: "2026-01-21 17:44:56 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -852,6 +852,10 @@ About Us
 "Learning better decision tree splits—LLMs as Heuristics for Program Synthesis"
 - "https://secondthoughts.my/posts/projects/forecats/ second-thoughts/posts/projects/forecats/"
 ""
+- https://www.secretorum.life/p/japanese-death-poems <em>Japanese Death Poems</em> - by Roger’s Bacon - Secretorum"
+"<em>Japanese Death Poems</em>"
+- https://www.secretorum.life/p/japanese-death-poems-part-2 <em>Japanese Death Poems</em> (part 2)—by Roger’s Bacon"
+"<em>Japanese Death Poems</em> (part 2)"
 
 Task:
 

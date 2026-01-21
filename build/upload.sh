@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2026-01-17 19:41:15 gwern"
+# When:  Time-stamp: "2026-01-21 16:41:39 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -15,7 +15,7 @@
 #
 # Files receive standard optimization, reformatting, compression, metadata-scrubbing etc.
 # This will rename to be globally-unique (and verify pre-existing extension usage), reformat, run PDFs through `ocrmypdf`
-# (via the `compressPdf` wrapper, to JBIG2-compress, OCR, and convert to PDF/A), and `git add` new files (or if too large to be safe to version-control, added to `.gitignore` instead).
+# (via the `compressPDF` wrapper, to JBIG2-compress, OCR, and convert to PDF/A), and `git add` new files (or if too large to be safe to version-control, added to `.gitignore` instead).
 # They are then opened in a web browser to verify they uploaded, have permissions, and render.
 
 . ~/wiki/static/build/bash.sh
@@ -25,7 +25,7 @@ set -e
 if [ ! -f "$1" ] || [ ! -s "$1" ]; then red "l25: '$1' is not a file or is empty‽" && exit 1; fi
 
 # Check for required dependencies upfront
-for cmd in firefox chromium exiftool fold rsync curl git compressPdf cloudflare-expire png2JPGQualityCheck convert locate; do
+for cmd in firefox chromium exiftool fold rsync curl git compressPDF cloudflare-expire png2JPGQualityCheck convert locate; do
     command -v "$cmd" >/dev/null 2>&1 || { missing="${missing:+$missing, }$cmd"; }
 done
 [ -n "$missing" ] && { red "Missing required tools: $missing"; exit 2; }
@@ -200,7 +200,7 @@ _upload() {
                   if [[ "$TARGET" =~ .*\.pdf ]]; then
                       METADATA=$(crossref "$TARGET") && echo "$METADATA" & # background for speed, but print it out mostly-atomically to avoid being mangled & impeding copy-paste of the annotation metadata
                       # run ocrmypdf to try to shrink the PDF w/JBIG2, convert it to PDF/A format for archival longevity, and otherwise generally ensure its validity; we modify the PDF only if it saves X% size to avoid excessive churn from trivial improvements like 1% file size savings (or even getting *larger*!).
-                      compressPdf "$TARGET" || true; # sometimes PDFs error out in `ocrmypdf` and yield a size of 0, so we explicitly ignore errors from the 'compressPdf' wrapper
+                      compressPDF "$TARGET" || true; # sometimes PDFs error out in `ocrmypdf` and yield a size of 0, so we explicitly ignore errors from the 'compressPDF' wrapper
                       chmod a+r "$TARGET";
                   fi
                   # Large file strategy: naively checking in large files like multi-gigabyte `.pkl` files is a recipe for degrading the git repo. However, we do not *really* need to track their histories (as they are usually WORM/archival files), we have plenty of disk space & bandwidth on the dedicated server, and we want to otherwise treat large files identically to smaller ones in terms of hosting on Gwern.net, including in tag-directories, file icons, and so on. So, using git-annex or git-lfs is overkill and doesn't offer any functionality we need. Instead, we simply make heavier use of `.gitignore`: large files are added to the appropriate directory in `/docs/`, and then simply ignored by git. This is toil if we do it by hand, but we add files using `upload`, so we can simply automate the addition of a file-specific ignore line (if that is necessary).

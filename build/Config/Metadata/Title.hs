@@ -184,4 +184,4 @@ stringDelete = [" - The Public Domain Review"
             , " - by Bryan Caplan", "Tom Lehman - ", "small clever rooms: ", "research!rsc: ", " - Debbie Maddy"
             , " - Keith Woods", " - by Zachary Brown", " - Anime News Network", " -blog", " - by JP Aumasson - bfSwA"
             , "MindAndMuscle.net - ", " \\ Anthropic", " (Maurycy's blog)", " - Soliloquies", " - iA", " - Tinyhack.com", " | Archives"
-            , " - Michael Chavinda - A collection of my thoughts on the various topics I find myself interested in."]
+            , " - Michael Chavinda - A collection of my thoughts on the various topics I find myself interested in.", " - by Roger’s Bacon - Secretorum"]

@@ -23,6 +23,7 @@ isCheapArchive :: String -> Bool
 isCheapArchive url = f url || f (transformURLsForArchiving url)
   where f u = anyInfix u [".pdf", "#pdf", "freedium.cfd", "news.ycombinator.com", "localhost:8081"
                          , "x.com", "greaterwrong.com", "https://github.com/"
+                         , "https://chatgpt.com/share/", "https://claude.ai/share/", "https://claude.ai/public/", "https://aistudio.google.com/app/prompts/"
                          , "https://web.archive.org/web/"] -- see <https://gwern.net/archiving#why-not-internet-archive>
 
 -- sometimes we may want to do automated transformations of a URL *before* we check any whitelists. In the case of
