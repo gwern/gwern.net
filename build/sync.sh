@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-01-21 11:23:45 gwern"
+# When:  Time-stamp: "2026-01-21 22:22:45 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -181,18 +181,19 @@ else
 
     bold "Compiling…"
     cd ./static/build
-    WARNINGS=""
-    if [ "$SLOW" ]; then WARNINGS="-Wall -Werror"; fi
-    compile () { ghc -O2 $WARNINGS -rtsopts -threaded --make "$@"; }
-    compile hakyll.hs
-    if [ -z "$SKIP_DIRECTORIES" ]; then
-        compile generateLinkBibliography.hs
-        compile generateDirectory.hs; fi
-    compile preprocess-markdown.hs
-    compile guessTag.hs &
-    compile changeTag.hs &
-    compile checkMetadata.hs &
-    compile generateSimilarLinks.hs &
+    # WARNINGS=""
+    # if [ "$SLOW" ]; then WARNINGS="-Wall -Werror"; fi
+    # compile () { ghc -O2 $WARNINGS -rtsopts -threaded --make "$@"; }
+    # compile hakyll.hs
+    # if [ -z "$SKIP_DIRECTORIES" ]; then
+    #     compile generateLinkBibliography.hs
+    #     compile generateDirectory.hs; fi
+    # compile preprocess-markdown.hs
+    # compile guessTag.hs &
+    # compile changeTag.hs &
+    # compile checkMetadata.hs &
+    # compile generateSimilarLinks.hs &
+    cabal install
     ## NOTE: the generateSimilarLinks & link-suggester.hs runs are done at midnight by a cron job because
     ## they are too slow to run during a regular site build & don't need to be super-up-to-date
     ## anyway
@@ -248,13 +249,13 @@ else
     if [ -z "$SKIP_DIRECTORIES" ]; then
         bold "Writing missing annotations to support link-bibliography/tag-directory updates…"
         # We add new annotations daily, but all the code in link-bib/tag-directory deal with only the current annotations which have been written out to disk as HTML snippets; thus, since that is done in the main compilation phase, the default would be that annotations would be omitted the first day and only appear the next time. This is annoying and manually working around it is even more tedious, so we provide a 'one-shot' missing-annotation mode and call that phase immediately before the lb/tag phase:
-        ./static/build/hakyll build +RTS -N"$N" -RTS --annotation-missing-one-shot  ; ./static/build/hakyll build clean
+        .hakyll build +RTS -N"$N" -RTS --annotation-missing-one-shot  ; ./static/build/hakyll build clean
         bold "Updating link bibliographies…"
-        ./static/build/generateLinkBibliography +RTS -N"$N" -RTS || true
+        generateLinkBibliography +RTS -N"$N" -RTS || true
 
         # we want to generate all directories first before running Hakyll in case a new tag was created
         bold "Building directory indexes…"
-        ./static/build/generateDirectory +RTS -N3 -RTS $DIRECTORY_TAGS
+        generateDirectory +RTS -N3 -RTS $DIRECTORY_TAGS
 
         # ensure that the list of test-cases has been updated so we can look at <https://gwern.net/lorem-link#live-link-testcases> immediately after the current sync (rather than afterwards, delaying it to after the next sync)
         λ() { ghci -istatic/build/ ./static/build/LinkLive.hs \
@@ -272,7 +273,7 @@ else
     (ping -q -c 5 google.com &> /dev/null && cd ./static/ && git status; git pull; git push --verbose &) || true
 
     # Cleanup pre:
-    rm --recursive --force ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks ./static/build/link-suggester || true
+    # rm --recursive --force ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks ./static/build/link-suggester || true
 
     cd ~/wiki/ # go to site root
     bold "Building site…"
@@ -488,7 +489,7 @@ else
         gfv -e '/doc/www/' -e '/doc/rotten.com/' | \
         parallel --jobs "$N" generate_thumbnail &
 
-    time ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 5)
+    time hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 5)
 
     if [ "$SLOW" ]; then
 
@@ -512,7 +513,7 @@ else
     echo "Total (including hardlinks) file count: $(find ./_site/ -type f -or -type l | wc --lines)"
 
     # cleanup post:
-    rm -- ./static/build/hakyll ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks ./static/build/link-extractor &>/dev/null || true
+    # rm -- ./static/build/hakyll ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks ./static/build/link-extractor &>/dev/null || true
     rm --recursive -- ./_cache/ &>/dev/null || true
 
     ## WARNING: this is a crazy hack to insert a sun horizontal rule 'in between' the first 3 sections
@@ -1109,7 +1110,7 @@ else
     λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 ge --with-filename --color=always -e 'href="/[a-z0-9-]#fn[0-9]+"' -e 'href="#fn[0-9]+"' -e '"></a>' -e '</p>[^ <"]' -e '[0-9][0-9]−[0-9][0-9]' -e '[^0-9]⁄.' -e '.⁄[^0-9]' | gfv -e 'tabindex="-1"></a>'; }
     wrap λ "Miscellaneous regexp errors in compiled HTML."
 
-    λ(){ ge -e '^"~/' -e '\$";$' -e '$" "doc' -e '\|' -e '\.\*\.\*' -e '\.\*";' -e '"";$' -e '.\*\$ doc' -e '\$" "";' -e '""' -e '^;$' ./static/redirect/nginx*.conf | gfv -e 'default "";'; }
+    λ(){ ge -e '^"~/' -e '\$";$' -e '$" "doc' -e '\|' -e '\.\*\.\*' -e '\.\*";' -e '"";$' -e '.\*\$ doc' -e '\$" "";' -e '""' -e '^;$' ./static/nginx/redirect/*.conf | gfv -e 'default "";'; }
     wrap λ "Warning: empty result or caret/tilde-less Nginx redirect rule (dangerous because it matches anywhere in URL)."
 
     λ(){ ghci -istatic/build/ ./static/build/Paragraph.hs -e 'warnParagraphizeGTX "metadata/full.gtx"' | gfv -e ' secs,' -e ' bytes' -e 'it :: ()'; }
@@ -1425,7 +1426,8 @@ else
     ## NOTE: we skip time/size syncs because sometimes the infrastructure changes values but not file size, and it's confusing when JS/CSS doesn't get updated; since the infrastructure is so small (compared to eg. doc/*), just force a hash-based sync every time to reduce risk:
     bold "Syncing static/…"
     REMOTE="gwern@176.9.41.242:/home/gwern/gwern.net/"
-    rsync --perms --exclude=".*" --exclude "*.hi" --exclude "*.o" --exclude "*.elc" --exclude '#*' --exclude='preprocess-markdown' --exclude 'generateLinkBibliography' --exclude='generateDirectory' --exclude='changeTag' --exclude='generateSimilar' --exclude='generateSimilarLinks' --exclude='hakyll' --exclude='guessTag' --exclude='changeTag' --exclude='link-extractor' --exclude='checkMetadata' --exclude="annotation-dump" --exclude="link-suggester" --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ "$REMOTE"/static &
+    # rsync --perms --exclude=".*" --exclude "*.hi" --exclude "*.o" --exclude "*.elc" --exclude '#*' --exclude='preprocess-markdown' --exclude 'generateLinkBibliography' --exclude='generateDirectory' --exclude='changeTag' --exclude='generateSimilar' --exclude='generateSimilarLinks' --exclude='hakyll' --exclude='guessTag' --exclude='changeTag' --exclude='link-extractor' --exclude='checkMetadata' --exclude="annotation-dump" --exclude="link-suggester" --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ "$REMOTE"/static &
+    rsync --perms --exclude=".*" --exclude "*.elc" --exclude '#*' --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ "$REMOTE"/static &
     ## Likewise, force checks of the Markdown pages but skip symlinks (ie. non-generated files):
     bold "Syncing pages…"
     rsync --perms --exclude=".*" --chmod='a+r' --recursive --checksum --quiet --info=skip0 ./_site/ "$REMOTE"
@@ -1440,7 +1442,7 @@ else
     bold "Expiring ≤100 updated files…"
     # expire CloudFlare cache to avoid hassle of manual expiration: (if more than 100, we've probably done some major systemic change & better to flush whole cache or otherwise investigate manually)
     # NOTE: 'bot-fighting' CloudFlare settings must be largely disabled, otherwise CF will simply CAPTCHA or block outright the various curl/linkchecker tests as 'bots'.
-    EXPIRE="$(find . -type f -mtime -1 -not -wholename "*/\.*/*" -not -wholename "*/_*/*" | gfv -e '/doc/www' -e '/static/build/' -e '/static/template/' -e '/static/include/' -e '/metadata/annotation/backlink/' -e '/metadata/annotation/similar/' -e '.gtx' -e 'static/redirect/' -e 'static/nginx' -e '.hs' | xargs ls -t 2>/dev/null | sed -e 's/\.md$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' | head -50) https://gwern.net/sitemap.xml https://gwern.net/lorem https://gwern.net/ https://gwern.net/index https://gwern.net/metadata/today-quote.html https://gwern.net/metadata/today-annotation.html https://gwern.net/metadata/today-site.html"
+    EXPIRE="$(find . -type f -mtime -1 -not -wholename "*/\.*/*" -not -wholename "*/_*/*" | gfv -e '/doc/www' -e '/static/build/' -e '/static/template/' -e '/static/include/' -e '/metadata/annotation/backlink/' -e '/metadata/annotation/similar/' -e '.gtx' -e 'static/nginx/redirect/' -e 'static/nginx' -e '.hs' | xargs ls -t 2>/dev/null | sed -e 's/\.md$//' -e 's/^\.\/\(.*\)$/https:\/\/gwern\.net\/\1/' | head -50) https://gwern.net/sitemap.xml https://gwern.net/lorem https://gwern.net/ https://gwern.net/index https://gwern.net/metadata/today-quote.html https://gwern.net/metadata/today-annotation.html https://gwern.net/metadata/today-site.html"
     for URL in $EXPIRE; do
         echo -n "Expiring: $URL "
         ( curl --silent --request POST "https://api.cloudflare.com/client/v4/zones/57d8c26bc34c5cfa11749f1226e5da69/purge_cache" \
@@ -1613,7 +1615,7 @@ else
           cm "text/markdown; charset=utf-8" 'https://gwern.net/gpt-3.md'
           cm "text/markdown; charset=utf-8" 'https://gwern.net/catitecture.md'
           cm "text/plain; charset=utf-8" 'https://gwern.net/doc/personal/2009-sleep.txt'
-          cm "text/plain; charset=utf-8" 'https://gwern.net/static/redirect/nginx.conf'
+          cm "text/plain; charset=utf-8" 'https://gwern.net/static/nginx/redirect/move.conf'
           cm "text/x-adobe-acrobat-drm" 'https://gwern.net/doc/dual-n-back/2012-zhong.ebt'
           cm "text/x-haskell; charset=utf-8" 'https://gwern.net/static/build/hakyll.hs'
           cm "text/x-opml; charset=utf-8" 'https://gwern.net/doc/personal/rss-subscriptions.opml'
@@ -1680,7 +1682,7 @@ else
         url="https://gwern.net/$dir"
         if timeout 30s curl --silent --output /dev/null --write "%{http_code}" "$url" | \
                 gf --quiet "404"; then
-            echo "\"~^/$dir\$\" \"/$fullpath\";" >> ./static/redirect/nginx.conf
+            echo "\"~^/$dir\$\" \"/$fullpath\";" >> ./static/nginx/redirect/move.conf
         fi
     done; ) &
 

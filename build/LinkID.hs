@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, ScopedTypeVariables #-}
 
 module LinkID (authorsToCite, generateID, generateURL, getDisambiguatedPairs, metadataItem2ID, url2ID, id2URLdb, writeOutID2URLdb, isValidID) where
 

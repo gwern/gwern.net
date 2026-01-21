@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-01-21 17:32:08 gwern"
+# When:  Time-stamp: "2026-01-21 23:57:41 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -1001,7 +1001,7 @@ gwtag () { (
              wait; # just in case another tool might be running (eg. gwtag or gwsed)
              cd ~/wiki/ &&
                      # echo "---" && grep --fixed-strings -- "$1" ./metadata/*.gtx || true
-                     timeout 20m nice ./static/build/changeTag +RTS -N2 -RTS "$@"; echo "" # &&
+                     timeout 20m nice changeTag +RTS -N2 -RTS "$@"; echo "" # &&
                          # echo "---" && grep --fixed-strings -- "$1" ./metadata/*.gtx
          ); }
 

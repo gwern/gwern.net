@@ -25,3 +25,4 @@ nginx/**/*.html
 redirect/**/*.html
 /.htaccess
 /asset.log
+build/dist-newstyle/
