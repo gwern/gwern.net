@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-01-17 12:28:26 gwern"
+# When:  Time-stamp: "2026-01-21 10:46:14 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -486,7 +486,7 @@ crop_one () {
         (( $(identify -ping -format '%[fx:w*h]' -- "$@") > 25000000 )) 2>/dev/null && \
             red "Warning: Image '$*' is larger than 5000×5000 pixels." >&2
         nice convert "$(path2File "$@")" \
-            -crop "$(nice -n 19 ionice -c 3 convert "$@" -virtual-pixel edge -blur 0x5 -fuzz 1% -trim -format '%wx%h%O' info:)" \
+            -crop "$(nice --adjustment=19 ionice --class 3 convert "$@" -virtual-pixel edge -blur 0x5 -fuzz 1% -trim -format '%wx%h%O' info:)" \
             +repage "$@";
     fi
 }

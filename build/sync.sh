@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-01-17 20:43:03 gwern"
+# When:  Time-stamp: "2026-01-21 11:23:45 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -1883,40 +1883,10 @@ else
     wrap λ "Compressing high-quality JPGs to ≤65% quality…" &
 
     bold "Compressing new PNGs…"
-    png.sh $(find ./doc/ -type f -name "*.png" -mtime -3 | gfv -e './doc/www/misc/' -e '2025-05-03-gwern-gpto3-demotivationalposter-heraclitus-youcanneverreproducethesamebugtwice.png') &> /dev/null &
+    compressPNG $(find ./doc/ -type f -name "*.png" -mtime -3 | gfv -e './doc/www/misc/' -e '2025-05-03-gwern-gpto3-demotivationalposter-heraclitus-youcanneverreproducethesamebugtwice.png') &> /dev/null &
 
-    # because GIF videos are *so* big, we lossily-compress GIFs in the WWW split archives using `gifsicle`
-    λ(){ optimize_gif() { # update the original GIF only if >10% size reduction; NOTE: this also avoids the issue where `gifsicle` *always* changes the file metadata by clobbering the original, even when no real change was made (which is a WONTFIX by the maintainer: <https://github.com/kohler/gifsicle/issues/201>).
-         local gif="$1"
-
-         if [ ! -f "$gif" ]; then
-           return
-         fi
-
-         local temp_gif
-         temp_gif="$(mktemp)"
-
-         gifsicle --colors=256 --optimize=3 "$gif" > "$temp_gif" 2>/dev/null
-
-         local original_size
-         original_size="$(stat --printf="%s" "$gif")"
-         local optimized_size=
-         optimized_size="$(stat --printf="%s" "$temp_gif")"
-
-         local size_delta
-         size_delta="$((original_size - optimized_size))"
-         local min_reduction
-         min_reduction="$(echo "scale=0; $original_size * 0.1 / 1" | bc)"
-
-         if [ "$size_delta" -ge "$min_reduction" ]; then
-           mv "$temp_gif" "$gif" && echo "Optimized $gif"
-         else
-           rm "$temp_gif"
-         fi
-       }
-       export -f optimize_gif
-       find ./doc/www/ -type f -name "*.gif" -mtime -3 | parallel optimize_gif
-    }
+    # because GIF videos are *so* big, we lossily-compress GIFs in the WWW split archives using `gifsicle`:
+    λ(){ find ./doc/www/ -type f -name "*.gif" -mtime -3 | compressGIF; }
     wrap λ "Optimized WWW archive GIFs."
 
     ## Find JPGs/PNGs which are too wide (1600px is an entire screen width on even wide monitors, which is too large for a figure/illustration):
