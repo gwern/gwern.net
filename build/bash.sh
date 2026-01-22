@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-01-21 10:46:14 gwern"
+# When:  Time-stamp: "2026-01-21 17:32:08 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -956,8 +956,8 @@ else
         # there are likely many Nginx redirects pointing from an inbound path to the old original URL as as a target.
         # These look like a single line like '"~^/inbound$" "/old";'
         # Update the target (tricky!):
-        stringReplace '"'"$OLD"'";' '"'"$NEW"'";' ~/wiki/static/redirect/*.conf;
-        echo '"~^'"$OLD"'.*$" "'"$NEW"'";' | tee --append ~/wiki/static/redirect/nginx.conf # 3. add a redirected old to nginx
+        stringReplace '"'"$OLD"'";' '"'"$NEW"'";' ~/wiki/static/nginx/redirect/*.conf;
+        echo '"~^'"$OLD"'.*$" "'"$NEW"'";' | tee --append ~/wiki/static/nginx/redirect/move.conf # 3. add a redirected old to nginx
         # 4. delete outdated annotations:
         OLD_FILE=$(basename "$OLD"); rm -- "$HOME/wiki/metadata/annotation/*$OLD_FILE*" || true > /dev/null
         wait

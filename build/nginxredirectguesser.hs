@@ -1,5 +1,5 @@
 -- nginxredirectguesser.hs: Semi-automate writing nginx redirect rules to fix incoming broken URL requests on Gwern.net.
--- For existing rules, see <https://gwern.net/static/redirect/nginx.conf> <https://gwern.net/static/redirect/nginx-broken.conf>
+-- For existing rules, see <https://gwern.net/static/nginx/redirect/move.conf> <https://gwern.net/static/nginx/redirect/broken.conf>
 --
 -- Because the set of redirects is so large already (>30k), there will often be a close but not exact match, of the sort hard to have written a regexp in advance for (and my past attempts to write very clever regexps have often backfired on me).
 -- We take the corpus quite literally. Instead of attempting fancy Transformer stuff (possible but I'm still chary), we simply ad hoc parse the set of rules as pairs, look for any exact filename matches else run a fuzzy <https://en.wikipedia.org/wiki/Levenshtein_distance> match between match & current error, and guess that the destination is what we need to fix the error.
@@ -68,8 +68,8 @@ main =
 
      files <- listFilesRecursivelyWithBasename C.root
 
-     one <- readFile "static/redirect/nginx.conf"
-     two <- readFile "static/redirect/nginx-broken.conf"
+     one <- readFile "static/nginx/redirect/move.conf"
+     two <- readFile "static/nginx/redirect/broken.conf"
 
      -- Optional: suppress exact-line duplicates already present in existing files.
      let existingLines = S.fromList . map strip . lines $ one ++ two

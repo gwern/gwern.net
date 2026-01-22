@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2025-04-19 15:38:40 gwern"
+# When:  Time-stamp: "2026-01-21 16:42:09 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
@@ -121,7 +121,7 @@ else
                     mv "$TARGET" "./doc/www/$DOMAIN/$HASH.pdf"
                     echo -n "doc/www/$DOMAIN/$HASH.pdf$ANCHOR"
                     ## use my local custom installation of recent ocrmypdf + JBIG2 encoder to OCR & optimize PDFs I'm hosting:
-                    compressPdf "./doc/www/$DOMAIN/$HASH.pdf" &> /dev/null # NOTE: we use `compressPdf` to benefit from its preservation of metadata & checks to avoid 'compressing' a PDF to 50× its original size (as happened with one Arxiv PDF).
+                    compressPDF "./doc/www/$DOMAIN/$HASH.pdf" &> /dev/null # NOTE: we use `compressPDF` to benefit from its preservation of metadata & checks to avoid 'compressing' a PDF to 50× its original size (as happened with one Arxiv PDF).
                 else
                     echo "Unsuccessful: $URL $HASH" 1>&2
                     exit 4
@@ -145,7 +145,7 @@ else
                 set -x
                 # NOTE: we must specify '--network="host"' to Docker, so that the Single-file app running inside Docker (which is its own private network namespace) can 'see' the local Nitter instance (running normally) for making Twitter snapshots; if we forget to do this, we get unhelpful 'connection error' messages like "$ docker run singlefile http://localhost:8081/novelaiofficial/status/1723601550927356343 → net::ERR_CONNECTION_REFUSED at http://localhost:8081/novelaiofficial/status/1723601550927356343"
                 timeout --kill-after=30s 200s \
-                        nice -n 19 \
+                        nice --adjustment=19 \
                         docker run --cpus 0.5 --network="host" --stop-timeout=15 singlefile "$URL" --compress-CSS \
                         --block-scripts "$REMOVE_SCRIPTS" --block-videos false --block-audios false \
                         --user-agent "$USER_AGENT" \
