@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2026-01-21 16:41:39 gwern"
+# When:  Time-stamp: "2026-01-23 14:15:04 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -162,7 +162,7 @@ _upload() {
 
       if [ ! -d ~/wiki/"$TARGET_DIR"  ]; then
           # try to guess a target:
-          GUESS=$(cd ~/wiki/ && ./static/build/guessTag "$2")
+          GUESS=$(cd ~/wiki/ && guessTag "$2")
           if [ ! -d ~/wiki/doc/"$GUESS"/ ]; then
               # the guess failed too, so bail out entirely:
               ls ~/wiki/"$TARGET_DIR" ~/wiki/doc/"$GUESS"/
