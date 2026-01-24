@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-01-21 17:44:56 gwern"
+# When:  Time-stamp: "2026-01-25 11:08:54 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -856,6 +856,8 @@ About Us
 "<em>Japanese Death Poems</em>"
 - https://www.secretorum.life/p/japanese-death-poems-part-2 <em>Japanese Death Poems</em> (part 2)—by Roger’s Bacon"
 "<em>Japanese Death Poems</em> (part 2)"
+- https://www.presentandcorrect.com/blogs/blog/typography-on-pencils-1-5 Typography on Pencils, 1–5.—Present &amp; Correct"
+"Typography on Pencils, 1–5"
 
 Task:
 
