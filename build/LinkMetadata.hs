@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2026-01-15 16:46:04 gwern"
+When:  Time-stamp: "2026-01-24 21:56:36 gwern"
 License: CC-0
 -}
 
@@ -471,7 +471,7 @@ createAnnotations md (Pandoc _ markdown) = Par.mapM_ (annotateLink md) $ extract
 annotateLink :: Metadata -> Inline -> IO (Either Failure (Path, MetadataItem))
 annotateLink md x@(Link (_,_,_) _ (targetT,_))
   | let targetT' = T.replace "https://gwern.net/" "/" targetT in
-      anyPrefixT targetT' ["/metadata/", "/doc/www/", "/ref/", "/blog/", "#", "!", "\8383", "$"] = return (Left Permanent) -- annotation intermediate files, self-links, interwiki links, and inflation-adjusted currencies *never* have annotations.
+      anyPrefixT targetT' ["/metadata/", "/doc/www/", "/ref/", "/blog/", "#", "!", "\8383", "$"] = return (Left Permanent) -- annotation intermediate files, self-links, interwiki links, and inflation-adjusted currencies *never* have annotations. And "/blog/" links are always generated *from* annotations and thus don't need to be checked.
   | otherwise =
   do let target = T.unpack targetT
      when (null target) $ error (show x)
@@ -531,11 +531,12 @@ hasAnnotationOrIDInline md inline = case inline of
     processLink metadatadb url x =
         let canonicalUrl = linkCanonicalize $ T.unpack url
          -- NOTE: we do not implement any blacklists or exclusion here, but defer it to the Metadata database, which will or will not have a Nothing vs Just entry; so all that logic is handled by `linkDispatcherURL` creating them in the first place.
-        in case M.lookup canonicalUrl metadatadb of
-            Nothing                     -> addID metadatadb Nothing x
-            Just ("","","","",[],[],"") -> addID metadatadb Nothing x
-            Just metadataItem           -> addID metadatadb (Just metadataItem)
-                                             (addRecentlyChanged metadataItem $ addHasAnnotation metadataItem x)
+        in if "/blog/" `isPrefixOf` canonicalUrl then x else
+             case M.lookup canonicalUrl metadatadb of
+               Nothing                     -> addID metadatadb Nothing x
+               Just ("","","","",[],[],"") -> addID metadatadb Nothing x
+               Just metadataItem           -> addID metadatadb (Just metadataItem)
+                                               (addRecentlyChanged metadataItem $ addHasAnnotation metadataItem x)
 addID :: Metadata -> Maybe MetadataItem -> Inline -> Inline
 addID md maybeMetadataItem inline = case inline of
     (Link x@(anchor, classes, _) e (url, title)) ->

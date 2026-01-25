@@ -1853,6 +1853,7 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
           , ("Formics", "Ender%27s_Game_(novel_series)#Formics")
           , ("Forward_digit_span", "Memory_span#Digit-span")
           , ("Forward_error_correction", "Error_correction_code")
+          , ("FEC", "Error_correction_code")
           , ("FosB", "FOSB")
           , ("Fosbury_Flop", "Fosbury_flop")
           , ("Foster-care", "Foster_care")

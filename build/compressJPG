@@ -3,13 +3,21 @@
 # compressJPG.sh: compress a JPG with mozjpeg if the savings are worthwhile.
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2026-01-21 10:40:14 gwern"
+# When:  Time-stamp: "2026-01-25 12:41:50 gwern"
 # License: CC-0
 
 set -e
 
+## Inlining for portability
 # shellcheck source=./bash.sh
-. ~/wiki/static/build/bash.sh # for 'get_image_files', 'green', 'red'
+# . ~/wiki/static/build/bash.sh # for 'get_image_files', 'green', 'red'
+red  () { echo -e "\e[41m$@\e[0m"; }
+green () { echo -e "\e[32m$@\e[0m"; }
+get_image_files () {
+    mapfile -t "$1" < <(find . -maxdepth 1 -type f \
+                             \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" -o -iname "*.avif" \) \
+                            | sort --version-sort)
+}
 
 args=("$@")
 if [ ${#args[@]} -eq 0 ]; then
