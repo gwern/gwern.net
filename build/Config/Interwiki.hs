@@ -6012,4 +6012,7 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("DRY", "Don%27t_repeat_yourself")
         , ("ABC", "Approximate_Bayesian_computation")
         , ("R", "R_(programming_language)")
+        , ("tar", "tar (computing)")
+        , ("tarball", "tar (computing)")
+        , ("tarballs", "tar (computing)")
         ]

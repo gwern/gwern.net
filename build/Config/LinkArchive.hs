@@ -21,7 +21,7 @@ archiveDelay = 60
 -- against our manual-review limit, because we won't meaningfully manually review them.
 isCheapArchive :: String -> Bool
 isCheapArchive url = f url || f (transformURLsForArchiving url)
-  where f u = anyInfix u [".pdf", "#pdf", "freedium.cfd", "news.ycombinator.com", "localhost:8081"
+  where f u = anyInfix u [".pdf", "#pdf", "news.ycombinator.com", "localhost:8081"
                          , "x.com", "greaterwrong.com", "https://github.com/"
                          , "https://chatgpt.com/share/", "https://claude.ai/share/", "https://claude.ai/public/", "https://aistudio.google.com/app/prompts/"
                          , "https://web.archive.org/web/"] -- see <https://gwern.net/archiving#why-not-internet-archive>
@@ -43,7 +43,6 @@ transformURLsForArchiving u   = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*
                             -- Old Reddit is the preferred browsing & archiving frontend given the death of `i.reddit.com` & `.compact`
                             $ replace "https://www.reddit.com" "https://old.reddit.com"
                             $ replace "https://x.com/" "http://localhost:8081/"
-                            $ replace "https://medium.com" "https://www.freedium.cfd" -- clean Medium frontend; NOTE: we use <freedium.cfd> instead of <scribe.rip> because Scribe (by design) does not cache or save content, only proxies to Medium, so once a Medium article is unpredictably deleted/paywalled, a working Scribe mirror immediately breaks. Freedium will keep working.
                             $ sed "^https://(.*)\\.fandom.com/(.*)$" "https://antifandom.com/\\1/\\2" -- clean Wikia/Fandom frontend
                             $ sed "^(https://web\\.archive\\.org/web/[12][0-9]+)/http(.*)$" "\\1if_/http\\2" -- <https://en.wikipedia.org/wiki/Help:Using_the_Wayback_Machine#Removing_the_navigational_toolbar>
                             $ transformURItoGW u
@@ -86,7 +85,6 @@ localizeLinktestCases = [
     , ("https://scholar.sun.ac.za/server/api/core/bitstreams/6dfdb0ca-e7e5-403e-9a2b-4161e3d93385/content#pdf", ("/doc/www/scholar.sun.ac.za/597ea379e3550e15a6355df58db5b19464dddd42.pdf", "", "", []))
     , ("https://x.com/alexeyguzey/status/1068583101633359874", ("", "https://nitter.net/alexeyguzey/status/1068583101633359874", "", []))
     , ("https://x.com/gdb/status/1495821544370708486", ("/doc/www/localhost/26c5938a85b27e976fdbaecb8570d9830362501e.html", "https://nitter.net/gdb/status/1495821544370708486", "", []))
---    , ("https://medium.com/@alex.tabarrok/when-can-token-curated-registries-actually-work-%C2%B9-2ad908653aaf", ("/doc/www/freedium.cfd/067a8f86abbb2ba5c0de0ed2f0ccfe046973bfb3.html", "", "https://www.freedium.cfd/@alex.tabarrok/when-can-token-curated-registries-actually-work-%C2%B9-2ad908653aaf", []))
     , ("https://news.ycombinator.com/item?id=17110385", ("/doc/www/news.ycombinator.com/de1d1ce15816a607ef9cfb9e04c34051ee08211f.html", "", "", []))
     , ("https://openreview.net/forum?id=0ZbPmmB61g#google", ("/doc/www/openreview.net/ec11c5bdd2766cd352fe7df9ae60e748f06d5175.pdf#google", "", "", []))
     -- , ("https://www.reddit.com/r/AnarchyChess/comments/10ydnbb/i_placed_stockfish_white_against_chatgpt_black/", ("/doc/www/old.reddit.com/bd98124b170baeb9324c51c734083302aa65323a.html", "", "https://old.reddit.com/r/AnarchyChess/comments/10ydnbb/i_placed_stockfish_white_against_chatgpt_black/", []))
@@ -118,7 +116,6 @@ localizeLinkTestDB = M.fromList $
   ++ map (\(a,b) -> (a,Right (Just b))) [("https://arxiv.org/abs/1909.05858#salesforce", "doc/www/arxiv.org/0b9e7be08a4baf0b4fc120364ea36172ecb3c9f0.pdf#salesforce")
                     , ("https://arxiv.org/abs/hep-ph/0204295", "doc/www/arxiv.org/4a7da1a80a185d239f989fa3c4773db572c441b0.pdf")
                     , ("https://scholar.sun.ac.za/server/api/core/bitstreams/6dfdb0ca-e7e5-403e-9a2b-4161e3d93385/content#pdf", "doc/www/scholar.sun.ac.za/597ea379e3550e15a6355df58db5b19464dddd42.pdf")
-                    , ("https://medium.com/@alex.tabarrok/when-can-token-curated-registries-actually-work-%C2%B9-2ad908653aaf", "doc/www/freedium.cfd/067a8f86abbb2ba5c0de0ed2f0ccfe046973bfb3.html")
                     , ("https://news.ycombinator.com/item?id=17110385", "doc/www/news.ycombinator.com/de1d1ce15816a607ef9cfb9e04c34051ee08211f.html")
                     , ("https://arxiv.org/abs/1904.01201#facebook", "doc/www/arxiv.org/3280474172991f9f5e492000192466bf1d9b6f7d.pdf#facebook")
                     , ("https://openreview.net/forum?id=0ZbPmmB61g#google", "doc/www/openreview.net/ec11c5bdd2766cd352fe7df9ae60e748f06d5175.pdf#google")

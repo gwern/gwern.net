@@ -40,7 +40,7 @@ import Text.Regex.TDFA(Regex,caseSensitive,multiline,newSyntax)
 
 -- | Makes a regular expression with the default options (multi-line,
 -- case-sensitive).  The syntax of regular expressions is
--- otherwise that of @egrep@ (i.e. POSIX \"extended\" regular
+-- otherwise that of @egrep@ (ie. POSIX \"extended\" regular
 -- expressions).
 mkRegex :: String -> Regex
 mkRegex s = makeRegexOpts opt defaultExecOpt s
@@ -90,7 +90,7 @@ matchRegexAll p str = matchM p str
 {- | Replaces every occurance of the given regexp with the replacement string.
 
 In the replacement string, @\"\\1\"@ refers to the first substring;
-@\"\\2\"@ to the second, etc; and @\"\\0\"@ to the entire match.
+@\"\\2\"@ to the second, etc.; and @\"\\0\"@ to the entire match.
 @\"\\\\\\\\\"@ will insert a literal backslash.
 
 This does not advance if the regex matches an empty string.  This
