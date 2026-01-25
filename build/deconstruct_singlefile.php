@@ -6,8 +6,13 @@
 ##     --backtrack-limit=5000000 
 ##     --jpg-quality=80% 
 ##     --save-original [default false]
+##     --keep-original [default false]
 ##     --debug [default false]
 
+## Version.
+$gwtar_version_string = 'v1';
+
+## Command line arguments.
 $args = [ ];
 for ($i = 1; $i < $argc; $i++) {
 	if (str_starts_with($argv[$i], '--')) {
@@ -20,6 +25,23 @@ for ($i = 1; $i < $argc; $i++) {
 		$args['file'] = $argv[$i];
 	}
 }
+
+## The JS file that does the client-side processing.
+$js_script_path = __DIR__ . '/gwtar.js';
+if (file_exists($js_script_path) == false) {
+	echo "ERROR: JS script file (‘gwtar.js’) must be in the same directory as this script! Exiting.\n";
+	die;
+}
+
+## The <noscript> warning.
+$noscript_message_path = __DIR__ . '/gwtar_noscript.html';
+if (file_exists($noscript_message_path) == false) {
+	echo "ERROR: Noscript message file (‘gwtar_noscript.html’) must be in the same directory as this script! Exiting.\n";
+	die;
+}
+
+## Directory for auxiliary tools.
+$build_tool_dir = __DIR__;
 
 ## PHP memory limit.
 $memory_limit = $args['--memory-limit'] ?? '1024M';
@@ -35,12 +57,11 @@ $jpg_quality = $args['--jpg-quality'] ?? '80%';
 ## Save original.
 $save_original = $args['--save-original'] ?? false;
 
+## Keep original.
+$keep_original = $args['--keep-original'] ?? false;
+
 ## Debug mode.
 $debug = $args['--debug'] ?? false;
-
-## Max number of decimal digits in a byte count/offset.
-## We support file sizes up to 99 EB (total, across all assets).
-$byte_count_max_digits = 20;
 
 ## Map of content-types to file extensions.
 $asset_type_map = [
@@ -137,11 +158,16 @@ $input_file = file_get_contents($input_file_path);
 preg_match('/^(.+\/)?([^\/]+)\.html$/', $input_file_path, $m);
 $asset_directory = "{$m[1]}{$m[2]}";
 $asset_base_name = $m[2];
+$html_file_name = "{$asset_base_name}.html";
 
-## Prepare to count assets and sizes (and thus byte offsets) thereof.
-$asset_count = 0;
-$byte_offset = 512; // tarball record header size
-$asset_file_paths = [ ];
+## Prepare to count assets, and record sizes and content-types.
+$assets = [ 
+	[ 
+		'size' => '0', 
+		'content-type' => 'text/html',
+		'basename' => $asset_base_name
+	]
+];
 
 // $output_file = '';
 // $start_text = 'url(data:';
@@ -182,28 +208,28 @@ $asset_file_paths = [ ];
 $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([A-Za-z0-9+\/=]+)(\1)/', function ($m) {
 	global $asset_type_map, $image_file_extensions;
 	global $input_file_path, $asset_directory, $asset_base_name;
-	global $asset_count, $byte_offset, $asset_file_paths;
-	global $jpg_quality;
+	global $jpg_quality, $build_tool_dir;
+	global $assets;
 	global $debug;
 
 	$type = $m[2];
 	$data = $m[3];
 	$quote = strlen($m[1]) > 0 ? $m[1] : '"';
 
-	$asset_suffix = '-asset-' . (++$asset_count);
+	$asset_suffix = '-asset-' . (count($assets));
 	$asset_extension = $asset_type_map[$type] ?? 'dat';
 	$asset_name = "{$asset_base_name}{$asset_suffix}.{$asset_extension}";
-	$asset_path = "{$asset_directory}/{$asset_name}";
+	$asset_file_path = "{$asset_directory}/{$asset_name}";
 
-	file_force_contents($asset_path, base64_decode($data));
-	$asset_file_paths[] = $asset_path;
+	file_force_contents($asset_file_path, base64_decode($data));
+	$asset_file_paths[] = $asset_file_path;
 
 	## Check image file integrity with ImageMagick.
 	## If file is bad, delete it, and leave the asset as base64.
 	if (in_array($asset_extension, $image_file_extensions)) {
-		$im_identify_result = `identify "{$asset_path}" 2>&1`;
+		$im_identify_result = `identify "{$asset_file_path}" 2>&1`;
 		if (strpos($im_identify_result, 'error') !== false) {
-			unlink($asset_path);
+			unlink($asset_file_path);
 			return $m[0];
 		}
 	}
@@ -213,6 +239,7 @@ $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([
 	## should be JPEGs, often the JPEG will be a third the size or less, which 
 	## (particularly for large images like sample-grids) makes for more pleasant
 	## web browsing.
+	$png_converted_to_jpg = false;
 	if ($asset_extension == 'png') {
 		## Criteria.
 		$quality_threshold = 31; # decibels
@@ -221,35 +248,38 @@ $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([
 		## Create the JPEG.
 		$alt_asset_extension = 'jpg';
 		$alt_asset_name = "{$asset_base_name}{$asset_suffix}.{$alt_asset_extension}";
-		$alt_asset_path = "{$asset_directory}/{$alt_asset_name}";
-		`convert "{$asset_path}" -quality 15% "{$alt_asset_path}" 2>&1`;
+		$alt_asset_file_path = "{$asset_directory}/{$alt_asset_name}";
+		`convert "{$asset_file_path}" -quality 15% "{$alt_asset_file_path}" 2>&1`;
 
-		if (file_exists($alt_asset_path)) {
+		if (file_exists($alt_asset_file_path)) {
 			## Measure size reduction.
-			$png_size = filesize($asset_path);
-			$jpg_size = filesize($alt_asset_path);
+			$png_size = filesize($asset_file_path);
+			$jpg_size = filesize($alt_asset_file_path);
 			$size_reduction = (1 - ($jpg_size / $png_size)) * 100;
 
 			## Measure quality.
-			$psnr = explode(' ', `compare -metric PSNR "{$asset_path}" "{$alt_asset_path}" null: 2>&1`)[0];
+			$psnr = explode(' ', `compare -metric PSNR "{$asset_file_path}" "{$alt_asset_file_path}" null: 2>&1`)[0];
 
 			## Check if size reduction and quality measure up.
 			if (   $psnr > $quality_threshold
 				&& $size_reduction > $size_reduction_threshold) {
+				$png_converted_to_jpg = true;
+				$asset_extension = $alt_asset_extension;
+
 				## Create the full-quality JPEG.
-				`convert "{$asset_path}" -quality {$jpg_quality} "{$alt_asset_path}" 2>&1`;
+				`convert "{$asset_file_path}" -quality {$jpg_quality} "{$alt_asset_file_path}" 2>&1`;
 
 				## Delete the PNG.
-				unlink($asset_path);
+				unlink($asset_file_path);
 
 				## We’ll write out the JPEG’s path to the HTML file.
 				$asset_name = $alt_asset_name;
 
 				## For file size calculation.
-				$asset_path = $alt_asset_path;
+				$asset_file_path = $alt_asset_file_path;
 			} else {
 				if ($debug) {
-					echo "PNG [{$asset_path}] unsuitable for JPEG conversion (";
+					echo "PNG [{$asset_file_path}] unsuitable for JPEG conversion (";
 					$reasons = [ ];
 					if (!($psnr > $quality_threshold))
 						$reasons[] = "PSNR too low ({$psnr})";
@@ -260,28 +290,39 @@ $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([
 				}
 
 				## Delete the test JPEG.
-				unlink($alt_asset_path);
+				unlink($alt_asset_file_path);
 			}
 		} else if ($debug) {
-			echo "Could not create JPEG from PNG: {$asset_path}\n";
+			echo "Could not create JPEG from PNG: {$asset_file_path}\n";
 		}
 	}
 
-	$asset_byte_size = filesize($asset_path);
-	$byte_range_begin = zero_padded_byte_count($byte_offset);
-	$byte_range_end = zero_padded_byte_count($byte_offset + $asset_byte_size - 1);
-	$asset_url = urlencode("{$asset_base_name}")
-			   . '-'
-			   . zero_padded_byte_count('0')
-			   . '.gdat.tar' 
-			   . '?' 
-			   . "bytes={$byte_range_begin}-{$byte_range_end}"
-			   . '&'
-			   . "content-type={$type}";
+	## Optimize images.
+// 	if (   $asset_extension == 'gif'
+// 		&& file_exists("{$build_tool_dir}/compressGIF")) {
+// 		`{$build_tool_dir}/compressGIF "$asset_file_path"`;
+// 	}
+// 	if (   $asset_extension == 'png'
+// 		&& file_exists("{$build_tool_dir}/compressPNG")) {
+// 		`{$build_tool_dir}/compressPNG "$asset_file_path"`;
+// 	}
+// 	if (   $asset_extension == 'jpg'
+// 		&& $png_converted_to_jpg == false
+// 		&& file_exists("{$build_tool_dir}/compressJPG")) {
+// 		`{$build_tool_dir}/compressJPG "$asset_file_path"`;
+// 	}
 
-	$byte_offset += tarball_record_size($asset_byte_size);
+	## Save asset name, size, and content type in asset manifest.
+	$assets[$asset_name] = [
+		'size'			=> filesize($asset_file_path),
+		'content-type'	=> $type,
+		'hash'			=> hash_file('sha256', $asset_file_path)
+	];
 
-	return ($quote . $asset_url . $quote);
+	## Construct asset relative URL.
+	$asset_relative_url = urlencode($asset_base_name) . '/' . urlencode($asset_name);
+
+	return ($quote . $asset_relative_url . $quote);
 }, $input_file);
 if (preg_last_error() != PREG_NO_ERROR)
 	die;
@@ -291,59 +332,98 @@ $output_file = preg_replace('/<img/', '<img loading="lazy" decoding="async"', $o
 if (preg_last_error() != PREG_NO_ERROR)
 	die;
 
+## Remove content security policy.
+$output_file = preg_replace('/<meta http-equiv=content-security-policy content=".+?".*>/', '', $output_file);
+if (preg_last_error() != PREG_NO_ERROR)
+	die;
+
+## Get hash of original singlefile.
+$input_file_hash = hash_file('sha256', $input_file_path);
+
 ## Save original singlefile, if need be.
-if ($save_original)
+if ($save_original || $keep_original)
 	`mv "{$input_file_path}" "{$input_file_path}.bak"`;
 
 ## Write out slimmed-down HTML file.
 file_put_contents($input_file_path, $output_file);
 
 ## Get HTML file size.
-$output_file_size = filesize($input_file_path);
-$output_file_record_size = tarball_record_size($output_file_size);
-$output_file_byte_range_end = zero_padded_byte_count(512 + $output_file_size - 1); // tarball record header size
+$assets[0]['size'] = filesize($input_file_path);
 
-## Update byte ranges.
-$output_file = preg_replace_callback('/-([0-9]+)\.gdat\.tar\?bytes=([0-9]+)-([0-9]+)&/', function ($m) use ($output_file_record_size, $output_file_byte_range_end) {
-	$byte_range_begin = zero_padded_byte_count(intval($m[2]) + $output_file_record_size);
-	$byte_range_end = zero_padded_byte_count(intval($m[3]) + $output_file_record_size);
-
-	return "-{$output_file_byte_range_end}.gdat.tar?bytes={$byte_range_begin}-{$byte_range_end}&";
-}, $output_file);
-
-## Write out updated HTML file.
-file_put_contents($input_file_path, $output_file);
+## Get HTML file hash.
+$assets[0]['hash'] = hash_file('sha256', $input_file_path);
 
 ## Create tarball.
-$tarball_file_name = "{$asset_base_name}-{$output_file_byte_range_end}.gdat.tar";
-`tar --create -f {$tarball_file_name} {$input_file_path}`;
-foreach($asset_file_paths as $asset_file_path)
-	`tar --append -f {$tarball_file_name} {$asset_file_path}`;
+$tarball_file_path = "{$asset_directory}/../{$asset_base_name}.tar";
+`tar --create -f "{$tarball_file_path}" --format=ustar --owner=0 --group=0 "{$input_file_path}"`;
+foreach ($assets as $asset_name => $asset_info) {
+	if ($asset_name == 0)
+		continue;
 
-## Remove asset directory.
-`rm -r {$asset_directory}/`;
+	$asset_file_path = "{$asset_directory}/{$asset_name}";
+	`tar --append -f "{$tarball_file_path}" --format=ustar --owner=0 --group=0 "{$asset_file_path}"`;
+}
+
+## Write out asset manifest.
+$asset_manifest_file_path = "{$asset_directory}/../{$asset_base_name}-asset-manifest.js";
+file_put_contents($asset_manifest_file_path, json_encode($assets));
+
+## GWTAR archive file path.
+$gwtar_file_path = "{$asset_directory}/../{$asset_base_name}.gwtar.html";
+
+## Construct GWTAR archive file.
+$gwtar_file_parts = [
+	implode("\n", [ '<html>', "<!-- Gwtar self-extracting HTML archive, {$gwtar_version_string} -->" ]),
+	implode("\n", [ '', "<!-- Original SingleFile: {$html_file_name} {$input_file_hash} (SHA-256) -->" ]),
+	implode("\n", [ '', '<body>', '<script>', 'let assets = ' ]),
+	json_encode($assets, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT),
+	implode("\n", [ '', '</script>', '<script>', 'let overhead = parseInt("' ]),
+	'000000000000', // 12 digits
+	implode("\n", [ '");', 'let totalArchiveSize = parseInt("' ]),
+	'000000000000000000000000', // 24 digits
+	implode("\n", [ '");', '</script>', '<script>', '' ]),
+	file_get_contents($js_script_path),
+	implode("\n", [ '', '</script>', '' ]),
+	file_get_contents($noscript_message_path),
+	implode("\n", [ '', '<script>', 'window.stop();', '</script>' ]),
+	implode("\n", [ '', '</body>', '</html>', '<!-- GWTAR END', '' ])
+];
+$overhead = strlen(implode('', $gwtar_file_parts));
+$gwtar_file_parts[5] = str_pad($overhead, 12, '0', STR_PAD_LEFT);
+$total_gwtar_size = $overhead + filesize($tarball_file_path);
+$gwtar_file_parts[7] = str_pad($total_gwtar_size, 24, '0', STR_PAD_LEFT);
+file_put_contents($gwtar_file_path, implode('', $gwtar_file_parts));
+`cat "{$tarball_file_path}" >> "{$gwtar_file_path}"`;
+
+## Make PAR2 files for forward error correction, tarball them up, and append.
+`par2create -r25 "{$gwtar_file_path}"`;
+$par_tarball_file_path = "{$gwtar_file_path}.par2.tar";
+`tar --create -f "{$par_tarball_file_path}" --format=ustar --owner=0 --group=0 "{$gwtar_file_path}.par2"; rm "{$gwtar_file_path}.par2"`;
+foreach (glob("{$gwtar_file_path}.*.par2") as $par_file_path) {
+	`tar --append -f "{$par_tarball_file_path}" --format=ustar --owner=0 --group=0 "{$par_file_path}"; rm "{$par_file_path}"`;
+}
+`cat "{$par_tarball_file_path}" >> "{$gwtar_file_path}"; rm "{$par_tarball_file_path}"`;
 
 ## Remove HTML file.
 unlink($input_file_path);
+
+## Remove asset manifest.
+unlink($asset_manifest_file_path);
+
+## Remove tarball.
+unlink($tarball_file_path);
+
+## Remove asset directory.
+`rm -r "{$asset_directory}/"`;
+
+## Replace original file, if need be.
+if ($keep_original)
+	`mv "{$input_file_path}.bak" "{$input_file_path}"`;
 
 ## Done.
 die;
 
 ## FUNCTIONS
-
-function tarball_record_size($file_byte_size) {
-	return (512 + round_up_to_multiple($file_byte_size, 512)); // tarball record header size, tarball record chunk size
-}
-
-function round_up_to_multiple($num, $divisor) {
-	return (ceil($num / $divisor) * $divisor);
-}
-
-function zero_padded_byte_count($byte_count) {
-	global $byte_count_max_digits;
-
-	return str_pad("{$byte_count}", $byte_count_max_digits, '0', STR_PAD_LEFT);
-}
 
 function file_force_contents($path, $contents){
 	$parts = explode('/', $path);
