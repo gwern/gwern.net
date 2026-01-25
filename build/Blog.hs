@@ -153,7 +153,7 @@ annotation2Markdown url (title, author, dateCreated, dateModified, kvs, _, _) =
        (if null thumbnail then [] else ["thumbnail: " ++ thumbnail]) ++
        (if null thumbnailT then [] else ["thumbnail-text: \"" ++ thumbnailT ++ "\""]) ++
        [
-       "created: "             ++ dateCreated
+       "created: "               ++ dateCreated
        , "modified: "            ++ dateModified
        , "status: "              ++ status
        , "importance: "          ++ importance
@@ -165,7 +165,7 @@ annotation2Markdown url (title, author, dateCreated, dateModified, kvs, _, _) =
        , "..."
        , ""
        , "[" ++ (if description /= "N/A" then description else "**Original page.**") ++
-         "](" ++ url ++ "){.include-annotation .include-strict" ++
+         "](" ++ url ++ "){.link-annotated .include-annotation .include-strict" ++
          (if "/blog" `isPrefixOf` url then "" else " rel='canonical'") ++
          " data-include-template='annotation-blockquote-not' .include-spinner-not .id-not}"
        , ""
