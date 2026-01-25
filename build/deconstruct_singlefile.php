@@ -298,19 +298,19 @@ $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([
 	}
 
 	## Optimize images.
-// 	if (   $asset_extension == 'gif'
-// 		&& file_exists("{$build_tool_dir}/compressGIF")) {
-// 		`{$build_tool_dir}/compressGIF "$asset_file_path"`;
-// 	}
-// 	if (   $asset_extension == 'png'
-// 		&& file_exists("{$build_tool_dir}/compressPNG")) {
-// 		`{$build_tool_dir}/compressPNG "$asset_file_path"`;
-// 	}
-// 	if (   $asset_extension == 'jpg'
-// 		&& $png_converted_to_jpg == false
-// 		&& file_exists("{$build_tool_dir}/compressJPG")) {
-// 		`{$build_tool_dir}/compressJPG "$asset_file_path"`;
-// 	}
+	if (   $asset_extension == 'gif'
+		&& file_exists("{$build_tool_dir}/compressGIF")) {
+		`{$build_tool_dir}/compressGIF "$asset_file_path"`;
+	}
+	if (   $asset_extension == 'png'
+		&& file_exists("{$build_tool_dir}/compressPNG")) {
+		`{$build_tool_dir}/compressPNG "$asset_file_path"`;
+	}
+	if (   $asset_extension == 'jpg'
+		&& $png_converted_to_jpg == false
+		&& file_exists("{$build_tool_dir}/compressJPG")) {
+		`{$build_tool_dir}/compressJPG "$asset_file_path"`;
+	}
 
 	## Save asset name, size, and content type in asset manifest.
 	$assets[$asset_name] = [
