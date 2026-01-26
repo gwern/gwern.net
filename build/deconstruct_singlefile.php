@@ -5,23 +5,44 @@
 ##     --memory-limit=1024M 
 ##     --backtrack-limit=5000000 
 ##     --jpg-quality=80% 
-##     --save-original [default false]
-##     --create-gwtar [default false]
-##     --keep-original [default false]
-##     --debug [default false]
+##     --optimize-images=1
+##     --save-original=0
+##     --create-gwtar=0
+##     --add-fec-data=1
+##     --keep-original=0
+##     --debug=0
+## (Boolean arguments may also be set to true by passing them without a value.)
 
 ## Version.
 $gwtar_version_string = 'v1';
 
 ## Command line arguments.
 $args = [ ];
+$boolean_arg_names = [
+	'--optimize-images',
+	'--save-original',
+	'--create-gwtar',
+	'--add-fec-data',
+	'--keep-original',
+	'--debug'
+];
 for ($i = 1; $i < $argc; $i++) {
 	if (str_starts_with($argv[$i], '--')) {
 		$parts = explode('=', $argv[$i]);
-		if (count($parts) == 2)
-			$args[$parts[0]] = $parts[1];
-		else
-			$args[$parts[0]] = true;
+		if (count($parts) == 2) {
+			if (in_array($parts[0], $boolean_arg_names)) {
+				$args[$parts[0]] = ($parts[1] != '0');
+			} else {
+				$args[$parts[0]] = $parts[1];
+			}
+		} else {
+			if (in_array($parts[0], $boolean_arg_names)) {
+				$args[$parts[0]] = true;
+			} else {
+				echo "ERROR: Argument ‘{$args[$parts[0]]}’ must have a value! Exiting.\n";
+				die;
+			}
+		}
 	} else if (!isset($args['file'])) {
 		$args['file'] = $argv[$i];
 	}
@@ -61,16 +82,22 @@ $backtrack_limit = $args['--backtrack-limit'] ?? '5000000';
 ## JPEG output quality (for converting PNGs).
 $jpg_quality = $args['--jpg-quality'] ?? '80%';
 
-## Save original.
+## Optimize images?
+$optimize_images = $args['--optimize-images'] ?? true;
+
+## Save original?
 $save_original = $args['--save-original'] ?? false;
 
-## Create a .gwtar.
+## Create a .gwtar?
 $create_gwtar = $args['--create-gwtar'] ?? false;
 
-## Keep original (when creating a .gwtar).
+## Add FEC data with par2?
+$add_fec_data = $args['--add-fec-data'] ?? true;
+
+## Keep original (when creating a .gwtar)?
 $keep_original = $args['--keep-original'] ?? false;
 
-## Debug mode.
+## Debug mode?
 $debug = $args['--debug'] ?? false;
 
 ## Map of content-types to file extensions.
@@ -182,7 +209,7 @@ $assets = [
 $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([A-Za-z0-9+\/=]+)(\1)/', function ($m) {
 	global $asset_type_map, $image_file_extensions;
 	global $input_file_path, $asset_directory, $asset_base_name;
-	global $jpg_quality, $build_tool_dir;
+	global $jpg_quality, $optimize_images, $build_tool_dir;
 	global $create_gwtar, $assets;
 	global $debug;
 
@@ -270,19 +297,21 @@ $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([
 		}
 	}
 
-	## Optimize images.
-	if (   $asset_extension == 'gif'
-		&& file_exists("{$build_tool_dir}/compressGIF")) {
-		`{$build_tool_dir}/compressGIF "$asset_file_path"`;
-	}
-	if (   $asset_extension == 'png'
-		&& file_exists("{$build_tool_dir}/compressPNG")) {
-		`{$build_tool_dir}/compressPNG "$asset_file_path"`;
-	}
-	if (   $asset_extension == 'jpg'
-		&& $png_converted_to_jpg == false
-		&& file_exists("{$build_tool_dir}/compressJPG")) {
-		`{$build_tool_dir}/compressJPG "$asset_file_path"`;
+	## Optimize images, if need be.
+	if ($optimize_images) {
+		if (   $asset_extension == 'gif'
+			&& file_exists("{$build_tool_dir}/compressGIF")) {
+			`{$build_tool_dir}/compressGIF "$asset_file_path"`;
+		}
+		if (   $asset_extension == 'png'
+			&& file_exists("{$build_tool_dir}/compressPNG")) {
+			`{$build_tool_dir}/compressPNG "$asset_file_path"`;
+		}
+		if (   $asset_extension == 'jpg'
+			&& $png_converted_to_jpg == false
+			&& file_exists("{$build_tool_dir}/compressJPG")) {
+			`{$build_tool_dir}/compressJPG "$asset_file_path"`;
+		}
 	}
 
 	## Save asset name, size, and content type in asset manifest.
@@ -373,14 +402,17 @@ if ($create_gwtar) {
 	file_put_contents($gwtar_file_path, implode('', $gwtar_file_parts));
 	`cat "{$tarball_file_path}" >> "{$gwtar_file_path}"`;
 
-	## Make PAR2 files for forward error correction, tarball them up, and append.
-	`par2create -r25 "{$gwtar_file_path}"`;
-	$par_tarball_file_path = "{$gwtar_file_path}.par2.tar";
-	`tar --create -f "{$par_tarball_file_path}" --format=ustar --owner=0 --group=0 "{$gwtar_file_path}.par2"; rm "{$gwtar_file_path}.par2"`;
-	foreach (glob("{$gwtar_file_path}.*.par2") as $par_file_path) {
-		`tar --append -f "{$par_tarball_file_path}" --format=ustar --owner=0 --group=0 "{$par_file_path}"; rm "{$par_file_path}"`;
+	## Make PAR2 files for forward error correction, tarball them up, and 
+	## append, if need be.
+	if ($add_fec_data) {
+		`par2create -r25 "{$gwtar_file_path}"`;
+		$par_tarball_file_path = "{$gwtar_file_path}.par2.tar";
+		`tar --create -f "{$par_tarball_file_path}" --format=ustar --owner=0 --group=0 "{$gwtar_file_path}.par2"; rm "{$gwtar_file_path}.par2"`;
+		foreach (glob("{$gwtar_file_path}.*.par2") as $par_file_path) {
+			`tar --append -f "{$par_tarball_file_path}" --format=ustar --owner=0 --group=0 "{$par_file_path}"; rm "{$par_file_path}"`;
+		}
+		`cat "{$par_tarball_file_path}" >> "{$gwtar_file_path}"; rm "{$par_tarball_file_path}"`;
 	}
-	`cat "{$par_tarball_file_path}" >> "{$gwtar_file_path}"; rm "{$par_tarball_file_path}"`;
 
 	## Remove asset manifest.
 	unlink($asset_manifest_file_path);
