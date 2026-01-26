@@ -5725,12 +5725,12 @@ doWhenElementExists(updateTOCVisibility, "#TOC");
 	list bullets of even-numbered list items to green, and the icon images of
 	horizontal rules to red.
 
-	(An optional fourth element in each entry specifies a dark mode property 
+	(An optional fourth element in each entry specifies a dark mode property
 	 which should be disabled - i.e., set to `unset` - when an element is
 	 colorized.)
 
-	NOTE: In order for colorization to work properly, the given selectors must 
-	have, as values of the given CSS variables, a CSS url() value containing an 
+	NOTE: In order for colorization to work properly, the given selectors must
+	have, as values of the given CSS variables, a CSS url() value containing an
 	inline-defined (and *not* base64-encoded) SVG image.
  */
 function colorizeElements(colorizationSpecs, container = document.main) {
@@ -5756,7 +5756,7 @@ function colorizeElement(element, cssVariableName, colorTransformFunction, undes
 		uncolorizeElement(element, cssVariableName, undesiredDarkModeProperty);
 
 	let svgSrc = getComputedStyle(element).getPropertyValue(cssVariableName).match(/url\(['"]data:image\/svg\+xml;utf8,(.+?)['"]\)/)[1];
-	svgSrc = svgSrc.replaceAll("%23", "#").replaceAll("\\", "").replace(/(?<!href=)"(#[0-9A-Fa-f]+)"/g, 
+	svgSrc = svgSrc.replaceAll("%23", "#").replaceAll("\\", "").replace(/(?<!href=)"(#[0-9A-Fa-f]+)"/g,
 		(match, colorCode) => {
 			return `"${(colorTransformFunction(colorCode))}"`;
 		});
@@ -5780,14 +5780,14 @@ function uncolorizeElement(element, cssVariableName, darkModeProperty) {
 }
 
 /******************************************************************************/
-/*	Undo the effects of colorizeElements(), for the given elements (optionally, 
+/*	Undo the effects of colorizeElements(), for the given elements (optionally,
 	within the given container).
 
-	(Each entry in the uncolorizationSpecs array need only have the selector 
+	(Each entry in the uncolorizationSpecs array need only have the selector
 	 and CSS variable name; no color need be specified.)
 
-	(An optional third element in each entry specifies a dark mode property 
-	 which should be un-disabled - i.e., the inline value of `unset` removed - 
+	(An optional third element in each entry specifies a dark mode property
+	 which should be un-disabled - i.e., the inline value of `unset` removed -
 	 when an element is un-colorized.)
  */
 function uncolorizeElements(uncolorizationSpecs, container = document.main) {
@@ -5838,7 +5838,7 @@ GW.allowedAssetSequencingModes = [
 	"nextAfterSaved",
 	"previousBeforeSaved",
 	"nextAfterCurrent",
-	"previousBeforeCurrent" 
+	"previousBeforeCurrent"
 ];
 
 /******************************************************************************/
@@ -5861,18 +5861,18 @@ GW.allowedAssetSequencingModes = [
 		numeric identifier string ("1", "14", etc.); the logo image file with
 		that numeric identifier in the file name will be selected.
 
-		NOTE: If this field is set, then the `sequence` and `randomize` fields 
+		NOTE: If this field is set, then the `sequence` and `randomize` fields
 		are ignored.
 
     randomize (boolean)
 	sequence (string)
-		[must be one of “nextAfterSaved”, “previousBeforeSaved”, 
-		 “nextAfterCurrent”, or “previousBeforeCurrent”; any other value is 
+		[must be one of “nextAfterSaved”, “previousBeforeSaved”,
+		 “nextAfterCurrent”, or “previousBeforeCurrent”; any other value is
 		 equivalent to a null value]
 
-		These two fields together define the sequencing behavior, over multiple 
-		invocations of this function (either within a single page load session 
-		or across multiple page loads), of the selection of a logo from multiple 
+		These two fields together define the sequencing behavior, over multiple
+		invocations of this function (either within a single page load session
+		or across multiple page loads), of the selection of a logo from multiple
 		available logos of the specified type.
 
 		If neither `randomize` nor `sequence` are set, then only a single,
@@ -5882,18 +5882,18 @@ GW.allowedAssetSequencingModes = [
 
 		If `randomize` is set to true but `sequence` is not set, then a logo
 		image file will be selected at random out of the available logo image
-		files that match the specified criteria (type, mode, scale).	
+		files that match the specified criteria (type, mode, scale).
 
-		If `sequence` is set to either “nextAfterCurrent” or 
-		“previousBeforeCurrent”, then the next logo image file after the 
+		If `sequence` is set to either “nextAfterCurrent” or
+		“previousBeforeCurrent”, then the next logo image file after the
 		currently set logo, or the previous logo image file before the currently
 		set logo (respectively) will be selected. If the currently set logo is
 		not one of the logo image files that match the specified criteria, then
-		the first or the last logo image files (respectively) out of the 
+		the first or the last logo image files (respectively) out of the
 		available matching ones will be selected. (The `randomize` field is
 		ignored in this case.)
 
-		If `sequence` is set to either “nextAfterSaved” or 
+		If `sequence` is set to either “nextAfterSaved” or
 		“previousBeforeSaved”, then the saved index of the previously selected
 		logo is retrieved from localStorage.
 
@@ -5902,19 +5902,19 @@ GW.allowedAssetSequencingModes = [
 
 		Otherwise, if `sequence` is set to “nextAfterSaved”, the saved index
 		is incremented by 1 (or else set to 1, if there is no saved index yet);
-		if `sequence` is set to “previousBeforeSaved”, the saved index is 
+		if `sequence` is set to “previousBeforeSaved”, the saved index is
 		decremented by 1 (or else set to 0, if there is no saved index yet).
 
 		(In either case, the new index is saved to localStorage.)
 
 		That logo image will be then be selected which is the i’th in the set
 		of logo image files that match the specified criteria, where i is equal
-		to the new sequence index modulo the number of matching logo image 
+		to the new sequence index modulo the number of matching logo image
 		files.
 
 	link (URL)
 		Points the logo link to the specified URL. (If this field is not set,
-		the logo link retains its current target, whatever that may be. Note 
+		the logo link retains its current target, whatever that may be. Note
 		that by default, the logo link starts out pointing to /index.)
  */
 function injectSpecialPageLogo(logoType, options) {
@@ -5972,8 +5972,8 @@ function injectSpecialPageLogo(logoType, options) {
         });
     };
 
-    /*  Note that getAssetPathname(), versionedAssetURL(), and 
-    	processAssetSequenceOptions() are defined in misc.js, and so cannot be 
+    /*  Note that getAssetPathname(), versionedAssetURL(), and
+    	processAssetSequenceOptions() are defined in misc.js, and so cannot be
     	called prior to this.
      */
     replacePageLogoWhenPossible(logoImage => {
@@ -5982,7 +5982,7 @@ function injectSpecialPageLogo(logoType, options) {
 
         //  Get new logo URL (specified, random, or sequenced).
 		let logoPathname = getAssetPathname(logoPathnamePattern, processAssetSequenceOptions(options, {
-			currentAssetURL: URLFromString(   logoImage.querySelector("use")?.getAttribute("href") 
+			currentAssetURL: URLFromString(   logoImage.querySelector("use")?.getAttribute("href")
 										   ?? logoImage.querySelector("img")?.src),
 			assetSavedIndexKey: `logo-sequence-index-${logoType}`
 		}));
@@ -6028,7 +6028,7 @@ function resetPageLogoSequenceIndex(logoType) {
 /*	Reset the page logo to the default one.
  */
 function resetPageLogo() {
-    /*  Note that versionedAssetURL() is defined in misc.js, and so cannot be 
+    /*  Note that versionedAssetURL() is defined in misc.js, and so cannot be
     	called too early.
      */
     replacePageLogoWhenPossible(logoImage => {
@@ -6075,11 +6075,11 @@ GW.specialOccasions = [
         	name: "GW.setHalloweenPageLogoForViewportWidth",
         	ifMatchesOrAlwaysDo:(mediaQuery) => {
 				injectSpecialPageLogo("halloween", {
-					mode: "dark", 
+					mode: "dark",
 					sequence: "previousBeforeSaved",
 					link: newLogoLink
 				});
-			}, 
+			},
         	otherwiseDo: (mediaQuery) => {
 				injectSpecialPageLogo("halloween", {
 					mode: "dark",
@@ -6134,7 +6134,7 @@ GW.specialOccasions = [
 				});
 			},
 			otherwiseDo: null,
-			whenCanceledDo: (mediaQuery) => {        	
+			whenCanceledDo: (mediaQuery) => {
 				resetPageLogo();
 				doWhenPageLoaded(() => {
 					uncolorizeElements([
@@ -6328,7 +6328,7 @@ function isItEaster() {
 
     /*  Easter dates 2024–2050 from <https://www.assa.org.au/edm/#List20>;
         the JS computus (<https://en.wikipedia.org/wiki/Date_of_Easter>)
-        algorithms on StackOverflow etc are squirrely enough I’d rather just
+        algorithms on StackOverflow etc. are squirrely enough I’d rather just
         hardwire it. Should I need to update it in 2051, that’s fine...
      */
     let easterDates = [

@@ -2235,6 +2235,12 @@ span.smallcaps {
     font-family: var(--GW-monospaced-serif-font-stack);
 }
 
+/*	Prevent line breaking (wrapping) within specified elements.
+ */
+.nowrap {
+	white-space: nowrap;
+}
+
 
 /*******************/
 /* UTILITY CLASSES */
