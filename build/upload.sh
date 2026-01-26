@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2026-01-23 14:15:04 gwern"
+# When:  Time-stamp: "2026-01-25 18:03:46 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -203,6 +203,19 @@ _upload() {
                       compressPDF "$TARGET" || true; # sometimes PDFs error out in `ocrmypdf` and yield a size of 0, so we explicitly ignore errors from the 'compressPDF' wrapper
                       chmod a+r "$TARGET";
                   fi
+
+                # if a >=5MB HTML page, let's convert it to Gwtar for lazy-loading efficiency (see </gwtar>)
+                if [[ "$TARGET" =~ .*\.html ]] && [[ $(stat --format=%s "$TARGET") -ge 5000000 ]]; then
+                    GWTAR_TARGET="${TARGET%.html}.gwtar.html"
+                    bold "Large HTML ($(numfmt --to=iec-i --suffix=B $(stat --format=%s "$TARGET"))), converting to gwtar..."
+                    if php ~/wiki/static/build/deconstruct_singlefile.php --create-gwtar "$TARGET"; then
+                        rm -f -- "$TARGET"
+                        TARGET="$GWTAR_TARGET"
+                        bold "Created: /$TARGET"
+                    else
+                        red "Gwtar creation failed, keeping original HTML"
+                    fi
+                fi
                   # Large file strategy: naively checking in large files like multi-gigabyte `.pkl` files is a recipe for degrading the git repo. However, we do not *really* need to track their histories (as they are usually WORM/archival files), we have plenty of disk space & bandwidth on the dedicated server, and we want to otherwise treat large files identically to smaller ones in terms of hosting on Gwern.net, including in tag-directories, file icons, and so on. So, using git-annex or git-lfs is overkill and doesn't offer any functionality we need. Instead, we simply make heavier use of `.gitignore`: large files are added to the appropriate directory in `/docs/`, and then simply ignored by git. This is toil if we do it by hand, but we add files using `upload`, so we can simply automate the addition of a file-specific ignore line (if that is necessary).
                   # Check file size and add to '.gitignore' if large.
                   FILESIZE=$(stat --format=%s "$TARGET")

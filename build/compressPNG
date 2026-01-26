@@ -3,10 +3,15 @@
 # png.sh: compress a PNG with pngnq & optipng if the savings are worthwhile.
 # Author: Gwern Branwen
 # Date: 2013-01-01
-# When:  Time-stamp: "2026-01-25 12:40:06 gwern"
+# When:  Time-stamp: "2026-01-25 14:32:28 gwern"
 # License: CC-0
 
 set -euo pipefail
+
+## apt-get install pngnq optipng parallel
+command -v pngnq > /dev/null
+command -v optipng > /dev/null
+command -v parallel > /dev/null
 
 ## Inlining for portability
 # shellcheck source=./bash.sh

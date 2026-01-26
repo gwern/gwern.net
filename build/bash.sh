@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-01-21 23:57:41 gwern"
+# When:  Time-stamp: "2026-01-25 17:16:06 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -1067,6 +1067,7 @@ is_downloading () {
     is_downloading "$file" "$min_size_kb"
   fi
 }
+
 # shortcut for handling link-archiving review:
 # `mvuri`: takes a filename with a URI encoding
 # like `file:///home/gwern/wiki/doc/www/www.patterns.app/d7aaf7b7491492af22c98dae1079fbfa93961b5b.html`
@@ -1149,6 +1150,9 @@ mvuri () {
 
   echo -n -e '\a'; # ring bell because done
 }
+
+# convert a static HTML file into an efficient Gwtar (see </gwtar>)
+alias gwtar="php ~/wiki/static/build/deconstruct_singlefile.php --create-gwtar"
 
 # everyNDays: returns a boolean true every _N_ whole-number days in a systematic way based on date modulus; can be used in place of `$RANDOM` calls to do an operation 'randomly' every once in a while, by calling `everyNDays N && ...` or `if everyNDays N; then ...; else; ... fi`.
 # (Better than actual randomness because it avoids clumping/starvation, or potentially doing all of the operations on the same run by chance; and far simpler than any explicit tracking of state/date.)

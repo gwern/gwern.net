@@ -1,7 +1,7 @@
  {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2025-08-08 19:42:22 gwern"
+When:  Time-stamp: "2026-01-25 17:05:44 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -68,7 +68,7 @@ linkLiveP u
 
 linkLive :: Inline -> Inline
 linkLive x@(Link (_, cl, kvs) _ (u, _))
-  | "link-live-not" `elem` cl             =    x
+  | "link-live-not" `elem` cl             =    x -- note: '.link-live-not' just stops us from marking a link at compile-time; to forcibly disable any such popup, you need to use '.extract-not'
   | "data-url-archive" `elem` map fst kvs = aL x -- if a link has a local-archive, we can always pop up the local mirror instead
   -- NOTE: special API-using links like Wikipedia or Github (or formerly Twitter) are handled by the frontend JS
   | linkLiveP u                           = aL x
