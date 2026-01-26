@@ -246,26 +246,6 @@ function tarballRecordSize(fileByteSize) {
 	return (512 + roundUpToMultiple(fileByteSize, 512)); // tarball record header size, tarball record chunk size
 }
 
-/*****************************************************************************/
-/*	Given an ArrayBuffer, returns a base64-encoded string of the ArrayBuffer’s
-	contents.
- */
-function arrayBufferToBase64(buffer) {
-    let bytes = new Uint8Array(buffer);
-    return byteArrayToBase64(bytes);
-}
-
-/************************************************************************/
-/*	Given an array of bytes (either a Uint8Array or an Array of Uint8’s), 
-	returns a base64-encoded string of the array’s contents.
- */
-function byteArrayToBase64(bytes) {
-    let binary = [ ];
-    for (let i = 0; i < bytes.byteLength; i++)
-        binary.push(String.fromCharCode(bytes[i]));
-    return btoa(binary.join(""));
-}
-
 
 /**********/
 /* ACTION */
@@ -302,22 +282,22 @@ function spawnRequestObserver(resourceURLStringsHandler) {
 	perfObserver.observe({ entryTypes: [ "resource" ] });
 }
 
-function replaceResourceInDocument(resourceName, resourceURLString, base64EncodedAsset) {
-	replaceResourceInElement(document.documentElement, resourceName, resourceURLString, base64EncodedAsset);
+function replaceResourceInDocument(resourceName, resourceURLString, blob) {
+	replaceResourceInElement(document.documentElement, resourceName, resourceURLString, blob);
 }
 
-function replaceResourceInElement(element, resourceName, resourceURLString, base64EncodedAsset, resourceURLStringRegExp) {
+function replaceResourceInElement(element, resourceName, resourceURLString, blob, resourceURLStringRegExp) {
 	if (resourceURLStringRegExp == undefined)
 		resourceURLStringRegExp = new RegExp(resourceURLString);
 
 	if (element.children.length > 0) {
 		for (let childElement of element.children)
-			replaceResourceInElement(childElement, resourceName, resourceURLString, base64EncodedAsset, resourceURLStringRegExp);
+			replaceResourceInElement(childElement, resourceName, resourceURLString, blob, resourceURLStringRegExp);
 	} else if (   element.parentElement != null
 			   && resourceURLStringRegExp.test(element.outerHTML)) {
 		element.outerHTML = element.outerHTML.replace(
 			resourceURLStringRegExp,
-			`data:${assets[resourceName]["content-type"]};base64,${base64EncodedAsset}`
+			URL.createObjectURL(blob)
 		);
 	}
 }
@@ -370,8 +350,8 @@ function getResources(resourceURLStrings) {
 		},
 		responseType: "arraybuffer",
 		onSuccess: (event) => {
-			let base64EncodedAsset = arrayBufferToBase64(event.target.response);
-			replaceResourceInDocument(resourceNames[0], resourceURLStrings[0], base64EncodedAsset);
+			let blob = new Blob([ event.target.response ], { type: assets[resourceNames.first]["content-type"] });
+			replaceResourceInDocument(resourceNames.first, resourceURLStrings.first, blob);
 		}
 	});
 }
@@ -466,8 +446,8 @@ function loadAllWaitingAssets() {
 				loadAllWaitingAssets();
 			});
 		} else {
-			let base64EncodedAsset = byteArrayToBase64(bytes);
-			replaceResourceInDocument(resourceName, resourceInfo["urlString"], base64EncodedAsset);
+			let blob = new Blob([ bytes ], { type: assets[resourceName]["content-type"] });
+			replaceResourceInDocument(resourceName, resourceInfo["urlString"], blob);
 		}
 
 		resourceInfo["status"] = "loaded";
