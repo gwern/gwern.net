@@ -350,24 +350,6 @@ function handlePageRequestFailure() {
 /*	For range-based loading only.
  */
 
-// function parseMultipartBody (body, boundary) {
-// 	return body.split(`--${boundary}`).reduce((parts, part) => {
-// 		if (   part > ""
-// 			&& part.startsWith("--") == false) {
-// 			const [ head, body ] = part.trim().split(/\r\n\r\n/g);
-// 			parts.push({
-// 				body: body,
-// 				headers: head.split(/\r\n/g).reduce((headers, header) => {
-// 					const [ key, value ] = header.split(/:\s+/);
-// 					headers[key.toLowerCase()] = value;
-// 					return headers;
-// 				}, {})
-// 			})
-// 		}
-// 		return parts;
-// 	}, []).filter(part => (part["body"] != undefined));
-// }
-
 function getResources(resourceURLStrings) {
 	let resourceNames = resourceURLStrings.map(resourceURLString => {
 		let resourceName = resourceURLString.match(/([^\/]+)$/)[1];
@@ -388,22 +370,8 @@ function getResources(resourceURLStrings) {
 		},
 		responseType: "arraybuffer",
 		onSuccess: (event) => {
-// 			let contentTypeParts = event.target.getResponseHeader("content-type").split(";").map(part => part.trim());
-// 			if (contentTypeParts[0] == "multipart/byteranges") {
-// 				let boundaryString = contentTypeParts[1].split("=")[1];
-// 				let parts = parseMultipartBody(event.target.response, boundaryString);
-// 				console.log(parts);
-// 				for (let [ idx, resourceName ] of Object.entries(resourceNames)) {
-// 					let resourceByteRange = `${assets[resourceName]["byteRangeStart"]}-${assets[resourceName]["byteRangeEnd"]}`;
-// 					let base64EncodedAsset = arrayBufferToBase64(parts.find(part => 
-// 						part["headers"]["content-range"].split("/")[0] == `bytes ${resourceByteRange}`
-// 					)["body"]);
-// 					replaceResourceInDocument(resourceName, resourceURLStrings[idx], base64EncodedAsset);
-// 				}
-// 			} else {
-				let base64EncodedAsset = arrayBufferToBase64(event.target.response);
-				replaceResourceInDocument(resourceNames[0], resourceURLStrings[0], base64EncodedAsset);
-// 			}
+			let base64EncodedAsset = arrayBufferToBase64(event.target.response);
+			replaceResourceInDocument(resourceNames[0], resourceURLStrings[0], base64EncodedAsset);
 		}
 	});
 }
