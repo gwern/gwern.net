@@ -6,6 +6,7 @@
 ##     --backtrack-limit=5000000 
 ##     --jpg-quality=80% 
 ##     --save-original [default false]
+##     --create-gwtar [default false]
 ##     --keep-original [default false]
 ##     --debug [default false]
 
@@ -24,6 +25,12 @@ for ($i = 1; $i < $argc; $i++) {
 	} else if (!isset($args['file'])) {
 		$args['file'] = $argv[$i];
 	}
+}
+
+## Check for file existing.
+if (file_exists($args['file']) == false) {
+	echo "ERROR: file ‘{$args['file']}’ does not exist! Exiting.\n";
+	die;
 }
 
 ## The JS file that does the client-side processing.
@@ -57,7 +64,10 @@ $jpg_quality = $args['--jpg-quality'] ?? '80%';
 ## Save original.
 $save_original = $args['--save-original'] ?? false;
 
-## Keep original.
+## Create a .gwtar.
+$create_gwtar = $args['--create-gwtar'] ?? false;
+
+## Keep original (when creating a .gwtar).
 $keep_original = $args['--keep-original'] ?? false;
 
 ## Debug mode.
@@ -209,7 +219,7 @@ $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([
 	global $asset_type_map, $image_file_extensions;
 	global $input_file_path, $asset_directory, $asset_base_name;
 	global $jpg_quality, $build_tool_dir;
-	global $assets;
+	global $create_gwtar, $assets;
 	global $debug;
 
 	$type = $m[2];
@@ -222,7 +232,6 @@ $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([
 	$asset_file_path = "{$asset_directory}/{$asset_name}";
 
 	file_force_contents($asset_file_path, base64_decode($data));
-	$asset_file_paths[] = $asset_file_path;
 
 	## Check image file integrity with ImageMagick.
 	## If file is bad, delete it, and leave the asset as base64.
@@ -338,87 +347,93 @@ if (preg_last_error() != PREG_NO_ERROR)
 	die;
 
 ## Get hash of original singlefile.
-$input_file_hash = hash_file('sha256', $input_file_path);
+if ($create_gwtar)
+	$input_file_hash = hash_file('sha256', $input_file_path);
 
 ## Save original singlefile, if need be.
-if ($save_original || $keep_original)
+if (   $save_original
+	|| (   $create_gwtar
+		&& $keep_original))
 	`mv "{$input_file_path}" "{$input_file_path}.bak"`;
 
 ## Write out slimmed-down HTML file.
 file_put_contents($input_file_path, $output_file);
 
-## Get HTML file size.
-$assets[0]['size'] = filesize($input_file_path);
+## If we’re making a .gwtar archive...
+if ($create_gwtar) {
+	## Get HTML file size.
+	$assets[0]['size'] = filesize($input_file_path);
 
-## Get HTML file hash.
-$assets[0]['hash'] = hash_file('sha256', $input_file_path);
+	## Get HTML file hash.
+	$assets[0]['hash'] = hash_file('sha256', $input_file_path);
 
-## Create tarball.
-$tarball_file_path = "{$asset_directory}/../{$asset_base_name}.tar";
-`tar --create -f "{$tarball_file_path}" --format=ustar --owner=0 --group=0 "{$input_file_path}"`;
-foreach ($assets as $asset_name => $asset_info) {
-	if ($asset_name == 0)
-		continue;
+	## Create tarball.
+	$tarball_file_path = "{$asset_directory}/../{$asset_base_name}.tar";
+	`tar --create -f "{$tarball_file_path}" --format=ustar --owner=0 --group=0 "{$input_file_path}"`;
+	foreach ($assets as $asset_name => $asset_info) {
+		if ($asset_name == 0)
+			continue;
 
-	$asset_file_path = "{$asset_directory}/{$asset_name}";
-	`tar --append -f "{$tarball_file_path}" --format=ustar --owner=0 --group=0 "{$asset_file_path}"`;
+		$asset_file_path = "{$asset_directory}/{$asset_name}";
+		`tar --append -f "{$tarball_file_path}" --format=ustar --owner=0 --group=0 "{$asset_file_path}"`;
+	}
+
+	## Write out asset manifest.
+	$asset_manifest_file_path = "{$asset_directory}/../{$asset_base_name}-asset-manifest.js";
+	file_put_contents($asset_manifest_file_path, json_encode($assets));
+
+	## GWTAR archive file path.
+	$gwtar_file_path = "{$asset_directory}/../{$asset_base_name}.gwtar.html";
+
+	## Construct GWTAR archive file.
+	$gwtar_file_parts = [
+		implode("\n", [ '<html>', "<!-- Gwtar self-extracting HTML archive, {$gwtar_version_string} -->" ]),
+		implode("\n", [ '', "<!-- Original SingleFile: {$html_file_name} {$input_file_hash} (SHA-256) -->" ]),
+		implode("\n", [ '', '<body>', '<script>', 'let assets = ' ]),
+		json_encode($assets, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT),
+		implode("\n", [ '', '</script>', '<script>', 'let overhead = parseInt("' ]),
+		'000000000000', // 12 digits
+		implode("\n", [ '");', 'let totalArchiveSize = parseInt("' ]),
+		'000000000000000000000000', // 24 digits
+		implode("\n", [ '");', '</script>', '<script>', '' ]),
+		file_get_contents($js_script_path),
+		implode("\n", [ '', '</script>', '' ]),
+		file_get_contents($noscript_message_path),
+		implode("\n", [ '', '<script>', 'window.stop();', '</script>' ]),
+		implode("\n", [ '', '</body>', '</html>', '<!-- GWTAR END', '' ])
+	];
+	$overhead = strlen(implode('', $gwtar_file_parts));
+	$gwtar_file_parts[5] = str_pad($overhead, 12, '0', STR_PAD_LEFT);
+	$total_gwtar_size = $overhead + filesize($tarball_file_path);
+	$gwtar_file_parts[7] = str_pad($total_gwtar_size, 24, '0', STR_PAD_LEFT);
+	file_put_contents($gwtar_file_path, implode('', $gwtar_file_parts));
+	`cat "{$tarball_file_path}" >> "{$gwtar_file_path}"`;
+
+	## Make PAR2 files for forward error correction, tarball them up, and append.
+	`par2create -r25 "{$gwtar_file_path}"`;
+	$par_tarball_file_path = "{$gwtar_file_path}.par2.tar";
+	`tar --create -f "{$par_tarball_file_path}" --format=ustar --owner=0 --group=0 "{$gwtar_file_path}.par2"; rm "{$gwtar_file_path}.par2"`;
+	foreach (glob("{$gwtar_file_path}.*.par2") as $par_file_path) {
+		`tar --append -f "{$par_tarball_file_path}" --format=ustar --owner=0 --group=0 "{$par_file_path}"; rm "{$par_file_path}"`;
+	}
+	`cat "{$par_tarball_file_path}" >> "{$gwtar_file_path}"; rm "{$par_tarball_file_path}"`;
+
+	## Remove asset manifest.
+	unlink($asset_manifest_file_path);
+
+	## Remove tarball.
+	unlink($tarball_file_path);
+
+	## Replace original file, if need be; otherwise remove HTML file.
+	if ($keep_original) {
+		`mv "{$input_file_path}.bak" "{$input_file_path}"`;
+	} else {
+		unlink($input_file_path);
+	}
+
+	## Remove asset directory.
+	`rm -r "{$asset_directory}/"`;
 }
-
-## Write out asset manifest.
-$asset_manifest_file_path = "{$asset_directory}/../{$asset_base_name}-asset-manifest.js";
-file_put_contents($asset_manifest_file_path, json_encode($assets));
-
-## GWTAR archive file path.
-$gwtar_file_path = "{$asset_directory}/../{$asset_base_name}.gwtar.html";
-
-## Construct GWTAR archive file.
-$gwtar_file_parts = [
-	implode("\n", [ '<html>', "<!-- Gwtar self-extracting HTML archive, {$gwtar_version_string} -->" ]),
-	implode("\n", [ '', "<!-- Original SingleFile: {$html_file_name} {$input_file_hash} (SHA-256) -->" ]),
-	implode("\n", [ '', '<body>', '<script>', 'let assets = ' ]),
-	json_encode($assets, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT),
-	implode("\n", [ '', '</script>', '<script>', 'let overhead = parseInt("' ]),
-	'000000000000', // 12 digits
-	implode("\n", [ '");', 'let totalArchiveSize = parseInt("' ]),
-	'000000000000000000000000', // 24 digits
-	implode("\n", [ '");', '</script>', '<script>', '' ]),
-	file_get_contents($js_script_path),
-	implode("\n", [ '', '</script>', '' ]),
-	file_get_contents($noscript_message_path),
-	implode("\n", [ '', '<script>', 'window.stop();', '</script>' ]),
-	implode("\n", [ '', '</body>', '</html>', '<!-- GWTAR END', '' ])
-];
-$overhead = strlen(implode('', $gwtar_file_parts));
-$gwtar_file_parts[5] = str_pad($overhead, 12, '0', STR_PAD_LEFT);
-$total_gwtar_size = $overhead + filesize($tarball_file_path);
-$gwtar_file_parts[7] = str_pad($total_gwtar_size, 24, '0', STR_PAD_LEFT);
-file_put_contents($gwtar_file_path, implode('', $gwtar_file_parts));
-`cat "{$tarball_file_path}" >> "{$gwtar_file_path}"`;
-
-## Make PAR2 files for forward error correction, tarball them up, and append.
-`par2create -r25 "{$gwtar_file_path}"`;
-$par_tarball_file_path = "{$gwtar_file_path}.par2.tar";
-`tar --create -f "{$par_tarball_file_path}" --format=ustar --owner=0 --group=0 "{$gwtar_file_path}.par2"; rm "{$gwtar_file_path}.par2"`;
-foreach (glob("{$gwtar_file_path}.*.par2") as $par_file_path) {
-	`tar --append -f "{$par_tarball_file_path}" --format=ustar --owner=0 --group=0 "{$par_file_path}"; rm "{$par_file_path}"`;
-}
-`cat "{$par_tarball_file_path}" >> "{$gwtar_file_path}"; rm "{$par_tarball_file_path}"`;
-
-## Remove HTML file.
-unlink($input_file_path);
-
-## Remove asset manifest.
-unlink($asset_manifest_file_path);
-
-## Remove tarball.
-unlink($tarball_file_path);
-
-## Remove asset directory.
-`rm -r "{$asset_directory}/"`;
-
-## Replace original file, if need be.
-if ($keep_original)
-	`mv "{$input_file_path}.bak" "{$input_file_path}"`;
 
 ## Done.
 die;
