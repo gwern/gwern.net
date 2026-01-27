@@ -267,12 +267,32 @@ for (let [ assetName, assetInfo ] of Object.entries(assets)) {
 	byteOffset += tarballRecordSize(fileSize);
 }
 
+function activateScript(script, scriptContent = null) {
+	let replacementScript = newElement("script");
+	for (let attrName of script.getAttributeNames())
+		replacementScript.setAttribute(attrName, script.getAttribute(attrName));
+
+	//	Inline all scripts.
+	if (scriptContent != null) {
+		replacementScript.appendChild(document.createTextNode(scriptContent));
+		replacementScript.removeAttribute("src");
+	} else if (script.src == "") {
+		replacementScript.appendChild(document.createTextNode(script.textContent));
+	}
+
+	script.replaceWith(replacementScript);
+}
+
 function replaceDocumentWithResponse(responseText) {
 	document.documentElement.innerHTML = responseText.match(/<html .+?>(.+)(<\/html>|$)/is)[1].replace(
 		//	Prevent spurious network requests.
 		new RegExp(`${resourceBaseName}/${resourceBaseName}-asset-[0-9]+\.[0-9a-zA-Z]+`, "g"),
 		(match) => { return modifiedURL(URLFromString(match), { hostname: "localhost" }).href; }
 	);
+	//	Activate scripts.
+	document.querySelectorAll("script").forEach(script => {
+		activateScript(script);
+	});
 }
 
 function spawnRequestObserver(resourceURLStringsHandler) {
@@ -282,23 +302,32 @@ function spawnRequestObserver(resourceURLStringsHandler) {
 	perfObserver.observe({ entryTypes: [ "resource" ] });
 }
 
-function replaceResourceInDocument(resourceName, resourceURLString, blob) {
-	replaceResourceInElement(document.documentElement, resourceName, resourceURLString, blob);
+function replaceResourceInDocument(resourceName, resourceURLString, resource) {
+	replaceResourceInElement(document.documentElement, resourceName, resourceURLString, resource);
 }
 
-function replaceResourceInElement(element, resourceName, resourceURLString, blob, resourceURLStringRegExp) {
+/*	The ‘resource’ argument can be anything that the Blob() constructor takes
+	an array of (ArrayBuffer, TypedArray, etc.).
+ */
+function replaceResourceInElement(element, resourceName, resourceURLString, resource, resourceURLStringRegExp) {
 	if (resourceURLStringRegExp == undefined)
 		resourceURLStringRegExp = new RegExp(resourceURLString);
 
 	if (element.children.length > 0) {
 		for (let childElement of element.children)
-			replaceResourceInElement(childElement, resourceName, resourceURLString, blob, resourceURLStringRegExp);
+			replaceResourceInElement(childElement, resourceName, resourceURLString, resource, resourceURLStringRegExp);
 	} else if (   element.parentElement != null
 			   && resourceURLStringRegExp.test(element.outerHTML)) {
-		element.outerHTML = element.outerHTML.replace(
-			resourceURLStringRegExp,
-			URL.createObjectURL(blob)
-		);
+		if (   element.tagName.toLowerCase() == "script"
+			&& resourceName.endsWith(".js")) {
+			activateScript(element, (new TextDecoder()).decode(resource));
+		} else {
+			let blob = new Blob([ resource ], { type: assets[resourceName]["content-type"] });
+			element.outerHTML = element.outerHTML.replace(
+				resourceURLStringRegExp,
+				URL.createObjectURL(blob)
+			);
+		}
 	}
 }
 
@@ -350,8 +379,7 @@ function getResources(resourceURLStrings) {
 		},
 		responseType: "arraybuffer",
 		onSuccess: (event) => {
-			let blob = new Blob([ event.target.response ], { type: assets[resourceNames.first]["content-type"] });
-			replaceResourceInDocument(resourceNames.first, resourceURLStrings.first, blob);
+			replaceResourceInDocument(resourceNames.first, resourceURLStrings.first, event.target.response);
 		}
 	});
 }
@@ -446,8 +474,7 @@ function loadAllWaitingAssets() {
 				loadAllWaitingAssets();
 			});
 		} else {
-			let blob = new Blob([ bytes ], { type: assets[resourceName]["content-type"] });
-			replaceResourceInDocument(resourceName, resourceInfo["urlString"], blob);
+			replaceResourceInDocument(resourceName, resourceInfo["urlString"], bytes);
 		}
 
 		resourceInfo["status"] = "loaded";
