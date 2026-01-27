@@ -400,6 +400,72 @@ function handlePageRequestFailure() {
 /*	For range-based loading only.
  */
 
+function parseMultipartBody(body, boundary) {
+	let parts = [ ];
+
+    let bytes = new Uint8Array(body);
+
+	const MultipartParsingSection = Object.freeze({
+		START:		Symbol("start"),
+		HEADERS:	Symbol("headers"),
+		BODY:		Symbol("body")
+	});
+
+	let decoder = new TextDecoder();
+
+	let section = MultipartParsingSection.START;
+	let boundaryString = `--${boundary}`;
+	let i = 0;
+	while (i < (bytes.length - boundaryString.length)) {
+		if (   section == MultipartParsingSection.START
+			|| section == MultipartParsingSection.BODY) {
+			for (var offset = 0; offset < boundaryString.length; offset++) {
+				let c = String.fromCharCode(bytes[i + offset]);
+				if (c != boundaryString[offset])
+					break;
+			}
+			if (offset == boundaryString.length) {
+				i += offset;
+				if (   String.fromCharCode(bytes[i]) == "-"
+					&& String.fromCharCode(bytes[i + 1]) == "-")
+					break;
+
+				section = MultipartParsingSection.HEADERS;
+				parts.push({ body: [ ], headers: { } });
+			} else {
+				if (section == MultipartParsingSection.BODY)
+					parts.last.body.push(bytes[i]);
+
+				i++;
+			}
+		} else {
+			let headerBytes = [ ];
+			while (true) {
+				let c = String.fromCharCode(bytes[i]);				
+				if (   c == "\r"
+					&& decoder.decode(bytes.slice(i, i + 4)) == "\r\n\r\n") {
+					i += 4;
+					break;
+				} else {
+					headerBytes.push(bytes[i]);
+					i++;
+				}
+			}
+			decoder.decode(Uint8Array.from(headerBytes)).trim().split("\r\n").forEach(header => {
+				let [ headerName, headerValue ] = header.split(/:\s+/);
+				parts.last.headers[headerName.toLowerCase()] = headerValue;
+			});
+			section = MultipartParsingSection.BODY;
+		}
+	}
+
+	parts.forEach(part => {
+		part.body = Uint8Array.from(part.body);
+	});
+
+	return parts;
+}
+
 function getResources(assetInfoRecords, callbacks) {
 	callbacks = Object.assign({ }, callbacks);
 
@@ -419,10 +485,24 @@ function getResources(assetInfoRecords, callbacks) {
 				callbacks.onProgress(event);
 		},
 		onSuccess: (event) => {
-			let assetInfo = assetInfoRecords.first;
-			assetInfo["data"] = event.target.response;
-			if (callbacks.onSuccess != null)
-				callbacks.onSuccess(event, assetInfo);
+			let contentTypeParts = event.target.getResponseHeader("content-type").split(";").map(part => part.trim());
+			if (contentTypeParts[0] == "multipart/byteranges") {
+				let boundaryString = contentTypeParts[1].split("=")[1];
+				let parts = parseMultipartBody(event.target.response, boundaryString);
+				assetInfoRecords.forEach(assetInfo => {
+					let resourceByteRange = `${assetInfo["byteRangeStart"]}-${assetInfo["byteRangeEnd"]}`;
+					assetInfo["data"] = parts.find(part => 
+						part["headers"]["content-range"].split("/")[0] == `bytes ${resourceByteRange}`
+					)["body"];
+					if (callbacks.onSuccess != null)
+						callbacks.onSuccess(event, assetInfo);
+				});
+			} else {
+				let assetInfo = assetInfoRecords.first;
+				assetInfo["data"] = event.target.response;
+				if (callbacks.onSuccess != null)
+					callbacks.onSuccess(event, assetInfo);
+			}
 		},
 		onFailure: (event) => {
 			if (callbacks.onFailure != null)
@@ -462,13 +542,10 @@ function getMainPageHTML() {
 					});
 
 					//	Retrieve those resources we still need.
-			// 		getResources(assetInfoRecords.filter(assetInfo => assetInfo["data"] == null));
-					assetInfoRecords.filter(assetInfo => assetInfo["data"] == null).forEach(assetInfo => {
-						getResources([ assetInfo ], {
-							onSuccess: (event, assetInfo) => {
-								replaceResourceInDocument(assetInfo);
-							}
-						});
+					getResources(assetInfoRecords.filter(assetInfo => assetInfo["data"] == null), {
+						onSuccess: (event, assetInfo) => {
+							replaceResourceInDocument(assetInfo);
+						}
 					});
 				});
 
@@ -487,19 +564,11 @@ function loadAllScriptsAndThenDo(callback) {
 		return;
 	}
 
-// 	getResources(allScripts().filter(assetInfo => (assetInfo["data"] == null)), {
-// 		onSuccess: (event, assetInfo) => {
-// 			if (allScriptsLoaded() == true)
-// 				callback();
-// 		}
-// 	});
-	allScripts().filter(assetInfo => (assetInfo["data"] == null)).forEach(assetInfo => {
-		getResources([ assetInfo ], {
-			onSuccess: (event, assetInfo) => {
-				if (allScriptsLoaded() == true)
-					callback();
-			}
-		});
+	getResources(allScripts().filter(assetInfo => (assetInfo["data"] == null)), {
+		onSuccess: (event, assetInfo) => {
+			if (allScriptsLoaded() == true)
+				callback();
+		}
 	});
 }
 
