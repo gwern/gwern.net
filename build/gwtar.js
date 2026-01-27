@@ -257,13 +257,27 @@ function tarballRecordSize(fileByteSize) {
 
 let resourceBaseName = assets["0"]["basename"];
 
+function assetInfoFromResourceURLString(resourceURLString) {
+	let resourceName = resourceURLString.match(/([^\/]+)$/)[1];
+	let assetInfo = assets[resourceName];
+	if (assetInfo == null)
+		return null;
+
+	if (assetInfo["name"] == null)
+		assetInfo["name"] = resourceName;
+	if (assetInfo["urlString"] == null)
+		assetInfo["urlString"] = resourceURLString;
+
+	return assetInfo;
+}
+
 //	Compute byte ranges.
 let byteOffset = overhead + 512; // tarball record header size
 for (let [ assetName, assetInfo ] of Object.entries(assets)) {
-	assets[assetName]["byteRangeStart"] = byteOffset;
+	assetInfo["byteRangeStart"] = byteOffset;
 
 	let fileSize = parseInt(assets[assetName]["size"]);
-	assets[assetName]["byteRangeEnd"] = byteOffset + fileSize - 1;
+	assetInfo["byteRangeEnd"] = byteOffset + fileSize - 1;
 	byteOffset += tarballRecordSize(fileSize);
 }
 
@@ -302,27 +316,27 @@ function spawnRequestObserver(resourceURLStringsHandler) {
 	perfObserver.observe({ entryTypes: [ "resource" ] });
 }
 
-function replaceResourceInDocument(resourceName, resourceURLString, resource) {
-	replaceResourceInElement(document.documentElement, resourceName, resourceURLString, resource);
+function replaceResourceInDocument(assetInfo) {
+	replaceResourceInElement(document.documentElement, assetInfo);
 }
 
-/*	The ‘resource’ argument can be anything that the Blob() constructor takes
-	an array of (ArrayBuffer, TypedArray, etc.).
+/*	The ‘data’ member of the ‘assetInfo’ argument can be anything that the 
+	Blob() constructor takes an array of (ArrayBuffer, TypedArray, etc.).
  */
-function replaceResourceInElement(element, resourceName, resourceURLString, resource, resourceURLStringRegExp) {
+function replaceResourceInElement(element, assetInfo, resourceURLStringRegExp) {
 	if (resourceURLStringRegExp == undefined)
-		resourceURLStringRegExp = new RegExp(resourceURLString);
+		resourceURLStringRegExp = new RegExp(assetInfo["urlString"]);
 
 	if (element.children.length > 0) {
 		for (let childElement of element.children)
-			replaceResourceInElement(childElement, resourceName, resourceURLString, resource, resourceURLStringRegExp);
+			replaceResourceInElement(childElement, assetInfo, resourceURLStringRegExp);
 	} else if (   element.parentElement != null
 			   && resourceURLStringRegExp.test(element.outerHTML)) {
 		if (   element.tagName.toLowerCase() == "script"
-			&& resourceName.endsWith(".js")) {
-			activateScript(element, (new TextDecoder()).decode(resource));
+			&& assetInfo["name"].endsWith(".js")) {
+			activateScript(element, (new TextDecoder()).decode(assetInfo["data"]));
 		} else {
-			let blob = new Blob([ resource ], { type: assets[resourceName]["content-type"] });
+			let blob = new Blob([ assetInfo["data"] ], { type: assetInfo["content-type"] });
 			element.outerHTML = element.outerHTML.replace(
 				resourceURLStringRegExp,
 				URL.createObjectURL(blob)
@@ -359,17 +373,10 @@ function handlePageRequestFailure() {
 /*	For range-based loading only.
  */
 
-function getResources(resourceURLStrings) {
-	let resourceNames = resourceURLStrings.map(resourceURLString => {
-		let resourceName = resourceURLString.match(/([^\/]+)$/)[1];
-		if (assets[resourceName] == null)
-			return null;
-		return resourceName;
-	}).nonnull();
-	let fullByteRange = resourceNames.map(resourceName => 
-		`${assets[resourceName]["byteRangeStart"]}-${assets[resourceName]["byteRangeEnd"]}`
+function getResources(assetInfoRecords) {
+	let fullByteRange = assetInfoRecords.map(assetInfo => 
+		`${assetInfo["byteRangeStart"]}-${assetInfo["byteRangeEnd"]}`
 	).join(",");
-
 	if (fullByteRange == "")
 		return;
 
@@ -379,7 +386,9 @@ function getResources(resourceURLStrings) {
 		},
 		responseType: "arraybuffer",
 		onSuccess: (event) => {
-			replaceResourceInDocument(resourceNames.first, resourceURLStrings.first, event.target.response);
+			let assetInfo = assetInfoRecords.first;
+			assetInfo["data"] = event.target.response;
+			replaceResourceInDocument(assetInfo);
 		}
 	});
 }
@@ -408,11 +417,20 @@ function getMainPageHTML() {
 			}
 		},
 		onSuccess: (event) => {
+			assets["0"]["data"] = event.target.responseText;
 			replaceDocumentWithResponse(event.target.responseText);
 			spawnRequestObserver((resourceURLStrings) => {
-		// 		getResources(resourceURLStrings);
-				resourceURLStrings.forEach(resourceURLString => {
-					getResources([ resourceURLString ]);
+				let assetInfoRecords = resourceURLStrings.map(assetInfoFromResourceURLString).nonnull();
+
+				//	Inject those resources we’ve already retrieved.
+				assetInfoRecords.filter(assetInfo => assetInfo["data"] != null).forEach(assetInfo => {
+					replaceResourceInDocument(assetInfo);
+				});
+
+				//	Retrieve those resources we still need.
+		// 		getResources(assetInfoRecords.filter(assetInfo => assetInfo["data"] == null));
+				assetInfoRecords.filter(assetInfo => assetInfo["data"] == null).forEach(assetInfo => {
+					getResources([ assetInfo ]);
 				});
 			});
 		},
@@ -454,40 +472,39 @@ function appendLoadedResponseData(value) {
 }
 
 function loadAllWaitingAssets() {
-	for (let [ resourceName, resourceInfo ] of Object.entries(assets)) {
-		if (resourceInfo["status"] != "waiting")
+	for (let [ assetName, assetInfo ] of Object.entries(assets)) {
+		if (assetInfo["status"] != "waiting")
 			continue;
 
-		if (resourceInfo["byteRangeEnd"] >= loadedResponseDataLength)
+		if (assetInfo["byteRangeEnd"] >= loadedResponseDataLength)
 			continue;
 
-		let bytes = loadedResponseData.slice(resourceInfo["byteRangeStart"], resourceInfo["byteRangeEnd"] + 1);
-		if (resourceName == "0") {
-			let decoder = new TextDecoder();
-			let responseText = decoder.decode(bytes);
+		let bytes = loadedResponseData.slice(assetInfo["byteRangeStart"], assetInfo["byteRangeEnd"] + 1);
+		if (assetName == "0") {
+			let responseText = (new TextDecoder()).decode(bytes);
+			assetInfo["data"] = responseText;
 			replaceDocumentWithResponse(responseText);
 			spawnRequestObserver((resourceURLStrings) => {
-				resourceURLStrings.forEach(resourceURLString => {
-					markResourceWaiting(resourceURLString);
+				let assetInfoRecords = resourceURLStrings.map(assetInfoFromResourceURLString).nonnull();
+				assetInfoRecords.forEach(assetInfo => {
+					markResourceWaiting(assetInfo);
 				});
 
 				loadAllWaitingAssets();
 			});
 		} else {
-			replaceResourceInDocument(resourceName, resourceInfo["urlString"], bytes);
+			replaceResourceInDocument(assetInfo);
 		}
 
-		resourceInfo["status"] = "loaded";
+		assetInfo["status"] = "loaded";
 	}
 }
 
-function markResourceWaiting(resourceURLString) {
-	let resourceName = resourceURLString.match(/([^\/]+)$/)[1];
-	if (assets[resourceName] == null)
+function markAssetWaiting(assetInfo) {
+	if (assetInfo == null)
 		return;
 
-	assets[resourceName]["status"] = "waiting";
-	assets[resourceName]["urlString"] = resourceURLString;
+	assetInfo["status"] = "waiting";
 }
 
 /***************************************************/
