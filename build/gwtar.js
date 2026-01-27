@@ -257,38 +257,45 @@ function tarballRecordSize(fileByteSize) {
 
 let resourceBaseName = assets["0"]["basename"];
 
+//	Compute byte ranges and save names.
+let byteOffset = overhead + 512; // tarball record header size
+for (let [ assetName, assetInfo ] of Object.entries(assets)) {
+	assetInfo["name"] = assetName;
+
+	assetInfo["byteRangeStart"] = byteOffset;
+
+	let fileSize = parseInt(assets[assetName]["size"]);
+	assetInfo["byteRangeEnd"] = byteOffset + fileSize - 1;
+
+	byteOffset += tarballRecordSize(fileSize);
+}
+
 function assetInfoFromResourceURLString(resourceURLString) {
 	let resourceName = resourceURLString.match(/([^\/]+)$/)[1];
 	let assetInfo = assets[resourceName];
 	if (assetInfo == null)
 		return null;
 
-	if (assetInfo["name"] == null)
-		assetInfo["name"] = resourceName;
 	if (assetInfo["urlString"] == null)
 		assetInfo["urlString"] = resourceURLString;
 
 	return assetInfo;
 }
 
-//	Compute byte ranges.
-let byteOffset = overhead + 512; // tarball record header size
-for (let [ assetName, assetInfo ] of Object.entries(assets)) {
-	assetInfo["byteRangeStart"] = byteOffset;
-
-	let fileSize = parseInt(assets[assetName]["size"]);
-	assetInfo["byteRangeEnd"] = byteOffset + fileSize - 1;
-	byteOffset += tarballRecordSize(fileSize);
-}
-
-function activateScript(script, scriptContent = null) {
+function activateScript(script) {
 	let replacementScript = newElement("script");
 	for (let attrName of script.getAttributeNames())
 		replacementScript.setAttribute(attrName, script.getAttribute(attrName));
 
 	//	Inline all scripts.
-	if (scriptContent != null) {
+	if (script.src > "") {
+		let scriptAssetInfo = assetInfoFromResourceURLString(script.src);
+		if (scriptAssetInfo["data"] == null)
+			return;
+
+		let scriptContent = (new TextDecoder()).decode(scriptAssetInfo["data"])
 		replacementScript.appendChild(document.createTextNode(scriptContent));
+
 		replacementScript.removeAttribute("src");
 	} else if (script.src == "") {
 		replacementScript.appendChild(document.createTextNode(script.textContent));
@@ -297,16 +304,38 @@ function activateScript(script, scriptContent = null) {
 	script.replaceWith(replacementScript);
 }
 
-function replaceDocumentWithResponse(responseText) {
-	document.documentElement.innerHTML = responseText.match(/<html .+?>(.+)(<\/html>|$)/is)[1].replace(
+function rewriteHTMLResponse(responseText) {
+	return responseText.match(/<html .+?>(.+)(<\/html>|$)/is)[1].replace(
 		//	Prevent spurious network requests.
 		new RegExp(`${resourceBaseName}/${resourceBaseName}-asset-[0-9]+\.[0-9a-zA-Z]+`, "g"),
 		(match) => { return modifiedURL(URLFromString(match), { hostname: "localhost" }).href; }
 	);
+}
+
+function renderMainPage() {
+	if (assets["0"]["data"] == null)
+		return;
+
+	document.documentElement.innerHTML = rewriteHTMLResponse((new TextDecoder()).decode(assets["0"]["data"]));
+
 	//	Activate scripts.
 	document.querySelectorAll("script").forEach(script => {
 		activateScript(script);
 	});
+
+	assets["0"]["rendered"] = true;
+}
+
+function allScripts() {
+	return Object.values(assets).filter(assetInfo => assetInfo["name"].endsWith(".js"));
+}
+
+//	Returns true if all .js assets have been loaded, false otherwise.
+function allScriptsLoaded() {
+	return (Object.values(assets).some(assetInfo => 
+		(   assetInfo["name"].endsWith(".js")
+		 && assetInfo["data"] == null)
+	) == false);
 }
 
 function spawnRequestObserver(resourceURLStringsHandler) {
@@ -324,6 +353,9 @@ function replaceResourceInDocument(assetInfo) {
 	Blob() constructor takes an array of (ArrayBuffer, TypedArray, etc.).
  */
 function replaceResourceInElement(element, assetInfo, resourceURLStringRegExp) {
+	if (assetInfo["data"] == null)
+		return;
+
 	if (resourceURLStringRegExp == undefined)
 		resourceURLStringRegExp = new RegExp(assetInfo["urlString"]);
 
@@ -332,16 +364,11 @@ function replaceResourceInElement(element, assetInfo, resourceURLStringRegExp) {
 			replaceResourceInElement(childElement, assetInfo, resourceURLStringRegExp);
 	} else if (   element.parentElement != null
 			   && resourceURLStringRegExp.test(element.outerHTML)) {
-		if (   element.tagName.toLowerCase() == "script"
-			&& assetInfo["name"].endsWith(".js")) {
-			activateScript(element, (new TextDecoder()).decode(assetInfo["data"]));
-		} else {
-			let blob = new Blob([ assetInfo["data"] ], { type: assetInfo["content-type"] });
-			element.outerHTML = element.outerHTML.replace(
-				resourceURLStringRegExp,
-				URL.createObjectURL(blob)
-			);
-		}
+		let blob = new Blob([ assetInfo["data"] ], { type: assetInfo["content-type"] });
+		element.outerHTML = element.outerHTML.replace(
+			resourceURLStringRegExp,
+			URL.createObjectURL(blob)
+		);
 	}
 }
 
@@ -373,7 +400,9 @@ function handlePageRequestFailure() {
 /*	For range-based loading only.
  */
 
-function getResources(assetInfoRecords) {
+function getResources(assetInfoRecords, callbacks) {
+	callbacks = Object.assign({ }, callbacks);
+
 	let fullByteRange = assetInfoRecords.map(assetInfo => 
 		`${assetInfo["byteRangeStart"]}-${assetInfo["byteRangeEnd"]}`
 	).join(",");
@@ -385,10 +414,19 @@ function getResources(assetInfoRecords) {
 			"Range": `bytes=${fullByteRange}`
 		},
 		responseType: "arraybuffer",
+		onProgress: (event) => {
+			if (callbacks.onProgress != null)
+				callbacks.onProgress(event);
+		},
 		onSuccess: (event) => {
 			let assetInfo = assetInfoRecords.first;
 			assetInfo["data"] = event.target.response;
-			replaceResourceInDocument(assetInfo);
+			if (callbacks.onSuccess != null)
+				callbacks.onSuccess(event, assetInfo);
+		},
+		onFailure: (event) => {
+			if (callbacks.onFailure != null)
+				callbacks.onFailure(event);
 		}
 	});
 }
@@ -396,10 +434,7 @@ function getResources(assetInfoRecords) {
 /*	Attempt to get just the HTML of the main page, via a Range request.
  */
 function getMainPageHTML() {
-	doAjax({
-		headers: {
-			"Range": `bytes=${assets["0"]["byteRangeStart"]}-${assets["0"]["byteRangeEnd"]}`
-		},
+	getResources([ assets["0"] ], {
 		onProgress: (event) => {
 			/*	If the response status code is 206, then everything is fine and
 				we’re getting our requested byte ranges.
@@ -416,25 +451,55 @@ function getMainPageHTML() {
 				getFullPageData();
 			}
 		},
-		onSuccess: (event) => {
-			assets["0"]["data"] = event.target.responseText;
-			replaceDocumentWithResponse(event.target.responseText);
-			spawnRequestObserver((resourceURLStrings) => {
-				let assetInfoRecords = resourceURLStrings.map(assetInfoFromResourceURLString).nonnull();
+		onSuccess: (event, assetInfo) => {
+			loadAllScriptsAndThenDo(() => {
+				spawnRequestObserver((resourceURLStrings) => {
+					let assetInfoRecords = resourceURLStrings.map(assetInfoFromResourceURLString).nonnull();
 
-				//	Inject those resources we’ve already retrieved.
-				assetInfoRecords.filter(assetInfo => assetInfo["data"] != null).forEach(assetInfo => {
-					replaceResourceInDocument(assetInfo);
+					//	Inject those resources we’ve already retrieved.
+					assetInfoRecords.filter(assetInfo => assetInfo["data"] != null).forEach(assetInfo => {
+						replaceResourceInDocument(assetInfo);
+					});
+
+					//	Retrieve those resources we still need.
+			// 		getResources(assetInfoRecords.filter(assetInfo => assetInfo["data"] == null));
+					assetInfoRecords.filter(assetInfo => assetInfo["data"] == null).forEach(assetInfo => {
+						getResources([ assetInfo ], {
+							onSuccess: (event, assetInfo) => {
+								replaceResourceInDocument(assetInfo);
+							}
+						});
+					});
 				});
 
-				//	Retrieve those resources we still need.
-		// 		getResources(assetInfoRecords.filter(assetInfo => assetInfo["data"] == null));
-				assetInfoRecords.filter(assetInfo => assetInfo["data"] == null).forEach(assetInfo => {
-					getResources([ assetInfo ]);
-				});
+				renderMainPage();
 			});
 		},
-		onFailure: handlePageRequestFailure
+		onFailure: (event) => {
+			handlePageRequestFailure();
+		}
+	});
+}
+
+function loadAllScriptsAndThenDo(callback) {
+	if (allScriptsLoaded() == true) {
+		callback();
+		return;
+	}
+
+// 	getResources(allScripts().filter(assetInfo => (assetInfo["data"] == null)), {
+// 		onSuccess: (event, assetInfo) => {
+// 			if (allScriptsLoaded() == true)
+// 				callback();
+// 		}
+// 	});
+	allScripts().filter(assetInfo => (assetInfo["data"] == null)).forEach(assetInfo => {
+		getResources([ assetInfo ], {
+			onSuccess: (event, assetInfo) => {
+				if (allScriptsLoaded() == true)
+					callback();
+			}
+		});
 	});
 }
 
@@ -479,24 +544,28 @@ function loadAllWaitingAssets() {
 		if (assetInfo["byteRangeEnd"] >= loadedResponseDataLength)
 			continue;
 
-		let bytes = loadedResponseData.slice(assetInfo["byteRangeStart"], assetInfo["byteRangeEnd"] + 1);
+		assetInfo["data"] = loadedResponseData.slice(assetInfo["byteRangeStart"], assetInfo["byteRangeEnd"] + 1);
+		assetInfo["status"] = "loaded";
+
 		if (assetName == "0") {
-			let responseText = (new TextDecoder()).decode(bytes);
-			assetInfo["data"] = responseText;
-			replaceDocumentWithResponse(responseText);
+			allScripts().filter(assetInfo => (assetInfo["status"] != "loaded")).forEach(markAssetWaiting);
+		} else if (assets["0"]["rendered"] == true) {
+			replaceResourceInDocument(assetInfo);
+		}
+
+		if (   assets["0"]["rendered"] != true
+			&& allScriptsLoaded() == true) {
 			spawnRequestObserver((resourceURLStrings) => {
 				let assetInfoRecords = resourceURLStrings.map(assetInfoFromResourceURLString).nonnull();
 				assetInfoRecords.forEach(assetInfo => {
-					markResourceWaiting(assetInfo);
+					markAssetWaiting(assetInfo);
 				});
 
 				loadAllWaitingAssets();
 			});
-		} else {
-			replaceResourceInDocument(assetInfo);
-		}
 
-		assetInfo["status"] = "loaded";
+			renderMainPage();
+		}
 	}
 }
 

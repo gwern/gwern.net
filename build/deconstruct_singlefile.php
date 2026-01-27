@@ -360,6 +360,19 @@ if ($create_gwtar) {
 	## Get HTML file hash.
 	$assets[0]['hash'] = hash_file('sha256', $input_file_path);
 
+	## Sort asset manifest to put JavaScript files first.
+	uksort($assets, function ($a, $b) {
+		if ($a == 0)
+			return -1;
+		if (   str_ends_with($a, '.js') == true
+			&& str_ends_with($b, '.js') == false)
+			return -1;
+		if (   str_ends_with($a, '.js') == false
+			&& str_ends_with($b, '.js') == true)
+			return 1;
+		return 0;
+	});
+
 	## Create tarball.
 	$tarball_file_path = "{$asset_directory}/../{$asset_base_name}.tar";
 	`tar --create -f "{$tarball_file_path}" --format=ustar --owner=0 --group=0 "{$input_file_path}"`;
