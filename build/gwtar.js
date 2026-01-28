@@ -483,6 +483,19 @@ function getResources(assetInfoRecords, callbacks) {
 		},
 		responseType: "arraybuffer",
 		onProgress: (event) => {
+			/*	If the response status code is 206, then everything is fine and
+				we’re getting our requested byte ranges.
+
+				If the status code is 200, then likely the server has ignored 
+				the HTTP Range header, and is sending the whole file. That means
+				that we need to handle things differently.
+
+				If the status code is anything else, then some problem is 
+				happening, probably. But we don’t need to handle that here.
+			 */
+			if (event.target.status == 200)
+				event.target.abort();
+
 			if (callbacks.onProgress != null)
 				callbacks.onProgress(event);
 		},
@@ -518,20 +531,13 @@ function getResources(assetInfoRecords, callbacks) {
 function getMainPageHTML() {
 	getResources([ assets["0"] ], {
 		onProgress: (event) => {
-			/*	If the response status code is 206, then everything is fine and
-				we’re getting our requested byte ranges.
-
-				If the status code is 200, then likely the server has ignored 
-				the HTTP Range header, and is sending the whole file. That means
-				that we need to handle things differently.
-
-				If the status code is anything else, then some problem is 
-				happening, probably. But we don’t need to handle that here.
+			/*	A 200 status code means that we’ve aborted the transfer (because
+				the server doesn’t support range requests, it seems), but we
+				still need to load the page. So we switch to full-response-based
+				mode.
 			 */
-			if (event.target.status == 200) {
-				event.target.abort();
+			if (event.target.status == 200)
 				getFullPageData();
-			}
 		},
 		onSuccess: (event, assetInfo) => {
 			loadAllScriptsAndThenDo(() => {
