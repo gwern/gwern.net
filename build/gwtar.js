@@ -469,7 +469,9 @@ function parseMultipartBody(body, boundary) {
 function getResources(assetInfoRecords, callbacks) {
 	callbacks = Object.assign({ }, callbacks);
 
-	let fullByteRange = assetInfoRecords.map(assetInfo => 
+	let fullByteRange = assetInfoRecords.sort((a, b) => 
+		(a["byteRangeStart"] - b["byteRangeStart"])
+	).map(assetInfo => 
 		`${assetInfo["byteRangeStart"]}-${assetInfo["byteRangeEnd"]}`
 	).join(",");
 	if (fullByteRange == "")
