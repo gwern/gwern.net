@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-01-25 11:08:54 gwern"
+# When:  Time-stamp: "2026-01-27 22:37:13 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -858,6 +858,8 @@ About Us
 "<em>Japanese Death Poems</em> (part 2)"
 - https://www.presentandcorrect.com/blogs/blog/typography-on-pencils-1-5 Typography on Pencils, 1–5.—Present &amp; Correct"
 "Typography on Pencils, 1–5"
+- "https://krabat.menneske.dk/kkblog/2016/06/29/solved-auto-breaking-lines-in-epub-poetry-collections/ SOLVED… Auto-Breaking lines in ePub poetry collections! Well, sorta…—Kenneth Krabats 1000 stemmer"
+"SOLVED… Auto-Breaking lines in ePub poetry collections! Well, sorta…"
 
 Task:
 

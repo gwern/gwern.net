@@ -185,4 +185,4 @@ stringDelete = [" - The Public Domain Review"
             , " - Keith Woods", " - by Zachary Brown", " - Anime News Network", " -blog", " - by JP Aumasson - bfSwA"
             , "MindAndMuscle.net - ", " \\ Anthropic", " (Maurycy's blog)", " - Soliloquies", " - iA", " - Tinyhack.com", " | Archives"
             , " - Michael Chavinda - A collection of my thoughts on the various topics I find myself interested in."
-            , " - by Roger’s Bacon - Secretorum", ".  - Present & Correct", ".—Present &amp; Correct"]
+            , " - by Roger’s Bacon - Secretorum", ".  - Present & Correct", ". —Present &amp; Correct", " - Kenneth Krabats 1000 stemmer"]
