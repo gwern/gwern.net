@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-01-25 16:09:04 gwern"
+# When:  Time-stamp: "2026-01-28 17:35:21 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -193,7 +193,7 @@ else
     # compile changeTag.hs &
     # compile checkMetadata.hs &
     # compile generateSimilarLinks.hs &
-    cabal install
+    cabal install ; cabal clean
     ## NOTE: the generateSimilarLinks & link-suggester.hs runs are done at midnight by a cron job because
     ## they are too slow to run during a regular site build & don't need to be super-up-to-date
     ## anyway
@@ -1675,6 +1675,11 @@ else
     curl --silent --head "https://gwern.net/doc/www/www.usagi.org/4b4194c682efeeab1f37fd9956dff3fc3807e3c8.html"  "https://gwern.net/doc/www/www.usagi.org/df4966e6908602944e3f0f22e9a818ffbfe09086.html" | ge --quiet "^x-robots-tag: " || red "/doc/www/ paths missing robots tag! ✗" # these mirrors are chosen to trigger SSI errors, if SSI processing is incorrectly happening on /doc/www/ files
     curl --silent --head "https://gwern.net/doc/index" | ge --quiet "^x-robots-tag: " && red "/doc/index has robots tag! ✗"
 
+    ## check that Range requests are working on Gwtar files like </doc/philosophy/religion/2010-02-brianmoriarty-thesecretofpsalm46.gwtar.html>:
+    GWTAR_RANGE=$(curl --silent --head --header "Range: bytes=0-99" 'https://gwern.net/doc/philosophy/religion/1999-03-17-brianmoriarty-whoburiedpaul.gwtar.html')
+    echo "$GWTAR_RANGE" | ge --quiet "^HTTP/[0-9.]* 206" || red "gwtar Range request not returning 206! ✗"
+    echo "$GWTAR_RANGE" | ge --quiet "^content-range:"   || red "gwtar Range request missing Content-Range! ✗"
+
     ## check that all tag shortcuts are working, and create missing ones:
     ( find ./doc/ -type f -name "index.md" | sort | while IFS= read -r file; do
         dir=$(basename "$(dirname "$file")")
@@ -1756,13 +1761,14 @@ else
     wrap λ "Archives of broken links"
 
     ## 'file' throws a lot of false negatives on HTML pages, often detecting XML and/or ASCII instead, so we whitelist some:
-    λ(){ find ./ -type f -mtime -31 -name "*.html" | gfv -e '4a4187fdcd0c848285640ce9842ebdf1bf179369' -e '5fda79427f76747234982154aad027034ddf5309' \
-                                                -e 'f0cab2b23e1929d87f060beee71f339505da5cad' -e 'a9abc8e6fcade0e4c49d531c7d9de11aaea37fe5' \
-                                                -e '2015-01-15-outlawmarket-index.html' -e 'ac4f5ed5051405ddbb7deabae2bce48b7f43174c.html' \
-                                                -e '%3FDaicon-videos.html' -e '86600697f8fd73d008d8383ff4878c25eda28473.html' \
-                                                -e '16aacaabe05dfc07c0e966b994d7dd0a727cd90e' -e 'metadata/today-quote.html' -e 'metadata/today-annotation.html' \
-                                                -e '023a48cb80d48b1438d2accbceb5dc8ad01e8e02' -e '/Starr_Report/' -e '88b3f6424a0b31dcd388ef8364b11097e228b809.html' \
-                                                -e '7f81f4ef122b83724448beb1f585025dbc8505d0' -e '/static/include/sidebar.html' -e 'unfortunatelytheclockisticking.html' -e 'idealconditionsdonotexistandwillneverhappen.html' -e '32938f5a1be0697eaca1f747631fc17550c1e862' \
+    λ(){ find ./ -type f -mtime -31 -name "*.html" -not -name "*.gwtar.html" \
+             | gfv -e '4a4187fdcd0c848285640ce9842ebdf1bf179369' -e '5fda79427f76747234982154aad027034ddf5309' \
+                   -e 'f0cab2b23e1929d87f060beee71f339505da5cad' -e 'a9abc8e6fcade0e4c49d531c7d9de11aaea37fe5' \
+                   -e '2015-01-15-outlawmarket-index.html' -e 'ac4f5ed5051405ddbb7deabae2bce48b7f43174c.html' \
+                   -e '%3FDaicon-videos.html' -e '86600697f8fd73d008d8383ff4878c25eda28473.html' \
+                   -e '16aacaabe05dfc07c0e966b994d7dd0a727cd90e' -e 'metadata/today-quote.html' -e 'metadata/today-annotation.html' \
+                   -e '023a48cb80d48b1438d2accbceb5dc8ad01e8e02' -e '/Starr_Report/' -e '88b3f6424a0b31dcd388ef8364b11097e228b809.html' \
+                   -e '7f81f4ef122b83724448beb1f585025dbc8505d0' -e '/static/include/sidebar.html' -e 'unfortunatelytheclockisticking.html' -e 'idealconditionsdonotexistandwillneverhappen.html' -e '32938f5a1be0697eaca1f747631fc17550c1e862' \
              | parallel --max-args=500 file | gfv -e 'HTML document, ' -e 'ASCII text' -e 'LaTeX document, UTF-8 Unicode text'; }
     wrap λ "Corrupted filetype: HTML" &
 
@@ -1876,6 +1882,9 @@ else
              -e 'doc/rotten.com/' -e 'doc/genetics/selection/www.mountimprobable.com/' -e 'doc/www/' | \
              parallel --max-args=500 identify | ge '\.gif\[[0-9]\] '; }
     wrap λ "Animated GIF is deprecated; GIFs should be converted to WebMs/MP4s."
+
+    λ(){ find . -type f -name "*.gwtar.html" | parallel --max-args=500 grep --files-without-match --fixed-strings -e "PAR2"; }
+    wrap λ "Gwtar archive file found which likely does not contain any PAR2 FEC (no hit for the string 'PAR2')? Add PAR2 to it."
 
     λ(){ JPGS_BIG="$(find ./doc/ -type f -mtime -31 -name "*.jpg" | gfv -e 'doc/www/misc/' | \
                           parallel --max-args=500 "identify -ping -format '%Q %F\n'" {} | sort --numeric-sort | \

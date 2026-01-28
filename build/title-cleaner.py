@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-01-27 22:37:13 gwern"
+# When:  Time-stamp: "2026-01-28 17:37:25 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -860,6 +860,8 @@ About Us
 "Typography on Pencils, 1–5"
 - "https://krabat.menneske.dk/kkblog/2016/06/29/solved-auto-breaking-lines-in-epub-poetry-collections/ SOLVED… Auto-Breaking lines in ePub poetry collections! Well, sorta…—Kenneth Krabats 1000 stemmer"
 "SOLVED… Auto-Breaking lines in ePub poetry collections! Well, sorta…"
+- "https://sdleffler.github.io/RustTypeSystemTuringComplete/ Rust’s Type System is Turing-Complete - Recursive Descent into Madness - A countable set of sanities and insanities, by Shea Leffler."
+"Rust’s Type System is Turing-Complete"
 
 Task:
 

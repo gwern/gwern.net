@@ -926,7 +926,9 @@ canonicalsWithInitials =
   , "Charles Allen Moser", "John A. Leslie", "Robert D. Putnam", "Joel D. Cooper", "Duane A. Compton"
   , "Timo E. Saaristo", "Arthur L. Caplan", "Robert T. Croyle", "Barbara K. Rimer", "Walter J. Ong"
   , "Samuel S. Wilks", "Kenneth Lee Pike", "Richard E. Turner", "Phil Hyoun Lee", "Karthik Rajagopal Narasimhan"
-  , "Hunter S. Thompson", "Robert C. Kaplan", "Richard N. Bergman", "Philip B. Mitchell", "Peter S. Chines", "Patrick S. Li", "Noah D. Goodman", "Nitish Shirish Keskar", "Clint M. Sergi", "Mary K. Wojczynski", "M. Saiful Bari"]
+  , "Hunter S. Thompson", "Robert C. Kaplan", "Richard N. Bergman", "Philip B. Mitchell", "Peter S. Chines"
+  , "Patrick S. Li", "Noah D. Goodman", "Nitish Shirish Keskar", "Clint M. Sergi", "Mary K. Wojczynski"
+  , "M. Saiful Bari", "Robert A. Freitas"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -2122,9 +2124,14 @@ authorLinkDB = M.fromList $
     , ("Martin Farrall", "https://www.chg.ox.ac.uk/~mfarrall/research.html")
     , ("Jesse Ward-Bond", "https://secondthoughts.my/about/")
     , ("MDN", "https://en.wikipedia.org/wiki/MDN_Web_Docs")
-    , ("Marc Lantot", "https://mlanctot.info/")
+    , ("Marc Lanctot", "https://mlanctot.info/")
     , ("Maarten Bosma", "https://ma2rten.github.io/")
     , ("M. Saiful Bari", "https://sbmaruf.github.io/")
+    , ("Li Zhang", "https://scholar.google.com/citations?user=wFEJvJUAAAAJ&hl=en&oi=ao")
+    , ("Lars Bertram", "https://scholar.google.com/citations?user=oUujyRkAAAAJ&hl=en&oi=ao")
+    , ("Kurt Lohman", "https://scholar.google.com/scholar?q=Kurt%20Lohman")
+    , ("Janice Wong", "https://sites.google.com/view/ccsfbiotech/alumni-profiles/janice-wong")
+    , ("Robert A. Freitas", "https://en.wikipedia.org/wiki/Robert_Freitas")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3415,4 +3422,4 @@ authorWpLinkDB =
     , "David E. Hoffman", "Paul Ginsparg", "Wojciech Kopczuk", "Robert J. White", "Dines Bjørner", "Hans-Joachim Voth"
     , "Friedrich Nietzsche", "William Bialek", "E. E. Cummings", "Simon Willison", "Karen Greenlee"
     , "Constance Reid", "Julia Robinson", "Ianthi-Maria Tsimpli", "Graeme Mitchison", "Ravi Vakil", "Ross Koppel"
-    , "Bruce G. Lindsay", "Anne Chao", "John A. Hostetler", "Brian Moriarty", "Archibald MacLeish"]
+    , "Bruce G. Lindsay", "Anne Chao", "John A. Hostetler", "Brian Moriarty", "Archibald MacLeish", "Michael Drew"]
