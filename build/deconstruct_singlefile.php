@@ -6,10 +6,10 @@
 ##     --backtrack-limit=5000000 
 ##     --jpg-quality=80% 
 ##     --optimize-images=1
-##     --save-original=0
+##     --save-original=1
 ##     --create-gwtar=0
 ##     --add-fec-data=1
-##     --keep-original=0
+##     --keep-original=1
 ##     --debug=0
 ## (Boolean arguments may also be set to true by passing them without a value.)
 
@@ -86,7 +86,7 @@ $jpg_quality = $args['--jpg-quality'] ?? '80%';
 $optimize_images = $args['--optimize-images'] ?? true;
 
 ## Save original?
-$save_original = $args['--save-original'] ?? false;
+$save_original = $args['--save-original'] ?? true;
 
 ## Create a .gwtar?
 $create_gwtar = $args['--create-gwtar'] ?? false;
@@ -95,7 +95,7 @@ $create_gwtar = $args['--create-gwtar'] ?? false;
 $add_fec_data = $args['--add-fec-data'] ?? true;
 
 ## Keep original (when creating a .gwtar)?
-$keep_original = $args['--keep-original'] ?? false;
+$keep_original = $args['--keep-original'] ?? true;
 
 ## Debug mode?
 $debug = $args['--debug'] ?? false;
