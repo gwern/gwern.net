@@ -486,6 +486,8 @@ function parseMultipartBody(body, boundary) {
 	return parts;
 }
 
+/*	Callbacks are called once per asset received, NOT once per HTTP response.
+ */
 function getResources(assetInfoRecords, callbacks) {
 	callbacks = Object.assign({ }, callbacks);
 
@@ -563,6 +565,8 @@ function getMainPageHTML() {
 			loadAllScriptsAndThenDo(() => {
 				spawnRequestObserver((resourceURLStrings) => {
 					let assetInfoRecords = resourceURLStrings.map(assetInfoFromResourceURLString).nonnull();
+					if (assetInfoRecords.length == 0)
+						return;
 
 					//	Inject those resources we’ve already retrieved.
 					assetInfoRecords.filter(assetInfo => assetInfo["data"] != null).forEach(assetInfo => {
@@ -570,11 +574,28 @@ function getMainPageHTML() {
 					});
 
 					//	Retrieve those resources we still need.
-					getResources(assetInfoRecords.filter(assetInfo => assetInfo["data"] == null), {
-						onSuccess: (event, assetInfo) => {
-							replaceResourceInDocument(assetInfo);
+					let assetInfoRecordsRemaining = assetInfoRecords.filter(
+						(assetInfo) => (assetInfo["data"] == null)
+					).sort(
+						(a, b) => (a["size"] - b["size"])
+					);
+					let batch = [ ];
+					let record = null;
+					let assumedBDP = (1 << 20); // 1 MB
+					for (let i = 0; i <= assetInfoRecordsRemaining.length; i++) {
+						let record = (i == assetInfoRecordsRemaining.length) ? null : assetInfoRecordsRemaining[i];
+						let totalBatchSize = batch.reduce((total, recordInBatch) => (total + recordInBatch["size"]), 0);
+						if (   record == null
+							|| totalBatchSize + record["size"] >= assumedBDP) {
+							getResources(batch, {
+								onSuccess: (event, assetInfo) => {
+									replaceResourceInDocument(assetInfo);
+								}
+							});
+							batch = [ ];
 						}
-					});
+						batch.push(record);
+					}
 				});
 
 				renderMainPage();
