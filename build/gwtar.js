@@ -364,11 +364,31 @@ function replaceResourceInElement(element, assetInfo, resourceURLStringRegExp) {
 			replaceResourceInElement(childElement, assetInfo, resourceURLStringRegExp);
 	} else if (   element.parentElement != null
 			   && resourceURLStringRegExp.test(element.outerHTML)) {
+		//	Save our place...
+		let parentElement = element.parentElement;
+		let previousElementSibling = element.previousElementSibling;
+
+		//	Wrap data in a Blob and inject the blob URL.
 		let blob = new Blob([ assetInfo["data"] ], { type: assetInfo["content-type"] });
 		element.outerHTML = element.outerHTML.replace(
 			resourceURLStringRegExp,
 			URL.createObjectURL(blob)
 		);
+
+		//	Previous reference is invalid now, so we get the new element.
+		element = previousElementSibling?.nextElementSibling ?? parentElement.firstElementChild;
+
+		//	Special handling for some element types.
+		if (element.tagName.toLowerCase() == "source") {
+			element.setAttribute("type", assetInfo["content-type"]);
+
+			/*	This weird hack is necessary because audio elements are, for
+				some reason, weird about Blob URLs. Somehow, this fixes it.
+			 */
+			let audio = element.closest("audio");
+			if (audio)
+				audio.replaceWith(audio.cloneNode(true));
+		}
 	}
 }
 
