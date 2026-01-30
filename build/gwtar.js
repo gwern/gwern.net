@@ -316,12 +316,16 @@ function renderMainPage() {
 	if (assets["0"]["data"] == null)
 		return;
 
-	document.documentElement.innerHTML = rewriteHTMLResponse((new TextDecoder()).decode(assets["0"]["data"]));
-
-	//	Activate scripts.
-	document.querySelectorAll("script").forEach(script => {
-		activateScript(script);
+	let html = rewriteHTMLResponse((new TextDecoder()).decode(assets["0"]["data"]));
+	//	Contents of <head> and <body>, respectively.
+	let parts = html.split(/<body.*?>/is).map(part => newDocument(part));
+	parts.forEach(part => {
+		part.querySelectorAll("script").forEach(script => {
+			activateScript(script);
+		});
 	});
+	document.head.replaceChildren(parts[0]);
+	document.body.replaceChildren(parts[1]);
 
 	assets["0"]["rendered"] = true;
 }
