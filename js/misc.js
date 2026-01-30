@@ -1124,7 +1124,10 @@ GW.TOC = {
 	mainTOC: null,
 
 	getMainTOC: () => {
-		return (GW.TOC.mainTOC ?? document.querySelector("#TOC"));
+		if (GW.TOC.mainTOC == null)
+			GW.TOC.mainTOC = document.querySelector("#TOC");
+
+		return GW.TOC.mainTOC;
 	},
 
     containersToUpdate: [ ]
@@ -1133,10 +1136,11 @@ GW.TOC = {
 /*********************************************************************/
 /*  Update page TOC, on the next animation frame, if not already done.
  */
-function updatePageTOCIfNeeded(container = document) {
-    if (container == document) {
-        GW.TOC.containersToUpdate = [ document ];
-    } else if (GW.TOC.containersToUpdate.includes(container) == false) {
+function updatePageTOCIfNeeded(container = document.main) {
+    if (container == document.main) {
+        GW.TOC.containersToUpdate = [ document.main ];
+    } else if (   GW.TOC.containersToUpdate.includes(container) == false
+    		   && GW.TOC.containersToUpdate.includes(document.main) == false) {
         GW.TOC.containersToUpdate.push(container);
     }
 
@@ -1152,7 +1156,7 @@ function updatePageTOCIfNeeded(container = document) {
  */
 //  Called by: updateMainPageTOC (rewrite.js)
 //  Called by: includeContent (transclude.js)
-function updatePageTOC(container = document) {
+function updatePageTOC(container = document.main) {
     GWLog("updatePageTOC", "misc.js", 2);
 
     let TOC = GW.TOC.getMainTOC();
