@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2026-01-17 18:43:46 gwern"
+;;; When:  Time-stamp: "2026-01-30 16:52:11 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -17,10 +17,13 @@
 
 (push '("\\.gtx$" . html-mode) auto-mode-alist)
 
-; add repo tool directory to path to avoid hardwiring script paths:
-(add-to-list 'exec-path "~/wiki/static/build/")
+; add repo & installed tool directory to path to avoid hardwiring script paths:
+(dolist (dir '("~/.cabal/bin" "~/wiki/static/build/"))
+  (let ((expanded (expand-file-name dir)))
+    (add-to-list 'exec-path expanded)
+    (setenv "PATH" (concat expanded ":" (getenv "PATH")))))
 
-; I do much of my editing in gwern.net files, so save myself some tab-completion hassle:
+; I do most of my editing in gwern.net files, so save myself some tab-completion hassle:
 (setq default-directory "~/wiki/")
 
 ; the tools & site compilation process frequently modify the Markdown/GTX files, especially during interactive use (like reviewing new annotations), and it is a hassle (and slow) to prompt for an update of the corresponding buffers every time.

@@ -95,7 +95,7 @@ surnameFalsePositivesWhiteList = ["Et", "et", "Al", "al", "Accurate", "Aesthetic
                                   "Camps", "Tamala", "Math", "States", "Uniqueness", "On", "LessWrong", "Lesswrong", "Chemistry"
                                  , "Physics", "Literature", "Biology", "Medicine", "Peace", "Economics", "Japan", "Building", "Papers"
                                  , "It’s", "It's", "s", "Republicans’", "Republicans", "Democrats’", "Democrats", "About", "Rendering"
-                                 , "Publications", "Instructions", "That", "England", "Some"]
+                                 , "Publications", "Instructions", "That", "England", "Some", "Online", "Manifest"]
 
 
 minRange, minDuration, maxDateSecond, minDateFirst :: Int

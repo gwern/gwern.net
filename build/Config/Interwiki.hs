@@ -6016,4 +6016,7 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("tar", "tar (computing)")
         , ("tarball", "tar (computing)")
         , ("tarballs", "tar (computing)")
+        , ("Schmidhuber", "Jürgen_Schmidhuber")
+        , ("JAGS", "Just_another_Gibbs_sampler")
+        , ("Chicken_sexing", "Chick_sexing")
         ]

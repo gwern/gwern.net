@@ -134,7 +134,7 @@ gwern md p
                           else return $ Right (p, (title', author', date, dateModified, doi, keywordTags, combinedAnnotation))
         where
           ext :: String
-          ext =  map toLower $ delete "." $ takeExtension p
+          ext =  map toLower $ delete "." $ takeExtension $ takeWhile (/='#') p
 
           filterThumbnail, filterThumbnailText, filterThumbnailCSS :: Tag String -> Bool
           filterThumbnail     = isMetaTag "og:image"
