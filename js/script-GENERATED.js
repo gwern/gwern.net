@@ -16907,37 +16907,47 @@ addContentLoadHandler("disableSingleItemColumnBlocks", (eventInfo) => {
  */
 addContentLoadHandler("rewriteInterviews", (eventInfo) => {
     eventInfo.container.querySelectorAll(".interview, .interview > .collapse").forEach(interviewWrapper => {
-        if (interviewWrapper.firstElementChild.tagName != "UL")
-            return;
+		if (interviewWrapper.firstElementChild == null) {
+			console.log("Empty interview!");
+			interviewWrapper.remove();
+			return;
+		}
 
-        let interview = newElement("UL", { class: `list ${interviewWrapper.className}` });
+		if (interviewWrapper.firstElementChild.tagName != "UL") {
+			console.log("Malformed interview!");
+			return;
+		}
 
-        for (let child of Array.from(interviewWrapper.children)) {
-            if (child.tagName != "UL")
-                continue;
+		atomicDOMUpdate(interviewWrapper, (interviewWrapper) => {
+			let interview = newElement("UL", { class: `list ${interviewWrapper.className}` });
 
-            let exchange = interview.appendChild(newElement("LI", { class: "exchange" }));
-            exchange.append(child.cloneNode(true));
+			for (let child of Array.from(interviewWrapper.children)) {
+				if (child.tagName != "UL")
+					continue;
 
-            for (let utterance of exchange.firstElementChild.children) {
-                utterance.classList.add("utterance");
+				let exchange = interview.appendChild(newElement("LI", { class: "exchange" }));
+				exchange.append(child.cloneNode(true));
 
-                let speaker = utterance.querySelector("strong");
+				for (let utterance of exchange.firstElementChild?.children) {
+					utterance.classList.add("utterance");
 
-                //  If the speaker is wrapped, find the outermost wrapper.
-                while (   speaker.parentElement
-                       && speaker.parentElement.tagName != "P"
-                       && speaker.nextSibling?.textContent.startsWith(":") != true)
-                    speaker = speaker.parentElement;
-                speaker.classList.add("speaker");
+					let speaker = utterance.querySelector("strong");
 
-                //  Move colon.
-                (speaker.querySelector("strong") ?? speaker).innerHTML += ": ";
-                speaker.nextSibling.textContent = speaker.nextSibling.textContent.slice(1).trimStart();
-            }
-        }
+					//  If the speaker is wrapped, find the outermost wrapper.
+					while (   speaker.parentElement
+						   && speaker.parentElement.tagName != "P"
+						   && speaker.nextSibling?.textContent.startsWith(":") != true)
+						speaker = speaker.parentElement;
+					speaker.classList.add("speaker");
 
-        interviewWrapper.replaceWith(interview);
+					//  Move colon.
+					(speaker.querySelector("strong") ?? speaker).innerHTML += ": ";
+					speaker.nextSibling.textContent = speaker.nextSibling.textContent.slice(1).trimStart();
+				}
+			}
+
+			interviewWrapper.parentNode.replaceChildren(interview);
+		});
     });
 }, "rewrite");
 
