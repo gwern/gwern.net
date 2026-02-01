@@ -876,6 +876,12 @@ canonicals = M.fromList
   , ("Mor Geva", "Mor Geva Pipek")
   , ("chrislakin", "Chris Lakin")
   , ("RichardHanania", "Richard Hanania")
+  , ("Kimi K2.5", "Kimi K2.5 Thinking")
+  , ("DeepSeek-r1", "DeepSeek-R1")
+  , ("Deepseek-r1", "DeepSeek-R1")
+  , ("DeepSeek R1", "DeepSeek-R1")
+  , ("Deepseek r1", "DeepSeek-R1")
+  , ("DeepSeek r1", "DeepSeek-R1")
   ]
 
 -- tests: unique
@@ -1448,6 +1454,7 @@ authorLinkDB = M.fromList $
     , ("Samuli Laine", "https://users.aalto.fi/~laines9/")
     , ("Li Dong", "https://scholar.google.com/citations?user=wEfQgPgAAAAJ")
     , ("GPT-4o", "https://openai.com/index/hello-gpt-4o/")
+    , ("GPT-4-o1-preview", "https://openai.com/index/introducing-openai-o1-preview/")
     , ("ChatGPT-4 o1-pro", "https://openai.com/index/introducing-chatgpt-pro/")
     , ("GPT-4.5", "https://openai.com/index/introducing-gpt-4-5/")
     , ("GPT-4-o3", "https://openai.com/index/introducing-o3-and-o4-mini/#o3")
@@ -1456,6 +1463,7 @@ authorLinkDB = M.fromList $
     , ("Claude-2", "https://www.anthropic.com/news/claude-2")
     , ("Claude-3.5-Sonnet", "https://www.anthropic.com/news/claude-3-5-sonnet")
     , ("Claude-3.7", "https://www.anthropic.com/news/claude-3-7-sonnet")
+    , ("Claude-3-opus", "https://www.anthropic.com/news/claude-3-family")
     , ("Brian Hayes", "https://en.wikipedia.org/wiki/Brian_Hayes_(scientist)")
     , ("Nat McAleese", "https://scholar.google.com/citations?user=crw6TeIAAAAJ")
     , ("Kevin Lu", "https://kevinlu.ai/")
@@ -1532,6 +1540,7 @@ authorLinkDB = M.fromList $
     , ("Charles Blundell", "https://scholar.google.com/citations?user=f31mvPsAAAAJ")
     , ("Bjarke Feenstra", "https://en.ssi.dk/about-us/contact/employees/b/bjarke-feenstra-fee")
     , ("DeepSeek", "https://www.deepseek.com/")
+    , ("DeepSeek-R1", "https://arxiv.org/abs/2501.12948#deepseek")
     , ("Nayuki", "https://www.nayuki.io/page/about")
     , ("Aella", "https://x.com/aella_girl")
     , ("Fernando Borretti", "https://borretti.me/about/")
@@ -1987,6 +1996,7 @@ authorLinkDB = M.fromList $
     , ("larry-dial", "https://www.lesswrong.com/users/larry-dial")
     , ("Kimi K2", "https://arxiv.org/abs/2507.20534#moonshot")
     , ("Kimi K2 Thinking", "https://moonshotai.github.io/Kimi-K2/thinking.html")
+    , ("Kimi K2.5 Thinking", "https://www.kimi.com/blog/kimi-k2-5.html")
     , ("Peter Seibel", "https://gigamonkeys.com/resume/")
     , ("Zvi Mowshowitz", "https://en.wikipedia.org/wiki/Zvi_Mowshowitz")
     , ("Anthropic", "https://en.wikipedia.org/wiki/Anthropic")
@@ -2007,6 +2017,7 @@ authorLinkDB = M.fromList $
     , ("James Heathers", "https://sites.google.com/view/jamesheathers/home")
     , ("iamronen", "https://about.iamronen.com/")
     , ("Ian Henry", "https://ianthehenry.com/")
+    , ("DeepSeek-V3", "https://arxiv.org/abs/2412.19437#deepseek")
     , ("DeepSeek-V3.1", "https://huggingface.co/deepseek-ai/DeepSeek-V3.1")
     , ("DeepSeek-V3.2", "https://arxiv.org/abs/2512.02556#deepseek")
     , ("Ravid Shwartz-Ziv", "https://www.ravid-shwartz-ziv.com/")
@@ -2132,6 +2143,8 @@ authorLinkDB = M.fromList $
     , ("Kurt Lohman", "https://scholar.google.com/scholar?q=Kurt%20Lohman")
     , ("Janice Wong", "https://sites.google.com/view/ccsfbiotech/alumni-profiles/janice-wong")
     , ("Robert A. Freitas", "https://en.wikipedia.org/wiki/Robert_Freitas")
+    , ("Pangram", "https://www.pangram.com/")
+    , ("LLaMA-3-70b", "https://ai.meta.com/blog/meta-llama-3/")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
