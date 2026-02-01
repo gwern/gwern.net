@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-01-28 17:35:21 gwern"
+# When:  Time-stamp: "2026-02-01 15:52:23 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -113,7 +113,7 @@ else
 
           ## abbreviation consistency:
           s '(ie,' '(ie.'; s '(ie ' '(ie. '; s 'i.e.,' 'ie.'; s 'ie., ' 'ie. '; s '(i.e.' '(ie.'; s '(eg, ' '(eg. '; s ' eg ' ' eg. '; s '(eg ' '(eg. '; s '[eg ' '[eg. '; s '[Eg ' '[eg. '; s 'e.g. ' 'eg. '; s ' e.g. ' ' eg. '; s 'e.g.,' 'eg.'; s 'eg.,' 'eg.'; s 'E.g.,' 'Eg.'; s '(cf ' '(cf. '; s ' cf ' ' cf. '; s 'c.f., ' 'cf. '; s 'v.s.' 'versus';
-          s ' etc ' ' etc. '; s ' etc)' ' etc.)'; s ' etc,' ' etc.,'; s ' etc]' ' etc.]'; s ' etc’' ' etc.’'; s ' etc---' ' etc.---'; s ' etc|' ' etc.|'; s ' etc?' ' etc.?'; s ' etc;' ' etc.;'; s ' etc:' ' etc.:'; s ' etc"' ' etc."'; s ' etc[' ' etc.['; s " etc'" " etc.'"; s ' etc!' ' etc.!'; s 'etc</p>' 'etc.</p>'; s 'etc</td>' 'etc.</td>'; s ' etc—' ' etc.—'; s ' etc”' ' .etc”'; s 'etc</a>' 'etc.</a>';
+          s ' etc ' ' etc. '; s ' etc)' ' etc.)'; s ' etc,' ' etc.,'; s ' etc]' ' etc.]'; s ' etc’' ' etc.’'; s ' etc---' ' etc.---'; s ' etc|' ' etc.|'; s ' etc?' ' etc.?'; s ' etc;' ' etc.;'; s ' etc:' ' etc.:'; s ' etc"' ' etc."'; s ' etc[' ' etc.['; s " etc'" " etc.'"; s ' etc!' ' etc.!'; s 'etc</p>' 'etc.</p>'; s 'etc</td>' 'etc.</td>'; s ' etc—' ' etc.—'; s ' etc”' ' .etc”'; s 'etc</a>' 'etc.</a>'; s 'etc)' 'etc.)';
           s ' Feb ' ' February '; s ' Aug ' ' August '; s ', Jr.' ' Junior'; s ' Jr.' ' Junior'; s ', Junior' ' Junior';
           s '<sup>Th</sup>' '<sup>th</sup>'; s ' 20th' ' 20<sup>th</sup>'; s ' 21st' ' 21<sup>st</sup>';
           s ',”' '”,'; s ",’" "’,"; s '(vs. ' '(versus '; s ' vs. ' ' versus '; s ' Vs. ' ' Versus '; s 'best-of-<em>N</em>' 'best-of-<em>n</em>'; s ' Best-Of-N ' ' Best-of-<em>n</em> '; s 'Best-of-n ' 'Best-of-<em>n</em> '; s ' best-of-n' ' best-of-<em>n</em>'; s ' best-of-N' ' best-of-<em>n</em>';
@@ -891,7 +891,7 @@ else
             "completion-status" "collapsible" "me" "new-essays" "new-links" "site" "accesskey"
             "dark-mode-selector-inline" "extracts-mode-selector-inline" "help-mode-selector-inline" "search-mode-selector-inline" "toolbar-mode-selector-inline"
             "link-bibliography-context" "extract-not" "fraction" "separator-inline" "dark-mode-invert" "dark-mode-enable-when-here" "dark-mode" "light-mode-re-enable-when-here"
-            "prefetch" "prefetch-not" "filesize-not" "poem" "poem-html" "redirect-from-id" "toc-not" "index" "editorial"
+            "prefetch" "prefetch-not" "filesize-not" "poem" "poem-html" "redirect-from-id" "toc-not" "index" "editorial" "wrap-not"
         )
         html_dataattributes_whitelist=("data-filesize-bytes" "data-link-icon" "data-amount-current" "data-amount-original" "data-aspect-ratio" "data-filesize-bytes" "data-filesize-percentage" "data-href-mobile" "data-image-height" "data-image-width" "data-include-selector-not" "data-include-template" "data-inflation" "data-link-content-type" "data-link-icon" "data-link-icon-color" "data-link-icon-type" "data-progress-percentage" "data-redirect-from-id" "data-target-id" "data-url-archive" "data-url-iframe" "data-url-original" "data-year-current" "data-year-original")
         html_classes_regexpattern=$(IFS='|'; echo "${html_classes_whitelist[*]}" "${html_dataatributes_whitelist[*]}")
