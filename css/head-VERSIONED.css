@@ -175,14 +175,14 @@ main {
     /*  Sidebar links (not including logo).
      */
     #sidebar .sidebar-links {
-		display: grid;
-		grid: auto-flow / 1fr 1fr 1fr;
+        display: grid;
+        grid: auto-flow / 1fr 1fr 1fr;
     }
-	@media all and (max-width: 349px) {
-		#sidebar .sidebar-links {
-			grid: auto-flow / 1fr 1fr;
-		}
-	}
+    @media all and (max-width: 349px) {
+        #sidebar .sidebar-links {
+            grid: auto-flow / 1fr 1fr;
+        }
+    }
     #sidebar .sidebar-links a {
         font-variant-caps: small-caps;
     }
@@ -2254,12 +2254,12 @@ span.smallcaps {
     font-family: var(--GW-monospaced-serif-font-stack);
 }
 
-/*	Prevent line breaking (wrapping) within specified elements.
+/*  Prevent line breaking (wrapping) within specified elements.
+    (This utility class is often named '.nowrap'.)
  */
-.nowrap {
-	white-space: nowrap;
+.wrap-not {
+    white-space: nowrap;
 }
-
 
 /*******************/
 /* UTILITY CLASSES */

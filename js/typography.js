@@ -184,7 +184,7 @@ Typography = {
 
 	excludedTags: [ 'PRE', 'SCRIPT', 'STYLE', 'NOSCRIPT' ],
 
-	unmodifiedTags: [ 'CODE '],
+	unmodifiedTags: [ 'CODE' ],
 
 	processElement: (element, replacementTypes = Typography.replacementTypes.NONE, rectifyWordBreaks = true) => {
 		if (Typography.excludedTags.includes(element.nodeName))
