@@ -882,6 +882,8 @@ canonicals = M.fromList
   , ("DeepSeek R1", "DeepSeek-R1")
   , ("Deepseek r1", "DeepSeek-R1")
   , ("DeepSeek r1", "DeepSeek-R1")
+  , ("johnswentworth", "John Wentworth")
+  , ("davidshor", "David Shor")
   ]
 
 -- tests: unique
@@ -2138,8 +2140,8 @@ authorLinkDB = M.fromList $
     , ("Marc Lanctot", "https://mlanctot.info/")
     , ("Maarten Bosma", "https://ma2rten.github.io/")
     , ("M. Saiful Bari", "https://sbmaruf.github.io/")
-    , ("Li Zhang", "https://scholar.google.com/citations?user=wFEJvJUAAAAJ&hl=en&oi=ao")
-    , ("Lars Bertram", "https://scholar.google.com/citations?user=oUujyRkAAAAJ&hl=en&oi=ao")
+    , ("Li Zhang", "https://scholar.google.com/citations?user=wFEJvJUAAAAJ")
+    , ("Lars Bertram", "https://scholar.google.com/citations?user=oUujyRkAAAAJ")
     , ("Kurt Lohman", "https://scholar.google.com/scholar?q=Kurt%20Lohman")
     , ("Janice Wong", "https://sites.google.com/view/ccsfbiotech/alumni-profiles/janice-wong")
     , ("Robert A. Freitas", "https://en.wikipedia.org/wiki/Robert_Freitas")
@@ -3435,4 +3437,5 @@ authorWpLinkDB =
     , "David E. Hoffman", "Paul Ginsparg", "Wojciech Kopczuk", "Robert J. White", "Dines Bjørner", "Hans-Joachim Voth"
     , "Friedrich Nietzsche", "William Bialek", "E. E. Cummings", "Simon Willison", "Karen Greenlee"
     , "Constance Reid", "Julia Robinson", "Ianthi-Maria Tsimpli", "Graeme Mitchison", "Ravi Vakil", "Ross Koppel"
-    , "Bruce G. Lindsay", "Anne Chao", "John A. Hostetler", "Brian Moriarty", "Archibald MacLeish", "Michael Drew", "Herbert H. Clark", "Jean E. Fox Tree"]
+    , "Bruce G. Lindsay", "Anne Chao", "John A. Hostetler", "Brian Moriarty", "Archibald MacLeish", "Michael Drew"
+    , "Herbert H. Clark", "Jean E. Fox Tree", "Mikhail Bulgakov", "David Shor"]

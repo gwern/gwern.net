@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-02-01 15:52:23 gwern"
+# When:  Time-stamp: "2026-02-04 23:36:30 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -113,7 +113,7 @@ else
 
           ## abbreviation consistency:
           s '(ie,' '(ie.'; s '(ie ' '(ie. '; s 'i.e.,' 'ie.'; s 'ie., ' 'ie. '; s '(i.e.' '(ie.'; s '(eg, ' '(eg. '; s ' eg ' ' eg. '; s '(eg ' '(eg. '; s '[eg ' '[eg. '; s '[Eg ' '[eg. '; s 'e.g. ' 'eg. '; s ' e.g. ' ' eg. '; s 'e.g.,' 'eg.'; s 'eg.,' 'eg.'; s 'E.g.,' 'Eg.'; s '(cf ' '(cf. '; s ' cf ' ' cf. '; s 'c.f., ' 'cf. '; s 'v.s.' 'versus';
-          s ' etc ' ' etc. '; s ' etc)' ' etc.)'; s ' etc,' ' etc.,'; s ' etc]' ' etc.]'; s ' etc’' ' etc.’'; s ' etc---' ' etc.---'; s ' etc|' ' etc.|'; s ' etc?' ' etc.?'; s ' etc;' ' etc.;'; s ' etc:' ' etc.:'; s ' etc"' ' etc."'; s ' etc[' ' etc.['; s " etc'" " etc.'"; s ' etc!' ' etc.!'; s 'etc</p>' 'etc.</p>'; s 'etc</td>' 'etc.</td>'; s ' etc—' ' etc.—'; s ' etc”' ' .etc”'; s 'etc</a>' 'etc.</a>'; s 'etc)' 'etc.)';
+          s ' etc ' ' etc. '; s ' etc)' ' etc.)'; s ' etc,' ' etc.,'; s ' etc]' ' etc.]'; s ' etc’' ' etc.’'; s ' etc---' ' etc.---'; s ' etc|' ' etc.|'; s ' etc?' ' etc.?'; s ' etc;' ' etc.;'; s ' etc:' ' etc.:'; s ' etc"' ' etc."'; s ' etc[' ' etc.['; s " etc'" " etc.'"; s ' etc!' ' etc.!'; s 'etc</p>' 'etc.</p>'; s 'etc</td>' 'etc.</td>'; s ' etc—' ' etc.—'; s ' etc”' ' .etc”'; s 'etc</a>' 'etc.</a>'
           s ' Feb ' ' February '; s ' Aug ' ' August '; s ', Jr.' ' Junior'; s ' Jr.' ' Junior'; s ', Junior' ' Junior';
           s '<sup>Th</sup>' '<sup>th</sup>'; s ' 20th' ' 20<sup>th</sup>'; s ' 21st' ' 21<sup>st</sup>';
           s ',”' '”,'; s ",’" "’,"; s '(vs. ' '(versus '; s ' vs. ' ' versus '; s ' Vs. ' ' Versus '; s 'best-of-<em>N</em>' 'best-of-<em>n</em>'; s ' Best-Of-N ' ' Best-of-<em>n</em> '; s 'Best-of-n ' 'Best-of-<em>n</em> '; s ' best-of-n' ' best-of-<em>n</em>'; s ' best-of-N' ' best-of-<em>n</em>';
@@ -960,16 +960,17 @@ else
     moreThanOne () { gev -e ':1$' -e ':0$'; }
     λ(){ count '^title: '          $PAGES | moreThanOne
          count '^description: '    $PAGES | moreThanOne
-         count '^confidence: '     $PAGES | moreThanOne
+         count '^author: '         $PAGES | moreThanOne
+         count '^author: '         $PAGES | moreThanOne
          count '^created: '        $PAGES | moreThanOne
-         count '^status: '         $PAGES | moreThanOne
-         count '^css-extension: '  $PAGES | moreThanOne
          count '^modified: '       $PAGES | moreThanOne
-         count '^thumbnail-css: '  $PAGES | moreThanOne
+         count '^status: '         $PAGES | moreThanOne
          count '^thumbnail: '      $PAGES | moreThanOne
          count '^thumbnail-text: ' $PAGES | moreThanOne
+         count '^thumbnail-css: '  $PAGES | moreThanOne
+         count '^confidence: '     $PAGES | moreThanOne
          count '^importance: '     $PAGES | moreThanOne
-         count '^author: '         $PAGES | moreThanOne
+         count '^css-extension: '  $PAGES | moreThanOne
        }
     wrap λ "Essays with redundant or duplicate metadata fields (must have no more than one of any!)"
 
@@ -1787,6 +1788,9 @@ else
 
     λ(){ find ./ -type f -name "*.mp3" | parallel 'output=$(mp3val {} 2>&1); if echo "$output" | gf --quiet "ERROR"; then echo "Corrupt file: {}"; echo "$output" | gf "ERROR"; fi'; }
     wrap λ "Corrupted MP3 files detected! Maybe try fixing in-place with 'mp3val -f'?"
+
+    # ensure all Markdown & text files are ordinary Unix text files with a trailing newline:
+    dos2unix --quiet --add-eol -- `find -type f -name "*.md" -or -name "*.txt"` > /dev/null &
 
     λ(){ find . -type f -name "*.txt" -or -type f -name "*.md" | parallel file | awk '/ CRLF/ || !/:.*text/'; }
     wrap λ "Corrupted text file (either CRLF or not a text file at all eg. a misnamed PDF)? use 'file' or 'dos2unix' on it."
