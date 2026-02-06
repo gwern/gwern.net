@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-02-06 13:27:23 gwern"
+# When:  Time-stamp: "2026-02-06 15:33:30 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -763,6 +763,211 @@ combine-unstack-last () {
 
     for IMG in "${args[@]}"; do is_downloading "$IMG" 50 || return 2; done
     for FILE in "${args[@]}"; do mogrify -crop 50%x50% +repage -delete 3 -append -- "$FILE"; done; }
+
+# convert an animated GIF to MP4; MP4s are preferred on Gwern.net for efficiency and controllability.
+# Uses H.264 with web-optimized settings (faststart, yuv420p, CRF 23).
+# Skips static GIFs. Reports size savings per file.
+# Usage: gifToMp4 [file.gif ...] (defaults to all .gif files in current directory)
+gifToMp4() {
+    local args=("$@")
+
+    # Find all GIFs in current directory if no arguments provided
+    if [[ ${#args[@]} -eq 0 ]]; then
+        mapfile -t args < <(find . -maxdepth 1 -type f -iname "*.gif" | sort --version-sort)
+        if [[ ${#args[@]} -eq 0 ]]; then
+            red "Error: No .gif files found in current directory" >&2
+            return 1
+        fi
+        bold "Processing ${#args[@]} .gif files found in current directory"
+    fi
+
+    local input
+    for input in "${args[@]}"; do
+        if [[ ! "${input,,}" =~ \.gif$ ]]; then
+            red "Error: Skipping non-GIF file: $input" >&2
+            continue
+        fi
+        if [[ ! -f "$input" ]]; then
+            red "Error: File not found: $input" >&2
+            continue
+        fi
+
+        # Check if GIF is animated
+        local frame_count
+        frame_count=$(ffprobe -v error -select_streams v:0 -count_packets \
+                             -show_entries stream=nb_read_packets -of csv=p=0 "$input" 2>/dev/null | tr -d '[:space:]')
+        if [[ -z "$frame_count" || ! "$frame_count" =~ ^[0-9]+$ || "$frame_count" -le 1 ]]; then
+            echo "Skipping static GIF: $input" >&2
+            continue
+        fi
+
+        is_downloading "$input" 50 || continue
+
+        local output="${input%.*}.mp4"
+        bold "Converting: $input → $output ($frame_count frames)"
+
+        # -c:v libx264:         H.264 for broad compatibility
+        # -crf 23:              visually lossless for animation; default quality
+        # -preset slower:       better compression for archival web hosting
+        # -pix_fmt yuv420p:     required for broad player compatibility
+        # -movflags +faststart: move moov atom to start for progressive web playback
+        # -an:                  strip audio (GIFs have none; avoids empty audio tracks)
+        # scale filter:         ensure even dimensions required by yuv420p
+        if ffmpeg -y -loglevel warning -i "$input" \
+                  -c:v libx264 -crf 23 -preset slower \
+                  -pix_fmt yuv420p \
+                  -movflags +faststart \
+                  -an \
+                  -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" \
+                  "$output"; then
+            local gif_size mp4_size savings
+            gif_size=$(stat -c%s "$input")
+            mp4_size=$(stat -c%s "$output")
+            savings=$(echo "scale=1; (1 - $mp4_size / $gif_size) * 100" | bc)
+            green "  $input: $(numfmt --to=iec "$gif_size") → $(numfmt --to=iec "$mp4_size") (${savings}% smaller)"
+        else
+            red "Error: ffmpeg conversion failed for: $input" >&2
+            rm --force -- "$output" # clean up partial output
+        fi
+    done
+}
+export -f gifToMp4
+
+# mp4-check-faststart: report which MP4s are missing the faststart moov-atom optimization.
+# The moov atom is the MP4 "table of contents"; when it follows mdat (the actual media data),
+# browsers must download the entire file before playback can begin.
+# Usage: mp4-check-faststart [file.mp4 ...] (defaults to all .mp4 files in current directory)
+mp4-check-faststart () {
+    local args=("$@")
+    if [[ ${#args[@]} -eq 0 ]]; then
+        mapfile -t args < <(find . -maxdepth 1 -type f -iname "*.mp4" | sort --version-sort)
+        if [[ ${#args[@]} -eq 0 ]]; then
+            red "Error: No .mp4 files found in current directory" >&2
+            return 1
+        fi
+    fi
+
+    local slow=0 fast=0 total=${#args[@]}
+    local file
+    for file in "${args[@]}"; do
+        if [[ ! -f "$file" ]]; then
+            red "Error: File not found: $file" >&2
+            continue
+        fi
+
+        # Extract top-level atom order via ffprobe; look for whether moov appears before mdat.
+        # The -show_entries format_tags trick doesn't help here; instead we use -show_format
+        # and check the actual byte-level atom layout with a simple python one-liner:
+        local atom_order
+        atom_order=$(python3 -c "
+import struct, sys
+with open(sys.argv[1], 'rb') as f:
+    atoms = []
+    while True:
+        hdr = f.read(8)
+        if len(hdr) < 8:
+            break
+        size, name = struct.unpack('>I4s', hdr)
+        name = name.decode('ascii', errors='replace')
+        atoms.append(name)
+        if name in ('moov', 'mdat'):
+            pass  # keep scanning for both
+        if size == 1:  # 64-bit extended size
+            ext = f.read(8)
+            if len(ext) < 8:
+                break
+            size = struct.unpack('>Q', ext)[0]
+            f.seek(size - 16, 1)
+        elif size == 0:  # atom extends to EOF
+            break
+        else:
+            f.seek(size - 8, 1)
+    # Report: did moov come before mdat?
+    moov_idx = next((i for i, a in enumerate(atoms) if a == 'moov'), None)
+    mdat_idx = next((i for i, a in enumerate(atoms) if a == 'mdat'), None)
+    if moov_idx is not None and mdat_idx is not None:
+        print('fast' if moov_idx < mdat_idx else 'slow')
+    elif moov_idx is None:
+        print('error:no-moov')
+    else:
+        print('fast')  # no mdat is unusual but moov-first is fine
+" "$file" 2>/dev/null)
+
+        case "$atom_order" in
+            slow)
+                echo "$file"
+                ((slow++))
+                ;;
+            fast)
+                ((fast++))
+                ;;
+            *)
+                yellow "Warning: Could not determine atom order for: $file" >&2
+                ;;
+        esac
+    done
+
+    echo "---" >&2
+    echo "$total checked: $slow slow (moov after mdat), $fast already fast" >&2
+}
+export -f mp4-check-faststart
+
+# mp4-fix-faststart: losslessly remux MP4s to move the moov atom before mdat.
+# Only touches files that actually need it. No re-encoding; bitwise identical audio/video streams.
+# Usage: mp4-fix-faststart [file.mp4 ...] (defaults to all slow MP4s in current directory)
+mp4-fix-faststart () {
+    local args=("$@")
+    if [[ ${#args[@]} -eq 0 ]]; then
+        # Default: find and fix only the slow ones
+        mapfile -t args < <(mp4-check-faststart 2>/dev/null)
+        if [[ ${#args[@]} -eq 0 ]]; then
+            bold "All MP4s in current directory already have faststart." >&2
+            return 0
+        fi
+        bold "Found ${#args[@]} MP4s needing faststart fix"
+    fi
+
+    local file
+    for file in "${args[@]}"; do
+        if [[ ! -f "$file" ]]; then
+            red "Error: File not found: $file" >&2
+            continue
+        fi
+
+        is_downloading "$file" 50 || continue
+
+        local tmp
+        tmp=$(mktemp "${file%.mp4}-faststart-XXXXXX.mp4")
+
+        bold "Fixing: $file"
+        # -c copy:              stream copy, no re-encoding (lossless, fast)
+        # -movflags +faststart: move moov atom to beginning
+        # -map_metadata 0:     preserve all metadata from source
+        if ffmpeg -y -loglevel warning \
+                  -i "$file" \
+                  -c copy \
+                  -map_metadata 0 \
+                  -movflags +faststart \
+                  "$tmp"; then
+            # Sanity check: output should be roughly the same size (remux adds/removes only bytes of moov relocation)
+            local orig_size new_size
+            orig_size=$(stat -c%s "$file")
+            new_size=$(stat -c%s "$tmp")
+            # If the new file is wildly different in size (>5% smaller), something went wrong
+            if (( new_size < orig_size * 90 / 100 )); then
+                red "  Error: output is suspiciously smaller ($(numfmt --to=iec "$orig_size") → $(numfmt --to=iec "$new_size")); keeping original" >&2
+                rm --force -- "$tmp"
+                continue
+            fi
+            mv -- "$tmp" "$file"
+            green "  Done: $file ($(numfmt --to=iec "$orig_size"))"
+        else
+            red "  Error: ffmpeg remux failed for: $file" >&2
+            rm --force -- "$tmp"
+        fi
+    done
+}
+export -f mp4-fix-faststart
 
 # check a PNG to see if it can be turned into a JPG with minimal quality loss (according to the ImageMagick PSNR perceptual loss); for PNGs that should be JPGs (eg. photos are surprisingly often saved as PNGs), often the JPG will be a third the size or less, which (particularly for large images like sample-grids) makes for more pleasant web browsing.
 # (This does not rename or convert as it is still experimental and automatically renaming gwern.net files is dangerous due to the need for global search-and-replace & defining nginx redirects.)

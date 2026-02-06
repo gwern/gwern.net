@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-02-05 18:02:56 gwern"
+# When:  Time-stamp: "2026-02-06 15:41:39 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -1887,6 +1887,21 @@ else
              -e 'doc/rotten.com/' -e 'doc/genetics/selection/www.mountimprobable.com/' -e 'doc/www/' | \
              parallel --max-args=500 identify | ge '\.gif\[[0-9]\] '; }
     wrap λ "Animated GIF is deprecated; GIFs should be converted to WebMs/MP4s."
+
+    # ensure all MP4 files have the 'moov atom' (the MP4 "table of contents") at the front of the file, to allow browser streaming:
+    find ./ -type f -name '*.mp4' \
+        | parallel --max-args="50" mp4-check-faststart 2>/dev/null \
+        | parallel --max-args="50" mp4-fix-faststart &
+
+    # check MP4 validity by forcing ffmpeg to decode every frame to /dev/null; this forces ffmpeg to actually parse and decode the full stream, and it'll report any corruption or truncation. If it prints nothing, the file is clean. Any output means something is wrong.
+    # This is intrinsically slow for huge collections like Gwern.net (>955 MP4 files) since it fully decodes every file, so we only do it occasionally.
+    λ(){ everyNDays 31 && find ./ -type f -name '*.mp4' -print0 | xargs --null -I{} sh -c '
+        errors=$(ffmpeg -v error -i "{}" -f null - 2>&1 | grep --fixed-strings --invert-match -- "non monotonically increasing dts to muxer")
+        if [ -n "$errors" ]; then
+           echo "FAIL: {}"
+           echo "$errors"
+        fi'; }
+    wrap λ "Some MP4 files are invalid?" &
 
     λ(){ find . -type f -name "*.gwtar.html" | parallel --max-args=500 grep --files-without-match --fixed-strings -e "PAR2"; }
     wrap λ "Gwtar archive file found which likely does not contain any PAR2 FEC (no hit for the string 'PAR2')? Add PAR2 to it."
