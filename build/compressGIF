@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-
 # compressGIF.sh: compress a GIF with gifsicle if the savings are worthwhile.
 # Author: Gwern Branwen
 # Date: 2024-02-26
-# When:  Time-stamp: "2026-01-25 12:39:28 gwern"
+# When:  Time-stamp: "2026-02-05 18:29:33 gwern"
 # License: CC-0
 
 set -e
+set -x
 
 ## Inlining for portability
 # shellcheck source=./bash.sh
@@ -15,44 +15,50 @@ red  () { echo -e "\e[41m$@\e[0m"; }
 green () { echo -e "\e[32m$@\e[0m"; }
 get_image_files () {
     mapfile -t "$1" < <(find . -maxdepth 1 -type f \
-                             \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" -o -iname "*.avif" \) \
+                             \( -iname "*.gif" \) \
                             | sort --version-sort)
 }
-
 args=("$@")
 if [ ${#args[@]} -eq 0 ]; then
     get_image_files args
     green "Attempting to use implied arguments: ${args[@]}"
 fi
-
 if [ ${#args[@]} -eq 0 ]; then
     red "Error: no arguments available!"; exit 1
 else
     command -v gifsicle > /dev/null
     command -v parallel > /dev/null
-
     optimize_gif() { # update the original GIF only if >10% size reduction; NOTE: this also avoids the issue where `gifsicle` *always* changes the file metadata by clobbering the original, even when no real change was made (which is a WONTFIX by the maintainer: <https://github.com/kohler/gifsicle/issues/201>).
          local gif="$1"
-
          if [ ! -f "$gif" ]; then
            return
          fi
-
+         # Skip non-GIF files
+         if [[ ! "$gif" =~ \.(gif|GIF)$ ]]; then
+           red "Skipping non-GIF file: $gif"
+           return
+         fi
          local temp_gif
          temp_gif="$(mktemp /tmp/XXXXXX.gif)"
-
-         gifsicle --colors=256 --optimize=3 "$gif" > "$temp_gif" 2>/dev/null
-
+         if ! gifsicle --colors=256 --optimize=3 "$gif" > "$temp_gif" 2>/dev/null; then
+           red "gifsicle failed on $gif"
+           rm -f "$temp_gif"
+           return
+         fi
          local original_size
          original_size="$(stat --printf="%s" "$gif")"
          local optimized_size
          optimized_size="$(stat --printf="%s" "$temp_gif")"
-
+         # Check for empty/corrupted output
+         if [ "$optimized_size" -eq 0 ]; then
+           red "gifsicle produced empty output for $gif"
+           rm -f "$temp_gif"
+           return
+         fi
          local size_delta
          size_delta="$((original_size - optimized_size))"
          local min_reduction
          min_reduction="$(echo "scale=0; $original_size * 0.1 / 1" | bc)"
-
          if [ "$size_delta" -ge "$min_reduction" ]; then
            mv "$temp_gif" "$gif" && echo "Optimized $gif"
          else
@@ -60,5 +66,5 @@ else
          fi
        }
        export -f optimize_gif
-       echo "${args[@]}" | parallel optimize_gif
+       printf '%s\n' "${args[@]}" | parallel optimize_gif
 fi
