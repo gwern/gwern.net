@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2026-01-21 21:37:15 gwern"
+When: Time-stamp: "2026-02-05 11:35:59 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -430,13 +430,13 @@ validateYAMLMetadata hakyllMeta filepath = do
   case getString "status" of
     Nothing -> return ()
     Just status -> unless (status `elem` C.yamlValidStatuses) $
-      error $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'status' must be one of " ++ show C.yamlValidStatuses ++ ", got: " ++ status
+      error $ "hakyll.validateYAMLMetadata C.yamlValidStatuses (" ++ filepath ++ "): 'status' must be one of " ++ show C.yamlValidStatuses ++ ", got: " ++ status
 
   -- confidence: Kesselman estimative word
   case getString "confidence" of
     Nothing -> return ()
     Just conf -> unless (conf `elem` C.yamlValidConfidences) $
-      error $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'confidence' must be a Kesselman word from " ++ show C.yamlValidConfidences ++ ", got: " ++ conf
+      error $ "hakyll.validateYAMLMetadata C.yamlValidConfidences (" ++ filepath ++ "): 'confidence' must be a Kesselman word from " ++ show C.yamlValidConfidences ++ ", got: " ++ conf
 
   -- importance: 0-10
   case getString "importance" of
@@ -452,7 +452,7 @@ validateYAMLMetadata hakyllMeta filepath = do
       let classes = words cssExt
           unknown = filter (`notElem` C.yamlValidCssExtensions) classes
       unless (null unknown) $
-        error $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'css-extension' has unknown classes: " ++ show unknown
+        error $ "hakyll.validateYAMLMetadata C.yamlValidCssExtensions (" ++ filepath ++ "): 'css-extension' has unknown classes: " ++ show unknown
 
   -- thumbnail: absolute path
   case getString "thumbnail" of

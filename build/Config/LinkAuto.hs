@@ -3,11 +3,12 @@ module Config.LinkAuto where
 
 import Data.List (sortBy)
 import qualified Data.Text as T (length, Text)
-
 import Text.Pandoc (nullAttr, Pandoc(..), QuoteType(DoubleQuote), Inline(Link,Quoted,Space,Str), nullMeta, Block(Para))
 
+import Utils (setLike)
+
 linkAutoTests :: [([Inline], Pandoc)]
-linkAutoTests =
+linkAutoTests = setLike
   -- test that it does *not* rewrite 'reinforcement learning' inside a Link's text (which would be an invalid Link-in-a-Link):
   [
     ([Link nullAttr [Quoted DoubleQuote [Str "Self-improving",Space,Str "reactive",Space,Str "agents",Space,Str "based",Space,Str "on",Space,Str "reinforcement",Space,Str "learning,",Space,Str "planning",Space,Str "and",Space,Str "teaching"]] ("https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.75.7884&rep=rep1&type=pdf",""),Str ",",Space,Str "Lin",Space,Str "1992"],
@@ -27,7 +28,7 @@ linkAutoTests =
 -- Testing: all-unique, value is URL
 custom, customSorted :: [(T.Text, T.Text)]
 customSorted = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) custom
-custom = [
+custom = setLike [
         ("(1-Lipschitz|Lipschitz)", "https://en.wikipedia.org/wiki/Lipschitz_continuity")
         , ("(A2C|A3C|[Aa]synchronous [Aa]dvantage [Aa]ctor-[Cc]ritic)", "https://arxiv.org/abs/1602.01783#deepmind")
         , ("(ADHD|[Aa]ttention[ -][Dd]eficit [Hh]yperactivity [Dd]isorder)s?", "https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder")

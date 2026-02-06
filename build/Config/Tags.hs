@@ -3,7 +3,7 @@ module Config.Tags where
 import Data.Char (toLower)
 import Data.List (isInfixOf, isPrefixOf)
 
-import Utils (anyInfix, anyPrefix)
+import Utils (anyInfix, anyPrefix, setLike)
 
 -- Maximum edit distance for typo correction in tag guessing using Levenshtein edit-distance (eg. 'sunkcost' → 'sunk-cost'):
 tagTypoMaxDistance :: Int
@@ -11,10 +11,10 @@ tagTypoMaxDistance = 3
 
 -- sub-directories where directory ≠ tag; this is usually the case in projects or archives/mirrors/dumps. We don't consider them to be tags.
 tagGuessBlacklist :: String -> Bool
-tagGuessBlacklist path = anyPrefix path ["/doc/biology/2000-iapac-norvir", "/doc/personal/2011-gwern-yourmorals.org", "/doc/rotten.com/",
+tagGuessBlacklist path = anyPrefix path $ setLike ["/doc/biology/2000-iapac-norvir", "/doc/personal/2011-gwern-yourmorals.org", "/doc/rotten.com/",
                                           "/doc/statistics/order/beanmachine-multistage", "/doc/www/"]
 tagListBlacklist :: [String]
-tagListBlacklist = ["2000-iapac-norvir", "rotten.com", "personal/2011-gwern-yourmorals.org", "beanmachine-multistage", "/www/", "biology/2000-iapac-norvir"]
+tagListBlacklist = setLike ["2000-iapac-norvir", "rotten.com", "personal/2011-gwern-yourmorals.org", "beanmachine-multistage", "/www/", "biology/2000-iapac-norvir"]
 
 -- Similar to guessing tags from local files' directories, we can also guess tags from their URLs.
 -- We allow arbitrary string predicates when guessing (so one might use regexps as well).
@@ -24,14 +24,14 @@ urlTagDB = map (\(s, t) -> ((s `isPrefixOf`), t)) prefixMatches
            ++ specialCases
   where
     prefixMatches, infixMatches :: [(String,String)]
-    prefixMatches = [("https://publicdomainreview.org/", "history/public-domain-review")
+    prefixMatches = setLike [("https://publicdomainreview.org/", "history/public-domain-review")
                     , ("https://www.filfre.net/", "technology/digital-antiquarian")
                     , ("https://abandonedfootnotes.blogspot.com", "sociology/abandoned-footnotes")
                     , ("https://dresdencodak.com", "humor")
                     , ("https://www.theonion.com", "humor")
                     , ("https://tvtropes.org", "fiction")]
 
-    infixMatches = [("r-project.org", "cs/r"),
+    infixMatches = setLike [("r-project.org", "cs/r"),
                     ("haskell.org", "cs/haskell")]
 
     specialCases :: [(String -> Bool, String)]
@@ -39,7 +39,7 @@ urlTagDB = map (\(s, t) -> ((s `isPrefixOf`), t)) prefixMatches
 
 -- testing: unique keys, regex validation
 wholeTagRewritesRegexes  :: [(String,String)]
-wholeTagRewritesRegexes = [("^cs/", "CS/")
+wholeTagRewritesRegexes = setLike [("^cs/", "CS/")
                      , ("^cs$", "CS")
                      , ("^cs/c$", "C (CS)")
                      , ("^cs/r$", "R")
@@ -202,7 +202,7 @@ tagsShort2Long = tagsShort2LongRewrites ++
 -- testing: unique list
 -- 'shortTagBlacklist' is used primarily in `Tags.guessTagFromShort`:
 shortTagBlacklist :: [String]
-shortTagBlacklist = ["a", "al", "an", "analysis", "and", "are", "as", "at", "be", "box", "done", "e", "error", "f",
+shortTagBlacklist = setLike ["a", "al", "an", "analysis", "and", "are", "as", "at", "be", "box", "done", "e", "error", "f",
                       "fine", "free", "g", "git", "if", "in", "is", "it", "of", "on", "option", "rm", "sed", "strong", "t",
                       "the", "to", "tr", "up", "we", "ls", "<ul>", "<ol>", "<p>", "<blockquote>"]
 
@@ -691,7 +691,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
 
 -- testing: unique keys
 shortTagTestSuite :: [(String, String)]
-shortTagTestSuite =
+shortTagTestSuite = setLike
  [("active-learning", "reinforcement-learning/exploration/active-learning")
  , ("add" , "psychiatry/adhd")
  , ("adhd" , "psychiatry/adhd")

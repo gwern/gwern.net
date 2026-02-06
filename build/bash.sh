@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-01-25 17:16:06 gwern"
+# When:  Time-stamp: "2026-02-06 13:27:23 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -537,7 +537,7 @@ crop-pad-black () { crop "$@" && pad-black "$@"; }
 # If I want to upload a bunch of dropcaps 8 at a time to the temp directory, say for Obormot to look at, I just do 'cv4 && cv2 && upload *.jpg'; then it'll print out a bunch of URLs which contain 4x2 grids and open them in Firefox etc.
 # If I want to save 4 newspaper comics from a paywall as a vertical strip with whitespace padding, for me it'd be something like right-click/click 4 times, `pad *.jpg && cv *.jpg && mv *.jpg 1975-berkeleybreathed-bloomcounty-unclebucktalkstotheyoungrepublicansondrugs.jpg && upload *.jpg humor`.
 
-# Helper function to get image files without white-spacing/weird characters worries (NOTE: assumes no newlines in filenames; GIF excluded due to animations):
+# Helper function to get image files without white-spacing/weird characters worries (NOTE: assumes no newlines in filenames; GIF excluded due to potential for animations which require special handling and user input to decide whether to convert to MP4 or JPG, etc.):
 get_image_files () {
     mapfile -t "$1" < <(find . -maxdepth 1 -type f \
                              \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" -o -iname "*.avif" \) \

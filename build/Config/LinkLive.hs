@@ -3,22 +3,24 @@ module Config.LinkLive where
 
 import qualified Data.Text as T (isPrefixOf, isInfixOf, Text)
 
+import Utils (setLike)
+
 -- local relative path of Markdown source file to append links to via `writeLinkLiveTestcase` for manual review:
 testPage :: FilePath
 testPage = "lorem-link.md"
 
 linkLivePrioritizeBlacklist :: [T.Text]
-linkLivePrioritizeBlacklist = ["omega.albany.edu"]
+linkLivePrioritizeBlacklist = setLike ["omega.albany.edu"]
 linkLivePrioritizeMinimum :: Int
 linkLivePrioritizeMinimum = 3
 
 -- hardwire URLs which should/should not be live
 overrideLinkLive, overrideLinkLiveNot :: [T.Text]
-overrideLinkLive = []
-overrideLinkLiveNot = ["https://en.wikipedia.org/w/index.php?title=Genome-wide_complex_trait_analysis&oldid=871165308"]
+overrideLinkLive = setLike []
+overrideLinkLiveNot = setLike ["https://en.wikipedia.org/w/index.php?title=Genome-wide_complex_trait_analysis&oldid=871165308"]
 
 wikipediaURLs :: [T.Text]
-wikipediaURLs = [".wikipedia.org"]
+wikipediaURLs = setLike [".wikipedia.org"]
 
 miscUrlRules :: T.Text -> Maybe Bool
 miscUrlRules u
@@ -30,11 +32,11 @@ miscUrlRules u
 
 -- all tested using `isDomain` in `Test`, and are unique lists, and no overlap between: `goodDomainsSub`/`badDomainsSub`, `goodDomainsSimple`/`badDomainsSimple`, `goodLinks`/`badLinks`.
 goodDomainsSub, goodDomainsSimple, badDomainsSub, badDomainsSimple, goodLinks, badLinks :: [T.Text]
-goodDomainsSub = [".allennlp.org", ".archive.org", ".archiveteam.org", ".bandcamp.com", ".eleuther.ai", ".fandom.com"
+goodDomainsSub = setLike [".allennlp.org", ".archive.org", ".archiveteam.org", ".bandcamp.com", ".eleuther.ai", ".fandom.com"
                  , ".github.io", ".givewell.org", ".greenspun.com", ".imagemagick.org", ".mementoweb.org"
                  , ".metafilter.com", ".nomeata.de", ".obormot.net", ".tumblr.com", ".xkcd.com", ".wordpress.com"
                  , ".blogspot.com", "antifandom.com"]
-goodDomainsSimple =
+goodDomainsSimple = setLike
   ["1dollarscan.com"
     , "humanprogress.org"
     , "6thfloor.blogs.nytimes.com"
@@ -762,9 +764,9 @@ goodDomainsSimple =
     , "blondihacks.com"
     ]
 
-badDomainsSub = [".plos.org", ".royalsocietypublishing.org", ".substack.com", ".stackexchange.com",
+badDomainsSub = setLike [".plos.org", ".royalsocietypublishing.org", ".substack.com", ".stackexchange.com",
                  ".oxfordjournals.org", ".medium.com", ".translate.goog"]
-badDomainsSimple = [ "2chan.us"
+badDomainsSimple = setLike ["2chan.us"
    , "1d4chan.org"
    , "5onwnspjvuk7cwvk.tor2web.org"
    , "a16z.com"
@@ -2365,7 +2367,7 @@ badDomainsSimple = [ "2chan.us"
    ]
 
 -- tested using `isURL` in `LinkLive` & are unique lists:
-goodLinks =
+goodLinks = setLike
           [ "https://aleph.se/andart2/neuroscience/energetics-of-the-brain-and-ai/"
             , "https://beza1e1.tuxen.de/articles/accidentally_turing_complete.html"
             , "https://courses.csail.mit.edu/6.857/2012/files/nash.py"
@@ -3066,7 +3068,7 @@ goodLinks =
             , "https://arbital.greaterwrong.com/p/fake_url/?format=preview&theme=classic"
             ]
 
-badLinks =  ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
+badLinks =  setLike ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I"
             , "http://2chan.us/wordpress/2012/07/12/c82-genre-stats/"
             , "https://ascii.textfiles.com/archives/1717"
             , "https://augmentingcognition.com/ltm.html"

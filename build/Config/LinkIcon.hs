@@ -3,7 +3,7 @@ module Config.LinkIcon (prioritizeLinkIconMin, prioritizeLinkIconBlackList, over
 
 import qualified Data.Text as T (drop, isInfixOf, isPrefixOf, unpack, Text)
 
-import Utils (extension, isLocal, hasExtension, isHostOrArchive)
+import Utils (extension, isLocal, hasExtension, isHostOrArchive, setLike)
 
 -- hardwire globally icons for exact-matches of specific URLs (`[(URL, (Link icon, Link icon type))]`).
 -- Useful in cases where we can't or won't edit the link directly to set link-icons
@@ -11,7 +11,7 @@ import Utils (extension, isLocal, hasExtension, isHostOrArchive)
 -- `[HQU Colab notebook](https://​tinyurl.com/hquv34 "Colab notebook: HQU-v3.4-light (Jax TPU)"){link-icon="alphabet" link-icon-type="svg" .link-live-not .archive-not}`.
 -- If we couldn't for some reason, we can hardwire that exact URL here.)
 overrideLinkIcons :: [(T.Text, (T.Text,T.Text,T.Text))]
-overrideLinkIcons = [("/index#abstract", ("","",""))]
+overrideLinkIcons = setLike [("/index#abstract", ("","",""))]
 
 ------------------------------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ prioritizeLinkIconMin :: Int
 prioritizeLinkIconMin = 4
 
 prioritizeLinkIconBlackList :: [T.Text] -- dead, icon-less, bad icon, overly-obscure, no real unifying nature worth knowing, etc.:
-prioritizeLinkIconBlackList =
+prioritizeLinkIconBlackList = setLike
   ["lilianweng.github.io", "www.smartpowders.com", "www.silverhandmeadery.com"
  , "philip.greenspun.com", "eli.thegreenplace.net", "danluu.com", "www.joelonsoftware.com"
  , "www.jstage.jst.go.jp", "intrade.com", "abandonedfootnotes.blogspot.com", "arr.am"
@@ -43,7 +43,7 @@ prioritizeLinkIconBlackList =
 
 -- all legal types of link-icon types displays
 linkIconTypes :: [T.Text]
-linkIconTypes = ["text", "svg"
+linkIconTypes = setLike ["text", "svg"
                 , "quad", "tri"
                 , "sans", "serif"
                 , "mono", "italic", "bold", "overline"
@@ -644,7 +644,7 @@ linkIconRulesColors u
 -- in /lorem order:
 -- testing: unique-keys, first is URI
 linkIconTestUnitsText :: [(T.Text,T.Text,T.Text,T.Text)]
-linkIconTestUnitsText =
+linkIconTestUnitsText = setLike
         [
          ("http://www.jstor.org/stable/10.1086/468061", "JTOR", "text,quad", "#900000")
          , ("https://meltingasphalt.com/interactive/going-critical/",  "\9650","text", "#aa0000")

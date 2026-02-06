@@ -1,11 +1,13 @@
 module Config.Paragraph where
 
+import Utils (setLike)
+
 minLength :: Int
 minLength = 768
 
 -- testing: unique list, all URLs
 whitelist :: [String]
-whitelist = ["/doc/economics/1998-delong.pdf", "/doc/cs/algorithm/1980-rytter.pdf"
+whitelist = setLike ["/doc/economics/1998-delong.pdf", "/doc/cs/algorithm/1980-rytter.pdf"
             , "https://cloud.google.com/storage/docs/gsutil/commands/config", "https://terrytao.wordpress.com/wp-content/uploads/2010/10/cosmic-distance-ladder.pdf"
             , "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC526783/", "https://www.strml.net/"
             , "https://antilop.cc/sr/files/Silk_Road_JTAN_com_Search_Warrant.pdf", "https://publicdomainreview.org/essay/the-snowflake-man-of-vermont/"

@@ -3,10 +3,11 @@ module Config.Interwiki where
 
 import Text.Pandoc (Inline(..), nullAttr)
 import qualified Data.Text as T (Text, append, isPrefixOf)
+import Utils (setLike)
 
 -- testing: `Test` checks key-uniqueness & validity of URL in the `Link` output.
 testCases :: [(Inline, Inline)]
-testCases = [
+testCases = setLike [
   -- !Wikipedia
   (Link nullAttr [Str "Pondicherry"] ("!Wikipedia",""),
     Link ("", ["link-live"], []) [Str "Pondicherry"] ("https://en.wikipedia.org/wiki/Pondicherry", ""))
@@ -170,7 +171,7 @@ testCases = [
   ]
 
 quoteOverrides :: [T.Text]
-quoteOverrides =  ["Antoine's", "Bloomingdale's", "Collier's", "Kinko's", "Mzoli's", "Denny's", "Denny’s",
+quoteOverrides =  setLike ["Antoine's", "Bloomingdale's", "Collier's", "Kinko's", "Mzoli's", "Denny's", "Denny’s",
                     "Security_hacker#Birth_of_subculture_and_entering_mainstream:_1960's-1980's",
                     "Security hacker#Birth of subculture and entering mainstream: 1960's-1980's"]
 
@@ -182,7 +183,7 @@ quoteOverrides =  ["Antoine's", "Bloomingdale's", "Collier's", "Kinko's", "Mzoli
 redirectDB :: [(T.Text, T.Text)]
 redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of arbitrary URLs (eg. other WMF projects, or for deleted articles, IA)
                         else T.append "https://en.wikipedia.org/wiki/" u in
-               map (\(a,b) -> (wp a, wp b)) $ [
+               map (\(a,b) -> (wp a, wp b)) $ setLike [
           ("WP:RS", "Wikipedia:Reliable_sources")
           , ("%2420", "United_States_twenty-dollar_bill")
           , ("%C3%80_la_recherche_du_temps_perdu", "In_Search_of_Lost_Time")

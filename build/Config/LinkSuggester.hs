@@ -6,7 +6,8 @@ import qualified Data.Text as T (head, length, unpack, isPrefixOf, isSuffixOf, T
 import qualified Data.Map.Strict as M (fromList, Map)
 import Text.Regex.TDFA ((=~))
 import Network.URI (isURI)
-import Utils (anyInfixT, anyPrefixT)
+
+import Utils (anyInfixT, anyPrefixT, setLike)
 
 hitsMinimum, anchorLengthMaximum :: Int
 hitsMinimum = 4
@@ -32,187 +33,202 @@ filterAnchors   t = T.length t > anchorLengthMaximum ||
 
 -- Testing: unique list
 badAnchorStrings :: [T.Text]
-badAnchorStrings = ["", "&", "#8", "#facebook", "& AI", "/r/SilkRoad", "0.45kg", "1 Second", "1 dead baby",
-             "10-50k", "100 days", "100GHz", "100\8211\&1000\215", "12-36 hours",
-             "12kb/day", "150 people", "15\215", "175 days", "1908/1966", "1920s",
-             "1933 paper", "1960s", "1980s", "1990s", "1kg", "1\8211\&4", "1\8211\&5",
-             "2 2.5-inch", "2 servers", "2 terabytes", "2 weeks", "2.5 years", "2000s",
-             "2004 SD was", "2005 essay", "2006 paper", "2007 survey", "2008 handout",
-             "2008 review", "2008-11-01", "2010 report", "2010 trial", "2011 paper",
-             "2011 report", "2011 survey", "2012 draft", "2012-11-07", "2013 review",
-             "2013-01-04", "2013-02-16", "2013-03-13", "2013-04-18", "2013-04-23",
-             "2013-09-03", "2013-11-26", "2013-12-19", "2013-12-20", "2014-06-09",
-             "2014-12-26", "2015-03-23", "2015-03-26", "2016 US presidential election",
-             "2016-08-16", "2019 profile", "2019-06-26", "2019-07-05", "2020-07-21",
-             "2021 profile", "20<sup>th</sup> century", "23 in 2018", "2TB one", "2channel",
-             "3 years", "3.5 years", "3D", "3\8211\&5\215", "3\8260\&4s cost", "4 examples",
-             "4 million", "4-item", "40 bytes", "400,000 year", "40 mg⧸day", "4chan.org",
-             "5 years", "50-100k", "53 cats", "58,020", "5\8211\&8", "6-7 years",
-             "7th report", "8 of 11", "8 years", "8mm film", "9 years", "900W UPS",
-             "<10", "<5", "<<", ">307", ">>", "@10", "@7", "@8", "@9", "A chapter",
-             "A trainer", "A-series", "ADHD", "AI", "AK", "ANN thread", "API", "Al-Qaeda",
-             "Alone", "Alpha", "Alzforum", "An article", "Anno again", "Ant", "Appendix A",
-             "Appendix B", "Appendix G", "April 2019", "April 2021", "Ash", "Ashkenazi",
-             "August 2002", "BLDBLOG", "Bamboo", "Blocking", "Blue light", "Book 3",
-             "Brave", "CDC", "CEOs", "CO2", "Caltech", "Chapter 5", "Co", "Code is available",
-             "Codex models", "Colab", "DFA", "DL", "DM", "DNA", "DOI", "Data sources",
-             "December 2017", "Dell monitor", "DoJ", "Donald Trump", "Dune-like",
-             "Dwarf", "Echoes", "English translation", "Episode One", "Episode Six",
-             "Erowid", "FAQ", "FDA", "FDA-approved", "For example", "GOS", "GPS",
-             "GQ", "Gainax.fr", "Genius", "Goog", "H+", "HN", "HTML", "Hackage", "Her",
-             "Hero", "Hoogle", "How often", "Howes", "Human Intelligence", "I conclude",
-             "I estimate", "I expected", "I found it", "I had predicted", "I have",
-             "I have been", "I have recorded", "I love", "I make", "I read", "I set up",
-             "II", "III", "IQs lower", "IRC", "If he does", "Image", "In a study",
-             "Indeed", "It turns out", "JS", "JSON", "Jaeggi says", "January 2010",
-             "January 2022", "John F. Kennedy", "July 2022", "June 2016", "June 2021",
-             "Karma", "Korff", "LW", "LW review", "Lab", "Law", "Lili", "Loui", "Lowe commentary",
-             "Lyons Den", "MIRI", "MP4", "March 11", "March 2022", "Mark Xu", "May 2021",
-             "MeFi", "Mr", "Multivariable", "NBC News", "NS", "NYRB", "NYT 2011",
-             "Net", "Neuroticism", "New Links", "New York", "No benefits", "No.",
-             "November 2019", "November 2021", "OA", "OA claims", "OA5", "ODS", "ON FIRE",
-             "October 2021", "October 2022", "Okada", "One", "One blogger", "One episode",
-             "One survey", "Online", "Open", "Organizational Behavior and Human Decision Processes",
-             "P&G", "PDF", "Paper", "Part 1", "Part 3", "Part Four", "Part I", "Part II",
-             "Part One", "Part Three", "Part Two", "Poll", "Pulp Mag", "Quest", "Quora",
-             "RNA", "RSS", "RSS version", "Raman", "Redditor", "Reset.me", "Rotem",
-             "Rumi", "S1", "S1E1", "S1E11", "S1E14", "S1E2", "S1E26", "S2E14", "S2E15",
-             "S2E25", "S2E26", "S2E4", "S2E8", "S3E11", "S3E12", "S3E13", "S3E3",
-             "S3E4", "S4E18", "S4E25", "S4E26", "S5E1", "S5E12", "S5E13", "S5E18",
-             "S5E2", "S5E21", "S5E25", "S5E5", "S5E9", "S6E22", "S6E25", "S6E9", "S7E10",
-             "S7E13", "S7E14", "S7E24", "S8E14", "S8E20", "S8E21", "S8E23", "S8E27",
-             "S9E13", "S9E14", "S9E21", "S9E23", "S9E4", "SD cards", "SF", "SR forums",
-             "SR1", "SR1F", "SR2F", "STRATFOR", "SVG", "Salon", "Salon.com", "SciAm",
-             "Section 5", "See also", "See here", "September 2021", "Share", "Silk Road 2",
-             "Silk Road 2.0", "Singal", "Slate", "Slice", "Some studies", "Some work",
-             "Spent", "Spring 2019", "Steven Kaas", "Sturm\8217s", "T-shirts", "TR",
-             "TSG", "TV", "Table 4", "Tables 2", "The Age", "The Guardian", "The Verge\8217s",
-             "The article", "The data", "The problem", "The results", "There are many ways",
-             "This interview", "This one", "This paper", "This technique", "To quote",
-             "Tofu", "Top books", "Tumblr", "U-shaped", "UK", "UOChris1", "URLs",
-             "US states", "USB hub", "Vaniver", "Verge", "Vice", "WaOi", "Why not",
-             "Wikipedia pages", "XMonad", "XSLT", "Xs", "Zagat", "a blog post", "a book",
-             "a co-founder", "a collection", "a commuter", "a curious appeal", "a decade later",
-             "a few lines", "a fifth", "a game", "a genius", "a good thing", "a half",
-             "a historic", "a laptop", "a later analysis", "a little work", "a lot",
-             "a lot of things", "a meta-analysis", "a network", "a new era", "a penalty",
-             "a quarter", "a reference", "a review", "a rumor", "a saying", "a scan",
-             "a second experiment", "a service", "a seventh", "a sixth", "a study",
-             "a survey", "a third", "a tradition", "a vice", "a web page", "about it",
-             "absolutely right", "ac.uk", "according to", "acne page", "affect mood",
-             "ajcn.org", "aleph.se", "all of them", "allow an", "also interesting",
-             "also with", "amazon.co.", "amazon.com", "an article", "an attempt",
-             "an email interview", "an essay", "an example", "an excerpt", "an interview",
-             "analytics", "and do", "and family history", "and identified", "animal welfare",
-             "annals.org", "annual survey", "anonymized", "another example", "another page",
-             "another suggestion", "anti-", "antilop.cc", "archive.is", "archivenow",
-             "are available", "are banned", "are due to", "are making", "aries", "arrest of 2",
-             "arrested 5", "art & wine", "arxiv", "arxiv.org", "as a teacher", "as is",
-             "as necessary", "as of 2011", "as of 2014", "as predicted", "as usual",
-             "ast", "at all", "at least 4", "at least once", "at night", "autoregressive",
-             "average-case", "award-winning", "awesome as it is", "background information",
-             "backing up", "basic idea", "be made", "been abandoned", "been examined",
-             "been in jail", "been removed", "believe it", "better performance", "bio",
-             "biomedicine", "black women", "blixt", "blocking", "blocks", "blog post",
-             "blood sugar", "bls.gov", "body weight", "book reviews", "brain plasticity",
-             "bre", "busted in", "by fans", "by his", "c2.com", "can be improved",
-             "can influence", "can lead to", "can\8217t build", "captainjojo", "ccc.de",
-             "cdlib.org", "census.gov", "cev", "ch14.5", "classifier", "cognitive training",
-             "court records", "criminal records", "dataset", "de facto", "debian.org",
-             "decline with age", "deep learning", "delusional", "demo quiz", "demo video",
-             "dental records", "did arrive", "did not do much", "diff of", "digit span",
-             "discord.gg", "doc88.com", "does know", "does seem", "doi.org", "don\8217t",
-             "dreams can", "dtic.mil", "due solely", "early 2012", "ecology & evolution",
-             "eepurl.com", "eg", "elderly individuals", "emphasis added", "encourager",
-             "episode 10", "episode 18", "erowid.org", "especially well", "evidence of publication bias",
-             "exigentsky", "expected from their", "expel elves", "fMRI study", "face crops",
-             "fair use", "famously argued that", "fandom.com", "fatal accidents",
-             "fatal flaw", "favorite books", "fda.gov", "feline form", "field experiment",
-             "figure 2/3", "financial incentive", "finetuned", "first calculation",
-             "first proposed", "first quote", "first result", "flickr.com", "followup",
-             "followup paper", "for aspirin", "for example", "for my dog", "for novelty",
-             "forum posts", "found the opposite", "free", "full translation", "game 1",
-             "game 2", "gatotsu911", "generalizability", "gitcoin.co", "gitlab.com",
-             "gnxp.com", "go", "goo.gl", "great results", "grok.se", "gwern", "gwern.net",
-             "had planned", "has announced", "has observed", "has said", "has shown",
-             "has told", "he says", "he wrote", "health benefits", "held up", "help me",
-             "her book", "high-dimensional", "highly optimized", "historical context",
-             "historical survey", "homeostasis", "how critical", "how long it takes",
-             "how often", "i2", "iacr.org", "ieet.org", "ietf.org", "if available",
-             "imdb.com", "imgur.com", "impact-factor", "in Bitcoin", "in China", "in Ireland",
-             "in Minecraft", "in a", "in an essay", "in animal models", "in generative models",
-             "in my table", "in the", "increased mortality", "independent replication",
-             "index.html", "instructional technology", "interesting thing", "into English",
-             "into the abdomen", "intro", "inversely correlated", "is amusing", "is available",
-             "is improved", "is reportedly", "is to", "isfdb.org", "it sells", "it uses",
-             "it was noted", "jttoto", "just one such", "just regression", "jwz.org",
-             "kaggle.com", "karthik bm", "kriegerlie", "landmark address", "large dataset",
-             "last very", "last year", "latest work", "le", "learn faster", "learned representation",
-             "legal highs", "leme.me", "leme.me/", "less on conflict", "less secure",
-             "libgen.is", "libgen.org", "lifetime income", "like murder", "link compilation",
-             "logging-in", "long way", "long-term", "looks like", "lwn.net", "made bail",
-             "make it", "makes sense", "many problems", "many things", "many ways",
-             "marginnote", "matrix multiplication", "may be", "maybe not", "mdpi.com",
-             "media op-ed", "medium.com", "mega.nz", "meta", "mid-2012", "mor", "more coverage",
-             "more difficult", "more examples", "more peculiar", "more samples", "more sober",
-             "more strongly", "mostly when", "mouse study", "movie adaptation", "much less",
-             "much more expensive", "much-cited", "muflax", "music generation", "must be",
-             "my config", "my own page", "my prediction", "my surprise", "mystical experience",
-             "nber.org", "ncase.me", "nejm.org", "neurobiology", "neuroticism", "newegg.com",
-             "nice slides", "nih.gov", "nips.css", "not heard", "not necessarily",
-             "not too bad", "npr.org", "nytimes.com", "odd study", "of course", "of data",
-             "of empathy", "off of SR2", "often low", "oglaf.com", "on average", "on closer inspection",
-             "on poetry", "on scaling", "one", "one article", "one buyer", "one month",
-             "one site", "one study", "one user", "online", "online demo", "only exit",
-             "only once", "only so much", "open questions", "or more", "original paper",
-             "original vision", "other benefits", "other examples", "oup.com", "our book",
-             "over an", "own films", "p.\160\&2", "part Five", "pdf", "peerj.com",
-             "pet flap", "png", "points out", "policy implications", "ponzis", "poorly studied",
-             "post-rock", "pre-2012", "pre-GWAS", "pregnancy rates", "premium\8217",
-             "preprint", "pretty safe", "probably not", "project page", "psychiatric disorders",
-             "psychiatry", "psychopathy", "public datasets", "publicly available",
-             "published version", "push-button", "qntm.org", "quora.com", "r = 0.4",
-             "random samples", "rare mutations", "raw data", "recent research", "regression tasks",
-             "regression to", "reported that", "research in general", "research paper",
-             "review article", "review of", "rewriting history", "row1.ca", "run computers",
-             "s1\8211\&8", "s9", "sanded floor", "scaled-up", "scales with model size",
-             "scaling laws", "scaling up", "school-based", "season 9", "second quote",
-             "sed", "sees through", "self-esteem", "serious threat", "several studies",
-             "shallow moon", "show off", "shut down", "side effects", "side-effects",
-             "simple SVG", "site traffic", "small fraction", "small study", "smallcaps",
-             "smaller model", "snowy halcy", "so low", "so many", "so powerful", "some evidence",
-             "some harm", "source code", "speeding up", "status", "status hierarchies",
-             "steady fall", "still bad", "still is", "still walk", "storks in", "struggled for years",
-             "such as Iran", "such files", "suggests that", "summarization", "summary statistics",
-             "summed to", "summer jobs", "surprising abilities", "survey results",
-             "synaptic", "tale of", "tality", "ted.com", "tells us", "than before",
-             "that config", "that could", "that low", "the BBC", "the E", "the Quakers",
-             "the USA", "the ambitions", "the appendix", "the cause", "the cellular level",
-             "the code", "the devil is in the details", "the difference", "the end",
-             "the heart", "the initial screening", "the king", "the mean", "the morning",
-             "the movie", "the newsletter", "the paper", "the problem", "the relationship",
-             "the research literature", "the seasons", "the seen", "the size", "the solution",
-             "their graph", "their health", "there are many ways", "there is evidence",
-             "there too", "there too!", "thin,", "this link", "this one", "this paper",
-             "this post", "those affected", "to solve", "to test", "to the mean",
-             "to why", "told not to", "top journals", "trans", "transcription/translation",
-             "turns out to be", "twin studies", "x.com", "type=pdf", "underspend",
-             "understand", "unigrams", "until 2014", "used it", "usually not", "v3",
-             "vague musing", "very fast", "very tricky", "vice-versa", "vice.com",
-             "video calls", "video demo", "visualizations", "vox.com", "w3.org", "was also",
-             "was minimal", "was searched", "was skeptical", "watch a video", "we have created",
-             "we see", "weak evidence", "web pages", "well studied", "well-known",
-             "well-studied", "went bankrupt", "whitepaper", "who would", "wikipedia.org",
-             "winning big", "with itself", "with others", "within a year", "won\8217t",
-             "worked out", "world model", "wrote a paper", "young adults", "youtu.be",
-             "~", "~16", "~2014-11-06", "~20kj/g", "~6", "\8217perfection", "\8383\&39,644",
-             "\12371\12393\12418\12398\12375\12367\12415", "\12402\12425\12426\21380\31070\27096",
-             "\12454\12469\12462\12488\12456\12468", "\21380\31070\27096\12398\36890\23398\36335",
-             "\24189\38597\12395\21682\12363\12379\12289\22696\26579\12398\26716",
-             "\24651\24515\12402\12392\12388", "\26481\26041\22934\12293\22818", "\27531\12425\12378\12398\26862",
-             "\30495\29983\26410\20998\12398\19968\24515", "\37504\27827\12392\24651\33394\39764\27861", "Review of",
-             "as happened", "non-trivial error rates", "the fulltext", "Smith et al", "heavily edited", "never worked",
-             "other considerations", "It succeeded", "much harder", "available for download", "as of 2023", "There must be", "text samples", "inefficiency of", "so often", "highly sensitive", "Matters Of", "Matters of", "matters of", "list of ideas", "in biology", "anchor", "transformative", "into them", "the stock market", "Bloomberg News", "Twitter", "media report", "to cry", "A/B test results", "white men", "more robust", "predicting the next", "white males", "They were surprised", "finetune it", "years pass", "locks of hair", "put it", "and that", "come together", "Reddit", "see also", "majority voting", "tradeoff", "the famous", "behind closed doors", "supported him", "reminds us", "in one scene", "closer inspection", "as GPT-3", "Why Anime", "as always", "are competitive", "a few hundred", "a claim", "due to randomness", "so slow", "cope with", "forum suggestion", "one post", "desirable property", "September 2022", "human-like", "not one but two", "We now take for granted", "already failed", "face synthesis", "R. A.", "Transformer version", "from above", "what if", "most of them", "Q&A", "has argued", "knew how to do it at that time", "faster performance", "the Guardian", "crowdsourcing experiment", "Its", "its", "news", "ITS", "NEWS", "heavy use", "seamless", "My proposal", "sinister", "in the morning", "to be false", "surprisingly close", "really learning", "an economist", "the launch", "similar datapoints", "it turns out", "Another article", "that other", "personalization", "a critic", "I agree", "minimal impact", "blog posts", "it turned out"]
+badAnchorStrings = setLike ["", " ", "\n", "&", "#8", "#facebook", "& AI", "/r/SilkRoad", "0.45kg", "1 Second", "1 dead baby"
+             , "10-50k", "100 days", "100GHz", "100\8211\&1000\215", "12-36 hours"
+             , "12kb/day", "150 people", "15\215", "175 days", "1908/1966", "1920s"
+             , "1933 paper", "1960s", "1980s", "1990s", "1kg", "1\8211\&4", "1\8211\&5"
+             , "2 2.5-inch", "2 servers", "2 terabytes", "2 weeks", "2.5 years", "2000s"
+             , "2004 SD was", "2005 essay", "2006 paper", "2007 survey", "2008 handout"
+             , "2008 review", "2008-11-01", "2010 report", "2010 trial", "2011 paper"
+             , "2011 report", "2011 survey", "2012 draft", "2012-11-07", "2013 review"
+             , "2013-01-04", "2013-02-16", "2013-03-13", "2013-04-18", "2013-04-23"
+             , "2013-09-03", "2013-11-26", "2013-12-19", "2013-12-20", "2014-06-09"
+             , "2014-12-26", "2015-03-23", "2015-03-26", "2016 US presidential election"
+             , "2016-08-16", "2019 profile", "2019-06-26", "2019-07-05", "2020-07-21"
+             , "2021 profile", "20<sup>th</sup> century", "23 in 2018", "2TB one", "2channel"
+             , "3 years", "3.5 years", "3D", "3\8211\&5\215", "3\8260\&4s cost", "4 examples"
+             , "4 million", "4-item", "40 bytes", "400,000 year", "40 mg⧸day", "4chan.org"
+             , "5 years", "50-100k", "53 cats", "58,020", "5\8211\&8", "6-7 years"
+             , "7th report", "8 of 11", "8 years", "8mm film", "9 years", "900W UPS"
+             , "<10", "<5", "<<", ">307", ">>", "@10", "@7", "@8", "@9", "A chapter"
+             , "A trainer", "A-series", "ADHD", "AI", "AK", "ANN thread", "API", "Al-Qaeda"
+             , "Alone", "Alpha", "Alzforum", "An article", "Anno again", "Ant", "Appendix A"
+             , "Appendix B", "Appendix G", "April 2019", "April 2021", "Ash", "Ashkenazi"
+             , "August 2002", "BLDBLOG", "Bamboo", "Blocking", "Blue light", "Book 3"
+             , "Brave", "CDC", "CEOs", "CO2", "Caltech", "Chapter 5", "Co", "Code is available"
+             , "Codex models", "Colab", "DFA", "DL", "DM", "DNA", "DOI", "Data sources"
+             , "December 2017", "Dell monitor", "DoJ", "Donald Trump", "Dune-like"
+             , "Dwarf", "Echoes", "English translation", "Episode One", "Episode Six"
+             , "Erowid", "FAQ", "FDA", "FDA-approved", "For example", "GOS", "GPS"
+             , "GQ", "Gainax.fr", "Genius", "Goog", "H+", "HN", "HTML", "Hackage", "Her"
+             , "Hero", "Hoogle", "How often", "Howes", "Human Intelligence", "I conclude"
+             , "I estimate", "I expected", "I found it", "I had predicted", "I have"
+             , "I have been", "I have recorded", "I love", "I make", "I read", "I set up"
+             , "II", "III", "IQs lower", "IRC", "If he does", "Image", "In a study"
+             , "Indeed", "It turns out", "JS", "JSON", "Jaeggi says", "January 2010"
+             , "January 2022", "John F. Kennedy", "July 2022", "June 2016", "June 2021"
+             , "Karma", "Korff", "LW", "LW review", "Lab", "Law", "Lili", "Loui", "Lowe commentary"
+             , "Lyons Den", "MIRI", "MP4", "March 11", "March 2022", "Mark Xu", "May 2021"
+             , "MeFi", "Mr", "Multivariable", "NBC News", "NS", "NYRB", "NYT 2011"
+             , "Net", "Neuroticism", "New Links", "New York", "No benefits", "No."
+             , "November 2019", "November 2021", "OA", "OA claims", "OA5", "ODS", "ON FIRE"
+             , "October 2021", "October 2022", "Okada", "One", "One blogger", "One episode"
+             , "One survey", "Online", "Open", "Organizational Behavior and Human Decision Processes"
+             , "P&G", "PDF", "Paper", "Part 1", "Part 3", "Part Four", "Part I", "Part II"
+             , "Part One", "Part Three", "Part Two", "Poll", "Pulp Mag", "Quest", "Quora"
+             , "RNA", "RSS", "RSS version", "Raman", "Redditor", "Reset.me", "Rotem"
+             , "Rumi", "S1", "S1E1", "S1E11", "S1E14", "S1E2", "S1E26", "S2E14", "S2E15"
+             , "S2E25", "S2E26", "S2E4", "S2E8", "S3E11", "S3E12", "S3E13", "S3E3"
+             , "S3E4", "S4E18", "S4E25", "S4E26", "S5E1", "S5E12", "S5E13", "S5E18"
+             , "S5E2", "S5E21", "S5E25", "S5E5", "S5E9", "S6E22", "S6E25", "S6E9", "S7E10"
+             , "S7E13", "S7E14", "S7E24", "S8E14", "S8E20", "S8E21", "S8E23", "S8E27"
+             , "S9E13", "S9E14", "S9E21", "S9E23", "S9E4", "SD cards", "SF", "SR forums"
+             , "SR1", "SR1F", "SR2F", "STRATFOR", "SVG", "Salon", "Salon.com", "SciAm"
+             , "Section 5", "See also", "See here", "September 2021", "Share", "Silk Road 2"
+             , "Silk Road 2.0", "Singal", "Slate", "Slice", "Some studies", "Some work"
+             , "Spent", "Spring 2019", "Steven Kaas", "Sturm\8217s", "T-shirts", "TR"
+             , "TSG", "TV", "Table 4", "Tables 2", "The Age", "The Guardian", "The Verge\8217s"
+             , "The article", "The data", "The problem", "The results", "There are many ways"
+             , "This interview", "This one", "This paper", "This technique", "To quote"
+             , "Tofu", "Top books", "Tumblr", "U-shaped", "UK", "UOChris1", "URLs"
+             , "US states", "USB hub", "Vaniver", "Verge", "Vice", "WaOi", "Why not"
+             , "Wikipedia pages", "XMonad", "XSLT", "Xs", "Zagat", "a blog post", "a book"
+             , "a co-founder", "a collection", "a commuter", "a curious appeal", "a decade later"
+             , "a few lines", "a fifth", "a game", "a genius", "a good thing", "a half"
+             , "a historic", "a laptop", "a later analysis", "a little work", "a lot"
+             , "a lot of things", "a meta-analysis", "a network", "a new era", "a penalty"
+             , "a quarter", "a reference", "a review", "a rumor", "a saying", "a scan"
+             , "a second experiment", "a service", "a seventh", "a sixth", "a study"
+             , "a survey", "a third", "a tradition", "a vice", "a web page", "about it"
+             , "absolutely right", "ac.uk", "according to", "acne page", "affect mood"
+             , "ajcn.org", "aleph.se", "all of them", "allow an", "also interesting"
+             , "also with", "amazon.co.", "amazon.com", "an article", "an attempt"
+             , "an email interview", "an essay", "an example", "an excerpt", "an interview"
+             , "analytics", "and do", "and family history", "and identified", "animal welfare"
+             , "annals.org", "annual survey", "anonymized", "another example", "another page"
+             , "another suggestion", "anti-", "antilop.cc", "archive.is", "archivenow"
+             , "are available", "are banned", "are due to", "are making", "aries", "arrest of 2"
+             , "arrested 5", "art & wine", "arxiv", "arxiv.org", "as a teacher", "as is"
+             , "as necessary", "as of 2011", "as of 2014", "as predicted", "as usual"
+             , "ast", "at all", "at least 4", "at least once", "at night", "autoregressive"
+             , "average-case", "award-winning", "awesome as it is", "background information"
+             , "backing up", "basic idea", "be made", "been abandoned", "been examined"
+             , "been in jail", "been removed", "believe it", "better performance", "bio"
+             , "biomedicine", "black women", "blixt", "blocking", "blocks", "blog post"
+             , "blood sugar", "bls.gov", "body weight", "book reviews", "brain plasticity"
+             , "bre", "busted in", "by fans", "by his", "c2.com", "can be improved"
+             , "can influence", "can lead to", "can\8217t build", "captainjojo", "ccc.de"
+             , "cdlib.org", "census.gov", "cev", "ch14.5", "classifier", "cognitive training"
+             , "court records", "criminal records", "dataset", "de facto", "debian.org"
+             , "decline with age", "deep learning", "delusional", "demo quiz", "demo video"
+             , "dental records", "did arrive", "did not do much", "diff of", "digit span"
+             , "discord.gg", "doc88.com", "does know", "does seem", "doi.org", "don\8217t"
+             , "dreams can", "dtic.mil", "due solely", "early 2012", "ecology & evolution"
+             , "eepurl.com", "eg", "elderly individuals", "emphasis added", "encourager"
+             , "episode 10", "episode 18", "erowid.org", "especially well", "evidence of publication bias"
+             , "exigentsky", "expected from their", "expel elves", "fMRI study", "face crops"
+             , "fair use", "famously argued that", "fandom.com", "fatal accidents"
+             , "fatal flaw", "favorite books", "fda.gov", "feline form", "field experiment"
+             , "figure 2/3", "financial incentive", "finetuned", "first calculation"
+             , "first proposed", "first quote", "first result", "flickr.com", "followup"
+             , "followup paper", "for aspirin", "for example", "for my dog", "for novelty"
+             , "forum posts", "found the opposite", "free", "full translation", "game 1"
+             , "game 2", "gatotsu911", "generalizability", "gitcoin.co", "gitlab.com"
+             , "gnxp.com", "go", "goo.gl", "great results", "grok.se", "gwern", "gwern.net"
+             , "had planned", "has announced", "has observed", "has said", "has shown"
+             , "has told", "he says", "he wrote", "health benefits", "held up", "help me"
+             , "her book", "high-dimensional", "highly optimized", "historical context"
+             , "historical survey", "homeostasis", "how critical", "how long it takes"
+             , "how often", "i2", "iacr.org", "ieet.org", "ietf.org", "if available"
+             , "imdb.com", "imgur.com", "impact-factor", "in Bitcoin", "in China", "in Ireland"
+             , "in Minecraft", "in a", "in an essay", "in animal models", "in generative models"
+             , "in my table", "in the", "increased mortality", "independent replication"
+             , "index.html", "instructional technology", "interesting thing", "into English"
+             , "into the abdomen", "intro", "inversely correlated", "is amusing", "is available"
+             , "is improved", "is reportedly", "is to", "isfdb.org", "it sells", "it uses"
+             , "it was noted", "jttoto", "just one such", "just regression", "jwz.org"
+             , "kaggle.com", "karthik bm", "kriegerlie", "landmark address", "large dataset"
+             , "last very", "last year", "latest work", "le", "learn faster", "learned representation"
+             , "legal highs", "leme.me", "leme.me/", "less on conflict", "less secure"
+             , "libgen.is", "libgen.org", "lifetime income", "like murder", "link compilation"
+             , "logging-in", "long way", "long-term", "looks like", "lwn.net", "made bail"
+             , "make it", "makes sense", "many problems", "many things", "many ways"
+             , "marginnote", "matrix multiplication", "may be", "maybe not", "mdpi.com"
+             , "media op-ed", "medium.com", "mega.nz", "meta", "mid-2012", "mor", "more coverage"
+             , "more difficult", "more examples", "more peculiar", "more samples", "more sober"
+             , "more strongly", "mostly when", "mouse study", "movie adaptation", "much less"
+             , "much more expensive", "much-cited", "muflax", "music generation", "must be"
+             , "my config", "my own page", "my prediction", "my surprise", "mystical experience"
+             , "nber.org", "ncase.me", "nejm.org", "neurobiology", "neuroticism", "newegg.com"
+             , "nice slides", "nih.gov", "nips.css", "not heard", "not necessarily"
+             , "not too bad", "npr.org", "nytimes.com", "odd study", "of course", "of data"
+             , "of empathy", "off of SR2", "often low", "oglaf.com", "on average", "on closer inspection"
+             , "on poetry", "on scaling", "one", "one article", "one buyer", "one month"
+             , "one site", "one study", "one user", "online", "online demo", "only exit"
+             , "only once", "only so much", "open questions", "or more", "original paper"
+             , "original vision", "other benefits", "other examples", "oup.com", "our book"
+             , "over an", "own films", "p.\160\&2", "part Five", "pdf", "peerj.com"
+             , "pet flap", "png", "points out", "policy implications", "ponzis", "poorly studied"
+             , "post-rock", "pre-2012", "pre-GWAS", "pregnancy rates", "premium\8217"
+             , "preprint", "pretty safe", "probably not", "project page", "psychiatric disorders"
+             , "psychiatry", "psychopathy", "public datasets", "publicly available"
+             , "published version", "push-button", "qntm.org", "quora.com", "r = 0.4"
+             , "random samples", "rare mutations", "raw data", "recent research", "regression tasks"
+             , "regression to", "reported that", "research in general", "research paper"
+             , "review article", "review of", "rewriting history", "row1.ca", "run computers"
+             , "s1\8211\&8", "s9", "sanded floor", "scaled-up", "scales with model size"
+             , "scaling laws", "scaling up", "school-based", "season 9", "second quote"
+             , "sed", "sees through", "self-esteem", "serious threat", "several studies"
+             , "shallow moon", "show off", "shut down", "side effects", "side-effects"
+             , "simple SVG", "site traffic", "small fraction", "small study", "smallcaps"
+             , "smaller model", "snowy halcy", "so low", "so many", "so powerful", "some evidence"
+             , "some harm", "source code", "speeding up", "status", "status hierarchies"
+             , "steady fall", "still bad", "still is", "still walk", "storks in", "struggled for years"
+             , "such as Iran", "such files", "suggests that", "summarization", "summary statistics"
+             , "summed to", "summer jobs", "surprising abilities", "survey results"
+             , "synaptic", "tale of", "tality", "ted.com", "tells us", "than before"
+             , "that config", "that could", "that low", "the BBC", "the E", "the Quakers"
+             , "the USA", "the ambitions", "the appendix", "the cause", "the cellular level"
+             , "the code", "the devil is in the details", "the difference", "the end"
+             , "the heart", "the initial screening", "the king", "the mean", "the morning"
+             , "the movie", "the newsletter", "the paper", "the problem", "the relationship"
+             , "the research literature", "the seasons", "the seen", "the size", "the solution"
+             , "their graph", "their health", "there are many ways", "there is evidence"
+             , "there too", "there too!", "thin,", "this link", "this one", "this paper"
+             , "this post", "those affected", "to solve", "to test", "to the mean"
+             , "to why", "told not to", "top journals", "trans", "transcription/translation"
+             , "turns out to be", "twin studies", "x.com", "type=pdf", "underspend"
+             , "understand", "unigrams", "until 2014", "used it", "usually not", "v3"
+             , "vague musing", "very fast", "very tricky", "vice-versa", "vice.com"
+             , "video calls", "video demo", "visualizations", "vox.com", "w3.org", "was also"
+             , "was minimal", "was searched", "was skeptical", "watch a video", "we have created"
+             , "we see", "weak evidence", "web pages", "well studied", "well-known"
+             , "well-studied", "went bankrupt", "whitepaper", "who would", "wikipedia.org"
+             , "winning big", "with itself", "with others", "within a year", "won\8217t"
+             , "worked out", "world model", "wrote a paper", "young adults", "youtu.be"
+             , "~", "~16", "~2014-11-06", "~20kj/g", "~6", "\8217perfection", "\8383\&39,644"
+             , "\12371\12393\12418\12398\12375\12367\12415", "\12402\12425\12426\21380\31070\27096"
+             , "\12454\12469\12462\12488\12456\12468", "\21380\31070\27096\12398\36890\23398\36335"
+             , "\24189\38597\12395\21682\12363\12379\12289\22696\26579\12398\26716"
+             , "\24651\24515\12402\12392\12388", "\26481\26041\22934\12293\22818", "\27531\12425\12378\12398\26862"
+             , "\30495\29983\26410\20998\12398\19968\24515", "\37504\27827\12392\24651\33394\39764\27861", "Review of"
+             , "as happened", "non-trivial error rates", "the fulltext", "Smith et al", "heavily edited", "never worked"
+             , "other considerations", "It succeeded", "much harder", "available for download", "as of 2023", "There must be"
+             , "text samples", "inefficiency of", "so often", "highly sensitive", "Matters Of", "Matters of"
+             , "matters of", "list of ideas", "in biology", "anchor", "transformative", "into them", "the stock market"
+             , "Bloomberg News", "Twitter", "media report", "to cry", "A/B test results", "white men", "more robust"
+             , "predicting the next", "white males", "They were surprised", "finetune it", "years pass", "locks of hair"
+             , "put it", "and that", "come together", "Reddit", "see also", "majority voting", "tradeoff", "the famous"
+             , "behind closed doors", "supported him", "reminds us", "in one scene", "closer inspection", "as GPT-3"
+             , "Why Anime", "as always", "are competitive", "a few hundred", "a claim", "due to randomness", "so slow"
+             , "cope with", "forum suggestion", "one post", "desirable property", "September 2022", "human-like"
+             , "not one but two", "We now take for granted", "already failed", "face synthesis", "R. A."
+             , "Transformer version", "from above", "what if", "most of them", "Q&A", "has argued"
+             , "knew how to do it at that time", "faster performance", "the Guardian", "crowdsourcing experiment"
+             , "Its", "its", "news", "ITS", "NEWS", "heavy use", "seamless", "My proposal", "sinister"
+             , "in the morning", "to be false", "surprisingly close", "really learning", "an economist", "the launch"
+             , "similar datapoints", "it turns out", "Another article", "that other", "personalization", "a critic"
+             , "I agree", "minimal impact", "blog posts", "it turned out"]
 
 -- a whitelist of (URL, [possible anchors]) pairs which would be filtered out normally by the heuristic checks, but are valid anyway. Instances can be found looking at the generated `linkSuggests-deleted.hs` database, or written by hand when I notice useful links not being suggested in the formatting phase of writing annotations.
 whiteListDB :: M.Map T.Text [T.Text]
@@ -220,7 +236,7 @@ whiteListDB = M.fromList $ filter (\(k,_) -> (k /= "") && (T.head k == '/' || is
 
 -- testing: unique keys & values & key-values; first, is URI, second, none are URL (cannot require not-isURI because strings like "PALM" parse as valid URIs)
 whiteList :: [(T.Text, [T.Text])]
-whiteList = [ ( "/crop#hands"
+whiteList = setLike [ ( "/crop#hands"
     , [ "PALM"
       , "PALM ('PALM Anime Locator Model') is a dataset of k=5,382 anime-style Danbooru2019 images annotated with the locations of _n_ = 14,394 hands, a YOLOv3 model trained using those annotations to detect hands in anime-style images, and a second dataset of _n_ = 96,534 hands cropped from the Danbooru2019 dataset using the PALM YOLO model and _n_ = 58,536 of them upscaled to \8805\&512px"
       , "PALM ('PALM Anime Locator Model') is a dataset of k=5,382 anime-style Danbooru2019 images annotated with the locations of n=14,394 hands, a YOLOv3 model trained using those annotations to detect hands in anime-style images, and a second dataset of n=96,534 hands cropped from the Danbooru2019 dataset using the PALM YOLO model and n=58,536 of them upscaled to \8805\&512px"

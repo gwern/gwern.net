@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-02-04 23:36:30 gwern"
+# When:  Time-stamp: "2026-02-05 18:02:56 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -55,8 +55,8 @@ fi
 # cleanup:
 rm --recursive --force -- ./_cache/ ./_site/ &
 ## delete Emacs temporary files which tend to break the build in unpredictable ways:
-find ./static/build/ -type f -name "flycheck_*.hs" -delete &
-find ./ -type f -name "#*\.md#" -delete &
+find ./static/build/ -type f -name "flycheck_*.hs" -delete 2>/dev/null &
+find ./ -type f -name "#*\.md#" -delete 2>/dev/null &
 
 MIN_GB="6"
 if [ "$(df --block-size=G ~/ | awk 'NR==2 {print $4}' | sed 's/G//')" -lt "$MIN_GB" ]; then
@@ -882,7 +882,7 @@ else
             "test-halloween" "triptych" "logo-image" "dropcap-cheshire" "dropcap-de-zs" "dropcap-gene-wolfe"
             "dropcap-goudy" "dropcap-kanzlei" "dropcap-ninit" "dropcap-not" "dropcaps-cheshire"
             "dropcaps-de-zs" "dropcaps-dropcat" "dropcaps-gene-wolfe" "dropcaps-goudy" "dropcaps-kanzlei"
-            "dropcaps-yinit" "dropcap-yinit" "dropcap-not"
+            "dropcaps-yinit" "dropcap-yinit" "dropcaps-not"
             "display-entry" "disable-the-not-chosen" "display-random-1" "display-random-2" "display-random-3" "display-random-4" "display-random-5" "display-random-6" "display-random-7" "display-random-8" "display-random-9" "display-random-10"
             "level1" "level2" "level3" "level4" "level5" "level6" "level7"
             "footnotes-end-of-document" "note" "bibtex" "Bibtex" "c" "C" "ch" "cpp" "Cpp" "cs" "CS"
@@ -1013,7 +1013,7 @@ else
     wrap λ "Broken HTML: double-anchor hash links? While valid HTML5, this is likely an error; if it's intentional range-transclusion, whitelist it."
 
     λ(){ find ./ -type f -name "*.md" -type f -exec grep --extended-regexp -e 'css-extension:' {} \; | \
-       gfv -e 'css-extension: dropcaps-cheshire' -e 'css-extension: dropcaps-cheshire reader-mode' -e 'css-extension: dropcaps-de-zs' -e 'css-extension: dropcaps-goudy' -e 'css-extension: dropcaps-goudy reader-mode' -e 'css-extension: dropcaps-kanzlei' -e 'css-extension: "dropcaps-kanzlei reader-mode"' -e 'css-extension: dropcaps-yinit' -e 'css-extension: dropcaps-dropcat' -e 'css-extension: dropcaps-gene-wolfe' -e 'css-extension: dropcap-not'; }
+       gfv -e 'css-extension: dropcaps-cheshire' -e 'css-extension: dropcaps-cheshire reader-mode' -e 'css-extension: dropcaps-de-zs' -e 'css-extension: dropcaps-goudy' -e 'css-extension: dropcaps-goudy reader-mode' -e 'css-extension: dropcaps-kanzlei' -e 'css-extension: "dropcaps-kanzlei reader-mode"' -e 'css-extension: dropcaps-yinit' -e 'css-extension: dropcaps-dropcat' -e 'css-extension: dropcaps-gene-wolfe'; }
     wrap λ "Incorrect dropcaps in Markdown."
 
     λ(){ find ./ -type f -name "*.md" | gfv '_site' | gfv -e 'lorem-code.md' -e 'ab-test.md' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 "grep --color=always -F --with-filename -- '<span class=\"er\">'"; } # NOTE: filtered out lorem-code.md's deliberate CSS test-case use of it in the syntax-highlighting section
@@ -1173,7 +1173,8 @@ else
             -e '[12][0-9][0-9][0-9]—[12][0-9][0-9][0-9]' -e '[\[( ~#"][12][0-9][0-9][0-9]-[12][0-9][0-9][0-9]' \
             -e ' -\$[1-9][0-9]+' -e ' -\$[1-9][0-9][0-9]' -e ' -\$[1-9][0-9][0-9]+' -e ' \$[0-9][0-9][0-9][0-9]' -e ' \$[0-9][0-9][0-9][0-9][0-9]' -e ' \$[1-9][0-9][0-9][0-9]' -e '[^=]\$[1-9][0-9][0-9][0-9][^)>kmg"]' -e '\$[0-9][0-9][0-9][0-9][0-9]' -e '\[\$[12][0-9][0-9][0-9]' \
             -e '[12][0-9][0-9][0-9]-[012][0-9]-[12][0-9][0-9][0-9]-[012][0-9]' -e '[0-9][0-9]−[0-9][0-9]' \
-            -e '<p>\.\.[A-Z]' -e '^p>' -e '^hr>' -e '^ol>' -e '^ul>' -e '^li>' -e '^figure>' -e '^code>' -e '^blockquote>' -e '^div>' -e '^div class=.*>' -e '\. [A-Z]</p>' -- ./metadata/*.gtx;
+            -e '<p>\.\.[A-Z]' -e '^p>' -e '^hr>' -e '^ol>' -e '^ul>' -e '^li>' -e '^figure>' -e '^code>' -e '^blockquote>' -e '^div>' \
+            -e '^div class=.*>' -e '\. [A-Z]</p>' -e '[a-z]+\?s ' -- ./metadata/*.gtx;
          ge -e ' I[0-9][0-9][0-9]' -e '</span> <[A-Z]' -- ./metadata/*.gtx | gfv ' I432'; }
     wrap λ "Check possible syntax errors in GTX metadata database (regexp matches)." &
 

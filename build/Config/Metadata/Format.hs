@@ -2,9 +2,11 @@
 
 module Config.Metadata.Format where
 
+import Utils (setLike)
+
 -- testing: unique keys
 balancedBracketTestCases :: [(String, String)]
-balancedBracketTestCases =
+balancedBracketTestCases = setLike
     [ ("(abc [de] {fg} \"hi\")", "")
     , ("((abc)", "((abc)")
     , ("[abc]]", "]")
@@ -36,7 +38,7 @@ balancedBracketTestCases =
 
 -- testing: none; no `isUniqueKeys` check for zeros because keys are not unique by value (eg. −0.0 == 0 == 0.00 etc), but we need to test that they print out the same in the test-suite anyway
 printDoubleTests :: [(Double, Int, String)]
-printDoubleTests =
+printDoubleTests = setLike
             [
             (-0, 0, "0")
             , (-0.0, 0, "0")
@@ -125,7 +127,7 @@ cleanAuthorsFixedRewrites = [(". . ", ". "), ("?",""), (",,", ","), (", ,", ", "
 -- 'author' metadata to be blacklisted: usually either nonsense, a third party, software tool, etc
 -- testing: unique list
 filterMetaBadSubstrings, filterMetaBadWholes :: [String]
-filterMetaBadSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY"
+filterMetaBadSubstrings = setLike ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY"
                           , "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf"
                           , "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "AppleWorks"
                           , "Apache", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Administrator"
@@ -160,7 +162,7 @@ filterMetaBadSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode",
                           , "Internet Archive (Scribe Version", "4.0-initial-155-gbba175a5"
                           , "Asura Version", "(SR 3)", "EPSON", "Perfection 3170", "Nature User"]
 
-filterMetaBadWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "downes", "American Medical Association"
+filterMetaBadWholes = setLike ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "downes", "American Medical Association"
                       , "om", "lhf", "comp", "Science Magazine", "Josh Lerner, Scott Stern (Editors)", "arsalan", "rssa_a0157 469..482", "Schniederjans_lo"
                       , "mcdonaldm", "ET35-4G.vp", "spco_037.fm", "LaTeX2e", "Paperless", "fulvio", "Winter", "markj"
                       , "Vahrenhorst", "vahrenhorst", "Vahrenhorst 2004", "Vahrenhorst 2008", "pilc2501", "yeh 2008", "markj 2009", "021186U129", "02_ASQ523602 1..33"
@@ -185,7 +187,7 @@ filterMetaBadWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is20
 
 -- tests: unique-all
 htmlRewriteTestCases :: [(String, String)]
-htmlRewriteTestCases = [("when moving from 8 to 256 GPUs", "when moving 8 → 256 GPUs")
+htmlRewriteTestCases = setLike [("when moving from 8 to 256 GPUs", "when moving 8 → 256 GPUs")
                        , ("*foo* bar", "<em>foo</em> bar")
                        , ("Code is available at github.com/microsoft/SPACH.</p>", "Code is available at <a href=\"https://github.com/microsoft/SPACH\">github.com/microsoft/SPACH</a>.</p>")
                        , ("...biochemical programs (preconditioning)2,3,4. Under...", "...biochemical programs (preconditioning)<sup>2,3,4</sup>. Under...")

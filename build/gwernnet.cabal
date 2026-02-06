@@ -1,12 +1,12 @@
 cabal-version: 3.0
 name:          gwernnet
-version:       2026.1.21.0
+version:       2026.02.06
 license:       CC0-1.0
 license-file:  LICENSE
 author:        Gwern Branwen
 maintainer:    Gwern Branwen
 build-type:    Simple
-synopsis:      Gwern.net build + maintenance tools (internal). See </static/build/sync.sh>, <https://gwern.net/design>, and <https://github.com/gwern/gwern.net/>.
+synopsis:      Gwern.net build + maintenance tools (internal). See <./build/sync.sh>, <https://gwern.net/design>, and <https://github.com/gwern/gwern.net/>.
 category:      Web
 
 -- Shared defaults for all components.

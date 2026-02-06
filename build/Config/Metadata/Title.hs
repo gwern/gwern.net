@@ -1,14 +1,16 @@
 module Config.Metadata.Title where
 
+import Utils (setLike)
+
 separators :: String
 separators = "—·|"
 
 badStringPatterns, badStrings :: [String]
-badStringPatterns = ["Redirecting to ", "404 ", "Page Unavailable", "Page not found", "Page Not Found", "CAPTCHA", "s shortform feed", "Item not found"]
+badStringPatterns = setLike ["Redirecting to ", "404 ", "Page Unavailable", "Page not found", "Page Not Found", "CAPTCHA", "s shortform feed", "Item not found"]
 
 -- testing: unique keys
 stringReplace :: [(String,String)]
-stringReplace = [("  ", " ")
+stringReplace = setLike [("  ", " ")
                 , (" � ", " - ")
                 , ("Â°", "°")
                 , ("Â ", " ")
@@ -17,7 +19,7 @@ stringReplace = [("  ", " ")
 
 -- testing: unique list; we do not bother unit-testing these because they are often used as few-shot examples
 -- in `/static/build/title-cleaner.py` instead, and shouldn't matter much.
-badStrings = ["", " ", "Quanta Magazine", "OSF", "CAIDA Resource Catalog", "Blogger", "Log in", "Stuff", "common.redirect_permanent.title", "Search", "search"
+badStrings = setLike ["", " ", "Quanta Magazine", "OSF", "CAIDA Resource Catalog", "Blogger", "Log in", "Stuff", "common.redirect_permanent.title", "Search", "search"
      , "404 Not Found", "301 Moved Permanently", "Object moved", "302 Found", "WordPress \8250 Error"
      , "Login \187 Qstream", "Kaggle Blog - Medium", "403 Forbidden", "500 Internal Server Error", "BBC NEWS Science &amp; Environment", "Welcome!", "Flashback Forum", "Best search engine for True crime stories"
      , "Research", "niplav", "SL4: By Thread", "Moved Temporarily", "Redirecting\8230", "Torch"
@@ -79,7 +81,7 @@ badStrings = ["", " ", "Quanta Magazine", "OSF", "CAIDA Resource Catalog", "Blog
 -- A list of bad substrings to remove. Note this is used with `Utils.deleteMixedMany` to specialize down to either prefix or suffix deletion based on the trailing vs leading space (respectively). This should greatly reduce the risk of unintended deletions.
 -- testing: unique list
 stringDelete :: [String]
-stringDelete = [" - The Public Domain Review"
+stringDelete = setLike [" - The Public Domain Review"
             , "â\200\224dConstruct Conference Talk"
             , " - Long Bets"
             , "Sequential Tart: Article - "

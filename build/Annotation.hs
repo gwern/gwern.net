@@ -2,7 +2,16 @@
 module Annotation (linkDispatcher, tooltipToMetadata, htmlDownloadAndParseTitleClean, processItalicizer, testGuessAuthorDate) where
 
 import Data.List (isPrefixOf, isInfixOf, intercalate)
+import Data.Char (isDigit)
+import System.FilePath (takeBaseName)
+import qualified Data.Text as T (unpack)
+import System.Exit (ExitCode(ExitFailure))
+
+import qualified Data.ByteString.Lazy.UTF8 as U (toString)
+import Data.FileStore.Utils (runShellCommand)
+import Text.Show.Pretty (ppShow)
 import Text.Pandoc (Inline(Link))
+import Data.List.Split  (splitOn)
 
 import Annotation.Biorxiv (biorxiv)
 import Annotation.Gwernnet (gwern)
@@ -15,18 +24,8 @@ import Metadata.Date (guessDateFromString, isDate)
 import Metadata.Author (extractTwitterUsername, isAuthor, authorsUnknownPrint)
 import Metadata.Title (tooltipToMetadata, wikipediaURLToTitle, htmlDownloadAndParseTitleClean)
 import Typography (typesetHtmlFieldPermanent)
-import Utils (replace, anyPrefix, printGreen, printRed, trim, delete)
+import Utils (replace, anyPrefix, printGreen, printRed, trim, delete, setLike)
 import qualified Config.Misc as C (todayDayString, cd, todayDayStringUnsafe)
-import qualified Data.Text as T (unpack)
-
-import qualified Data.ByteString.Lazy.UTF8 as U (toString)
-import System.Exit (ExitCode(ExitFailure))
-import Data.FileStore.Utils (runShellCommand)
-import Text.Show.Pretty (ppShow)
-
-import Data.List.Split  (splitOn)
-import Data.Char (isDigit)
-import System.FilePath (takeBaseName)
 
 -- 'new link' handler: if we have never seen a URL before (because it's not in the metadata database), we attempt to parse it or call out to external sources to get metadata on it, and hopefully a complete annotation.
 --
@@ -105,7 +104,7 @@ processItalicizer t =
                   if t' == "\"\"" || t' == ""
                   || delete "<em>" (delete "</em>" t') /= t then return t
                   else return t'
-  where whitelist = ["Guys and Dolls", "A critique of pure reason"]
+  where whitelist = setLike ["Guys and Dolls", "A critique of pure reason"]
 
 guessAuthorDateFromPath :: (Path, MetadataItem) -> (Path, MetadataItem)
 guessAuthorDateFromPath x@(l, (title,author,dateRaw,dc,kvs,tags,abstract))

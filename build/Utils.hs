@@ -35,6 +35,10 @@ import Text.Pandoc (def, nullAttr, nullMeta, runPure,
 import Text.Pandoc.Walk (walk)
 import Unique (isUniqueList)
 
+import System.Random (randomRIO)
+import qualified Data.Vector.Mutable as MV (length, swap)
+import qualified Data.Vector as V (freeze, fromList, thaw, toList)
+
 import qualified Debug.Trace as DT (trace)
 
 import qualified Data.Map.Strict as Map (fromList, lookup)
@@ -640,24 +644,23 @@ host p = if T.head p `elem` ['#', '!'] || isInflationURL p then "" else
 escapeUnicode :: T.Text -> T.Text
 escapeUnicode = T.pack . escapeURIString isUnescapedInURI . T.unpack
 
+-- Note: an 'any' operator should not depend on the order of the set-like list input, since we operate on finite lists and do not need to short-circuit on infinite lists
 anyInfix, anyPrefix, anySuffix :: String -> [String] -> Bool
-anyInfix  p = any (`isInfixOf`  p)
-anyPrefix p = any (`isPrefixOf` p)
-anySuffix p = any (`isSuffixOf` p)
+anyInfix  p = any (`isInfixOf`  p) . setLike
+anyPrefix p = any (`isPrefixOf` p) . setLike
+anySuffix p = any (`isSuffixOf` p) . setLike
 
 anyInfixT, anyPrefixT, anySuffixT :: T.Text -> [T.Text] -> Bool
-anyInfixT  p = any (`T.isInfixOf`  p)
-anyPrefixT p = any (`T.isPrefixOf` p)
-anySuffixT p = any (`T.isSuffixOf` p)
+anyInfixT  p = any (`T.isInfixOf`  p) . setLike
+anyPrefixT p = any (`T.isPrefixOf` p) . setLike
+anySuffixT p = any (`T.isSuffixOf` p) . setLike
 
 {- | Returns true if the given list contains any of the elements in the search
 list. -}
 hasAny :: Eq a => [a]           -- ^ List of elements to look for
        -> [a]                   -- ^ List to search
        -> Bool                  -- ^ Result
-hasAny [] _          = False             -- An empty search list: always false
-hasAny _ []          = False             -- An empty list to scan: always false
-hasAny search (x:xs) = x `elem` search || hasAny search xs
+hasAny search xs = any (`elem` setLike search) xs
 
 -- Data.Text equivalent of System.FilePath.takeExtension
 takeExtension :: T.Text -> T.Text
@@ -771,3 +774,24 @@ truncateString maxLen string
             Nothing      -> prefix ++ "…"
             -- Found a space, truncate the *original* string just before it and add "…"
             Just lastIdx -> take lastIdx string ++ "…"
+
+-- use Data.Vector to permute a list:
+shuffleList :: [a] -> IO [a]
+shuffleList []  = return []
+shuffleList [x] = return [x]
+shuffleList xs = do
+  let v = V.fromList xs
+  mv <- V.thaw v
+  let n = MV.length mv
+  mapM_ (\i -> do j <- randomRIO (i, n - 1)
+                  MV.swap mv i j) [0..n-2]
+  V.toList <$> V.freeze mv
+
+-- Help enforce set-like invariants on config lists.
+-- By shuffling config lists every run, we break any downstream caller's illicit dependency on ordering of 'set-like lists'.
+-- (We cannot use actual Data.Set Sets here because there are too many list-only functions and casting back to a list will create a list whose ordering can be accidentally depended on anyway.)
+setLike :: [a] -> [a]
+setLike []  = []
+setLike [x] = [x]
+setLike xs = unsafePerformIO (shuffleList xs)
+{-# NOINLINE setLike #-}

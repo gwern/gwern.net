@@ -4,13 +4,15 @@ module Config.Typography where
 
 import Text.Pandoc (Inline(Str, Subscript, Superscript, Span))
 
--- how many 1–n we want to generate <hr> versions of, to let us cycle ruler stylings instead of using a single ruler appearance everywhere.
+import Utils (setLike)
+
+-- how many 1–n we want to generate `<hr>` versions of, to let us cycle ruler stylings instead of using a single ruler appearance everywhere.
 cycleCount :: Int
 cycleCount = 3
 
 -- testing: unique keys
 titleCaseTestCases :: [(String, String)]
-titleCaseTestCases = [
+titleCaseTestCases = setLike [
   ("‘Two Truths and a Lie’ As a Class-participation Activity", "‘Two Truths and a Lie’ As a Class-Participation Activity")
             , ("end-to-end testing", "End-To-End Testing")
             , ("mother-in-law", "Mother-In-Law")
@@ -78,7 +80,7 @@ titleCaseTestCases = [
 
 -- testing: unique list
 surnameFalsePositivesWhiteList :: [String]
-surnameFalsePositivesWhiteList = ["Et", "et", "Al", "al", "Accurate", "Aesthetics", "Africa", "After", "Alert", "America", "An", "Apr",
+surnameFalsePositivesWhiteList = setLike ["Et", "et", "Al", "al", "Accurate", "Aesthetics", "Africa", "After", "Alert", "America", "An", "Apr",
                                   "April", "At", "Atari", "Atlas", "August", "Aug", "Autumn", "Before", "British", "Challenge", "Chat",
                                   "Codex", "Cohort", "Commodore", "Competition", "Considered", "Copyright", "Counterfactual", "Crypto",
                                   "Daily", "Dear", "Dec", "December", "Diaries", "Differences", "Early", "Enterprise", "Esthetics", "Evolution",
@@ -106,7 +108,7 @@ minDateFirst = 1501 -- too many ordinary numbers <1,500 which are not comma-sepa
 
 -- testing: unique list
 dateRangeDurationTestCases :: [(Int, Inline, Inline)]
-dateRangeDurationTestCases = [
+dateRangeDurationTestCases = setLike [
   (2024, Str "(1) 400 patients studied from 1984\8211\&1987, expanded to 500, also tested 1984\8211\&1987"
     , Span ("",[],[]) [Span ("",[],[]) [Str "(1) 400 patients studied from ",Span ("",["date-range"],[("title","The date range 1984\8211\&1987 lasted 3 years, ending 37 years ago.")]) [Str "1984",Str "\8211",Str "1987",Subscript [Span ("",[],[("title","1984 was 37 years ago.")]) [Str "37ya"]]],Str ", expanded to 500, also tested "],Span ("",["date-range"],[("title","The date range 1984\8211\&1987 lasted 3 years, ending 37 years ago.")]) [Str "1984",Str "\8211",Str "1987",Subscript [Span ("",[],[("title","1984 was 37 years ago.")]) [Str "37ya"]]]]
     )

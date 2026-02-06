@@ -7,10 +7,11 @@ import Text.Pandoc (Inline(Link, Span, Space, Str))
 import qualified Data.Text as T (Text)
 
 import Interwiki (toWikipediaEnURL)
+import Utils (setLike)
 
 -- tests: unique keys, URL keys
 extractTwitterUsernameTestSuite :: [(String,String)]
-extractTwitterUsernameTestSuite = [("https://x.com/grantslatton/status/1703913578036904431", "grantslatton")
+extractTwitterUsernameTestSuite = setLike [("https://x.com/grantslatton/status/1703913578036904431", "grantslatton")
                                   , ("https://x.com/grantslatton", "grantslatton")
                                   , ("https://x.com/AndyAyrey/status/1792342948887290106", "AndyAyrey")
                                   , ("https://x.com/_AndyAyrey/status/1792342948887290106", "_AndyAyrey")
@@ -21,7 +22,7 @@ extractTwitterUsernameTestSuite = [("https://x.com/grantslatton/status/170391357
 
 -- config testing: all unique
 authorCollapseTestCases :: [(String, [Inline])]
-authorCollapseTestCases =
+authorCollapseTestCases = setLike
   [ ("a", [Space,Span ("",["author","cite-author"],[]) [Str "a"]])
   , ("a, b", [Space,Span ("",["author"],[]) [Str "a",Str ", ",Str "b"]])
   , ("a, b, c", [Space,Span ("",["author"],[]) [Str "a",Str ", ",Str "b",Str ", ",Str "c"]])
@@ -78,7 +79,7 @@ cleanAuthorsFixedRewrites = [(". . ", ". "), ("?",""), (",,", ","), (", ,", ", "
 
 -- Config tests: unique list
 authorLinkBlacklist :: [T.Text]
-authorLinkBlacklist = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"] ++
+authorLinkBlacklist = setLike ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"] ++
                     ["1890\8211\&1974", "1902","1906","1916","1922","1928",":", "English Wikipedia", "Wiel", "Word", "Rau", "Qi"
                     , "Pontifex", "Postma", "Poinar", "Pier", "Pika", "van Buuren","van Os","van den Hurk", "van der Ploeg"
                     , "Anonymous", "Et al", "et al"]
@@ -86,12 +87,12 @@ authorLinkBlacklist = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","
 -- Odd author names which look like a typo or error, but are real or the best that can be done. Used in `LinkMetadata.readLinkMetadataAndCheck`.
 -- Config tests: unique list
 authorWhitelist :: [String]
-authorWhitelist = ["K. U.", "6510#HN", "N. K.", "0xType", "3D_DLW"]
+authorWhitelist = setLike ["K. U.", "6510#HN", "N. K.", "0xType", "3D_DLW"]
 
 -- list of rewrites for 'alternative name' → 'canonical name'. This is a simple mapping which doesn't attempt to handle variants like initializations. For that, see `canonicalsWithInitials`.
 -- Config tests: unique keys, no loops
 canonicals :: M.Map String String
-canonicals = M.fromList
+canonicals = M.fromList $ setLike
   [ ("ESYudkowsky", "Eliezer Yudkowsky")
   , ("AaronKoelker", "Aaron Koelker")
   , ("alexalbert__", "Alex Albert")
@@ -884,11 +885,19 @@ canonicals = M.fromList
   , ("DeepSeek r1", "DeepSeek-R1")
   , ("johnswentworth", "John Wentworth")
   , ("davidshor", "David Shor")
+  , ("Roland G. Fryer Junior", "Roland G. Fryer")
+  , ("Roland G. Fryer, Junior", "Roland G. Fryer")
+  , ("Roland G. Fryer, Jr", "Roland G. Fryer")
+  , ("Roland G. Fryer, Jr.", "Roland G. Fryer")
+  , ("Roland G. Fryer Jr.", "Roland G. Fryer")
+  , ("Roland G. Fryer Jr", "Roland G. Fryer")
+  , ("brand", "Steward Brand")
+  , ("42irrationalist", "Sasha Putilin")
   ]
 
 -- tests: unique
 canonicalsWithInitials :: [String]
-canonicalsWithInitials =
+canonicalsWithInitials = setLike
  ["Ingrid Sigfrid Melle", "Ken K. Ong", "Lenore J. Launer", "Olli T. Raitakari"
   , "Andrew D. Grotzinger", "Penelope A. Lind", "Saul Justin Newman", "Alice B. Sheldon"
   , "Michael N. Weedon", "Felix R. Day", "John A. Peralta", "W. David Hill"
@@ -936,13 +945,13 @@ canonicalsWithInitials =
   , "Samuel S. Wilks", "Kenneth Lee Pike", "Richard E. Turner", "Phil Hyoun Lee", "Karthik Rajagopal Narasimhan"
   , "Hunter S. Thompson", "Robert C. Kaplan", "Richard N. Bergman", "Philip B. Mitchell", "Peter S. Chines"
   , "Patrick S. Li", "Noah D. Goodman", "Nitish Shirish Keskar", "Clint M. Sergi", "Mary K. Wojczynski"
-  , "M. Saiful Bari", "Robert A. Freitas"]
+  , "M. Saiful Bari", "Robert A. Freitas", "Roland G. Fryer"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
 authorLinkDB = M.fromList $
   zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we put the WP link first for easier reading/editing, but all WP entries are overridden by by an entry below:
-   [ ("George Washington#SS", "https://en.wikipedia.org/wiki/SS_George_Washington")
+   setLike [ ("George Washington#SS", "https://en.wikipedia.org/wiki/SS_George_Washington")
     , ("Alexey Guzey","https://guzey.com/")
     , ("Carl Shulman","https://timelines.issarice.com/wiki/Timeline_of_Carl_Shulman_publications#Full_timeline")
     , ("I. Richard Savage","https://projecteuclid.org/journals/statistical-science/volume-14/issue-1/A-conversation-with-I-Richard-Savage-with-the-assistance-of/10.1214/ss/1009211808.full")
@@ -2147,11 +2156,14 @@ authorLinkDB = M.fromList $
     , ("Robert A. Freitas", "https://en.wikipedia.org/wiki/Robert_Freitas")
     , ("Pangram", "https://www.pangram.com/")
     , ("LLaMA-3-70b", "https://ai.meta.com/blog/meta-llama-3/")
+    , ("Claude-4.6-opus", "https://www.anthropic.com/news/claude-opus-4-6")
+    , ("Vishal Prasad", "https://substack.com/@vishalprasad1")
+    , ("GPT-5.3-Codex", "https://openai.com/index/introducing-gpt-5-3-codex/")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
 authorWpLinkDB :: [T.Text]
-authorWpLinkDB =
+authorWpLinkDB = setLike
     ["A. A. Brill", "A. Bradford Hill", "A. C. Littleton", "A. G. W. Cameron", "Russell Impagliazzo"
     ,"A. K. Bera", "A. L. Barker", "A. L. Sadler", "A. Murat Eren"
     ,"A. Tversky", "Aanund Hylland", "Aaron Clauset", "Aaron Cochrane"

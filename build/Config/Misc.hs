@@ -11,7 +11,7 @@ import Data.Time.Clock (getCurrentTime)
 import Data.Time (utcToLocalTime, localDay, localTimeOfDay, getCurrentTimeZone, todHour)
 import Data.Time.Format   (formatTime, defaultTimeLocale, parseTimeOrError)
 
-import Utils (anyInfixT, anyPrefixT)
+import Utils (anyInfixT, anyPrefixT, setLike)
 
 author, authorL :: String
 author = "Gwern"
@@ -24,7 +24,7 @@ cd :: IO ()
 cd = setCurrentDirectory root
 
 pageMetadataFieldsMandatory :: [String]
-pageMetadataFieldsMandatory = ["title", "description", "created", "status"]
+pageMetadataFieldsMandatory = setLike ["title", "description", "created", "status"]
 
 pageTitleMaxWords, pageDescriptionMaxLength, pageDescriptionMinLength :: Int
 pageTitleMaxWords = 13
@@ -35,13 +35,14 @@ pageDescriptionMinLength = 20
 -------------------
 -- for documentation of valid metadata enumerations, see </style-guide#page-metadata>.
 yamlValidStatuses, yamlValidConfidences, yamlValidCssExtensions :: [String]
-yamlValidStatuses = ["finished", "in progress", "draft", "notes", "abandoned", "obsolete"]
+yamlValidStatuses = setLike ["finished", "in progress", "draft", "notes", "abandoned", "obsolete"]
 -- Kesselman estimative words + custom extensions. See: <https://en.wikipedia.org/wiki/Words_of_estimative_probability>
-yamlValidConfidences = ["certain", "highly likely", "likely", "possible", "unlikely"
+yamlValidConfidences = setLike ["certain", "highly likely", "likely", "possible", "unlikely"
                        , "highly unlikely", "remote", "impossible"
                        , "log", "emotional", "fiction"]
 -- site-specific extensions:
-yamlValidCssExtensions = ["dark-mode", "dropcap-not", "dropcaps-cheshire", "dropcaps-de-zs"
+yamlValidCssExtensions = setLike ["dark-mode", "dropcaps-not" -- "dropcap-not" is local, and "dropcaps-not" is the page-level
+                         , "dropcaps-cheshire", "dropcaps-de-zs"
                          , "dropcaps-dropcat", "dropcaps-gene-wolfe", "dropcaps-goudy"
                          , "dropcaps-kanzlei", "dropcaps-yinit", "extract-not", "index"
                          , "reader-mode", "test-april-fools-2024", "test-april-fools-2025"
@@ -140,7 +141,7 @@ listLengthMaxN = 75
 
 -- LinkBacklinks:
 sectionizeWhiteList :: [T.Text]
-sectionizeWhiteList = ["/danbooru2021#danbooru2018", "/danbooru2021#danbooru2019", "/danbooru2021#danbooru2020"]
+sectionizeWhiteList = setLike ["/danbooru2021#danbooru2018", "/danbooru2021#danbooru2019", "/danbooru2021#danbooru2020"]
 sectionizeMinN :: Int
 sectionizeMinN = 3
 
@@ -165,7 +166,7 @@ userAgent = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:110.0) Gecko/20100101 Fi
 -- testing: unique keys
 tooltipToMetadataTestcases :: [((String,String),(String,String,String))]
 tooltipToMetadataTestcases =
-    [(("","‘Title1 Title2's First Word Title3’, Foo et al 2020a"),    ("Title1 Title2's First Word Title3","Foo, et al","2020"))
+ setLike [(("","‘Title1 Title2's First Word Title3’, Foo et al 2020a"),    ("Title1 Title2's First Word Title3","Foo, et al","2020"))
       , (("","‘Title1 Title2’s First Word Title3’, Foo et al 2020a"), ("Title1 Title2’s First Word Title3","Foo, et al","2020"))
       , (("","'Title1 Title2’s First Word Title3', Foo et al 2020a"), ("Title1 Title2’s First Word Title3","Foo, et al","2020"))
       , (("","“Title1 Title2's First Word Title3”, Foo et al 2020a"), ("Title1 Title2's First Word Title3","Foo, et al","2020"))
@@ -214,7 +215,7 @@ fileExtensionToEnglish :: String -> String
 fileExtensionToEnglish ext = case lookup (takeWhile (/= '#') ext) extensionMapping of
                                Just name -> name
                                Nothing   -> ""
-  where extensionMapping = map (\(a,b) -> ("."++a,b)) $ [("json", "JSON"), ("jsonl", "JSON Lines"), ("opml", "OPML"), ("md", "Markdown")
+  where extensionMapping = map (\(a,b) -> ("."++a,b)) $ setLike [("json", "JSON"), ("jsonl", "JSON Lines"), ("opml", "OPML"), ("md", "Markdown")
                            , ("pdf", "PDF"), ("txt", "text"), ("xml", "XML"), ("R", "R code"), ("css", "CSS")
                            , ("hs", "Haskell"), ("js", "JavaScript"), ("patch", "patch"), ("sh", "Bash")
                            , ("php", "PHP"), ("conf", "configuration"), ("mp3", "MP3"), ("webm", "WebM")
@@ -248,7 +249,7 @@ minimumAnnotationLength = 250
 -- this is puffery applied to every single advance, and in an Arxiv abstract, is meaningless.
 -- testing: unique keys
 cleanArxivAbstracts :: [(String, String)]
-cleanArxivAbstracts = [(" significant", ""), (" significantly", ""), (" significance", "")
+cleanArxivAbstracts = setLike [(" significant", ""), (" significantly", ""), (" significance", "")
                        , ("more significant", "important")
                        , ("significant margin", "large margin")
                        , ("significant capital", "large capital")
@@ -265,19 +266,19 @@ cleanArxivAbstracts = [(" significant", ""), (" significantly", ""), (" signific
 
 -- testing: unique keys, keys valid regexp
 arxivAbstractRegexps, arxivAbstractFixedRewrites :: [(String,String)]
-arxivAbstractRegexps = [("\\\\citep?\\{([[:graph:]]*)\\}", "(\\texttt\\{\\1})")
+arxivAbstractRegexps = setLike [("\\\\citep?\\{([[:graph:]]*)\\}", "(\\texttt\\{\\1})")
                        , ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt\\{\\1})")
                        , ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt\\{\\1})")
                        , ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt\\{\\1})")
                        , ("(\\{\\lambda})", "(λ)")
                        ]
-arxivAbstractFixedRewrites = [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%"), ("\n  ", "\n\n")
+arxivAbstractFixedRewrites = setLike [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%"), ("\n  ", "\n\n")
                              , (",\n", ", "), ("~", " \\sim"), ("(the teacher})", "(the teacher)")
                              , ("\\{Born-Again Networks (BANs)", "**Born-Again Networks (BANs)**")
                              , ("%we", "We"), (" #", " \\#"), ("\\sigma\\ ", "σ "), (" \\& ", " & ")]
 
 -- what keys are permitted in the key-value fields of GTX files?
 gtxKeyValueKeyNames :: [String]
-gtxKeyValueKeyNames = ["id", "doi", "title", "description", "created", "modified"
+gtxKeyValueKeyNames = setLike ["id", "doi", "title", "description", "created", "modified"
                       , "status", "importance", "confidence", "css-extension", "invert", "backlink"
                       , "placeholder", "index", "thumbnail", "thumbnail-text"]
