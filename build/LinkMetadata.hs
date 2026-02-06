@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2026-01-24 21:56:36 gwern"
+When:  Time-stamp: "2026-02-06 16:33:06 gwern"
 License: CC-0
 -}
 
@@ -689,21 +689,15 @@ generateAnnotationBlock md am (f, ann) blp slp lb =
            -- make sure every abstract is wrapped in paragraph tags for proper rendering:
            abst' = if null abst || anyPrefix abst ["<p>", "<ul", "<ol", "<h2", "<h3", "<bl", "<figure", "<div"] then abst else "<p>" ++ abst ++ "</p>"
        in
-         [Para
-              ([link] ++
-                (if null aut && null date then [] else [Str ","]) ++
-                author ++
-                date ++
-                (if (tags++backlink++similarlink++linkBibliography)==[] then []
-                  else [Str " ("] ++
-                       tags ++
-                       backlink ++
-                       similarlink ++
-                       linkBibliography ++
-                       [Str ")"] ++
-                       (if null abst then [] else [Str "\8288:"])
-                ))] ++
-                (if null abst then []
+         map Para
+          [[link]
+         , author
+         , date
+         , tags
+         , backlink
+         , similarlink
+         , linkBibliography] ++
+         (if null abst then []
                   else [BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst') `T.append`
                                                    if (blp++slp++lb)=="" then ""
                                                    else
