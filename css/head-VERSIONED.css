@@ -116,18 +116,18 @@ main {
 }
 
 
-/***********/
-/* SIDEBAR */
-/***********/
+/**********/
+/* NAVBAR */
+/**********/
 
-#sidebar {
+#navbar {
     position: relative;
     display: flex;
 }
 
-/*  Sidebar links (including logo).
+/*  Navbar links (including logo).
  */
-#sidebar a {
+#navbar a {
     border: 1px dotted currentColor;
     text-align: center;
     margin: 1px 0 1px 2px;
@@ -135,114 +135,114 @@ main {
 
 /*  Logo.
  */
-#sidebar a.logo {
+#navbar a.logo {
     display: flex;
     align-items: center;
     margin: 1px 0;
 }
-#sidebar a.logo .logo-image {
+#navbar a.logo .logo-image {
     width: var(--logo-width);
     height: calc(var(--logo-width) * 94/80);
 }
 
-/*  Sidebar links (not including logo).
+/*  Navbar links (not including logo).
  */
-#sidebar .sidebar-links {
+#navbar .navbar-links {
     flex: 1 1 100%;
     display: flex;
     flex-flow: row wrap;
 }
-#sidebar .sidebar-links a {
+#navbar .navbar-links a {
     flex: 1 1 auto;
     padding: 0.25em 0.75em;
 }
 
 @media all and (max-width: 649px) {
-    #sidebar {
+    #navbar {
         margin-right: -1px;
     }
 
     /*  Logo.
      */
-    #sidebar a.logo {
+    #navbar a.logo {
         margin: 1px 0 1px -1px;
         padding: 0.5em 0.375em;
     }
-    #sidebar a.logo .logo-image {
+    #navbar a.logo .logo-image {
         --logo-width: 2.5em;
     }
 
-    /*  Sidebar links (not including logo).
+    /*  Navbar links (not including logo).
      */
-    #sidebar .sidebar-links {
+    #navbar .navbar-links {
         display: grid;
         grid: auto-flow / 1fr 1fr 1fr;
     }
     @media all and (max-width: 349px) {
-        #sidebar .sidebar-links {
+        #navbar .navbar-links {
             grid: auto-flow / 1fr 1fr;
         }
     }
-    #sidebar .sidebar-links a {
+    #navbar .navbar-links a {
         font-variant-caps: small-caps;
     }
 
-    #sidebar .sidebar-links a.site {
+    #navbar .navbar-links a.site {
         order: -3;
     }
-    #sidebar .sidebar-links a.me {
+    #navbar .navbar-links a.me {
         order: -2;
     }
-    #sidebar .sidebar-links a.patreon {
+    #navbar .navbar-links a.patreon {
         order: -1;
     }
-    #sidebar .sidebar-links a.new {
+    #navbar .navbar-links a.new {
         order: 1;
     }
-    #sidebar .sidebar-links a.blog {
+    #navbar .navbar-links a.blog {
         order: 2;
     }
-    #sidebar .sidebar-links a.links {
+    #navbar .navbar-links a.links {
         order: 3;
     }
 }
 
 @media all and (min-width: 650px) {
-    /*  Sidebar links (including logo).
+    /*  Navbar links (including logo).
      */
-    #sidebar a {
+    #navbar a {
         color: var(--GW-nav-header-link-color);
     }
-    #sidebar a:hover {
+    #navbar a:hover {
         color: var(--GW-nav-header-link-hover-color);
     }
 
-    /*  Sidebar links (not including logo).
+    /*  Navbar links (not including logo).
      */
-    #sidebar .sidebar-links a {
+    #navbar .navbar-links a {
         text-transform: uppercase;
         font-weight: 600;
     }
 
     @media all and (max-width: 779px) {
-        #sidebar .sidebar-links .mobile-not {
+        #navbar .navbar-links .mobile-not {
             display: none;
         }
     }
     @media all and (max-width: 1179px) {
         /*  Logo.
          */
-        #sidebar a.logo {
+        #navbar a.logo {
             padding: 0.25em 0.375em;
         }
-        #sidebar a.logo .logo-image {
+        #navbar a.logo .logo-image {
             --logo-width: 1em;
         }
     }
     @media all and (min-width: 1180px) {
         /*  Logo.
          */
-        #sidebar a.logo {
+        #navbar a.logo {
             position: absolute;
             right: 100%;
             margin: 0 0.75em 0 0;
@@ -250,21 +250,21 @@ main {
             border: none;
             opacity: 0.5;
         }
-        #sidebar a.logo:hover,
-        #sidebar a.logo.bright {
+        #navbar a.logo:hover,
+        #navbar a.logo.bright {
             opacity: 1.0;
         }
-        #sidebar a.logo.fading {
+        #navbar a.logo.fading {
             transition:
                 opacity 1s ease;
         }
-        #sidebar a.logo .logo-image {
+        #navbar a.logo .logo-image {
             --logo-width: 4em;
         }
 
-        /*  Sidebar links (not including logo).
+        /*  Navbar links (not including logo).
          */
-        #sidebar .sidebar-links a:first-child {
+        #navbar .navbar-links a:first-child {
             margin-left: 0;
         }
     }
@@ -2312,7 +2312,7 @@ span.smallcaps {
 /*****************/
 /* ACCESSIBILITY */
 /*****************/
-/* Provide a link which skips straight to the content bypassing the sidebar &
+/* Provide a link which skips straight to the content bypassing the navbar &
    metadata block; this link is positioned off-screen until <Tab>-navigated to,
    which focuses it, highlighting it in a big red block in the upper-left corner.
    Implementation & rationale from https://webaim.org/techniques/skipnav/
@@ -2373,22 +2373,22 @@ body.page-index #TOC {
 
 /*  No index self-link.
  */
-body.page-index #sidebar a.logo {
+body.page-index #navbar a.logo {
     pointer-events: none;
 }
 
 /*  Special nav link styling on /index.
  */
 @media all and (min-width: 650px) {
-    body.page-index #sidebar a {
+    body.page-index #navbar a {
         color: var(--GW-nav-header-link-hover-color);
     }
-    body.page-index #sidebar a:hover {
+    body.page-index #navbar a:hover {
         color: var(--GW-nav-header-link-color);
     }
 
     @media all and (min-width: 1180px) {
-        body.page-index #sidebar a.logo {
+        body.page-index #navbar a.logo {
             opacity: 1.0;
         }
     }
@@ -2795,7 +2795,7 @@ body.special-halloween-dark .heading {
 }
 
 @media all and (max-width: 649px) {
-	body.special-halloween-dark #sidebar a {
+	body.special-halloween-dark #navbar a {
 		--GW-body-link-color: var(--GW-blood-red-arterial);
 
 		color: var(--GW-body-link-color);
@@ -2809,17 +2809,17 @@ body.special-halloween-dark #navigation a:hover {
     color: var(--GW-blood-red-arterial);
 }
 
-body.special-halloween-dark #sidebar svg.logo-image {
+body.special-halloween-dark #navbar svg.logo-image {
     visibility: hidden;
 }
-body.special-halloween-dark #sidebar svg.logo-image.visible {
+body.special-halloween-dark #navbar svg.logo-image.visible {
 	visibility: visible;
 }
-body.special-halloween-dark #sidebar span.logo-image img {
+body.special-halloween-dark #navbar span.logo-image img {
     filter: none;
 }
 @media all and (max-width: 649px) {
-    body.special-halloween-dark #sidebar span.logo-image img {
+    body.special-halloween-dark #navbar span.logo-image img {
         width: 133%;
         position: relative;
         left: -15%; top: -15%;
@@ -2827,14 +2827,14 @@ body.special-halloween-dark #sidebar span.logo-image img {
 }
 @media all and (min-width: 650px) {
     @media all and (max-width: 1179px) {
-        body.special-halloween-dark #sidebar span.logo-image img {
+        body.special-halloween-dark #navbar span.logo-image img {
             width: 150%;
             position: relative;
             left: -30%; top: -15%;
         }
     }
     @media all and (min-width: 1180px) {
-        body.special-halloween-dark #sidebar span.logo-image img {
+        body.special-halloween-dark #navbar span.logo-image img {
             width: 150%;
             position: relative;
             left: -30%; top: -10%;
@@ -2874,11 +2874,11 @@ body.special-halloween-dark #x-of-the-day .site-of-the-day blockquote::after {
 
 /*  Styles for /index
  */
-body.page-index.special-halloween-dark #sidebar a:hover {
+body.page-index.special-halloween-dark #navbar a:hover {
     color: var(--GW-blood-red);
 }
 
-body.page-index.special-halloween-dark #sidebar a.logo {
+body.page-index.special-halloween-dark #navbar a.logo {
 	pointer-events: auto;
 }
 
@@ -3024,7 +3024,7 @@ body.special-christmas-light header h1 {
 body.special-christmas-light .heading a,
 body.special-christmas-light p[class*='dropcap-'] span.dropcap,
 body.special-christmas-light #navigation a,
-body.special-christmas-light #sidebar a {
+body.special-christmas-light #navbar a {
     text-shadow:
         0 0 1px var(--GW-christmas-lights-gold);
 }
@@ -3037,7 +3037,7 @@ body.special-christmas-dark header h1 {
 body.special-christmas-dark .heading a,
 body.special-christmas-dark p[class*='dropcap-'] span.dropcap,
 body.special-christmas-dark #navigation a,
-body.special-christmas-dark #sidebar a {
+body.special-christmas-dark #navbar a {
     text-shadow:
         0 0 2px var(--GW-body-background-color),
         0 0 2px var(--GW-christmas-lights-gold);
@@ -3047,14 +3047,14 @@ body.special-christmas-dark #sidebar a {
 /*  Logo.
  */
 
-body[class*='special-christmas'] #sidebar svg.logo-image {
+body[class*='special-christmas'] #navbar svg.logo-image {
     visibility: hidden;
 }
-body[class*='special-christmas'] #sidebar span.logo-image img {
+body[class*='special-christmas'] #navbar span.logo-image img {
     filter: none;
 }
 @media all and (max-width: 649px) {
-    body[class*='special-christmas'] #sidebar span.logo-image img {
+    body[class*='special-christmas'] #navbar span.logo-image img {
         width: 133%;
         position: relative;
         left: -15%; top: -15%;
@@ -3062,14 +3062,14 @@ body[class*='special-christmas'] #sidebar span.logo-image img {
 }
 @media all and (min-width: 650px) {
     @media all and (max-width: 1179px) {
-        body[class*='special-christmas'] #sidebar span.logo-image img {
+        body[class*='special-christmas'] #navbar span.logo-image img {
             width: 150%;
             position: relative;
             left: -30%; top: -15%;
         }
     }
     @media all and (min-width: 1180px) {
-        body[class*='special-christmas'] #sidebar span.logo-image img {
+        body[class*='special-christmas'] #navbar span.logo-image img {
             width: 125%;
             position: relative;
             left: -10%; top: -10%;
@@ -3079,11 +3079,11 @@ body[class*='special-christmas'] #sidebar span.logo-image img {
 
 /*  Styles for /index
  */
-body.page-index[class*='special-christmas'] #sidebar a:hover {
+body.page-index[class*='special-christmas'] #navbar a:hover {
     color: var(--GW-holly-leaf-green);
 }
 
-body.page-index[class*='special-christmas'] #sidebar a.logo {
+body.page-index[class*='special-christmas'] #navbar a.logo {
 	pointer-events: auto;
 }
 @charset "UTF-8";
@@ -3151,7 +3151,7 @@ body.page-index[class*='special-christmas'] #sidebar a.logo {
 /*  Elements to be deleted completely.
  */
 body.reader-mode-active .reader-mode-not,
-body.reader-mode-active #sidebar,
+body.reader-mode-active #navbar,
 body.reader-mode-active #page-metadata .page-status,
 body.reader-mode-active #page-metadata .page-confidence,
 body.reader-mode-active #page-metadata .page-importance,
@@ -3199,7 +3199,7 @@ body.reader-mode-active.masked-links-hidden .footnote-back-block {
     opacity: 0;
 }
 
-body.reader-mode-active #sidebar a.logo {
+body.reader-mode-active #navbar a.logo {
     border-color: transparent;
 }
 

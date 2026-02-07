@@ -3298,7 +3298,7 @@ addContentInjectHandler("designateLocalNavigationLinkIcons", (eventInfo) => {
 	let exclusionSelector = [
 		".icon-not",
 		".icon-special",
-		"#sidebar",
+		"#navbar",
 		"#page-metadata",
 		"#footer",
 		".aux-links",

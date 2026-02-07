@@ -27,7 +27,7 @@ Extracts = { ...Extracts,
     testTarget_ANNOTATION: (target) => {
         return (!(   Extracts.popFrameProvider == Popins
                   && (   Extracts.isTOCLink(target)
-                      || Extracts.isSidebarLink(target))));
+                      || Extracts.isNavbarLink(target))));
     },
 
     /*  An annotation for a link.

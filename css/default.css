@@ -7428,7 +7428,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 
     #skip-to-content-link,
     #ui-elements-container,
-    #sidebar,
+    #navbar,
     #page-metadata .page-metadata-fields .backlinks,
     #page-metadata .page-metadata-fields .similars,
     #page-metadata .page-metadata-fields span.page-similars,

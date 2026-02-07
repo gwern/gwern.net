@@ -2307,7 +2307,7 @@ GW.floatingHeader = {
         //  Calculate minimum Y offset.
         let thresholdElement = GW.floatingHeader.pageHeader.offsetParent != null
                                ? GW.floatingHeader.pageHeader
-                               : document.querySelector("#sidebar");
+                               : document.querySelector("#navbar");
         GW.floatingHeader.minimumYOffset = thresholdElement.getBoundingClientRect().top
                                          + GW.scrollState.lastScrollTop
                                          + thresholdElement.offsetHeight;
@@ -12366,7 +12366,7 @@ Extracts = { ...Extracts,
     testTarget_ANNOTATION: (target) => {
         return (!(   Extracts.popFrameProvider == Popins
                   && (   Extracts.isTOCLink(target)
-                      || Extracts.isSidebarLink(target))));
+                      || Extracts.isNavbarLink(target))));
     },
 
     /*  An annotation for a link.
@@ -12689,11 +12689,11 @@ Extracts = { ...Extracts,
         return (target.closest("#TOC") != null);
     },
 
-    /*  Links in the sidebar.
+    /*  Links in the navbar.
      */
     //  Called by: Extracts.testTarget_LOCAL_PAGE
-    isSidebarLink: (target) => {
-        return (target.closest("#sidebar") != null);
+    isNavbarLink: (target) => {
+        return (target.closest("#navbar") != null);
     },
 
 	/*	“Full context” links in backlinks lists.
@@ -12720,7 +12720,7 @@ Extracts = { ...Extracts,
     testTarget_LOCAL_PAGE: (target) => {
         return (!(   Extracts.popFrameProvider == Popins
         		  && (   Extracts.isTOCLink(target)
-        			  || Extracts.isSidebarLink(target)
+        			  || Extracts.isNavbarLink(target)
         			  || Extracts.isMobileAnnotationTitleLink(target))));
     },
 
@@ -14092,7 +14092,7 @@ Extracts.config = {
     contentContainersSelector: [
     	".markdownBody",
     	"#TOC",
-    	"#sidebar"
+    	"#navbar"
     ].join(", "),
 
 	/*	Selector for containers within which targets may not be found.
@@ -14121,7 +14121,7 @@ Extracts.config = {
 	hooklessLinksContainersSelector: [
 		"body.page-index #markdownBody",
 		"div#new-popular-notable",
-		"#sidebar",
+		"#navbar",
 		".TOC",
 		"#floating-header",
     	"#page-toolbar",
@@ -18062,7 +18062,7 @@ addContentInjectHandler("designateLocalNavigationLinkIcons", (eventInfo) => {
 	let exclusionSelector = [
 		".icon-not",
 		".icon-special",
-		"#sidebar",
+		"#navbar",
 		"#page-metadata",
 		"#footer",
 		".aux-links",

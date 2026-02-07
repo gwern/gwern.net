@@ -2307,7 +2307,7 @@ GW.floatingHeader = {
         //  Calculate minimum Y offset.
         let thresholdElement = GW.floatingHeader.pageHeader.offsetParent != null
                                ? GW.floatingHeader.pageHeader
-                               : document.querySelector("#sidebar");
+                               : document.querySelector("#navbar");
         GW.floatingHeader.minimumYOffset = thresholdElement.getBoundingClientRect().top
                                          + GW.scrollState.lastScrollTop
                                          + thresholdElement.offsetHeight;

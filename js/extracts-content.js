@@ -55,11 +55,11 @@ Extracts = { ...Extracts,
         return (target.closest("#TOC") != null);
     },
 
-    /*  Links in the sidebar.
+    /*  Links in the navbar.
      */
     //  Called by: Extracts.testTarget_LOCAL_PAGE
-    isSidebarLink: (target) => {
-        return (target.closest("#sidebar") != null);
+    isNavbarLink: (target) => {
+        return (target.closest("#navbar") != null);
     },
 
 	/*	“Full context” links in backlinks lists.
@@ -86,7 +86,7 @@ Extracts = { ...Extracts,
     testTarget_LOCAL_PAGE: (target) => {
         return (!(   Extracts.popFrameProvider == Popins
         		  && (   Extracts.isTOCLink(target)
-        			  || Extracts.isSidebarLink(target)
+        			  || Extracts.isNavbarLink(target)
         			  || Extracts.isMobileAnnotationTitleLink(target))));
     },
 

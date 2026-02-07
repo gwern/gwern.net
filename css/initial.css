@@ -97,18 +97,18 @@ main {
 }
 
 
-/***********/
-/* SIDEBAR */
-/***********/
+/**********/
+/* NAVBAR */
+/**********/
 
-#sidebar {
+#navbar {
     position: relative;
     display: flex;
 }
 
-/*  Sidebar links (including logo).
+/*  Navbar links (including logo).
  */
-#sidebar a {
+#navbar a {
     border: 1px dotted currentColor;
     text-align: center;
     margin: 1px 0 1px 2px;
@@ -116,114 +116,114 @@ main {
 
 /*  Logo.
  */
-#sidebar a.logo {
+#navbar a.logo {
     display: flex;
     align-items: center;
     margin: 1px 0;
 }
-#sidebar a.logo .logo-image {
+#navbar a.logo .logo-image {
     width: var(--logo-width);
     height: calc(var(--logo-width) * 94/80);
 }
 
-/*  Sidebar links (not including logo).
+/*  Navbar links (not including logo).
  */
-#sidebar .sidebar-links {
+#navbar .navbar-links {
     flex: 1 1 100%;
     display: flex;
     flex-flow: row wrap;
 }
-#sidebar .sidebar-links a {
+#navbar .navbar-links a {
     flex: 1 1 auto;
     padding: 0.25em 0.75em;
 }
 
 @media all and (max-width: 649px) {
-    #sidebar {
+    #navbar {
         margin-right: -1px;
     }
 
     /*  Logo.
      */
-    #sidebar a.logo {
+    #navbar a.logo {
         margin: 1px 0 1px -1px;
         padding: 0.5em 0.375em;
     }
-    #sidebar a.logo .logo-image {
+    #navbar a.logo .logo-image {
         --logo-width: 2.5em;
     }
 
-    /*  Sidebar links (not including logo).
+    /*  Navbar links (not including logo).
      */
-    #sidebar .sidebar-links {
+    #navbar .navbar-links {
         display: grid;
         grid: auto-flow / 1fr 1fr 1fr;
     }
     @media all and (max-width: 349px) {
-        #sidebar .sidebar-links {
+        #navbar .navbar-links {
             grid: auto-flow / 1fr 1fr;
         }
     }
-    #sidebar .sidebar-links a {
+    #navbar .navbar-links a {
         font-variant-caps: small-caps;
     }
 
-    #sidebar .sidebar-links a.site {
+    #navbar .navbar-links a.site {
         order: -3;
     }
-    #sidebar .sidebar-links a.me {
+    #navbar .navbar-links a.me {
         order: -2;
     }
-    #sidebar .sidebar-links a.patreon {
+    #navbar .navbar-links a.patreon {
         order: -1;
     }
-    #sidebar .sidebar-links a.new {
+    #navbar .navbar-links a.new {
         order: 1;
     }
-    #sidebar .sidebar-links a.blog {
+    #navbar .navbar-links a.blog {
         order: 2;
     }
-    #sidebar .sidebar-links a.links {
+    #navbar .navbar-links a.links {
         order: 3;
     }
 }
 
 @media all and (min-width: 650px) {
-    /*  Sidebar links (including logo).
+    /*  Navbar links (including logo).
      */
-    #sidebar a {
+    #navbar a {
         color: var(--GW-nav-header-link-color);
     }
-    #sidebar a:hover {
+    #navbar a:hover {
         color: var(--GW-nav-header-link-hover-color);
     }
 
-    /*  Sidebar links (not including logo).
+    /*  Navbar links (not including logo).
      */
-    #sidebar .sidebar-links a {
+    #navbar .navbar-links a {
         text-transform: uppercase;
         font-weight: 600;
     }
 
     @media all and (max-width: 779px) {
-        #sidebar .sidebar-links .mobile-not {
+        #navbar .navbar-links .mobile-not {
             display: none;
         }
     }
     @media all and (max-width: 1179px) {
         /*  Logo.
          */
-        #sidebar a.logo {
+        #navbar a.logo {
             padding: 0.25em 0.375em;
         }
-        #sidebar a.logo .logo-image {
+        #navbar a.logo .logo-image {
             --logo-width: 1em;
         }
     }
     @media all and (min-width: 1180px) {
         /*  Logo.
          */
-        #sidebar a.logo {
+        #navbar a.logo {
             position: absolute;
             right: 100%;
             margin: 0 0.75em 0 0;
@@ -231,21 +231,21 @@ main {
             border: none;
             opacity: 0.5;
         }
-        #sidebar a.logo:hover,
-        #sidebar a.logo.bright {
+        #navbar a.logo:hover,
+        #navbar a.logo.bright {
             opacity: 1.0;
         }
-        #sidebar a.logo.fading {
+        #navbar a.logo.fading {
             transition:
                 opacity 1s ease;
         }
-        #sidebar a.logo .logo-image {
+        #navbar a.logo .logo-image {
             --logo-width: 4em;
         }
 
-        /*  Sidebar links (not including logo).
+        /*  Navbar links (not including logo).
          */
-        #sidebar .sidebar-links a:first-child {
+        #navbar .navbar-links a:first-child {
             margin-left: 0;
         }
     }
@@ -2293,7 +2293,7 @@ span.smallcaps {
 /*****************/
 /* ACCESSIBILITY */
 /*****************/
-/* Provide a link which skips straight to the content bypassing the sidebar &
+/* Provide a link which skips straight to the content bypassing the navbar &
    metadata block; this link is positioned off-screen until <Tab>-navigated to,
    which focuses it, highlighting it in a big red block in the upper-left corner.
    Implementation & rationale from https://webaim.org/techniques/skipnav/
@@ -2354,22 +2354,22 @@ body.page-index #TOC {
 
 /*  No index self-link.
  */
-body.page-index #sidebar a.logo {
+body.page-index #navbar a.logo {
     pointer-events: none;
 }
 
 /*  Special nav link styling on /index.
  */
 @media all and (min-width: 650px) {
-    body.page-index #sidebar a {
+    body.page-index #navbar a {
         color: var(--GW-nav-header-link-hover-color);
     }
-    body.page-index #sidebar a:hover {
+    body.page-index #navbar a:hover {
         color: var(--GW-nav-header-link-color);
     }
 
     @media all and (min-width: 1180px) {
-        body.page-index #sidebar a.logo {
+        body.page-index #navbar a.logo {
             opacity: 1.0;
         }
     }

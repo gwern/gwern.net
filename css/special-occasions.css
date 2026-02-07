@@ -97,7 +97,7 @@ body.special-halloween-dark .heading {
 }
 
 @media all and (max-width: 649px) {
-	body.special-halloween-dark #sidebar a {
+	body.special-halloween-dark #navbar a {
 		--GW-body-link-color: var(--GW-blood-red-arterial);
 
 		color: var(--GW-body-link-color);
@@ -111,17 +111,17 @@ body.special-halloween-dark #navigation a:hover {
     color: var(--GW-blood-red-arterial);
 }
 
-body.special-halloween-dark #sidebar svg.logo-image {
+body.special-halloween-dark #navbar svg.logo-image {
     visibility: hidden;
 }
-body.special-halloween-dark #sidebar svg.logo-image.visible {
+body.special-halloween-dark #navbar svg.logo-image.visible {
 	visibility: visible;
 }
-body.special-halloween-dark #sidebar span.logo-image img {
+body.special-halloween-dark #navbar span.logo-image img {
     filter: none;
 }
 @media all and (max-width: 649px) {
-    body.special-halloween-dark #sidebar span.logo-image img {
+    body.special-halloween-dark #navbar span.logo-image img {
         width: 133%;
         position: relative;
         left: -15%; top: -15%;
@@ -129,14 +129,14 @@ body.special-halloween-dark #sidebar span.logo-image img {
 }
 @media all and (min-width: 650px) {
     @media all and (max-width: 1179px) {
-        body.special-halloween-dark #sidebar span.logo-image img {
+        body.special-halloween-dark #navbar span.logo-image img {
             width: 150%;
             position: relative;
             left: -30%; top: -15%;
         }
     }
     @media all and (min-width: 1180px) {
-        body.special-halloween-dark #sidebar span.logo-image img {
+        body.special-halloween-dark #navbar span.logo-image img {
             width: 150%;
             position: relative;
             left: -30%; top: -10%;
@@ -176,11 +176,11 @@ body.special-halloween-dark #x-of-the-day .site-of-the-day blockquote::after {
 
 /*  Styles for /index
  */
-body.page-index.special-halloween-dark #sidebar a:hover {
+body.page-index.special-halloween-dark #navbar a:hover {
     color: var(--GW-blood-red);
 }
 
-body.page-index.special-halloween-dark #sidebar a.logo {
+body.page-index.special-halloween-dark #navbar a.logo {
 	pointer-events: auto;
 }
 
@@ -326,7 +326,7 @@ body.special-christmas-light header h1 {
 body.special-christmas-light .heading a,
 body.special-christmas-light p[class*='dropcap-'] span.dropcap,
 body.special-christmas-light #navigation a,
-body.special-christmas-light #sidebar a {
+body.special-christmas-light #navbar a {
     text-shadow:
         0 0 1px var(--GW-christmas-lights-gold);
 }
@@ -339,7 +339,7 @@ body.special-christmas-dark header h1 {
 body.special-christmas-dark .heading a,
 body.special-christmas-dark p[class*='dropcap-'] span.dropcap,
 body.special-christmas-dark #navigation a,
-body.special-christmas-dark #sidebar a {
+body.special-christmas-dark #navbar a {
     text-shadow:
         0 0 2px var(--GW-body-background-color),
         0 0 2px var(--GW-christmas-lights-gold);
@@ -349,14 +349,14 @@ body.special-christmas-dark #sidebar a {
 /*  Logo.
  */
 
-body[class*='special-christmas'] #sidebar svg.logo-image {
+body[class*='special-christmas'] #navbar svg.logo-image {
     visibility: hidden;
 }
-body[class*='special-christmas'] #sidebar span.logo-image img {
+body[class*='special-christmas'] #navbar span.logo-image img {
     filter: none;
 }
 @media all and (max-width: 649px) {
-    body[class*='special-christmas'] #sidebar span.logo-image img {
+    body[class*='special-christmas'] #navbar span.logo-image img {
         width: 133%;
         position: relative;
         left: -15%; top: -15%;
@@ -364,14 +364,14 @@ body[class*='special-christmas'] #sidebar span.logo-image img {
 }
 @media all and (min-width: 650px) {
     @media all and (max-width: 1179px) {
-        body[class*='special-christmas'] #sidebar span.logo-image img {
+        body[class*='special-christmas'] #navbar span.logo-image img {
             width: 150%;
             position: relative;
             left: -30%; top: -15%;
         }
     }
     @media all and (min-width: 1180px) {
-        body[class*='special-christmas'] #sidebar span.logo-image img {
+        body[class*='special-christmas'] #navbar span.logo-image img {
             width: 125%;
             position: relative;
             left: -10%; top: -10%;
@@ -381,10 +381,10 @@ body[class*='special-christmas'] #sidebar span.logo-image img {
 
 /*  Styles for /index
  */
-body.page-index[class*='special-christmas'] #sidebar a:hover {
+body.page-index[class*='special-christmas'] #navbar a:hover {
     color: var(--GW-holly-leaf-green);
 }
 
-body.page-index[class*='special-christmas'] #sidebar a.logo {
+body.page-index[class*='special-christmas'] #navbar a.logo {
 	pointer-events: auto;
 }

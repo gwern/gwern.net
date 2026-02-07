@@ -5815,7 +5815,7 @@ function svgPageLogoContainerSourceForURL(logoURL) {
 	available.
  */
 function replacePageLogoWhenPossible(replaceLogo) {
-    let logoSelector = "#sidebar .logo-image";
+    let logoSelector = "#navbar .logo-image";
     let logoImage;
     if (logoImage = document.querySelector(logoSelector)) {
         replaceLogo(logoImage);
@@ -5953,7 +5953,7 @@ function injectSpecialPageLogo(logoType, options) {
 
     //  Temporarily brighten logo, then fade slowly after set duration.
     let brightenLogoTemporarily = (brightDuration, fadeDuration) => {
-        let logoLink = document.querySelector("#sidebar a.logo");
+        let logoLink = document.querySelector("#navbar a.logo");
 
         logoLink.classList.add("bright");
         logoLink.fadeTimer = setTimeout(() => {

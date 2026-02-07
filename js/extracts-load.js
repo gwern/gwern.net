@@ -7,7 +7,7 @@ Extracts.config = {
     contentContainersSelector: [
     	".markdownBody",
     	"#TOC",
-    	"#sidebar"
+    	"#navbar"
     ].join(", "),
 
 	/*	Selector for containers within which targets may not be found.
@@ -36,7 +36,7 @@ Extracts.config = {
 	hooklessLinksContainersSelector: [
 		"body.page-index #markdownBody",
 		"div#new-popular-notable",
-		"#sidebar",
+		"#navbar",
 		".TOC",
 		"#floating-header",
     	"#page-toolbar",

@@ -1,7 +1,7 @@
 /*  Elements to be deleted completely.
  */
 body.reader-mode-active .reader-mode-not,
-body.reader-mode-active #sidebar,
+body.reader-mode-active #navbar,
 body.reader-mode-active #page-metadata .page-status,
 body.reader-mode-active #page-metadata .page-confidence,
 body.reader-mode-active #page-metadata .page-importance,
@@ -49,7 +49,7 @@ body.reader-mode-active.masked-links-hidden .footnote-back-block {
     opacity: 0;
 }
 
-body.reader-mode-active #sidebar a.logo {
+body.reader-mode-active #navbar a.logo {
     border-color: transparent;
 }
 
