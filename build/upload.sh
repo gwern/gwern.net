@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2026-01-25 18:03:46 gwern"
+# When:  Time-stamp: "2026-02-06 16:28:58 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -204,8 +204,8 @@ _upload() {
                       chmod a+r "$TARGET";
                   fi
 
-                # if a >=5MB HTML page, let's convert it to Gwtar for lazy-loading efficiency (see </gwtar>)
-                if [[ "$TARGET" =~ .*\.html ]] && [[ $(stat --format=%s "$TARGET") -ge 5000000 ]]; then
+                # if a ≥7MB HTML page, let's convert it to Gwtar for lazy-loading efficiency (see </gwtar>); this renames "foo.html" → "foo.gwtar.html".
+                if [[ "$TARGET" =~ .*\.html ]] && [[ $(stat --format=%s "$TARGET") -ge 7000000 ]]; then
                     GWTAR_TARGET="${TARGET%.html}.gwtar.html"
                     bold "Large HTML ($(numfmt --to=iec-i --suffix=B $(stat --format=%s "$TARGET"))), converting to gwtar..."
                     if php ~/wiki/static/build/deconstruct_singlefile.php --create-gwtar "$TARGET"; then
@@ -233,7 +233,7 @@ _upload() {
 
                   (rsync --chmod='a+r' --mkpath --quiet "$TARGET" gwern@176.9.41.242:"/home/gwern/gwern.net/$TARGET_DIR/" || \
                       rsync --chmod='a+r' --mkpath --verbose "$TARGET" gwern@176.9.41.242:"/home/gwern/gwern.net/$TARGET_DIR/"
-                  URL="https://gwern.net/$TARGET_DIR/$(basename "$FILE")"
+                  URL="https://gwern.net/$TARGET_DIR/$(basename "$TARGET")"
                   curl --head --max-filesize 200000000 "$URL" > /dev/null # verify it's downloadable
                   echo ""
                   echo "/$TARGET $URL"

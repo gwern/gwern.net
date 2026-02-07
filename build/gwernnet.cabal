@@ -1,6 +1,6 @@
 cabal-version: 3.0
 name:          gwernnet
-version:       2026.02.06
+version:       2026.2.6
 license:       CC0-1.0
 license-file:  LICENSE
 author:        Gwern Branwen
