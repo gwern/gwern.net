@@ -893,6 +893,7 @@ canonicals = M.fromList $ setLike
   , ("Roland G. Fryer Jr", "Roland G. Fryer")
   , ("brand", "Steward Brand")
   , ("42irrationalist", "Sasha Putilin")
+  , ("Patrick McKenzie (patio11)", "Patrick McKenzie")
   ]
 
 -- tests: unique
