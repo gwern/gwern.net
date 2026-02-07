@@ -29,20 +29,18 @@
 # - Fails fast; recoverable network errors are explicitly ignored.
 #
 #
-# Example script to open the results systematically in Firefox:
+# Example script to open the results systematically in Chromium:
 #
-## #!/usr/bin/env bash
-## When you Ctrl-C, it prints the next START value. Resume with ./substack-open.sh substack-urls.txt 8 47 or whatever line you left off at.
-## set -e
-## INPUT="${1:-substack-urls.txt}"
-## BATCH="${2:-8}"
+#
+## INPUT="/home/gwern/2026-02-06-gwern-gwernnet-allsubstackusingurlsgeneratedbysubstackchecksh.txt"
+## BATCH="${2:-20}"
 ## START="${3:-1}"
 ##
 ## tail --lines="+${START}" -- "$INPUT" | while mapfile -t -n "$BATCH" URLS && (( ${#URLS[@]} )); do
-##     firefox "${URLS[@]}" &
+##     chromium "${URLS[@]}" &
 ##     START=$(( START + ${#URLS[@]} ))
 ##     echo >&2 "Opened ${#URLS[@]} tabs. Next batch: START=${START}. Press Enter to continue, Ctrl-C to stop..."
-##     read -r
+##     read -r < /dev/tty
 ## done
 
 set -e
@@ -108,7 +106,7 @@ echo >&2 "${#DOMAIN_IS_SUBSTACK[@]} unique domains (${#UNKNOWN_DOMAINS[@]} to ch
 echo >&2 "Phase 2: CNAME check (parallelism=${PARALLEL_DNS})..."
 
 CNAME_RESULTS=$(printf '%s\n' "${UNKNOWN_DOMAINS[@]}" \
-    | xargs --max-procs="$PARALLEL_DNS" --replace={} sh -c '
+    | xargs --delimiter='\n' --max-procs="$PARALLEL_DNS" --replace={} sh -c '
         domain="$1"
         base="${domain#www.}"
         # Check the domain as-is (catches blog.*, newsletter.*, etc.)
@@ -141,7 +139,7 @@ echo >&2 "Phase 3: HEAD checks for ${#REMAINING[@]} remaining domains (paralleli
 
 HEAD_RESULTS=$(for domain in "${REMAINING[@]}"; do
     echo "$domain ${DOMAIN_SAMPLE_URL[$domain]}"
-done | xargs --max-procs="$PARALLEL_HEAD" --max-lines=1 sh -c '
+done | xargs --delimiter='\n' --max-procs="$PARALLEL_HEAD" --max-lines=1 sh -c '
     domain="$1"; url="$2"
     if curl --silent --head --location \
         --max-time 10 \
