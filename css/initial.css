@@ -177,14 +177,18 @@ main {
     #navbar .navbar-links a.patreon {
         order: -1;
     }
-    #navbar .navbar-links a.new {
+    #navbar .navbar-links a.links {
         order: 1;
     }
-    #navbar .navbar-links a.blog {
+    #navbar .navbar-links a.new {
         order: 2;
     }
-    #navbar .navbar-links a.links {
+    #navbar .navbar-links a.mail { /* Substack */
         order: 3;
+    }
+    #navbar .navbar-links a.blog {
+        order: 0;
+        display: none;
     }
 }
 
@@ -206,7 +210,7 @@ main {
     }
 
     @media all and (max-width: 779px) {
-        #navbar .navbar-links .mobile-not {
+        #navbar .navbar-links .blog {
             display: none;
         }
     }
