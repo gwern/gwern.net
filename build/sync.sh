@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-02-07 12:29:25 gwern"
+# When:  Time-stamp: "2026-02-08 19:16:39 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -265,7 +265,7 @@ else
     else
         # we don't rebuild *all* tag-directories, but we will build any empty ones (ie. newly-created ones), because otherwise they will kill a fast sync (and I'd often forget at night that it has to be a full sync after creating a tag during the day):
         DIRECTORIES_EMPTY="$(find ./doc/ -type f -name "index.md" -size 0)"
-        [ -n "$DIRECTORIES_EMPTY" ] && runghc -istatic/build/ ./static/build/generateDirectory $DIRECTORIES_EMPTY
+        [ -n "$DIRECTORIES_EMPTY" ] && runghc --ghc-arg="-package random" -istatic/build/ ./static/build/generateDirectory $DIRECTORIES_EMPTY
     fi
   fi
 
@@ -1126,7 +1126,7 @@ else
     λ(){ gwa | gf -- '[("doi"'; }
     wrap λ "Broken annotations leaking into each other in GTX?" &
 
-    λ(){ runghc -istatic/build/ ./static/build/link-prioritize.hs 20; }
+    λ(){ runghc --ghc-arg="-package random" -istatic/build/ ./static/build/link-prioritize.hs 20; }
     wrap λ "Links needing annotations by priority:" &
 
     λ(){ gec -e '[a-zA-Z]- ' -e 'PsycInfo Database Record' -e 'https://www.gwern.net' -e '/home/gwern/' -e 'https://goo.gl' -- ./metadata/*.gtx | \
@@ -1518,7 +1518,7 @@ else
     everyNDays 50 && ghci -istatic/build/ ./static/build/LinkLive.hs -e 'linkLiveTestHeaders'
 
     # it is rare, but some duplicates might've crept into the X-of-the-day databases:
-    everyNDays 30 && (runghc -istatic/build/ ./static/build/duplicatequotesitefinder.hs &)
+    everyNDays 30 && (runghc --ghc-arg="-package random" -istatic/build/ ./static/build/duplicatequotesitefinder.hs &)
 
     # check the holiday themes function:
     everyNDays 180 && chromium "https://gwern.net/lorem-halloween" "https://gwern.net/lorem-christmas"
@@ -2040,7 +2040,7 @@ else
 
         # check for any pages that could use multi-columns now:
         λ(){ (find . -name "*.md"; find ./metadata/annotation/ -maxdepth 1 -name "*.html") | \
-                 parallel --max-args=500 runghc -istatic/build/ ./static/build/Columns.hs --print-filenames; }
+                 parallel --max-args=500 runghc --ghc-arg="-package random" -istatic/build/ ./static/build/Columns.hs --print-filenames; }
         wrap λ "Multi-columns use?"
     fi
     # if the end of the month, expire all of the annotations to get rid of stale ones:
@@ -2051,14 +2051,14 @@ else
     # once a year, check all on-site local links to make sure they point to the true current URL; this avoids excess redirects and various possible bugs (such as an annotation not being applied because it's defined for the true current URL but not the various old ones, or going through HTTP nginx redirects first)
     if [ "$(date +"%j")" == "002" ]; then
         bold "Checking all URLs for redirects…"
-        for URL in $(find . -type f -name "*.md" | parallel --max-args=500 runghc -istatic/build/ ./static/build/link-extractor.hs | \
+        for URL in $(find . -type f -name "*.md" | parallel --max-args=500 runghc --ghc-arg="-package random" -istatic/build/ ./static/build/link-extractor.hs | \
                          ge -e '^/' | cut --delimiter=' ' --field=1 | sort --unique); do
             echo "$URL"
             MIME=$(curl --max-filesize 200000000 --silent --max-redirs 0 --output /dev/null --write '%{content_type}' "https://gwern.net$URL");
             if [[ "$MIME" == "" ]]; then red "redirect! $URL (MIME: $MIME)"; fi;
         done
 
-        for URL in $(find . -type f -name "*.md" | parallel --max-args=500 runghc -istatic/build/ ./static/build/link-extractor.hs | \
+        for URL in $(find . -type f -name "*.md" | parallel --max-args=500 runghc --ghc-arg="-package random" -istatic/build/ ./static/build/link-extractor.hs | \
                          ge -e '^https://gwern.net' | sort --unique); do
             MIME=$(curl --max-filesize 200000000 --silent --max-redirs 0 --output /dev/null --write '%{content_type}' "$URL");
             if [[ "$MIME" == "" ]]; then red "redirect! $URL"; fi;
