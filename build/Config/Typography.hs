@@ -97,7 +97,7 @@ surnameFalsePositivesWhiteList = setLike ["Et", "et", "Al", "al", "Accurate", "A
                                   "Camps", "Tamala", "Math", "States", "Uniqueness", "On", "LessWrong", "Lesswrong", "Chemistry"
                                  , "Physics", "Literature", "Biology", "Medicine", "Peace", "Economics", "Japan", "Building", "Papers"
                                  , "It’s", "It's", "s", "Republicans’", "Republicans", "Democrats’", "Democrats", "About", "Rendering"
-                                 , "Publications", "Instructions", "That", "England", "Some", "Online", "Manifest", "Easter"]
+                                 , "Publications", "Instructions", "That", "England", "Some", "Online", "Manifest", "Easter", "Was"]
 
 
 minRange, minDuration, maxDateSecond, minDateFirst :: Int

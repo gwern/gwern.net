@@ -4613,6 +4613,7 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
           , ("Stanford_Prison_Experiment", "Stanford_prison_experiment")
           , ("Stanislaw_Lem", "Stanis%C5%82aw_Lem")
           , ("Stanislaw_Ulam", "Stanis%C5%82aw_Ulam")
+          , ("Stan", "Stan_(software)")
           , ("Star_Trek_%28text_game%29", "Star_Trek_(1971_video_game)")
           , ("Star_Wars:_A_New_Hope", "Star_Wars_(film)")
           , ("Star_Wars:_Knights_of_the_Old_Republic_II_The_Sith_Lords", "Star_Wars_Knights_of_the_Old_Republic_II:_The_Sith_Lords")

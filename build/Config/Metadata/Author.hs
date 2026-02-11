@@ -2163,6 +2163,7 @@ authorLinkDB = M.fromList $
     , ("Leslie Stephen Coles", "https://en.wikipedia.org/wiki/L._Stephen_Coles")
     , ("Coral Osborne", "https://substack.com/@coralosborne")
     , ("Jacob Bacharach", "https://jacobbacharach.com/")
+    , ("Gregory Clark", "https://en.wikipedia.org/wiki/Gregory_Clark_(economist)")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole

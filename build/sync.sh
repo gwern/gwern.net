@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-02-08 19:16:39 gwern"
+# When:  Time-stamp: "2026-02-10 14:49:24 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -159,7 +159,7 @@ else
           s 'link-icon-not' 'icon-not'; s '<!--<p>' '<!-- <p>'; s '</p>-->' '</p> -->';
           s '](W!' '](!W'; s '<em>𝛽</em>' '<em>β</em>'; s '𝛽' '<em>β</em>'; s 'class="table-simple' 'class="table-small';
           s ' > > ' ' >> '; s '</pan>' '</span>'; s 'display:none;' 'display: none;'; s '</spam>' '</span>'; s '\U0001D4AA' '𝒪̃';
-          s 'class="Editorial"' 'class="editorial"'; s '<a herf=' '<a href='; s '<a ref=' '<a href='; s '<a hrfe=' '<a href=';
+          s 'class="Editorial"' 'class="editorial"'; s '<a herf=' '<a href='; s '<a ref=' '<a href='; s '<a hrfe=' '<a href='; s '<a rhef=' '<a href='; s '<a href"$' '<a href="$'; s '<a hrref=' '<a href=';
 
           ## TODO: duplicate HTML classes from Pandoc reported as issue #8705 & fixed; fix should be in >pandoc 3.1.1 (2023-03-05), so can remove these two rewrites once I upgrade past that:
           s 'class="odd odd' 'class="odd'; s 'class="even even' 'class="even';
@@ -1770,7 +1770,7 @@ else
                    -e '%3FDaicon-videos.html' -e '86600697f8fd73d008d8383ff4878c25eda28473.html' \
                    -e '16aacaabe05dfc07c0e966b994d7dd0a727cd90e' -e 'metadata/today-quote.html' -e 'metadata/today-annotation.html' \
                    -e '023a48cb80d48b1438d2accbceb5dc8ad01e8e02' -e '/Starr_Report/' -e '88b3f6424a0b31dcd388ef8364b11097e228b809.html' \
-                   -e '7f81f4ef122b83724448beb1f585025dbc8505d0' -e '/static/include/sidebar.html' -e 'unfortunatelytheclockisticking.html' -e 'idealconditionsdonotexistandwillneverhappen.html' -e '32938f5a1be0697eaca1f747631fc17550c1e862' \
+                   -e '7f81f4ef122b83724448beb1f585025dbc8505d0' -e '/static/include/sidebar.html' -e 'unfortunatelytheclockisticking.html' -e 'idealconditionsdonotexistandwillneverhappen.html' -e '32938f5a1be0697eaca1f747631fc17550c1e862' -e './static/include/navbar.html' \
              | parallel --max-args=500 file | gfv -e 'HTML document, ' -e 'ASCII text' -e 'LaTeX document, UTF-8 Unicode text' -e 'CSV Unicode text, UTF-8 text'; }
     wrap λ "Corrupted filetype: HTML" &
 
