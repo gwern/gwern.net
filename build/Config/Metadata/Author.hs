@@ -2161,6 +2161,8 @@ authorLinkDB = M.fromList $
     , ("Vishal Prasad", "https://substack.com/@vishalprasad1")
     , ("GPT-5.3-Codex", "https://openai.com/index/introducing-gpt-5-3-codex/")
     , ("Leslie Stephen Coles", "https://en.wikipedia.org/wiki/L._Stephen_Coles")
+    , ("Coral Osborne", "https://substack.com/@coralosborne")
+    , ("Jacob Bacharach", "https://jacobbacharach.com/")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3452,4 +3454,5 @@ authorWpLinkDB = setLike
     , "Friedrich Nietzsche", "William Bialek", "E. E. Cummings", "Simon Willison", "Karen Greenlee"
     , "Constance Reid", "Julia Robinson", "Ianthi-Maria Tsimpli", "Graeme Mitchison", "Ravi Vakil", "Ross Koppel"
     , "Bruce G. Lindsay", "Anne Chao", "John A. Hostetler", "Brian Moriarty", "Archibald MacLeish", "Michael Drew"
-    , "Herbert H. Clark", "Jean E. Fox Tree", "Mikhail Bulgakov", "David Shor", "Rudolf Sloboda"]
+    , "Herbert H. Clark", "Jean E. Fox Tree", "Mikhail Bulgakov", "David Shor", "Rudolf Sloboda", "Frank Bidart"
+    , "Gary McGraw", "Liisa Keltikangas-Järvinen"]

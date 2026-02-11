@@ -645,24 +645,26 @@ escapeUnicode :: T.Text -> T.Text
 escapeUnicode = T.pack . escapeURIString isUnescapedInURI . T.unpack
 
 -- Note: an 'any' operator should not depend on the order of the set-like list input, since we operate on finite lists and do not need to short-circuit on infinite lists
+-- However, these helpers do not need `setLike` because `any` is already order-independent:
+-- no caller can observe the list order through the Bool result.
+-- Config lists passed in should already be wrapped in `setLike` at their definition site.
 anyInfix, anyPrefix, anySuffix :: String -> [String] -> Bool
-anyInfix  p = any (`isInfixOf`  p) . setLike
-anyPrefix p = any (`isPrefixOf` p) . setLike
-anySuffix p = any (`isSuffixOf` p) . setLike
+anyInfix  p = any (`isInfixOf`  p)
+anyPrefix p = any (`isPrefixOf` p)
+anySuffix p = any (`isSuffixOf` p)
 
 anyInfixT, anyPrefixT, anySuffixT :: T.Text -> [T.Text] -> Bool
-anyInfixT  p = any (`T.isInfixOf`  p) . setLike
-anyPrefixT p = any (`T.isPrefixOf` p) . setLike
-anySuffixT p = any (`T.isSuffixOf` p) . setLike
+anyInfixT  p = any (`T.isInfixOf`  p)
+anyPrefixT p = any (`T.isPrefixOf` p)
+anySuffixT p = any (`T.isSuffixOf` p)
 
-{- | Returns true if the given list contains any of the elements in the search
-list. -}
+-- | Returns true if the given list contains any of the elements in the search list.
 hasAny :: Eq a => [a]           -- ^ List of elements to look for
        -> [a]                   -- ^ List to search
        -> Bool                  -- ^ Result
 hasAny search xs = any (`elem` setLike search) xs
 
--- Data.Text equivalent of System.FilePath.takeExtension
+-- Data.Text equivalent of `System.FilePath.takeExtension`
 takeExtension :: T.Text -> T.Text
 takeExtension f = T.reverse $
                   T.takeWhile ((/=) '.') $
@@ -789,7 +791,8 @@ shuffleList xs = do
 
 -- Help enforce set-like invariants on config lists.
 -- By shuffling config lists every run, we break any downstream caller's illicit dependency on ordering of 'set-like lists'.
--- (We cannot use actual Data.Set Sets here because there are too many list-only functions and casting back to a list will create a list whose ordering can be accidentally depended on anyway.)
+-- (We cannot use actual `Data.Set.Sets` here because there are too many list-only functions,
+-- and casting back to a list will create a list whose ordering can be accidentally depended on anyway.)
 setLike :: [a] -> [a]
 setLike []  = []
 setLike [x] = [x]

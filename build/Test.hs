@@ -8,6 +8,10 @@ import qualified Data.Map.Strict as M (keys, toList)
 import Data.Char (isAlpha, isLower)
 import qualified Data.Text as T (unpack, elem, head, pack)
 
+import Text.Regex.Base.RegexLike (makeRegexM)
+import Text.Regex (Regex)
+import Control.Exception (try, SomeException)
+
 import Text.Pandoc (Inline(Link))
 
 import Cycle (isCycleLess)
@@ -16,7 +20,7 @@ import Metadata.Format (printDoubleTestSuite, cleanAbstractsHTMLTest, balanced, 
 import Metadata.Date (isDate, dateRangeDurationTestCasesTestsuite)
 import Utils (printGreen, printRed, isDomainT, isURL, isURLT, isURLAny, isURLAnyT, ensure)
 import LinkID (url2ID, isValidID)
-import Unique
+import Unique (isUniqueAll, isUniqueKeys, isUniqueKeys3, isUniqueKeys4, isUniqueList)
 
 -- module self-tests:
 import Annotation (tooltipToMetadata, testGuessAuthorDate)
@@ -51,10 +55,6 @@ import qualified Config.Misc (cd, tooltipToMetadataTestcases, cycleTestCases, cl
 import qualified Config.Paragraph (whitelist)
 import qualified Config.Metadata.Author (authorCollapseTestCases, canonicals, canonicalsWithInitials, authorLinkDB, authorLinkBlacklist, cleanAuthorsFixedRewrites, cleanAuthorsRegexps, extractTwitterUsernameTestSuite, authorWhitelist)
 import qualified Config.Metadata.Title (badStrings, stringReplace, stringDelete)
-
-import Text.Regex.Base.RegexLike (makeRegexM)
-import Text.Regex (Regex)
-import Control.Exception (try, SomeException)
 
 -- test function to validate lists of regex patterns
 testRegexPatterns :: [String] -> IO ()
