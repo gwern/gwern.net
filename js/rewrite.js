@@ -1917,6 +1917,38 @@ addContentLoadHandler("designateFirstAndLastLinesInPoemStanzas", (eventInfo) => 
 	});
 }, ">rewrite");
 
+/************************************************************************/
+/*	Designate non-semantic line breaks in poems with leading long dashes.
+ */
+addContentInjectHandler("addNonSemanticLineBreakDesignatorsToPoems", (eventInfo) => {
+	doWhenPageLayoutComplete(() => {
+		let range = new Range();
+		eventInfo.container.querySelectorAll(".poem:not(.poem-html) .stanza:not(.layout-special-center) p").forEach(line => {
+			line.querySelectorAll(".line-break-designator").forEach(lbd => {
+				lbd.remove();
+			});
+
+			range.selectNode(line);
+			let rects = Array.from(range.getClientRects()).slice(1);
+			if (rects.some(rect => (rect.y > rects.first.bottom)) == false)
+				return;
+
+			let lineOffsets = [ 0 ];
+			rects.forEach(rect => {
+				let rectYOffset = Math.floor(rect.y - rects.first.y);
+				if (lineOffsets.some(offset => (Math.round(rectYOffset - offset) > 1)) == true)
+					lineOffsets.push(rectYOffset);
+			});
+			lineOffsets.slice(1).forEach(lineOffset => {
+				line.appendChild(newElement("SPAN", {
+					class: "line-break-designator",
+					style: "top: " + lineOffset + "px;"
+				}));
+			});
+		});
+	});
+}, ">rewrite");
+
 
 /*************/
 /* EPIGRAPHS */
