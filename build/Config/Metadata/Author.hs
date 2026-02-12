@@ -946,7 +946,7 @@ canonicalsWithInitials = setLike
   , "Samuel S. Wilks", "Kenneth Lee Pike", "Richard E. Turner", "Phil Hyoun Lee", "Karthik Rajagopal Narasimhan"
   , "Hunter S. Thompson", "Robert C. Kaplan", "Richard N. Bergman", "Philip B. Mitchell", "Peter S. Chines"
   , "Patrick S. Li", "Noah D. Goodman", "Nitish Shirish Keskar", "Clint M. Sergi", "Mary K. Wojczynski"
-  , "M. Saiful Bari", "Robert A. Freitas", "Roland G. Fryer", "Leslie Stephen Coles"]
+  , "M. Saiful Bari", "Robert A. Freitas", "Roland G. Fryer", "Leslie Stephen Coles", "Mathew John Wedel"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -2164,6 +2164,7 @@ authorLinkDB = M.fromList $
     , ("Coral Osborne", "https://substack.com/@coralosborne")
     , ("Jacob Bacharach", "https://jacobbacharach.com/")
     , ("Gregory Clark", "https://en.wikipedia.org/wiki/Gregory_Clark_(economist)")
+    , ("Mathew John Wedel", "https://en.wikipedia.org/wiki/Matt_Wedel")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3456,4 +3457,4 @@ authorWpLinkDB = setLike
     , "Constance Reid", "Julia Robinson", "Ianthi-Maria Tsimpli", "Graeme Mitchison", "Ravi Vakil", "Ross Koppel"
     , "Bruce G. Lindsay", "Anne Chao", "John A. Hostetler", "Brian Moriarty", "Archibald MacLeish", "Michael Drew"
     , "Herbert H. Clark", "Jean E. Fox Tree", "Mikhail Bulgakov", "David Shor", "Rudolf Sloboda", "Frank Bidart"
-    , "Gary McGraw", "Liisa Keltikangas-Järvinen"]
+    , "Gary McGraw", "Liisa Keltikangas-Järvinen", "fnnch"]

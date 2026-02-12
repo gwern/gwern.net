@@ -35,7 +35,7 @@ goodDomainsSub, goodDomainsSimple, badDomainsSub, badDomainsSimple, goodLinks, b
 goodDomainsSub = setLike [".allennlp.org", ".archive.org", ".archiveteam.org", ".bandcamp.com", ".eleuther.ai", ".fandom.com"
                  , ".github.io", ".givewell.org", ".greenspun.com", ".imagemagick.org", ".mementoweb.org"
                  , ".metafilter.com", ".nomeata.de", ".obormot.net", ".tumblr.com", ".xkcd.com", ".wordpress.com"
-                 , ".blogspot.com", "antifandom.com"]
+                 , ".blogspot.com"]
 goodDomainsSimple = setLike
   ["1dollarscan.com"
     , "humanprogress.org"
@@ -2364,6 +2364,7 @@ badDomainsSimple = setLike ["2chan.us"
    , "ew.com"
    , "fibery.io"
    , "freakonomics.com"
+   , "antifandom.com"
    ]
 
 -- tested using `isURL` in `LinkLive` & are unique lists:
@@ -3019,7 +3020,6 @@ goodLinks = setLike
             , "https://tomodachi.de/"
             , "https://www.urbandharma.org/udharma4/mpe.html"
             , "https://www.vetta.org/2009/12/tick-tock-tick-tock-bing/"
-            , "https://antifandom.com/mlp/wiki/Explore_Equestria:_Greatest_Hits"
             , "https://dialnet.unirioja.es/descarga/articulo/6084963.pdf"
             , "https://ai.stanford.edu/blog/in-context-learning/"
             , "https://alexdanco.com/2019/11/27/the-social-subsidy-of-angel-investing/"
@@ -4613,5 +4613,6 @@ badLinks =  setLike ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Par
             , "https://ew.com/tv/2017/10/12/frankie-muniz-memory-loss/"
             , "https://fibery.io/blog/gems/hypertext-tools-from-the-80s/"
             , "https://freakonomics.com/2011/05/mining-for-correlations-it-works/#comment-244672"
+            , "https://antifandom.com/mlp/wiki/Explore_Equestria:_Greatest_Hits"
             ]
 

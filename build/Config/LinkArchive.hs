@@ -60,7 +60,6 @@ transformURLsForMobile   u    = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*
 transformURLsForLiveLinking u =
  let urlFinal =
        archiveTheater
-        $ sed "^https://(.*)\\.fandom.com/(.*)$" "https://antifandom.com/\\1/\\2" -- clean Wikia/Fandom frontend
         $ transformURItoGW
         $ transformWPtoMobileWP
         $ sed "^(https://web\\.archive\\.org/web/[12][0-9]+)/http(.*)$" "\\1if_/http\\2"
@@ -88,7 +87,6 @@ localizeLinktestCases = [
     , ("https://news.ycombinator.com/item?id=17110385", ("/doc/www/news.ycombinator.com/de1d1ce15816a607ef9cfb9e04c34051ee08211f.html", "", "", []))
     , ("https://openreview.net/forum?id=0ZbPmmB61g#google", ("/doc/www/openreview.net/ec11c5bdd2766cd352fe7df9ae60e748f06d5175.pdf#google", "", "", []))
     -- , ("https://www.reddit.com/r/AnarchyChess/comments/10ydnbb/i_placed_stockfish_white_against_chatgpt_black/", ("/doc/www/old.reddit.com/bd98124b170baeb9324c51c734083302aa65323a.html", "", "https://old.reddit.com/r/AnarchyChess/comments/10ydnbb/i_placed_stockfish_white_against_chatgpt_black/", []))
-    , ("https://darkrunescape.fandom.com/wiki/Doubling_money_scam", ("", "", "https://antifandom.com/darkrunescape/wiki/Doubling_money_scam", []))
     , ("https://archive.org/details/in.ernet.dli.2015.90433", ("", "", "https://archive.org/details/in.ernet.dli.2015.90433?view=theater", []))
 --     , ("https://www.amazon.com/Exploring-World-Dreaming-Stephen-LaBerge/dp/034537410X/", ("", "", "https://www.amazon.com/Exploring-World-Dreaming-Stephen-LaBerge/dp/034537410X/?tag=gwernnet-20", []))
 --    , ("https://github.com/nevesnunes/z80-sans", ("", "", "https://github.com/nevesnunes/z80-sans#readme", []))
