@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-02-08 20:06:35 gwern"
+# When:  Time-stamp: "2026-02-12 20:20:17 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -866,6 +866,10 @@ About Us
 "70F Road Trip version 2.0 (2023)"
 - "https://jcdecker.blogspot.com/2017/04/tellers-magic-trick.html?m=1 Fortunate Son: Teller’s Magic Trick"
 "Teller’s Magic Trick"
+- "https://sampatt.com/blog/2025-12-13-my-grandma-was-a-fed-lessons-from-digitizing-hundreds-of-hours-of-childhood/ My Grandma Was a Fed—Lessons from Digitizing Hundreds of Hours of Childhood—Sam Patterson"
+"My Grandma Was a Fed—Lessons from Digitizing Hundreds of Hours of Childhood"
+- "https://wanderingfounder.substack.com/p/the-art-of-cold-emailing-a-billionaire The art of cold-emailing a billionaire - by Andy"
+"The art of cold-emailing a billionaire"
 
 Task:
 

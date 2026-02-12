@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2026-01-30 16:52:11 gwern"
+;;; When:  Time-stamp: "2026-02-12 22:43:03 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -2427,10 +2427,11 @@ To save typing effort, we add those as well if not present."
   "Surround selected region (or word) with editorial syntax.
 Used on Gwern.net to denote ‘editorial’ insertions like commentary
 or annotations. Markdown version.
-For existing bracketed regions, they will be Markdown-escaped to
-reduce risk of syntax breakage from double-brackets like '\[\[';
-see </style-guide#editorial> for more discussion."
-(interactive)
+
+If the selected text is already bracketed like \"[...]\",
+escape only that *outer* bracket pair to avoid creating \"[[\" / \"]]\".
+Internal Markdown (eg links like \"[foo](url)\") is left untouched."
+  (interactive)
   (let* ((beg (if (use-region-p)
                   (region-beginning)
                 (progn
@@ -2438,10 +2439,16 @@ see </style-guide#editorial> for more discussion."
                   (point))))
          (end (if (use-region-p)
                   (region-end)
-                (save-excursion (forward-word) (point))))
+                (save-excursion
+                  (forward-word 1)
+                  (point))))
          (content (buffer-substring-no-properties beg end))
-         (escaped (replace-regexp-in-string "\\]" "\\]"
-                    (replace-regexp-in-string "\\[" "\\[" content nil t) nil t)))
+         (escaped
+          (if (and (>= (length content) 2)
+                   (eq (aref content 0) ?\[)
+                   (eq (aref content (1- (length content))) ?\]))
+              (concat "\\[" (substring content 1 -1) "\\]")
+            content)))
     (delete-region beg end)
     (goto-char beg)
     (insert "[" escaped "]{.editorial}")

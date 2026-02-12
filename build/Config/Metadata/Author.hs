@@ -2165,6 +2165,8 @@ authorLinkDB = M.fromList $
     , ("Jacob Bacharach", "https://jacobbacharach.com/")
     , ("Gregory Clark", "https://en.wikipedia.org/wiki/Gregory_Clark_(economist)")
     , ("Mathew John Wedel", "https://en.wikipedia.org/wiki/Matt_Wedel")
+    , ("Elizabeth van Nostrand", "https://acesounderglass.com/about-me-2/")
+    , ("Aaaron Silverbook", "https://aaronsilverbook.com/")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3457,4 +3459,4 @@ authorWpLinkDB = setLike
     , "Constance Reid", "Julia Robinson", "Ianthi-Maria Tsimpli", "Graeme Mitchison", "Ravi Vakil", "Ross Koppel"
     , "Bruce G. Lindsay", "Anne Chao", "John A. Hostetler", "Brian Moriarty", "Archibald MacLeish", "Michael Drew"
     , "Herbert H. Clark", "Jean E. Fox Tree", "Mikhail Bulgakov", "David Shor", "Rudolf Sloboda", "Frank Bidart"
-    , "Gary McGraw", "Liisa Keltikangas-Järvinen", "fnnch"]
+    , "Gary McGraw", "Liisa Keltikangas-Järvinen", "fnnch", "Philipp Holliger"]
