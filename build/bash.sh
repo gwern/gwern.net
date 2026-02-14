@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-02-06 15:33:30 gwern"
+# When:  Time-stamp: "2026-02-13 23:17:10 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -479,8 +479,8 @@ doc2pdf () {
     [ "$#" -eq 2 ] && mv -- "${input%.*}.pdf" "$output"
 }
 
-
 # trim whitespace from around JPG/PNG images
+# TODO: handles filenames with spaces badly?
 crop_one () {
     if [[ "$*" =~ .*\.(jpg|png) ]]; then
         (( $(identify -ping -format '%[fx:w*h]' -- "$@") > 25000000 )) 2>/dev/null && \

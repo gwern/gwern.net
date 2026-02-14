@@ -2,7 +2,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2026-02-12 22:43:03 gwern"
+;;; When:  Time-stamp: "2026-02-13 22:35:19 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -2428,9 +2428,13 @@ To save typing effort, we add those as well if not present."
 Used on Gwern.net to denote ‘editorial’ insertions like commentary
 or annotations. Markdown version.
 
-If the selected text is already bracketed like \"[...]\",
-escape only that *outer* bracket pair to avoid creating \"[[\" / \"]]\".
-Internal Markdown (eg links like \"[foo](url)\") is left untouched."
+Single-line regions use a Pandoc span: `[FOO]{.editorial}`.
+
+Multi-line regions use a HTML div:
+
+<div class=editorial>
+FOO
+</div>"
   (interactive)
   (let* ((beg (if (use-region-p)
                   (region-beginning)
@@ -2442,21 +2446,35 @@ Internal Markdown (eg links like \"[foo](url)\") is left untouched."
                 (save-excursion
                   (forward-word 1)
                   (point))))
-         (content (buffer-substring-no-properties beg end))
-         (escaped
-          (if (and (>= (length content) 2)
-                   (eq (aref content 0) ?\[)
-                   (eq (aref content (1- (length content))) ?\]))
-              (concat "\\[" (substring content 1 -1) "\\]")
-            content)))
+         (multiline (and (use-region-p)
+                         (not (= (line-number-at-pos beg)
+                                 (line-number-at-pos end)))))
+         (indent (and multiline
+                      (save-excursion
+                        (goto-char beg)
+                        (make-string (current-indentation) ?\s))))
+         (content (buffer-substring-no-properties beg end)))
     (delete-region beg end)
     (goto-char beg)
-    (insert "[" escaped "]{.editorial}")
+    (if multiline
+        (progn
+          (insert indent "<div class=editorial>\n" content)
+          (unless (string-suffix-p "\n" content)
+            (insert "\n"))
+          (insert indent "</div>\n"))
+      (let ((escaped
+             (if (and (>= (length content) 2)
+                      (eq (aref content 0) ?\[)
+                      (eq (aref content (1- (length content))) ?\]))
+                 (concat "\\[" (substring content 1 -1) "\\]")
+               content)))
+        (insert "[" escaped "]{.editorial}")))
     (deactivate-mark)))
-
 (defun html-insert-editorial-note ()
-  "Surround selected region FOO BAR (or word FOO) with `editorial note`.
-\(Implemented as a special `<span>` HTML class.\)
+  "Surround selected region FOO BAR (or word FOO) with an `editorial note`.
+Inline selections use a `<span class=editorial>…</span>`.
+Multi-line selections use a `<div class=editorial>…</div>`.
+
 This is for editorial insertions like commentary.
 When inserting editorial notes into HTML snippets,
 that usually means an annotation and
@@ -2465,12 +2483,44 @@ which are denoted by paired `[]` brackets.
 To save typing effort, we add those as well if not present.
 See also margin-notes (‘html-insert-margin-note’, ‘markdown-insert-margin-note’)."
   (interactive)
-  (let ((content (if (use-region-p)
-                     (buffer-substring-no-properties (region-beginning) (region-end))
-                   (thing-at-point 'word t))))
-    (if (and (string-prefix-p "[" content) (string-suffix-p "]" content))
-        (surround-region-or-word "<span class=editorial>" "</span>") ; NOTE: we skip quotes to make it litt safer for use in annotations given that they get substituted into figure captions sometimes
-      (surround-region-or-word "<span class=editorial>[" "]</span>"))))
+  ;; `surround-region-or-word' treats repeated invocations specially by looking at
+  ;; `last-command'. Since this wrapper may choose either span/div based on the
+  ;; selection, ensure repeat-mode uses the *actual* end-tag at point rather
+  ;; than re-deciding and potentially mismatching.
+  (let ((repeat-end-tag
+         (and (eq last-command 'surround-region-or-word)
+              (catch 'found
+                ;; Order matters: bracketed end-tags must be tested first,
+                ;; since ("]</span>") ends with ("</span>"), etc.
+                (dolist (cand '("]</span>" "</span>" "]</div>" "</div>"))
+                  (when (and (>= (point) (length cand))
+                             (string= (buffer-substring-no-properties (- (point) (length cand)) (point))
+                                      cand))
+                    (throw 'found cand)))
+                nil))))
+    (if repeat-end-tag
+        (surround-region-or-word "" repeat-end-tag)
+      (let* ((beg (when (use-region-p) (region-beginning)))
+             (end (when (use-region-p) (region-end)))
+             (multiline (and beg end
+                             (not (= (line-number-at-pos beg)
+                                     (line-number-at-pos end)))))
+             (tag (if multiline "div" "span"))
+             ;; NOTE: we skip quotes to make it a little safer for use in annotations
+             ;; given that they get substituted into figure captions sometimes.
+             (open        (format "<%s class=editorial>"  tag))
+             (close       (format "</%s>" tag))
+             (open-brack  (format "<%s class=editorial>[" tag))
+             (close-brack (format "]</%s>" tag))
+             (content (if (use-region-p)
+                          (buffer-substring-no-properties beg end)
+                        (thing-at-point 'word t)))
+             (trimmed (and content (string-trim content))))
+        (if (and trimmed
+                 (string-prefix-p "[" trimmed)
+                 (string-suffix-p "]" trimmed))
+            (surround-region-or-word open close)
+          (surround-region-or-word open-brack close-brack))))))
 
 ;; keybindings:
 ;;; Markdown:

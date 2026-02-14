@@ -54,7 +54,7 @@ htmlDownloadAndParseTitleClean u  = if not (isURL u) then error $ "Metadata.Titl
                  then reverse $ tail $ dropWhile (`notElem` C.separators) $ reverse title
                  else title
   if title' `elem` C.badStrings || anyInfix title' C.badStringPatterns || length title' < 5 || length title' > 500
-  then return "" -- no need to shell out to a LLM for cleaning if it is a known-bad title
+  then return "" -- no need to shell out to an LLM for cleaning if it is a known-bad title
   else
         do titleCleaned <- fmap cleanAbstractsHTML $ cleanTitleWithAI title'
            return $ if titleCleaned == "" then "" else

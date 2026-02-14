@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-02-12 20:20:17 gwern"
+# When:  Time-stamp: "2026-02-14 13:16:57 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -870,6 +870,8 @@ About Us
 "My Grandma Was a Fed—Lessons from Digitizing Hundreds of Hours of Childhood"
 - "https://wanderingfounder.substack.com/p/the-art-of-cold-emailing-a-billionaire The art of cold-emailing a billionaire - by Andy"
 "The art of cold-emailing a billionaire"
+- "https://allpoetry.com/Mr-Cogito-And-The-Imagination Mr Cogito And The Imagination by Zbigniew Herbert—Famous poems, famous poets.—All Poetry"
+"Mr Cogito And The Imagination by Zbigniew Herbert"
 
 Task:
 

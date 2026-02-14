@@ -41,8 +41,8 @@ urlTagDB = map (\(s, t) -> ((s `isPrefixOf`), t)) prefixMatches
 wholeTagRewritesRegexes  :: [(String,String)]
 wholeTagRewritesRegexes = setLike [("^cs/", "CS/")
                      , ("^cs$", "CS")
-                     , ("^cs/c$", "C (CS)")
-                     , ("^cs/r$", "R")
+                     , ("^cs/c$", "C (language)")
+                     , ("^cs/r$", "R (language)")
                      , ("^ai/", "AI/")
                      , ("^ai$", "AI")
                      , ("^iq/", "IQ/")
@@ -191,7 +191,7 @@ tagsShort2LongRewrites =
    , ("star-war", "star-wars"), ("starwars", "star-wars"), ("starwar", "star-wars")
    , ("hydranencephaly", "anencephaly"), ("aencephaly", "anencephaly"), ("amencephaly", "anencephaly"), ("anancephaly", "anencephaly"), ("ancephaly", "anencephaly"), ("anecephaly", "anencephaly"), ("anecnephaly", "anencephaly"), ("anencefaly", "anencephaly"), ("anenceohalyt", "anencephaly"), ("anencepahly", "anencephaly"), ("anencepaly", "anencephaly"), ("anencephal", "anencephaly"), ("anencephaley", "anencephaly"), ("anencephalg", "anencephaly"), ("anencephalt", "anencephaly"), ("anencephay", "anencephaly"), ("anencephlay", "anencephaly"), ("anencephly", "anencephaly"), ("anencepphaly", "anencephaly"), ("anencphaly", "anencephaly"), ("anencwphaly", "anencephaly"), ("anenecephaly", "anencephaly"), ("anenecphaly", "anencephaly"), ("anenenecephaly", "anencephaly"), ("anennccephaly", "anencephaly"), ("anensefaly", "anencephaly"), ("anensephaly", "anencephaly"), ("anincephaly", "anencephaly"), ("annencephaly", "anencephaly"), ("gydrancrephaly", "anencephaly"), ("hydracephaly", "anencephaly"), ("hydrancefaly", "anencephaly"), ("hydrancepahly", "anencephaly"), ("hydrancepaly", "anencephaly"), ("hydrancephakt", "anencephaly"), ("hydrancephal", "anencephaly"), ("hydrancephaley", "anencephaly"), ("hydrancephalg", "anencephaly"), ("hydrancephay", "anencephaly"), ("hydrancephlay", "anencephaly"), ("hydrancephly", "anencephaly"), ("hydrancepphaly", "anencephaly"), ("hydrancwphaly", "anencephaly"), ("hydranecephaly", "anencephaly"), ("hydranecphaly", "anencephaly"), ("hydranephaly", "anencephaly"), ("hydrannccephaly", "anencephaly"), ("hydransefaly", "anencephaly"), ("hydransephaly", "anencephaly"), ("hydranxephaly", "anencephaly"), ("hydrnacephaly", "anencephaly"), ("hydroancephaly", "anencephaly"), ("hydrocephaly", "anencephaly"), ("hydrrancephaly", "anencephaly"), ("hyrdrancephaly", "anencephaly"), ("jydrancephaly", "anencephaly"), ("naencephaly", "anencephaly"), ("nencephaly", "anencephaly"), ("snencephaly", "anencephaly")
    , ("physucs", "physics"), ("illusoin", "illusion"), ("opetry", "poetry"), ("poem", "poetry"), ("poet", "poetry"), ("typogrpahy", "typography"), ("bipolar-energy", "bipolar/energy"), ("clade-4", "claude/4"), ("discrete-diffusion", "diffusion/discrete"), ("discrete/diffusion", "diffusion/discrete"), ("working-memory", "dnb")
-   , ("ai/nn/transformer/gpt/non-fiction", "ai/nn/transformer/gpt/nonfiction"), ("ai/nn/transformer/gpt/5/4-5", "ai/nn/transformer/gpt/4-5"), ("non-fiction", "nonfiction"), ("nonfiction" , "ai/nn/transformer/gpt/nonfiction"), ("piblication-bias", "statistics/bias/publication")
+   , ("ai/nn/transformer/gpt/non-fiction", "ai/nn/transformer/gpt/nonfiction"), ("ai/nn/transformer/gpt/5/4-5", "ai/nn/transformer/gpt/4-5"), ("non-fiction", "nonfiction"), ("nonfiction" , "ai/nn/transformer/gpt/nonfiction"), ("piblication-bias", "statistics/bias/publication"), ("embryo-selection", "selection/artificial"), ("embryo/selection", "selection/artificial"), ("selection/embryo", "selection/artificial")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
@@ -312,8 +312,6 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("design/typography/sidenote", "sidenotes (typography)")
   , ("design/typography/sentence-spacing", "sentence-spacing (typography)")
   , ("darknet-market/silk-road/1/lsd", "SR1 LSD")
-  , ("cs/c", "C (language)")
-  , ("cs/r", "R (language)")
   , ("cs/security", "computer security")
   , ("cs/lisp/emacs", "Emacs")
   , ("cs/lisp/scheme", "Scheme")

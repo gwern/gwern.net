@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2026-02-05 11:35:59 gwern"
+When: Time-stamp: "2026-02-14 09:45:04 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -51,7 +51,7 @@ import LinkMetadata (addPageLinkWalk, readLinkMetadataSlow, writeAnnotationFragm
 import LinkMetadataTypes (Metadata, SizeDB)
 import Tags (tagsToLinksDiv)
 import Typography (linebreakingTransform, typographyTransformTemporary, titlecaseInline, completionProgressHTML)
-import Utils (printGreen, replace, deleteMany, replaceChecked, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines, delete, toHTML, getMostRecentlyModifiedDir)
+import Utils (printGreen, printRed, replace, deleteMany, replaceChecked, safeHtmlWriterOptions, simplifiedHTMLString, inlinesToText, flattenLinksInInlines, delete, toHTML, getMostRecentlyModifiedDir)
 import Test (testAll)
 import qualified Config.Misc as C (cd, currentYear, todayDayStringUnsafe, isOlderThan, isNewWithinNDays, pageMetadataFieldsMandatory, pageTitleMaxWords, pageDescriptionMaxLength, pageDescriptionMinLength, yamlValidStatuses, yamlValidConfidences, yamlValidCssExtensions, root)
 import Metadata.Date (dateRangeDuration, isDate, isDatePossibleGwernnet)
@@ -407,7 +407,7 @@ validateYAMLMetadata hakyllMeta filepath = do
   -- description: length range limits
   case getString "description" of
     Nothing -> return ()
-    -- /blog/ posts are deliberate exceptions to the description rule, because they exist to be 'lightweight' pages which skip polish like descriptions. It would be nice if all blog posts had descriptions, and maybe at some point I'll make a LLM pass for that, but they don't.
+    -- /blog/ posts are deliberate exceptions to the description rule, because they exist to be 'lightweight' pages which skip polish like descriptions. It would be nice if all blog posts had descriptions, and maybe at some point I'll make an LLM pass for that, but they don't.
     Just desc -> unless ("blog/" `isPrefixOf` filepath || "newsletter/20"`isPrefixOf`filepath || "/index.md" `isSuffixOf` filepath || "/abstract.md" `isSuffixOf` filepath) $ do
       when (length desc > C.pageDescriptionMaxLength) $
         error $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'description' should be <"++show C.pageDescriptionMaxLength++" characters, was " ++ show (length desc) ++ " characters; string: " ++ show desc
@@ -475,7 +475,7 @@ headerSelflinkAndSanitize x@(Header _ ("",_,_) _) = error $ "hakyll.hs: headerSe
 headerSelflinkAndSanitize x@(Header a (href,b,c) d) =
   let href' = T.filter (`notElem` ['.', '#', ':']) href in
     unsafePerformIO $ do
-      when (href' /= href) $ error $ "hakyll.hs: headerSelflinkAndSanitize: Invalid ID for header after filtering! The header text must be changed or a valid ID manually set: " ++ show x
+      when (href' /= href) $ printRed $ "hakyll.hs: headerSelflinkAndSanitize: Invalid ID for header after filtering! The header text must be changed or a valid ID manually set: " ++ show x
       if href' == "" then error $ "hakyll.hs: headerSelflinkAndSanitize: Invalid ID for header after filtering! The header text must be changed or a valid ID manually set: " ++ show x else
         return $ Header a (href',b,c) [Link nullAttr (walk titlecaseInline $ flattenLinksInInlines d)
                                        ("#"`T.append`href', "Link to section: § '" `T.append` inlinesToText d `T.append` "'")]

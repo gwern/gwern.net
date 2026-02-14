@@ -3459,4 +3459,4 @@ authorWpLinkDB = setLike
     , "Constance Reid", "Julia Robinson", "Ianthi-Maria Tsimpli", "Graeme Mitchison", "Ravi Vakil", "Ross Koppel"
     , "Bruce G. Lindsay", "Anne Chao", "John A. Hostetler", "Brian Moriarty", "Archibald MacLeish", "Michael Drew"
     , "Herbert H. Clark", "Jean E. Fox Tree", "Mikhail Bulgakov", "David Shor", "Rudolf Sloboda", "Frank Bidart"
-    , "Gary McGraw", "Liisa Keltikangas-Järvinen", "fnnch", "Philipp Holliger"]
+    , "Gary McGraw", "Liisa Keltikangas-Järvinen", "fnnch", "Philipp Holliger", "Zbigniew Herbert", "Branko Grünbaum"]
