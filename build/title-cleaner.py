@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-02-14 13:16:57 gwern"
+# When:  Time-stamp: "2026-02-16 11:53:16 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -872,6 +872,10 @@ About Us
 "The art of cold-emailing a billionaire"
 - "https://allpoetry.com/Mr-Cogito-And-The-Imagination Mr Cogito And The Imagination by Zbigniew Herbert—Famous poems, famous poets.—All Poetry"
 "Mr Cogito And The Imagination by Zbigniew Herbert"
+- "https://www.instructables.com/microwave-smelter/ Microwave Smelter : 8 Steps (with Pictures)—Instructables"
+"Microwave Smelter: 8 Steps (with Pictures)"
+- "https://stephstiner.substack.com/p/inside-the-hot-girl-economy inside the hot girl economy—steph :)"
+"Inside the hot girl economy"
 
 Task:
 
