@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-02-16 11:53:16 gwern"
+# When:  Time-stamp: "2026-02-18 20:28:17 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -876,6 +876,8 @@ About Us
 "Microwave Smelter: 8 Steps (with Pictures)"
 - "https://stephstiner.substack.com/p/inside-the-hot-girl-economy inside the hot girl economy—steph :)"
 "Inside the hot girl economy"
+- https://kotaku.com/pokemon-ken-sugimori-original-art-red-blue-gold-silver-1850352781 Two Decades Later, <em>Pokémon</em>’s Original Iconic Art Can Finally Be Seen In Its Full Glory—<em>Kotaku</em>"
+"Two Decades Later, <em>Pokémon</em>’s Original Iconic Art Can Finally Be Seen In Its Full Glory"
 
 Task:
 

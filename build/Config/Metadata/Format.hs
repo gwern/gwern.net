@@ -1910,6 +1910,7 @@ htmlRewriteFixed =
          , ("</strong></strong>", "</strong")
          , ("<bold>Summary:\8195</bold>", "")
          , ("<bold>Summary:</bold>", "")
+         , ("<label></label>", "")
          , ("<sc>ad</sc>", "AD")
          , ("<sc>bc</sc>", "BC")
          , (" Imagenet-1k", " ImageNet-1k")
