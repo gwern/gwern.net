@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-02-18 20:28:17 gwern"
+# When:  Time-stamp: "2026-02-24 21:03:21 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -878,6 +878,10 @@ About Us
 "Inside the hot girl economy"
 - https://kotaku.com/pokemon-ken-sugimori-original-art-red-blue-gold-silver-1850352781 Two Decades Later, <em>Pokémon</em>’s Original Iconic Art Can Finally Be Seen In Its Full Glory—<em>Kotaku</em>"
 "Two Decades Later, <em>Pokémon</em>’s Original Iconic Art Can Finally Be Seen In Its Full Glory"
+- "I Don’™t Want to Hire Women—Clarissa’s Blog"
+"I Don’t Want to Hire Women"
+- "https://unsung.aresluna.org/unsung-heroes-flickrs-urls-scheme/ Unsung heroes: Flickr’s URLs scheme - Unsung"
+"Unsung heroes: Flickr’s URLs scheme"
 
 Task:
 
