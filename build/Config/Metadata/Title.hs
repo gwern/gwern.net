@@ -191,4 +191,4 @@ stringDelete = setLike [" - The Public Domain Review"
             , " - Recursive Descent into Madness - A countable set of sanities and insanities, by Shea Leffler.", " — by Scott Alexander"
             , "—by Scott Alexander", "Brian B.'s Climate Blog: ", "Fortunate Son: ", " - Sam Patterson"
             , " - Famous poems, famous poets. - All Poetry", " - Instructables", " - steph :)", " - Kotaku", " - Clarissa's Blog"
-            , " - Unsung"]
+            , " - Unsung", " - The Shamblog"]

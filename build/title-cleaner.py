@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-02-24 21:03:21 gwern"
+# When:  Time-stamp: "2026-02-25 09:45:21 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -882,6 +882,8 @@ About Us
 "I Don’t Want to Hire Women"
 - "https://unsung.aresluna.org/unsung-heroes-flickrs-urls-scheme/ Unsung heroes: Flickr’s URLs scheme - Unsung"
 "Unsung heroes: Flickr’s URLs scheme"
+- "https://theshamblog.com/an-ai-agent-wrote-a-hit-piece-on-me-part-4/ An AI Agent Published a Hit Piece on Me—The Operator Came Forward—The Shamblog"
+"An AI Agent Published a Hit Piece on Me—The Operator Came Forward"
 
 Task:
 

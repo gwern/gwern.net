@@ -2,7 +2,7 @@
  * Title: 404 Error Page URL Suggester
  * Author: Gwern Branwen
  * Date: 2024-06-25
- * When:  Time-stamp: "2025-03-03 12:16:47 gwern"
+ * When:  Time-stamp: "2026-02-25 09:35:24 gwern"
  * License: CC-0
  *
  * This script enhances the 404 error page on gwern.net by suggesting similar URLs
@@ -54,7 +54,7 @@
  * specifically flushed on every sync, but a *client* may have cached a stale sitemap.xml.
  * This seems like an unimportant edge-case: precisely because legitimate 404s are so rare,
  * it is unlikely a client will have hit 404 #1, cached, then sometime later hit 404 #2,
- * only where #2 is a brandnew file not in the cached sitemap.xml.
+ * only where #2 is a brand-new file not in the cached sitemap.xml.
  * Indeed, >95% of Gwern.net 404s are to ‘old’ URLs, created years or decades before.
  * (Which makes some sense: new URLs arrive slowly on Gwern.net, and tend to be harder to typo than
  * the old URLs were, and there is much more traffic to old URLs than new URLs.)
@@ -171,11 +171,11 @@ function findSimilarUrlPaths(urlPaths, targetPath, numResults, maxDistance) {
 /*	Find URLs with similar “basenames” (a.k.a. last segments of the pathname).
  */
 function findSimilarByBasename(urlPaths, targetPath, numResults, maxDistance) {
-    const targetPathLastSegment = URLFromString(targetPath).pathSegments.last; 
+    const targetPathLastSegment = URLFromString(targetPath).pathSegments.last;
     //	Skip if basename is too short or empty
     if (targetPathLastSegment.length < 3)
     	return [];
- 
+
     return urlPaths.map(
     	//	Get last pathname segments.
     	urlPath => ({
@@ -232,8 +232,8 @@ function injectSuggestions(currentPath, suggestedUrlStrings) {
  */
 async function suggest404Alternatives() {
     const currentPath = window.location.pathname;
-    /*	If we redirected to a 404 rather than received it as an error, then the 
-    	current URL is useless and can’t be guessed, so we skip the whole 
+    /*	If we redirected to a 404 rather than received it as an error, then the
+    	current URL is useless and can’t be guessed, so we skip the whole
     	business, saving the bandwidth & injection:
      */
     if (currentPath.endsWith("/404")) {
