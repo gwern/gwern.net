@@ -846,7 +846,9 @@ canonicals = M.fromList $ setLike
   , ("aidigest_", "AI Digest")
   , ("User:Cmglee", "CMG Lee")
   , ("Cmglee", "CMG Lee")
+  , ("Nano Banana", "Google Nano Banana")
   , ("Nano Banana Pro", "Google Nano Banana Pro")
+  , ("Nano Banana Pro 2", "Google Nano Banana Pro 2")
   , ("CartoonsHateHer", "Cartoons Hate Her")
   , ("cartoonshateher", "Cartoons Hate Her")
   , ("Claude-3-sonnet-new", "Claude-3.5-Sonnet")
@@ -949,7 +951,8 @@ canonicalsWithInitials = setLike
   , "Samuel S. Wilks", "Kenneth Lee Pike", "Richard E. Turner", "Phil Hyoun Lee", "Karthik Rajagopal Narasimhan"
   , "Hunter S. Thompson", "Robert C. Kaplan", "Richard N. Bergman", "Philip B. Mitchell", "Peter S. Chines"
   , "Patrick S. Li", "Noah D. Goodman", "Nitish Shirish Keskar", "Clint M. Sergi", "Mary K. Wojczynski"
-  , "M. Saiful Bari", "Robert A. Freitas", "Roland G. Fryer", "Leslie Stephen Coles", "Mathew John Wedel", "Ralph S. Baric", "Jack D. Cowan", "Paul C. Bressloff"]
+  , "M. Saiful Bari", "Robert A. Freitas", "Roland G. Fryer", "Leslie Stephen Coles", "Mathew John Wedel"
+  , "Ralph S. Baric", "Jack D. Cowan", "Paul C. Bressloff"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -2092,6 +2095,7 @@ authorLinkDB = M.fromList $
     , ("CMG Lee", "https://en.wikipedia.org/wiki/User:Cmglee")
     , ("Richard Polt", "https://site.xavier.edu/polt/typewriters/about.html")
     , ("Google Nano Banana Pro", "https://blog.google/technology/ai/nano-banana-pro/")
+    , ("Google Nano Banana Pro 2", "https://blog.google/innovation-and-ai/technology/ai/nano-banana-2/")
     , ("Richard E. Turner", "https://rich-turner-group.github.io/")
     , ("Cartoons Hate Her", "https://www.cartoonshateher.com/about")
     , ("Cendyne", "https://cendyne.dev/")

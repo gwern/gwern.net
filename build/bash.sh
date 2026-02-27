@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-02-13 23:17:10 gwern"
+# When:  Time-stamp: "2026-02-26 21:05:15 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -1055,7 +1055,7 @@ gw () {
     QUERY=$(echo "$*" | tr -d '\n') # remove newlines, which are usually spurious (and also not supported by grep by default?) thanks to browsers injecting newlines everywhere when copy-pasting...
     RESULTS=$( (find ~/wiki/ -type f -name "*.md";
          ls ~/.emacs ~/*.md;
-         find ~/wiki/metadata/ ~/wiki/haskell/ -name "*.hs" -or -name "*.gtx";
+         find ~/wiki/metadata/ ~/wiki/haskell/ -name "*.hs" -or -name "*.gtx" | grep --fixed-strings -v -e 'metadata/listsortedmagic.hs';
          find ~/wiki/static/ -type f -name "*.js" -or -name "*.css" -or -name "*.hs" -or -name "*.conf" -or -name "*.gtx" -or -name "*.py" -or -name "*.sh";
          find ~/wiki/ -type f -name "*.html" -not -wholename "*/doc/*" ) | \
            grep --fixed-strings -v -e '.#' -e 'auto.hs' -e doc/link-bibliography/ -e metadata/annotation/ -e _site/ -e _cache/ | sort --unique  | \
