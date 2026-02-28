@@ -899,6 +899,7 @@ canonicals = M.fromList $ setLike
   , ("Ploum", "Lionel Dricot")
   , ("ploum", "Lionel Dricot")
   , ("Martin Golubitsky", "Marty Golubitsky")
+  , ("Stanislaw Ulam", "Stanisław Ulam")
   ]
 
 -- tests: unique
@@ -3473,4 +3474,4 @@ authorWpLinkDB = setLike
     , "Bruce G. Lindsay", "Anne Chao", "John A. Hostetler", "Brian Moriarty", "Archibald MacLeish", "Michael Drew"
     , "Herbert H. Clark", "Jean E. Fox Tree", "Mikhail Bulgakov", "David Shor", "Rudolf Sloboda", "Frank Bidart"
     , "Gary McGraw", "Liisa Keltikangas-Järvinen", "fnnch", "Philipp Holliger", "Zbigniew Herbert", "Branko Grünbaum"
-    , "Bali Pulendran", "Yascha Mounk", "Peter B. Andrews", "Marty Golubitsky", "Volker Haucke"]
+    , "Bali Pulendran", "Yascha Mounk", "Peter B. Andrews", "Marty Golubitsky", "Volker Haucke", "Stanisław Ulam"]

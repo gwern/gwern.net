@@ -789,7 +789,7 @@ shuffleList xs = do
                   MV.swap mv i j) [0..n-2]
   V.toList <$> V.freeze mv
 
--- Help enforce set-like invariants on config lists.
+-- Help enforce set-like invariants on config lists (see Hyrum's law <https://www.hyrumslaw.com/>).
 -- By shuffling config lists every run, we break any downstream caller's illicit dependency on ordering of 'set-like lists'.
 -- (We cannot use actual `Data.Set.Sets` here because there are too many list-only functions,
 -- and casting back to a list will create a list whose ordering can be accidentally depended on anyway.)
