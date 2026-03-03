@@ -261,7 +261,7 @@ $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([
     ## Check image file integrity with ImageMagick.
     ## If file is bad, delete it, and leave the asset as base64.
     if (in_array($asset_extension, $image_file_extensions)) {
-        $im_identify_result = `identify "{$asset_file_path}" 2>&1`;
+        $im_identify_result = shell_exec('identify ' . escapeshellarg($asset_file_path) . ' 2>&1');
         if (strpos($im_identify_result, 'error') !== false) {
             unlink($asset_file_path);
             return $m[0];
@@ -283,7 +283,7 @@ $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([
         $alt_asset_extension = 'jpg';
         $alt_asset_name = "{$asset_base_name}{$asset_suffix}.{$alt_asset_extension}";
         $alt_asset_file_path = "{$asset_directory}/{$alt_asset_name}";
-        `convert "{$asset_file_path}" -quality 15% "{$alt_asset_file_path}" 2>&1`;
+        shell_exec('convert ' . escapeshellarg($asset_file_path) . ' -quality 15% ' . escapeshellarg($alt_asset_file_path) . ' 2>&1');
 
         if (file_exists($alt_asset_file_path)) {
             ## Measure size reduction.
@@ -292,7 +292,7 @@ $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([
             $size_reduction = (1 - ($jpg_size / $png_size)) * 100;
 
             ## Measure quality.
-            $psnr = explode(' ', `compare -metric PSNR "{$asset_file_path}" "{$alt_asset_file_path}" null: 2>&1`)[0];
+            $psnr = explode(' ', shell_exec('compare -metric PSNR ' . escapeshellarg($asset_file_path) . ' ' . escapeshellarg($alt_asset_file_path) . ' null: 2>&1'))[0];
 
             ## Check if size reduction and quality measure up.
             if (   $psnr > $quality_threshold
@@ -301,7 +301,7 @@ $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([
                 $asset_extension = $alt_asset_extension;
 
                 ## Create the full-quality JPEG.
-                `convert "{$asset_file_path}" -quality {$jpg_quality} "{$alt_asset_file_path}" 2>&1`;
+                shell_exec('convert ' . escapeshellarg($asset_file_path) . " -quality {$jpg_quality} " . escapeshellarg($alt_asset_file_path) . ' 2>&1');
 
                 ## Delete the PNG.
                 unlink($asset_file_path);
@@ -335,16 +335,16 @@ $output_file = preg_replace_callback('/([\'"]?)data:([a-z0-9-+\.\/]+?);base64,([
     if ($optimize_images) {
         if (   $asset_extension == 'gif'
             && file_exists("{$build_tool_dir}/compressGIF")) {
-            `{$build_tool_dir}/compressGIF "$asset_file_path"`;
+            shell_exec(escapeshellarg("{$build_tool_dir}/compressGIF") . ' ' . escapeshellarg($asset_file_path));
         }
         if (   $asset_extension == 'png'
             && file_exists("{$build_tool_dir}/compressPNG")) {
-            `{$build_tool_dir}/compressPNG "$asset_file_path"`;
+            shell_exec(escapeshellarg("{$build_tool_dir}/compressPNG") . ' ' . escapeshellarg($asset_file_path));
         }
         if (   $asset_extension == 'jpg'
             && $png_converted_to_jpg == false
             && file_exists("{$build_tool_dir}/compressJPG")) {
-            `{$build_tool_dir}/compressJPG "$asset_file_path"`;
+            shell_exec(escapeshellarg("{$build_tool_dir}/compressJPG") . ' ' . escapeshellarg($asset_file_path));
         }
     }
 
@@ -381,7 +381,7 @@ if ($create_gwtar)
 if (   $save_original
     || (   $create_gwtar
         && $keep_original))
-    `mv "{$input_file_path}" "{$input_file_path}.bak"`;
+    shell_exec('mv ' . escapeshellarg($input_file_path) . ' ' . escapeshellarg("{$input_file_path}.bak"));
 
 ## Write out slimmed-down HTML file.
 file_put_contents($input_file_path, $output_file);
@@ -409,13 +409,13 @@ if ($create_gwtar) {
 
     ## Create tarball.
     $tarball_file_path = "{$asset_directory}/../{$asset_base_name}.tar";
-    `tar --create -f "{$tarball_file_path}" --format=ustar --owner=0 --group=0 "{$input_file_path}"`;
+    shell_exec('tar --create -f ' . escapeshellarg($tarball_file_path) . ' --format=ustar --owner=0 --group=0 ' . escapeshellarg($input_file_path));
     foreach ($assets as $asset_name => $asset_info) {
         if ($asset_name == 0)
             continue;
 
         $asset_file_path = "{$asset_directory}/{$asset_name}";
-        `tar --append -f "{$tarball_file_path}" --format=ustar --owner=0 --group=0 "{$asset_file_path}"`;
+        shell_exec('tar --append -f ' . escapeshellarg($tarball_file_path) . ' --format=ustar --owner=0 --group=0 ' . escapeshellarg($asset_file_path));
     }
 
     ## Write out asset manifest.
@@ -447,18 +447,18 @@ if ($create_gwtar) {
     $total_gwtar_size = $overhead + filesize($tarball_file_path);
     $gwtar_file_parts[7] = str_pad($total_gwtar_size, 24, '0', STR_PAD_LEFT);
     file_put_contents($gwtar_file_path, implode('', $gwtar_file_parts));
-    `cat "{$tarball_file_path}" >> "{$gwtar_file_path}"`;
+    shell_exec('cat ' . escapeshellarg($tarball_file_path) . ' >> ' . escapeshellarg($gwtar_file_path));
 
     ## Make PAR2 files for forward error correction, tarball them up, and
     ## append, if need be.
     if ($add_fec_data) {
-        `par2create -r25 "{$gwtar_file_path}"`;
+        shell_exec('par2create -r25 ' . escapeshellarg($gwtar_file_path));
         $par_tarball_file_path = "{$gwtar_file_path}.par2.tar";
-        `tar --create -f "{$par_tarball_file_path}" --format=ustar --owner=0 --group=0 "{$gwtar_file_path}.par2"; rm "{$gwtar_file_path}.par2"`;
+        shell_exec('tar --create -f ' . escapeshellarg($par_tarball_file_path) . ' --format=ustar --owner=0 --group=0 ' . escapeshellarg("{$gwtar_file_path}.par2") . '; rm ' . escapeshellarg("{$gwtar_file_path}.par2"));
         foreach (glob("{$gwtar_file_path}.*.par2") as $par_file_path) {
-            `tar --append -f "{$par_tarball_file_path}" --format=ustar --owner=0 --group=0 "{$par_file_path}"; rm "{$par_file_path}"`;
+            shell_exec('tar --append -f ' . escapeshellarg($par_tarball_file_path) . ' --format=ustar --owner=0 --group=0 ' . escapeshellarg($par_file_path) . '; rm ' . escapeshellarg($par_file_path));
         }
-        `cat "{$par_tarball_file_path}" >> "{$gwtar_file_path}"; rm "{$par_tarball_file_path}"`;
+        shell_exec('cat ' . escapeshellarg($par_tarball_file_path) . ' >> ' . escapeshellarg($gwtar_file_path) . '; rm ' . escapeshellarg($par_tarball_file_path));
     }
 
     ## Remove asset manifest.
@@ -469,13 +469,13 @@ if ($create_gwtar) {
 
     ## Replace original file, if need be; otherwise remove HTML file.
     if ($keep_original) {
-        `mv "{$input_file_path}.bak" "{$input_file_path}"`;
+        shell_exec('mv ' . escapeshellarg("{$input_file_path}.bak") . ' ' . escapeshellarg($input_file_path));
     } else {
         unlink($input_file_path);
     }
 
     ## Remove asset directory.
-    `rm -r "{$asset_directory}/"`;
+    shell_exec('rm -r ' . escapeshellarg("{$asset_directory}/"));
 }
 
 ## Done.
