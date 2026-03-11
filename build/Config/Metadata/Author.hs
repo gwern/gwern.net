@@ -900,6 +900,7 @@ canonicals = M.fromList $ setLike
   , ("ploum", "Lionel Dricot")
   , ("Martin Golubitsky", "Marty Golubitsky")
   , ("Stanislaw Ulam", "Stanisław Ulam")
+  , ("GPT-5.4", "GPT-5.4 Pro")
   ]
 
 -- tests: unique
@@ -1962,6 +1963,8 @@ authorLinkDB = M.fromList $
     , ("GPT-5.1 Pro", "https://openai.com/index/gpt-5-1/#gpt-51-thinking")
     , ("GPT-5.2", "https://openai.com/index/introducing-gpt-5-2/")
     , ("GPT-5.2 Pro", "https://openai.com/index/introducing-gpt-5-2/#science-and-math")
+    , ("GPT-5.4 Thinking", "https://openai.com/index/introducing-gpt-5-4/#thinking")
+    , ("GPT-5.4 Pro", "https://openai.com/index/introducing-gpt-5-4/#pro")
     , ("Jerry Green", "https://en.wikipedia.org/wiki/Jerry_Green_(economist)")
     , ("Inger Njølstad", "https://no.wikipedia.org/wiki/Inger_Nj%C3%B8lstad")
     , ("Ingrid Agartz", "https://scholar.google.com/citations?user=NlZOhHMAAAAJ")
