@@ -2,7 +2,7 @@
 # compressGIF: compress a GIF with gifsicle if the savings are worthwhile.
 # Author: Gwern Branwen
 # Date: 2024-02-26
-# When:  Time-stamp: "2026-02-07 12:08:09 gwern"
+# When:  Time-stamp: "2026-03-11 10:10:44 gwern"
 # License: CC-0
 #
 # Usage: stdin or file arguments.
@@ -29,7 +29,8 @@ if [ ${#args[@]} -eq 0 ]; then
     green "Attempting to use implied arguments: ${args[*]}"
 fi
 if [ ${#args[@]} -eq 0 ]; then
-    red "Error: no arguments available!"; exit 1
+    # no arguments provided, so exit silently; we don't throw an error to allow clean use in pipelines, eg. `find | compressGIF`
+    exit 0
 else
     command -v gifsicle > /dev/null
     command -v parallel > /dev/null

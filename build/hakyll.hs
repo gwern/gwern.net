@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2026-02-14 09:45:04 gwern"
+When: Time-stamp: "2026-03-11 10:07:08 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -154,6 +154,7 @@ main =
                                          "static/nginx/**",
                                          "static/redirect/**",
                                          "static/template/**",
+                                         "static/**.cabal",
                                          "static/**.conf",
                                          "static/**.css",
                                          "static/**.gif",

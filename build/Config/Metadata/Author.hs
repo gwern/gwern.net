@@ -846,7 +846,9 @@ canonicals = M.fromList $ setLike
   , ("aidigest_", "AI Digest")
   , ("User:Cmglee", "CMG Lee")
   , ("Cmglee", "CMG Lee")
+  , ("Nano Banana", "Google Nano Banana")
   , ("Nano Banana Pro", "Google Nano Banana Pro")
+  , ("Nano Banana Pro 2", "Google Nano Banana Pro 2")
   , ("CartoonsHateHer", "Cartoons Hate Her")
   , ("cartoonshateher", "Cartoons Hate Her")
   , ("Claude-3-sonnet-new", "Claude-3.5-Sonnet")
@@ -897,6 +899,9 @@ canonicals = M.fromList $ setLike
   , ("Ploum", "Lionel Dricot")
   , ("ploum", "Lionel Dricot")
   , ("Martin Golubitsky", "Marty Golubitsky")
+  , ("Stanislaw Ulam", "Stanisław Ulam")
+  , ("GPT-5.4", "GPT-5.4 Pro")
+  , ("Bellard", "Fabrice Bellard")
   ]
 
 -- tests: unique
@@ -949,7 +954,8 @@ canonicalsWithInitials = setLike
   , "Samuel S. Wilks", "Kenneth Lee Pike", "Richard E. Turner", "Phil Hyoun Lee", "Karthik Rajagopal Narasimhan"
   , "Hunter S. Thompson", "Robert C. Kaplan", "Richard N. Bergman", "Philip B. Mitchell", "Peter S. Chines"
   , "Patrick S. Li", "Noah D. Goodman", "Nitish Shirish Keskar", "Clint M. Sergi", "Mary K. Wojczynski"
-  , "M. Saiful Bari", "Robert A. Freitas", "Roland G. Fryer", "Leslie Stephen Coles", "Mathew John Wedel", "Ralph S. Baric", "Jack D. Cowan", "Paul C. Bressloff"]
+  , "M. Saiful Bari", "Robert A. Freitas", "Roland G. Fryer", "Leslie Stephen Coles", "Mathew John Wedel"
+  , "Ralph S. Baric", "Jack D. Cowan", "Paul C. Bressloff"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -1958,6 +1964,8 @@ authorLinkDB = M.fromList $
     , ("GPT-5.1 Pro", "https://openai.com/index/gpt-5-1/#gpt-51-thinking")
     , ("GPT-5.2", "https://openai.com/index/introducing-gpt-5-2/")
     , ("GPT-5.2 Pro", "https://openai.com/index/introducing-gpt-5-2/#science-and-math")
+    , ("GPT-5.4 Thinking", "https://openai.com/index/introducing-gpt-5-4/#thinking")
+    , ("GPT-5.4 Pro", "https://openai.com/index/introducing-gpt-5-4/#pro")
     , ("Jerry Green", "https://en.wikipedia.org/wiki/Jerry_Green_(economist)")
     , ("Inger Njølstad", "https://no.wikipedia.org/wiki/Inger_Nj%C3%B8lstad")
     , ("Ingrid Agartz", "https://scholar.google.com/citations?user=NlZOhHMAAAAJ")
@@ -2092,6 +2100,7 @@ authorLinkDB = M.fromList $
     , ("CMG Lee", "https://en.wikipedia.org/wiki/User:Cmglee")
     , ("Richard Polt", "https://site.xavier.edu/polt/typewriters/about.html")
     , ("Google Nano Banana Pro", "https://blog.google/technology/ai/nano-banana-pro/")
+    , ("Google Nano Banana Pro 2", "https://blog.google/innovation-and-ai/technology/ai/nano-banana-2/")
     , ("Richard E. Turner", "https://rich-turner-group.github.io/")
     , ("Cartoons Hate Her", "https://www.cartoonshateher.com/about")
     , ("Cendyne", "https://cendyne.dev/")
@@ -3469,4 +3478,5 @@ authorWpLinkDB = setLike
     , "Bruce G. Lindsay", "Anne Chao", "John A. Hostetler", "Brian Moriarty", "Archibald MacLeish", "Michael Drew"
     , "Herbert H. Clark", "Jean E. Fox Tree", "Mikhail Bulgakov", "David Shor", "Rudolf Sloboda", "Frank Bidart"
     , "Gary McGraw", "Liisa Keltikangas-Järvinen", "fnnch", "Philipp Holliger", "Zbigniew Herbert", "Branko Grünbaum"
-    , "Bali Pulendran", "Yascha Mounk", "Peter B. Andrews", "Marty Golubitsky", "Volker Haucke"]
+    , "Bali Pulendran", "Yascha Mounk", "Peter B. Andrews", "Marty Golubitsky", "Volker Haucke", "Stanisław Ulam"
+    , "Edward H. Clarke", "Ghislaine Dehaene-Lambertz"]

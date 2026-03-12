@@ -6022,4 +6022,5 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("JAGS", "Just_another_Gibbs_sampler")
         , ("Chicken_sexing", "Chick_sexing")
         , ("Power_analysis", "Power_(statistics)")
+        , ("𝓁1_penalty", "Lasso_(statistics)")
         ]

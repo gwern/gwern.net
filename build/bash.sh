@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-02-13 23:17:10 gwern"
+# When:  Time-stamp: "2026-03-01 13:39:21 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -1055,7 +1055,7 @@ gw () {
     QUERY=$(echo "$*" | tr -d '\n') # remove newlines, which are usually spurious (and also not supported by grep by default?) thanks to browsers injecting newlines everywhere when copy-pasting...
     RESULTS=$( (find ~/wiki/ -type f -name "*.md";
          ls ~/.emacs ~/*.md;
-         find ~/wiki/metadata/ ~/wiki/haskell/ -name "*.hs" -or -name "*.gtx";
+         find ~/wiki/metadata/ ~/wiki/haskell/ -name "*.hs" -or -name "*.gtx" | grep --fixed-strings -v -e 'metadata/listsortedmagic.hs' -e 'metadata/listname.hs';
          find ~/wiki/static/ -type f -name "*.js" -or -name "*.css" -or -name "*.hs" -or -name "*.conf" -or -name "*.gtx" -or -name "*.py" -or -name "*.sh";
          find ~/wiki/ -type f -name "*.html" -not -wholename "*/doc/*" ) | \
            grep --fixed-strings -v -e '.#' -e 'auto.hs' -e doc/link-bibliography/ -e metadata/annotation/ -e _site/ -e _cache/ | sort --unique  | \
@@ -1452,4 +1452,43 @@ run_gold_test () {
     for page in $(get_lorem_pages); do
         compare_page "${page}"
     done
+}
+
+# `swap FILE1 FILE2`: rename FILE1 to FILE2, and FILE2 to FILE1
+#
+# Exchanges the names of two files by renaming through a temporary file in the
+# same directory as FILE1. All three operations are same-filesystem renames
+# (directory-entry relinks), so no data is ever copied and no extra disk space
+# is consumed.
+#
+# On partial failure (kill between renames, full directory, etc.) mv prints its
+# own error and a '.swap.*' tempfile is left in FILE1's directory holding the
+# salvageable content. Remove it once you've recovered.
+#
+# Does not handle:
+
+# - Files on different filesystems (mktemp will be on FILE1's fs; mv of FILE2
+#   across filesystems will fail, leaving a .swap.* tempfile — recoverable)
+# - Missing files (mv will error clearly)
+# - Broken symlinks (-e is false for them)
+#
+# A more elaborate version could: verify both files are on the same device
+# before starting; handle broken symlinks via -L; clean up the tempfile on
+# success while preserving it on failure via EXIT trap state; add -v/--dry-run
+# flags; or on Linux ≥3.15 use `renameat2(RENAME_EXCHANGE)` for a true atomic
+# single-syscall swap with no tempfile or failure window at all. We omit all of
+# this in the name of simplicity.
+swap() {
+    [[ $# -eq 2 ]] || { printf 'Usage: swap <file1> <file2>\n' >&2; return 1; }
+    [[ "$1" -ef "$2" ]] && { printf 'swap: same file\n' >&2; return 1; }
+
+    local tmp
+    tmp=$(mktemp -d -- "$(dirname -- "$1")/.swap.XXXXXXXXXX") || return 1
+
+    # Safely clean up the directory on exit, but ONLY if it is empty.
+    trap 'rmdir -- "$tmp" 2>/dev/null' RETURN
+
+    command mv -- "$1" "$tmp/val" &&
+    command mv -- "$2" "$1"       &&
+    command mv -- "$tmp/val" "$2"
 }

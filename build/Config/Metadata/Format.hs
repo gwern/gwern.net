@@ -160,7 +160,8 @@ filterMetaBadSubstrings = setLike ["ABBYY", "Adobe", "InDesign", "Arbortext", "U
                           , "C:My Documents", ".wp", "Nova India", "/var/www", "oup_cercor"
                           , "oup_humrep", "Print Publisher", "11.1.4012/W", "PDFium"
                           , "Internet Archive (Scribe Version", "4.0-initial-155-gbba175a5"
-                          , "Asura Version", "(SR 3)", "EPSON", "Perfection 3170", "Nature User"]
+                          , "Asura Version", "(SR 3)", "EPSON", "Perfection 3170", "Nature User", "DVIPSONE"
+                          , "(32) 2.1.3", "http://www.YandY. com"]
 
 filterMetaBadWholes = setLike ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "downes", "American Medical Association"
                       , "om", "lhf", "comp", "Science Magazine", "Josh Lerner, Scott Stern (Editors)", "arsalan", "rssa_a0157 469..482", "Schniederjans_lo"

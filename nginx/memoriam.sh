@@ -3,7 +3,7 @@
 # memoriam.sh: generate a `X-Clacks-Overhead` HTTP header nginx configuration line based on day-of-year & list of deceased.
 # Author: Gwern Branwen
 # Date: 2024-02-24
-# When:  Time-stamp: "2026-01-13 10:04:10 gwern"
+# When:  Time-stamp: "2026-02-27 10:29:39 gwern"
 # License: CC-0
 #
 # memoriam.sh is intended for generating HTTP headers (<https://en.wikipedia.org/wiki/List_of_HTTP_header_fields>) which memorialize a dead person.
@@ -64,7 +64,7 @@ declare -A memorials=(
     ["02-14"]="Julian Huxley"
     ["02-15"]="Richard Feynman"
     ["02-19"]="Umberto Eco, Deng Xiaoping"
-    ["02-21"]="Baruch Spinoza"
+    ["02-21"]="Baruch Spinoza, Dan Simmons"
     ["02-23"]="John Keats"
     ["02-24"]="Claude Shannon, Donald Keene"
     ["02-28"]="Freeman Dyson"
