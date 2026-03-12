@@ -2294,6 +2294,13 @@ hr.horizontal-rule-nth-3 {
     --icon-dark-mode-invert-filter: invert(1) drop-shadow(0 0 0 currentColor);
 }
 
+@media all and (min-width: 650px) {
+	hr[data-icon-x-position] {
+		padding-left: calc(var(--icon-x-position) - (var(--icon-size) * 0.5));
+		padding-right: calc((100% - var(--icon-x-position)) - (var(--icon-size) * 0.5));
+	}
+}
+
 
 /*********/
 /* LISTS */
@@ -9429,7 +9436,6 @@ a[data-link-icon='apple'] {
 
 a[data-link-icon='arrows-pointing-inwards-to-dot'] { /* bl backlinks ‘implosion’ */
     --link-icon-size: 0.90em;
-    --link-icon-offset-y: 0.22em;
     --link-icon-offset-y: 0.25em;
     --link-icon-opacity: 0.70;
 }

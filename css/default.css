@@ -1152,6 +1152,13 @@ hr.horizontal-rule-nth-3 {
     --icon-dark-mode-invert-filter: invert(1) drop-shadow(0 0 0 currentColor);
 }
 
+@media all and (min-width: 650px) {
+	hr[data-icon-x-position] {
+		padding-left: calc(var(--icon-x-position) - (var(--icon-size) * 0.5));
+		padding-right: calc((100% - var(--icon-x-position)) - (var(--icon-size) * 0.5));
+	}
+}
+
 
 /*********/
 /* LISTS */

@@ -355,6 +355,17 @@ addRewriteProcessor("designateHorizontalRuleStyles", (blockContainer) => {
 	});
 });
 
+/************************************************************************/
+/*	Set inline styles based on `data-icon-x-position` attribute of <hr>s.
+ */
+addRewriteProcessor("setHorizontalRuleXPositions", (blockContainer) => {
+    GWLog("setHorizontalRuleXPositions", "rewrite-initial.js", 2);
+
+	blockContainer.querySelectorAll("hr[data-icon-x-position]").forEach(hr => {
+		hr.style.setProperty("--icon-x-position", hr.dataset.iconXPosition);
+	});
+});
+
 
 /*************************/
 /* INLINE MODE SELECTORS */
