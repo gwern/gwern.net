@@ -701,4 +701,9 @@ function markAssetWaiting(assetInfo) {
 /***************************************************/
 /*	Begin loading (after the prefix document loads).
  */
-requestIdleCallback(getMainPageHTML);
+
+if ('requestIdleCallback' in window) {
+    requestIdleCallback(getMainPageHTML);
+} else {
+    setTimeout(getMainPageHTML, 1);
+}
