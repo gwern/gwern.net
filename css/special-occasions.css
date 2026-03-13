@@ -345,6 +345,115 @@ body.special-christmas-dark #navbar a {
         0 0 2px var(--GW-christmas-lights-gold);
 }
 
+/*=-------------=*/
+/*= Mabinogion =*/
+/*=-------------=*/
+
+body.special-mabinogion-light {
+    --GW-fire-red: #9B2D30;
+    --GW-ember-red: #C0392B;
+    --GW-soot-black: #212121;
+    --GW-crown-gold: #F1C40F;
+    --GW-parchment-white: #FDFEFE;
+}
+
+body.special-mabinogion-dark {
+    --GW-fire-red: #E74C3C;
+    --GW-ember-red: #C0392B;
+    --GW-soot-black: #E5E7E9;
+    --GW-crown-gold: #F7DC6F;
+    --GW-parchment-white: #1B2631;
+}
+
+body[class*='special-mabinogion'] {
+    --GW-nav-header-link-color: var(--GW-ember-red);
+    --GW-nav-header-link-hover-color: var(--GW-fire-red);
+    --GW-TOC-border-color: var(--GW-soot-black);
+    --GW-abstract-border-color: var(--GW-soot-black);
+    --GW-pre-element-border-color: var(--GW-ember-red);
+    --GW-epigraph-quotation-mark-color: var(--GW-ember-red);
+    --GW-H1-border-color: var(--GW-fire-red);
+    --GW-H2-border-color: var(--GW-soot-black);
+    --GW-dropcaps-yinit-color: var(--GW-fire-red);
+    --GW-dropcaps-yinit-text-shadow-color: var(--GW-ember-red);
+    --GW-dropcaps-de-zs-color: var(--GW-fire-red);
+    --GW-dropcaps-cheshire-color: var(--GW-fire-red);
+    --GW-dropcaps-kanzlei-color: var(--GW-fire-red);
+    --GW-figure-outline-color: var(--GW-soot-black);
+    --GW-figure-caption-outline-color: var(--GW-ember-red);
+    --GW-footnotes-section-top-rule-color: var(--GW-soot-black);
+    --GW-footnote-border-color: var(--GW-fire-red);
+    --GW-sidenote-highlight-box-shadow-color: var(--GW-fire-red);
+    --GW-footnote-backlink-border-color: var(--GW-ember-red);
+    --GW-footnote-backlink-border-hover-color: var(--GW-fire-red);
+    --GW-footnote-highlighted-border-color: var(--GW-ember-red);
+    --GW-sidenote-self-link-border-color: var(--GW-fire-red);
+    --GW-sidenote-border-color: var(--GW-fire-red);
+    --GW-math-block-scrollbar-border-color: var(--GW-ember-red);
+    --GW-collapse-disclosure-button-text-color: var(--GW-ember-red);
+    --GW-collapse-disclosure-button-text-hover-color: var(--GW-fire-red);
+    --GW-x-of-the-day-border-color: var(--GW-soot-black);
+    --GW-page-toolbar-border-color: var(--GW-soot-black);
+    --GW-page-toolbar-control-button-color: var(--GW-ember-red);
+    --GW-bottom-ornament-line-color: var(--GW-fire-red);
+    --GW-back-to-top-link-color: var(--GW-ember-red);
+    --GW-back-to-top-link-hover-color: var(--GW-fire-red);
+    --GW-floating-header-scroll-indicator-color: var(--GW-fire-red);
+    --GW-body-link-color: var(--GW-fire-red);
+    --GW-body-link-visited-color: var(--GW-ember-red);
+    --GW-body-link-hover-color: var(--GW-crown-gold);
+    --GW-highlighted-link-outline-color: var(--GW-crown-gold);
+}
+
+/* blockquotes in carved stone */
+body.special-mabinogion-light blockquote {
+    --border-color: var(--GW-soot-black);
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1);
+}
+body.special-mabinogion-dark blockquote {
+    --border-color: var(--GW-soot-black);
+    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05);
+}
+
+/* Narrative List Markers (The Two Houses) */
+body[class*='special-mabinogion'] ol > li:nth-of-type(odd)::before {
+	color: var(--GW-fire-red);
+}
+body[class*='special-mabinogion'] ol > li:nth-of-type(even)::before {
+	color: var(--GW-ember-red);
+}
+
+/* hearth fire glow */
+body.special-mabinogion-light header h1,
+body.special-mabinogion-light .heading a,
+body.special-mabinogion-light p[class*='dropcap-'] span.dropcap,
+body.special-mabinogion-light #navigation a,
+body.special-mabinogion-light #sidebar a {
+    text-shadow:
+        0 0 1px var(--GW-crown-gold);
+}
+
+body.special-mabinogion-dark header h1,
+body.special-mabinogion-dark .heading a,
+body.special-mabinogion-dark p[class*='dropcap-'] span.dropcap,
+body.special-mabinogion-dark #navigation a,
+body.special-mabinogion-dark #sidebar a {
+    text-shadow:
+        0 0 2px var(--GW-body-background-color),
+        0 0 2px var(--GW-crown-gold);
+}
+
+body[class*='special-mabinogion'] .heading {
+    --GW-body-text-color: var(--GW-fire-red);
+    --GW-body-link-color: var(--GW-fire-red);
+    color: var(--GW-body-text-color);
+}
+
+body[class*='special-mabinogion'] header h1 {
+    --GW-body-text-color: var(--GW-fire-red);
+    color: var(--GW-body-text-color);
+}
+
 /********/
 /*  Logo.
  */
