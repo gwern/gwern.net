@@ -231,6 +231,13 @@ function elementFromHTML(elementHTML) {
 	return doc.firstElementChild;
 }
 
+/************************************************/
+/*	Polyfill for requestIdleCallback() in Safari.
+ */
+if (window.requestIdleCallback == null) {
+	window.requestIdleCallback = (fn) => { setTimeout(fn, 0) };
+}
+
 /***************************************************************/
 /*	Round an integer up to the next multiple of a given divisor.
  */
