@@ -1599,6 +1599,7 @@ ul.interview .speaker {
 @media all and (max-width: 649px) {
 	.poem p .line-break-designator {
 		width: 1.5em;
+		opacity: 0.30;
 	}
 }
 

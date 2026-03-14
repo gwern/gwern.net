@@ -504,3 +504,15 @@ div.poem span.caesura-mark {
 		opacity: 0.4;
 	}
 }
+
+/*	Line break designators in poems.
+ */
+div.poem p .line-break-designator {
+	opacity: 0.30;
+}
+@media all and (max-width: 649px) {
+	div.poem p .line-break-designator {
+		opacity: 0.40;
+	}
+}
+
