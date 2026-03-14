@@ -2574,6 +2574,28 @@ ul.interview .speaker {
     margin-right: var(--speaker-spacing);
 }
 
+/****************************/
+/*	Miscellaneous edge cases.
+ */
+ 
+.markdownBody ul.interview p.list-heading {
+    text-indent: inherit;
+}
+
+ul.interview li.exchange ol {
+	--list-left-padding: 1.625em;
+}
+ul.interview li.exchange ol > li::before {
+	left: calc(0.75em - var(--list-left-padding));
+	width: calc(var(--list-left-padding) + 0.5em);
+}
+ul.interview li.exchange ol > li p {
+	text-indent: 0;
+}
+ul.interview li.exchange ol > li p:not(.first-graf) {
+	text-indent: var(--text-indent);
+}
+
 
 /*************/
 /* ABSTRACTS */
