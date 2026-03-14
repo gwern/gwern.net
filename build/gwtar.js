@@ -308,7 +308,7 @@ function rewriteHTMLResponse(responseText) {
 	return responseText.match(/<html .+?>(.+)(<\/html>|$)/is)[1].replace(
 		//	Prevent spurious network requests.
 		new RegExp(`${resourceBaseName}/${resourceBaseName}-asset-[0-9]+\.[0-9a-zA-Z]+`, "g"),
-		(match) => { return modifiedURL(URLFromString(match), { hostname: "localhost" }).href; }
+		(match) => { return modifiedURL(URLFromString(match), { hostname: "0.0.0.0" }).href; }
 	);
 }
 
