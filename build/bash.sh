@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-03-01 13:39:21 gwern"
+# When:  Time-stamp: "2026-03-14 17:53:54 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -480,19 +480,41 @@ doc2pdf () {
 }
 
 # trim whitespace from around JPG/PNG images
-# TODO: handles filenames with spaces badly?
 crop_one () {
-    if [[ "$*" =~ .*\.(jpg|png) ]]; then
-        (( $(identify -ping -format '%[fx:w*h]' -- "$@") > 25000000 )) 2>/dev/null && \
-            red "Warning: Image '$*' is larger than 5000×5000 pixels." >&2
-        nice convert "$(path2File "$@")" \
-            -crop "$(nice --adjustment=19 ionice --class 3 convert "$@" -virtual-pixel edge -blur 0x5 -fuzz 1% -trim -format '%wx%h%O' info:)" \
-            +repage "$@";
+    local file="$1"
+
+    if [[ "$file" =~ \.(jpg|png)$ ]]; then
+
+        local w h
+        w=$(identify -ping -format '%[w]' -- "$file" 2>/dev/null || echo 0)
+        h=$(identify -ping -format '%[h]' -- "$file" 2>/dev/null || echo 0)
+        (( w * h > 25000000 )) && \
+            red "Warning: Image '$file' is larger than 5,000×5,000 pixels." >&2
+
+        # Use a temporary file for atomic saving
+        local tmp_file="${file}.tmp"
+
+        # Only replace the original if the convert command succeeds
+        if nice convert "$file" \
+            -crop "$(nice --adjustment=19 ionice --class 3 convert "$file" -virtual-pixel edge -blur 0x5 -fuzz 1% -trim -format '%wx%h%O' info:)" \
+            +repage "$tmp_file"; then
+
+            mv "$tmp_file" "$file"
+        else
+            rm -f "$tmp_file" # clean up
+            red "Error: Failed to crop '$file'" >&2
+        fi
     fi
 }
-crop () { export -f crop_one; ls $(path2File "$@") | parallel crop_one; }
-# WARNING: if 'export' isn't inside the function call, it breaks 'atd'! no idea why. may be connected to Shellshock.
-export -f crop crop_one
+crop () {
+    (( $# == 0 )) && { echo "Usage: crop <files...>" >&2; return 1; }
+
+    for f in "$@"; do
+        printf '%s\0' "$(path2File "$f")"
+    # `--memfree 1G` tells parallel to avoid starting new jobs if free memory <1GB
+    done | parallel -0 --memfree 1G crop_one
+}
+export -f crop crop_one path2File red
 
 alias invert="mogrify -negate"
 
