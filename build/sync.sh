@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-03-16 22:43:47 gwern"
+# When:  Time-stamp: "2026-03-17 22:16:03 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -1071,7 +1071,7 @@ else
      wrap λ "Unicodify: misc"
 
      # λ(){ gf -e '' -- $PAGES; }
-     # wrap λ "Markdown: miscellaneous fixed string errors."
+     # wrap λ "Markdown: miscellaneous fixed-string errors."
 
      λ(){ echo $PAGES | tr ' ' '\n' | gfv '/lorem' | xargs --max-procs=0 --max-args=20 pandoc --from=Markdown --to=plain | gf -e "redirect-from-id"; }
      wrap λ "Plain text: miscellaneous fixed-string errors (eg. HTML/Markdown fragments leaking through)."
@@ -1104,9 +1104,9 @@ else
 
     λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | \
              xargs --max-args=500 grep --fixed-strings --with-filename --color=always \
-                   -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' -e '<a href="!W"' -e '’S ' -e '<span id="#' -e ' abd ' -e '<p><span class="abstract-collapse-only">' -e '{=HTML}' -e ' 1_e_' -e '>><' -e '</>' -e '](!W “' -e '```{' -e '.- ' -e '<div class="cite' -e 'id="reader-mode-disable-when-here' -e '&gt; &gt;' | \
+                   -e '](/​image/​' -e '](/​images/​' -e '](/images/' -e '<p>[[' -e ' _</span><a ' -e ' _<a ' -e '{.marginnote}' -e '^[]' -e '‘’' -e '``' -e 'href="\\%' -e '**' -e '<a href="!W"' -e '’S ' -e '<span id="#' -e ' abd ' -e '<p><span class="abstract-collapse-only">' -e '{=HTML}' -e ' 1_e_' -e '>><' -e '</>' -e '](!W “' -e '```{' -e '.- ' -e '<div class="cite' -e 'id="reader-mode-disable-when-here' -e '&gt; &gt;' -e ' [https://' -e ' [http://' | \
                    gfv -e '/design-graveyard' --; }
-    wrap λ "Miscellaneous fixed string errors in compiled HTML."
+    wrap λ "Miscellaneous fixed-string errors in compiled HTML."
 
     λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 ge --with-filename --color=always -e 'href="/[a-z0-9-]#fn[0-9]+"' -e 'href="#fn[0-9]+"' -e '"></a>' -e '</p>[^ <"]' -e '[0-9][0-9]−[0-9][0-9]' -e '[^0-9]⁄.' -e '.⁄[^0-9]' | gfv -e 'tabindex="-1"></a>'; }
     wrap λ "Miscellaneous regexp errors in compiled HTML."
@@ -1159,7 +1159,7 @@ else
     wrap λ "Unicode/HTML entity encoding error?" &
 
     λ(){ gfc -e 'en.m.wikipedia.org' -- ./metadata/me.gtx ./metadata/full.gtx; }
-    wrap λ "Check possible syntax errors in full.gtx GTX metadata database (fixed string-matches)." &
+    wrap λ "Check possible syntax errors in full.gtx GTX metadata database (fixed-string matches)." &
 
     λ(){ gec -e '^- - /docs/.*' -e '^  -  ' -e "\. '$" -e '[a-zA-Z]\.[0-9]+ [A-Z]' \
             -e 'href="[a-ce-gi-ln-zA-Z]' -e '>\.\.[a-zA-Z]' -e '\]\([0-9]' \
@@ -1188,7 +1188,7 @@ else
             -e '<figure class="invertible">' -e '</a<' -e 'href="%5Bhttps' -e '<jats:inline-graphic' \
             -e '<figure-inline' -e '<small></small>' -e '<inline-formula' -e '<inline-graphic' -e '<ahref=' \
             -e '](/' -e '-, ' -e '<abstract abstract-type="' -e '- pdftk' -e 'thumb|' -e ' <span>' -e "''''" -e '<em>𝒪' -- ./metadata/*.gtx | gfv -e 'righto.com/2025/01/'; }
-    wrap λ "#1: Check possible syntax errors in GTX metadata database (fixed string matches)."
+    wrap λ "#1: Check possible syntax errors in GTX metadata database (fixed-string matches)."
     λ(){ gfc -e '<sec ' -e '<list' -e '</list>' -e '<wb<em>r</em>' -e '<abb<em>' -e '<ext-link' -e '<title>' -e '</title>' \
             -e ' {{' -e '<<' -e '[Formula: see text]' -e '<p><img' -e '<p> <img' -e '- - /./' -e '[Keyword' -e '[KEYWORD' \
             -e '[Key word' -e '<strong>[Keywords:' -e 'href="$"' -e '<em>Figure' \
@@ -1196,7 +1196,7 @@ else
             -e '<figcaption></figcaption>' -e '&Ouml;' -e '&uuml;' -e '&amp;gt;' -e '&amp;lt;' -e '&amp;ge;' -e '&amp;le;' \
             -e '<ul class="columns"' -e '<ol class="columns"' -e ',/div>' -e '](https://' -e ' the the ' \
             -e 'Ꜳ' -e 'ꜳ'  -e 'ꬱ' -e 'Ꜵ' -e 'ꜵ' -e 'Ꜷ' -e 'ꜷ' -e 'Ꜹ' -e 'ꜹ' -e 'Ꜻ' -e 'ꜻ' -e 'Ꜽ' -e 'ꜽ' -- ./metadata/*.gtx | gfv 'Jamais Vu'; }
-    wrap λ "#2: Check possible syntax errors in GTX metadata database (fixed string matches)." &
+    wrap λ "#2: Check possible syntax errors in GTX metadata database (fixed-string matches)." &
     λ(){ gfc -e '🙰' -e 'ꭁ' -e 'ﬀ' -e 'ﬃ' -e 'ﬄ' -e 'ﬁ' -e 'ﬂ' -e 'ﬅ' -e 'ﬆ ' -e 'ᵫ' -e 'ꭣ' -e ']9h' -e ']9/' \
             -e ']https' -e 'STRONG>' -e '\1' -e '\2' -e '\3' -e ']($' -e '](₿' -e 'M age ' -e '….' -e '((' -e ' %' \
             -e '<h1' -e '</h1>' -e '<h2' -e '</h2>' -e '<h3' -e '</h3>' -e '<h4' -e '</h4>' -e '<h5' -e '</h5>' \
@@ -1222,7 +1222,7 @@ else
              gfv -e 'popular_shelves' -e 'Le corps dans les étoiles: l’homme zodiacal';
          gf -e ' TeX' -e ' LaTeX' -e '>><' -e '</>' -e '<stronge>' -- ./metadata/*.gtx | gfv -e 'logotype-';
        }
-    wrap λ "#3: Check possible syntax errors in GTX metadata database (fixed string matches)." &
+    wrap λ "#3: Check possible syntax errors in GTX metadata database (fixed-string matches)." &
 
     λ(){ ge -e ' [0-9]/[0-9]+ ' -- ./metadata/*.gtx | gfv -e 'Toll-like' -e 'Adam' -e '0/1' -e 'My Little Pony Seasons' -e '9/11' -e 'TRFK 31/8' -e 'TRFK 303/577' -e 'TRFK 6/8'; }
     wrap λ "Possible uses of FRACTION SLASH ⁄ or EN DASH –?" &

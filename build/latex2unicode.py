@@ -4,7 +4,7 @@
 # latex2unicode.py: Convert a simple inline TeX/LaTeX (aimed at ArXiv abstracts) into Unicode+HTML+CSS, using the OA API.
 # Author: Gwern Branwen
 # Date: 2023-06-28
-# When:  Time-stamp: "2026-03-14 13:34:52 gwern"
+# When:  Time-stamp: "2026-03-17 19:03:09 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python latex2unicode.py
@@ -55,7 +55,7 @@ Details:
 - The TeX/LaTeX special glyphs (`\\TeX` & `\\LaTeX`) are handled elsewhere; do not convert them, but simply repeat it.
 - Use Unicode entities, eg. MATHEMATICAL CAPITAL SCRIPT O `𝒪` in place of `\\mathcal{O}`, and likewise for the Fraktur ones (`\\mathfrak`) and bold ones (`\\mathbb`). Convert to the closest Unicode entity that exists. Convert symbols, special symbols, mathematical operators, and Greek letters. Convert even if the Unicode is rare (such as  `𝒪`). If there is no Unicode equivalent (such as because there is not a matching letter in that font family, or no appropriate combining character), then do not convert it.
 - If there are multiple reasonable choices, such as  `\\approx` which could be represented as `≈` or `~`, choose the simpler-looking one. Do not choose the complex one unless there is some good specific reason for that.
-- For superimposed subscript+superscript, use a predefined CSS <span> class `subsup`, eg. `(\\Delta^0_n)` → `Δ<span class="subsup"><sub><em>n</em></sub><sup>0</sup></span>`; `\\Xi_{cc}^{++} = ccu` → `Ξ<span class="subsup"><sub>cc</sub><sup>++</sup></span> = <em>ccu</em>`; `\\,\\Lambda_c \\Lambda_c \\to \\Xi_{cc}^{++}\\,n\\,` → `<em>Λ<sub>c</sub></em> <em>Λ<sub>c</sub></em> → Ξ<span class="subsup"><sub>cc</sub><sup>++</sup></span>,<em>n</em>`. This is also useful for summations or integrals, such as `\\int_a^b f(x) dx` → `∫<span class="subsup"><sub><em>a</em></sub><sup><em>b</em></sup></span> <em>f</em>(<em>x</em>) <em>dx</em>`.
+- For superimposed subscript+superscript, such as binomials, use our predefined CSS <span> class `subsup`, eg. `(\\Delta^0_n)` → `Δ<span class="subsup"><sub><em>n</em></sub><sup>0</sup></span>`; `\\Xi_{cc}^{++} = ccu` → `Ξ<span class="subsup"><sub>cc</sub><sup>++</sup></span> = <em>ccu</em>`; `\\,\\Lambda_c \\Lambda_c \\to \\Xi_{cc}^{++}\\,n\\,` → `<em>Λ<sub>c</sub></em> <em>Λ<sub>c</sub></em> → Ξ<span class="subsup"><sub>cc</sub><sup>++</sup></span>,<em>n</em>`. This is also useful for summations or integrals, such as `\\int_a^b f(x) dx` → `∫<span class="subsup"><sub><em>a</em></sub><sup><em>b</em></sup></span> <em>f</em>(<em>x</em>) <em>dx</em>`.
 
     - NOTE: the '<sub>' must come before '<sup>', for Pandoc compatibility. (Hence the name 'subsup' rather than 'supsub'.)
 - For small fractions, where both numbers are 3 integer digits or less, use FRACTION SLASH (⁄) to convert (eg. `1/2` or `\\frac{1}{2}` → `1⁄2`). Do not use the Unicode fractions like VULGAR FRACTION ONE HALF `½`.
@@ -274,6 +274,8 @@ DyT(<em>x</em>) = tanh(α<em>x</em>)
 2 · 5 = 10
 - '$32^\\circ\\text{C}$'
 32℃
+- '$\\binom{m}{2}$'
+(<span class="subsup"><sup><em>m</em></sup><sub>2</sub></span>)
 
 Task:
 
