@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2026-02-06 16:33:06 gwern"
+When:  Time-stamp: "2026-03-17 19:53:17 gwern"
 License: CC-0
 -}
 
@@ -125,7 +125,6 @@ addPageLink x = x
 --
 -- To do IO (eg. calling an API):
 --
--- > md <- LinkMetadata.readLinkMetadata :: IO LinkMetadataTypes.Metadata
 -- > walkAndUpdateLinkMetadata True (\(path,(title,author,date,dateModified,kvs,tags,abst)) ->
 -- >  do { abst' <- Paragraph.processParagraphizer md path abst;
 -- >       return (path,(title,author,date,dateModified,kvs,tags, abst')) } )
@@ -147,6 +146,11 @@ addPageLink x = x
 --
 -- > let f = \x@(path,(a,b,c,d,e,f,g)) -> return $ case (lookup path Config.LinkID.linkIDOverrides) of { Nothing -> x; Just ident -> (path,(a,b,c,d,e++[("id",T.unpack ident)],f,g)) }
 -- > walkAndUpdateLinkMetadata True f
+--
+-- To fix malformed dates:
+--
+-- > walkAndUpdateLinkMetadata True ( \x@(path,(title,author,date,dateModified,kvs,tags,abst)) -> if (date/="" && not (Metadata.Date.isDate date)) then (do { date' <- Metadata.Date.guessDateFromString date; return (path,(title,author,date',dateModified,kvs,tags,abst)) }) else return x )
+-- > walkAndUpdateLinkMetadata True ( \x@(path,(title,author,date,dateModified,kvs,tags,abst)) -> if (date/="" && not (Metadata.Date.isDate date)) then (do { date' <- Metadata.Date.guessDateFromString date; return (path,(title,author,date',dateModified,kvs,tags,abst)) }) else return x )
 walkAndUpdateLinkMetadata :: Bool -> ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> IO ()
 walkAndUpdateLinkMetadata check f = do walkAndUpdateLinkMetadataGTX f "metadata/me.gtx"
                                        walkAndUpdateLinkMetadataGTX f "metadata/full.gtx"
@@ -268,7 +272,7 @@ readLinkMetadataAndCheck = do
              mapM_ printError missingFiles
 
              -- auto-generated cached definitions; can be deleted if gone stale
-             rewriteLinkMetadata half full "metadata/auto.gtx" -- do auto-cleanup  first
+             rewriteLinkMetadata half full "metadata/auto.gtx" -- do auto-cleanup first
              auto <- readGTXSlow "metadata/auto.gtx"
              duplicateAbstracts (filter (\(p,_) -> not (isLocal (T.pack p))) auto)
 

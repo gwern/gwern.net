@@ -24,6 +24,7 @@ import qualified Data.ByteString.Lazy.Char8 as LBS (toStrict)
 import Data.Aeson (object, (.=), encode)
 import qualified Data.Aeson.Key as Key (fromText)
 
+import Metadata.Date (isDate)
 import LinkMetadataTypes (Metadata, MetadataItem, Path)
 import Utils (replace, replaceMany, deleteMany, sedMany, split, trim, delete, simplifiedHtmlToString, writeUpdatedFile)
 import qualified Config.Misc as CM (currentYear, cd, authorL)
@@ -31,6 +32,8 @@ import qualified Config.LinkID as C (linkIDOverrides)
 
 -- Convert a URL/path to a 9-character URL-safe Base64 (the 64-character range [a-zA-Z0-9_-] or "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-") ID, using SHA-1.
 -- This ID must start with an underscore, to uniquely identify hash-IDs from manually-written or citation-inferred cites (which themselves must not start with an underscore).
+-- This ID must also not be a valid YYYY-MM-DD date, to avoid field confusion.
+--
 -- This is the 'universal' fallback ID for all URLs/paths where there isn't enough metadata to create a human-readable citation-style ID like "foo-2020". (Note that the two kinds of IDs are not mutually exclusive: "foo-2020" is also a possible hash value.)
 -- It ensures we can always define backlinks for URLs (eg. in link-bibliographies) as the targets of `<a>` links, as the IDs will always be safe to use as a hash like '#ID'.
 --
@@ -49,8 +52,8 @@ url2ID url = T.append "_" $ T.take 8 $ TE.decodeUtf8 $ B64URL.encode $ BS.take 6
 isValidID :: String -> Bool
 isValidID ""        = False
 isValidID s
-    | length s == 9 = (head s == '_' && all isBase64Char s) || isStructuredID s
-    | otherwise     = isStructuredID s
+    | length s == 9 = (head s == '_' && all isBase64Char s) || isStructuredID s && not (isDate s)
+    | otherwise     = isStructuredID s && not (isDate s)
   where
     -- URL-safe Base64 character set [a-zA-Z0-9_-]
     isBase64Char c = isAsciiLower c || isAsciiUpper c || isDigit c || c == '_' || c == '-'
