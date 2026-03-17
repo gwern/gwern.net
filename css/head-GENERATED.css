@@ -1306,6 +1306,11 @@ p.empty-graf {
 
     font-family: var(--GW-monospaced-serif-font-stack);
 }
+@media all and (max-width: 649px) {
+    .poem {
+        --text-hyphenation: none;
+    }
+}
 
 .poem-html {
     white-space: pre;
