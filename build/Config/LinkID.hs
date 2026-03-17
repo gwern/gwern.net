@@ -5,7 +5,7 @@ import qualified Data.Text as T (Text)
 
 import Utils (setLike)
 
--- testing: unique list
+-- Testing: unique list
 affiliationAnchors :: [String]
 affiliationAnchors = setLike ["ai21", "adobe", "alibaba", "allen", "amazon", "anthropic", "apple", "baai", "baidu", "bair", "bytedance"
                      , "cerebras", "cohere", "deepmind", "deepseek", "eleutherai", "elementai", "facebook", "flickr", "github", "google"
@@ -14,7 +14,7 @@ affiliationAnchors = setLike ["ai21", "adobe", "alibaba", "allen", "amazon", "an
                      , "salesforce", "samsung", "sberbank", "schmidhuber", "sensetime", "snapchat", "sony", "spotify", "tencent"
                      , "tensorfork", "twitter", "uber", "yandex"]
 
--- testing: unique keys & unique values; keys are URIs, values are not URIs (to guard against swaps) & start with letters with no periods
+-- Testing: unique keys & unique values; keys are URIs, values are not URIs (to guard against swaps) & start with letters with no periods
 linkIDOverrides :: [(String, T.Text)]
 linkIDOverrides = setLike
   [

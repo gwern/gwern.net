@@ -4,7 +4,7 @@ module Config.Metadata.Format where
 
 import Utils (setLike)
 
--- testing: unique keys
+-- Testing: unique keys
 balancedBracketTestCases :: [(String, String)]
 balancedBracketTestCases = setLike
     [ ("(abc [de] {fg} \"hi\")", "")
@@ -36,7 +36,7 @@ balancedBracketTestCases = setLike
     , ("\"abc(def\"ghi)", ")")
     ]
 
--- testing: none; no `isUniqueKeys` check for zeros because keys are not unique by value (eg. −0.0 == 0 == 0.00 etc), but we need to test that they print out the same in the test-suite anyway
+-- Testing: none; no `isUniqueKeys` check for zeros because keys are not unique by value (eg. −0.0 == 0 == 0.00 etc), but we need to test that they print out the same in the test-suite anyway
 printDoubleTests :: [(Double, Int, String)]
 printDoubleTests = setLike
             [
@@ -125,7 +125,7 @@ cleanAuthorsFixedRewrites = [(". . ", ". "), ("?",""), (",,", ","), (", ,", ", "
                             , (" M. D. MMM", ""), (" M. D. MHS", "")]
 
 -- 'author' metadata to be blacklisted: usually either nonsense, a third party, software tool, etc
--- testing: unique list
+-- Testing: unique list
 filterMetaBadSubstrings, filterMetaBadWholes :: [String]
 filterMetaBadSubstrings = setLike ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY"
                           , "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf"
@@ -195,7 +195,7 @@ htmlRewriteTestCases = setLike [("when moving from 8 to 256 GPUs", "when moving 
                        , ("or strokes (n = 7). Both presurgical and", "or strokes (<em>n</em> = 7). Both presurgical and")
                        ]
 
--- testing: unique keys, valid regex keys; used with `sedMany`
+-- Testing: unique keys, valid regex keys; used with `sedMany`
 htmlRewriteRegexpAfter, htmlRewriteRegexpBefore, htmlRewriteFixed :: [(String, String)]
 htmlRewriteRegexpAfter = [
          ("from ([0-9\\.]+) to ([0-9\\.]+)", "\\1 → \\2") -- "when moving from 8 to 256 GPUs" → "when moving 8 → 256 GPUs"
@@ -336,7 +336,7 @@ htmlRewriteRegexpAfter = [
          ]
 
 -- simple string substitutions:
--- testing: unique keys
+-- Testing: unique keys
 htmlRewriteFixed =
          [
          ("<strong>One Sentence Summary</strong></p>\n<p>", "<strong>One Sentence Summary</strong>: ")

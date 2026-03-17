@@ -5,7 +5,7 @@ import Text.Pandoc (Inline(..), nullAttr)
 import qualified Data.Text as T (Text, append, isPrefixOf)
 import Utils (setLike)
 
--- testing: `Test` checks key-uniqueness & validity of URL in the `Link` output.
+-- Testing: `Test` checks key-uniqueness & validity of URL in the `Link` output.
 testCases :: [(Inline, Inline)]
 testCases = setLike [
   -- !Wikipedia
@@ -6023,4 +6023,5 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("Chicken_sexing", "Chick_sexing")
         , ("Power_analysis", "Power_(statistics)")
         , ("𝓁1_penalty", "Lasso_(statistics)")
+        , ("Shellshock", "Shellshock_(software_bug)")
         ]

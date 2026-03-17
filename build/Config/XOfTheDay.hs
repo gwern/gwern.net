@@ -24,7 +24,7 @@ minAnnotationAbstractLength = 2000
 siteLinkMin :: Int
 siteLinkMin = 3
 
--- testing: unique list, is domain (rather than URI or URL)
+-- Testing: unique list, is domain (rather than URI or URL)
 siteBlackList :: [T.Text] -- definitely excluded from recs
 siteBlackList = setLike [
           "07th-expansion.fandom.com", "17th-angel.tumblr.com", "2chan.us", "abandonedfootnotes.blogspot.com", "abcnews.go.com"

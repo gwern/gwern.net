@@ -642,7 +642,7 @@ linkIconRulesColors u
 --                           ]
 
 -- in /lorem order:
--- testing: unique-keys, first is URI
+-- Testing: unique-keys, first is URI
 linkIconTestUnitsText :: [(T.Text,T.Text,T.Text,T.Text)]
 linkIconTestUnitsText = setLike
         [

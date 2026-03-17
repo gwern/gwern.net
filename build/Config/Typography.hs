@@ -10,7 +10,7 @@ import Utils (setLike)
 cycleCount :: Int
 cycleCount = 3
 
--- testing: unique keys
+-- Testing: unique keys
 titleCaseTestCases :: [(String, String)]
 titleCaseTestCases = setLike [
   ("‘Two Truths and a Lie’ As a Class-participation Activity", "‘Two Truths and a Lie’ As a Class-Participation Activity")
@@ -78,7 +78,7 @@ titleCaseTestCases = setLike [
             , ("a janken (rock-paper-scissors) playing robot", "A Janken (Rock-Paper-Scissors) Playing Robot")
               ]
 
--- testing: unique list
+-- Testing: unique list
 surnameFalsePositivesWhiteList :: [String]
 surnameFalsePositivesWhiteList = setLike ["Et", "et", "Al", "al", "Accurate", "Aesthetics", "Africa", "After", "Alert", "America", "An", "Apr",
                                   "April", "At", "Atari", "Atlas", "August", "Aug", "Autumn", "Before", "British", "Challenge", "Chat",
@@ -106,7 +106,7 @@ minDuration = 11
 maxDateSecond = 2100 -- the latest serious AD year I see on Gwern.net currently seems to be '2561 AD', from Charles Stross’s "USENIX 2011 Keynote: Network Security in the Medium Term, 2061–2561 AD" talk. But dates past 2100 AD are too rare to care about, and much more likely to be an ordinary number
 minDateFirst = 1501 -- too many ordinary numbers <1,500 which are not comma-separated
 
--- testing: unique list
+-- Testing: unique list
 dateRangeDurationTestCases :: [(Int, Inline, Inline)]
 dateRangeDurationTestCases = setLike [
   (2024, Str "(1) 400 patients studied from 1984\8211\&1987, expanded to 500, also tested 1984\8211\&1987"

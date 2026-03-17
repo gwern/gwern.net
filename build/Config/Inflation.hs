@@ -107,7 +107,7 @@ inflationDollarLinkTestCases =
     , (("$0.00","$2019"),          Span nullAttr [Str "$0.00"])
     ]
 
--- testing: unique keys
+-- Testing: unique keys
 bitcoinUSDExchangeRateHistory :: [(String,Double)]
 bitcoinUSDExchangeRateHistory = [
     -- extrapolate from Pizza Day (22 May 2010), $30/₿10,000

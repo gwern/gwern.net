@@ -8,7 +8,7 @@ separators = "—·|"
 badStringPatterns, badStrings :: [String]
 badStringPatterns = setLike ["Redirecting to ", "404 ", "Page Unavailable", "Page not found", "Page Not Found", "CAPTCHA", "s shortform feed", "Item not found"]
 
--- testing: unique keys
+-- Testing: unique keys
 stringReplace :: [(String,String)]
 stringReplace = setLike [("  ", " ")
                 , (" � ", " - ")
@@ -17,7 +17,7 @@ stringReplace = setLike [("  ", " ")
                 , (" â\200\224 ", "—")
                 , ("\128\200\231", "’")]
 
--- testing: unique list; we do not bother unit-testing these because they are often used as few-shot examples
+-- Testing: unique list; we do not bother unit-testing these because they are often used as few-shot examples
 -- in `/static/build/title-cleaner.py` instead, and shouldn't matter much.
 badStrings = setLike ["", " ", "Quanta Magazine", "OSF", "CAIDA Resource Catalog", "Blogger", "Log in", "Stuff", "common.redirect_permanent.title", "Search", "search"
      , "404 Not Found", "301 Moved Permanently", "Object moved", "302 Found", "WordPress \8250 Error"
@@ -79,7 +79,7 @@ badStrings = setLike ["", " ", "Quanta Magazine", "OSF", "CAIDA Resource Catalog
      , "The Anime Cafe", "life in a monospace typeface", "News Details", "GlyphDrawing.Club -blog", "Informasi Resmi Game Online Terkini Cuan", "Zotero", "Sign in - Google Accounts", "Virgin and Child", "Michael Wolf", "L.B.Stanza", "Blog Post - Alex Litzenberger"]
 
 -- A list of bad substrings to remove. Note this is used with `Utils.deleteMixedMany` to specialize down to either prefix or suffix deletion based on the trailing vs leading space (respectively). This should greatly reduce the risk of unintended deletions.
--- testing: unique list
+-- Testing: unique list
 stringDelete :: [String]
 stringDelete = setLike [" - The Public Domain Review"
             , "â\200\224dConstruct Conference Talk"

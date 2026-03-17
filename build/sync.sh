@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-03-14 19:52:50 gwern"
+# When:  Time-stamp: "2026-03-16 22:43:47 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -1220,7 +1220,7 @@ else
             -e ' r-squared' -e ' R-squared' -e '&gt ' -e '&lt ' -e '&lte ' -e '&gte ' -e 'Error occurred. Exception: ' \
             -e '"editorial"[' -e ' data-;' -e ' data-$' -e ' data-1' -e ' data-2' -e 'ttle="' -- ./metadata/*.gtx | \
              gfv -e 'popular_shelves' -e 'Le corps dans les étoiles: l’homme zodiacal';
-         gf -e ' TeX' -e ' LaTeX' -e '>><' -e '</>' -- ./metadata/*.gtx | gfv -e 'logotype-';
+         gf -e ' TeX' -e ' LaTeX' -e '>><' -e '</>' -e '<stronge>' -- ./metadata/*.gtx | gfv -e 'logotype-';
        }
     wrap λ "#3: Check possible syntax errors in GTX metadata database (fixed string matches)." &
 

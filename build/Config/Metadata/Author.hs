@@ -3479,4 +3479,4 @@ authorWpLinkDB = setLike
     , "Herbert H. Clark", "Jean E. Fox Tree", "Mikhail Bulgakov", "David Shor", "Rudolf Sloboda", "Frank Bidart"
     , "Gary McGraw", "Liisa Keltikangas-Järvinen", "fnnch", "Philipp Holliger", "Zbigniew Herbert", "Branko Grünbaum"
     , "Bali Pulendran", "Yascha Mounk", "Peter B. Andrews", "Marty Golubitsky", "Volker Haucke", "Stanisław Ulam"
-    , "Edward H. Clarke", "Ghislaine Dehaene-Lambertz"]
+    , "Edward H. Clarke", "Ghislaine Dehaene-Lambertz", "Greg Turk"]

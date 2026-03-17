@@ -5,7 +5,7 @@ import Utils (setLike)
 minLength :: Int
 minLength = 768
 
--- testing: unique list, all URLs
+-- Testing: unique list, all URLs
 whitelist :: [String]
 whitelist = setLike ["/doc/economics/1998-delong.pdf", "/doc/cs/algorithm/1980-rytter.pdf"
             , "https://cloud.google.com/storage/docs/gsutil/commands/config", "https://terrytao.wordpress.com/wp-content/uploads/2010/10/cosmic-distance-ladder.pdf"

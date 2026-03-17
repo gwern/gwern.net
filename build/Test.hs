@@ -1,3 +1,5 @@
+-- see </style-guide#gwernnet-testing>
+
 {-# LANGUAGE OverloadedStrings #-}
 module Test where
 

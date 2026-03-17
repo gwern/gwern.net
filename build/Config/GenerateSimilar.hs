@@ -29,7 +29,7 @@ blackList p = p `elem` blackListURLs
   || "/newsletter/20" `isPrefixOf` p
   || "/lorem" `isPrefixOf` p
 
--- testing: `Test` as unique-list & valid URI (`isURIReference`)
+-- Testing: `Test` as unique-list & valid URI (`isURIReference`)
 blackListURLs :: [String] -- TODO: experiment with removing the blacklist to see if the pathologies have gone away
 blackListURLs = ["/index", "/changelog", "/help"] -- ["https://www.biorxiv.org/content/10.1101/2020.04.03.024554.full",
                 --         "/doc/genetics/heritable/correlation/2019-kandler.pdf", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4210287/",

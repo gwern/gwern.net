@@ -37,7 +37,7 @@ urlTagDB = map (\(s, t) -> ((s `isPrefixOf`), t)) prefixMatches
     specialCases :: [(String -> Bool, String)]
     specialCases = [(\u -> anyInfix u ["evageeks.org","eva.onegeek.org", "evamonkey.com"], "anime/eva")]
 
--- testing: unique keys, regex validation
+-- Testing: unique keys, regex validation
 wholeTagRewritesRegexes  :: [(String,String)]
 wholeTagRewritesRegexes = setLike [("^cs/", "CS/")
                      , ("^cs$", "CS")
@@ -60,7 +60,7 @@ wholeTagRewritesRegexes = setLike [("^cs/", "CS/")
                      ]
 
 -- intended for use with full literal fixed-string matches, not regexps/infix/suffix/prefix matches.
--- testing: unique keys; keys are all-lowercase (on-disk directories are always lowercase)
+-- Testing: unique keys; keys are all-lowercase (on-disk directories are always lowercase)
 tagsLong2Short, tagsShort2Long, tagsShort2LongRewrites :: [(String,String)]
 tagsShort2LongRewrites =
    [("power", "statistics/power-analysis"), ("statistics/power", "statistics/power-analysis"), ("reinforcement-learning/robotics", "reinforcement-learning/robot")
@@ -191,7 +191,7 @@ tagsShort2LongRewrites =
    , ("star-war", "star-wars"), ("starwars", "star-wars"), ("starwar", "star-wars")
    , ("hydranencephaly", "anencephaly"), ("aencephaly", "anencephaly"), ("amencephaly", "anencephaly"), ("anancephaly", "anencephaly"), ("ancephaly", "anencephaly"), ("anecephaly", "anencephaly"), ("anecnephaly", "anencephaly"), ("anencefaly", "anencephaly"), ("anenceohalyt", "anencephaly"), ("anencepahly", "anencephaly"), ("anencepaly", "anencephaly"), ("anencephal", "anencephaly"), ("anencephaley", "anencephaly"), ("anencephalg", "anencephaly"), ("anencephalt", "anencephaly"), ("anencephay", "anencephaly"), ("anencephlay", "anencephaly"), ("anencephly", "anencephaly"), ("anencepphaly", "anencephaly"), ("anencphaly", "anencephaly"), ("anencwphaly", "anencephaly"), ("anenecephaly", "anencephaly"), ("anenecphaly", "anencephaly"), ("anenenecephaly", "anencephaly"), ("anennccephaly", "anencephaly"), ("anensefaly", "anencephaly"), ("anensephaly", "anencephaly"), ("anincephaly", "anencephaly"), ("annencephaly", "anencephaly"), ("gydrancrephaly", "anencephaly"), ("hydracephaly", "anencephaly"), ("hydrancefaly", "anencephaly"), ("hydrancepahly", "anencephaly"), ("hydrancepaly", "anencephaly"), ("hydrancephakt", "anencephaly"), ("hydrancephal", "anencephaly"), ("hydrancephaley", "anencephaly"), ("hydrancephalg", "anencephaly"), ("hydrancephay", "anencephaly"), ("hydrancephlay", "anencephaly"), ("hydrancephly", "anencephaly"), ("hydrancepphaly", "anencephaly"), ("hydrancwphaly", "anencephaly"), ("hydranecephaly", "anencephaly"), ("hydranecphaly", "anencephaly"), ("hydranephaly", "anencephaly"), ("hydrannccephaly", "anencephaly"), ("hydransefaly", "anencephaly"), ("hydransephaly", "anencephaly"), ("hydranxephaly", "anencephaly"), ("hydrnacephaly", "anencephaly"), ("hydroancephaly", "anencephaly"), ("hydrocephaly", "anencephaly"), ("hydrrancephaly", "anencephaly"), ("hyrdrancephaly", "anencephaly"), ("jydrancephaly", "anencephaly"), ("naencephaly", "anencephaly"), ("nencephaly", "anencephaly"), ("snencephaly", "anencephaly")
    , ("physucs", "physics"), ("illusoin", "illusion"), ("opetry", "poetry"), ("poem", "poetry"), ("poet", "poetry"), ("typogrpahy", "typography"), ("bipolar-energy", "bipolar/energy"), ("clade-4", "claude/4"), ("discrete-diffusion", "diffusion/discrete"), ("discrete/diffusion", "diffusion/discrete"), ("working-memory", "dnb")
-   , ("ai/nn/transformer/gpt/non-fiction", "ai/nn/transformer/gpt/nonfiction"), ("ai/nn/transformer/gpt/5/4-5", "ai/nn/transformer/gpt/4-5"), ("non-fiction", "nonfiction"), ("nonfiction" , "ai/nn/transformer/gpt/nonfiction"), ("piblication-bias", "statistics/bias/publication"), ("embryo-selection", "selection/artificial"), ("embryo/selection", "selection/artificial"), ("selection/embryo", "selection/artificial"), ("multiagent", "multi-agent"), ("stegranoaphy", "steganography"), ("dpeeseek", "deepseek")
+   , ("ai/nn/transformer/gpt/non-fiction", "ai/nn/transformer/gpt/nonfiction"), ("ai/nn/transformer/gpt/5/4-5", "ai/nn/transformer/gpt/4-5"), ("non-fiction", "nonfiction"), ("nonfiction" , "ai/nn/transformer/gpt/nonfiction"), ("piblication-bias", "statistics/bias/publication"), ("embryo-selection", "selection/artificial"), ("embryo/selection", "selection/artificial"), ("selection/embryo", "selection/artificial"), ("multiagent", "multi-agent"), ("stegranoaphy", "steganography"), ("dpeeseek", "deepseek"), ("tokeniation", "tokenization")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
@@ -200,14 +200,14 @@ tagsShort2Long = tagsShort2LongRewrites ++
   -- attempt to infer short → long rewrites from the displayed tag names, which are long→short; but note that many of them are inherently invalid and the mapping only goes one way.
    map (\(a,b) -> (map toLower b,a)) (filter (\(_,fancy) -> not (anyInfix fancy [" ", "<", ">", "(",")"])) tagsLong2Short)
 
--- testing: unique list
+-- Testing: unique list
 -- 'shortTagBlacklist' is used primarily in `Tags.guessTagFromShort`:
 shortTagBlacklist :: [String]
 shortTagBlacklist = setLike ["a", "al", "an", "analysis", "and", "are", "as", "at", "be", "box", "done", "e", "error", "f",
                       "fine", "free", "g", "git", "if", "in", "is", "it", "of", "on", "option", "rm", "sed", "strong", "t",
                       "the", "to", "tr", "up", "we", "ls", "<ul>", "<ol>", "<p>", "<blockquote>"]
 
--- testing: unique all
+-- Testing: unique all
 tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories should come before their directories if they are going to override the prefix.
   ("traffic/ab-testing", "Web A/B testing") -- NOTE: TLAs cannot be put into smallcaps because we italicize tags but Source Serif Pro does not have italic smallcaps <https://github.com/adobe-fonts/source-serif/issues/46>.
   , ("science/fermi-problem", "Fermi problems")
@@ -228,6 +228,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("statistics/bias/animal", "animal study methodology")
   , ("statistics/bias", "scientific bias")
   , ("statistics/bayes/hope-function", "Hope function")
+   , ("statistics/bayes/regression-to-mean", "regression to a mean")
   , ("reinforcement-learning/safe/clippy", "Clippy (AI safety)")
   , ("reinforcement-learning/imperfect-information/poker", "poker AI")
   , ("reinforcement-learning/imperfect-information/hanabi", "<em>Hanabi</em> AI")
@@ -350,11 +351,11 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("ai/nn/gan/data-augmentation", "data-augmented GANs")
   , ("ai/nn/diffusion/discrete", "discrete diffusion NN")
   , ("ai/nn/diffusion/imagen", "Google Imagen")
-  , ("ai/nn/diffusion/midjourney/dropcap/ninit", "Ninit dropcaps")
-  , ("ai/nn/diffusion/midjourney/dropcap/genewolfe-dropcap", "Gene Wolfe dropcaps")
-  , ("ai/nn/diffusion/midjourney/dropcap/dropcat", "Dropcat dropcaps")
-  , ("ai/nn/diffusion/midjourney/dropcap", "dropcaps (AI typography)")
-  , ("ai/nn/diffusion/midjourney/black-sun", "black sun sigil")
+  , ("ai/nn/diffusion/midjourney/dropcap/ninit", "Ninit dropcaps (AI)")
+  , ("ai/nn/diffusion/midjourney/dropcap/genewolfe-dropcap", "Gene Wolfe dropcaps (AI)")
+  , ("ai/nn/diffusion/midjourney/dropcap/dropcat", "Dropcat dropcaps (AI)")
+  , ("ai/nn/diffusion/midjourney/dropcap", "dropcaps (AI)")
+  , ("ai/nn/diffusion/midjourney/black-sun", "‘black sun’ sigil (AI)")
   , ("ai/nn/diffusion/midjourney/landscape", "Midjourney landscapes")
   , ("ai/nn/diffusion/midjourney", "Midjourney")
   , ("ai/highleyman", "Highleyman’s AI")
@@ -398,7 +399,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("cat/psychology/earwax", "cats & earwax")
   , ("cat/genetics", "cat genetics")
   , ("cat/psychology/drug/silvervine", "silvervine (cat)")
-  , ("cat/psychology/drug/catnip/survey", "catnip survey")
+  , ("cat/psychology/drug/catnip/survey", "catnip response survey")
   , ("cat/psychology/drug/catnip", "catnip")
   , ("cat/psychology/drug/tatarian-honeysuckle", "Tatarian honeysuckle (cat)")
   , ("cat/psychology/drug/valerian", "Valerian (cat)")
@@ -458,7 +459,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("statistics/decision/stigler-diet", "Stigler’s diet problem")
   , ("statistics/decision/mail-delivery", "mail-delivery optimization")
   , ("statistics/decision", "decision theory")
-  , ("statistics/order/selection/pipeline", "leaky pipelines")
+  , ("statistics/order/selection/pipeline", "leaky pipeline")
   , ("statistics/order/selection", "statistical selection")
   , ("statistics/order/capture", "mark-and-recapture")
   , ("statistics/order/comparison", "statistical comparison")
@@ -614,7 +615,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("ai/nn/transformer/gpt/4/poetry",           "GPT-4 poetry")
   , ("ai/nn/transformer/gpt/4/nonfiction",       "GPT-4 nonfiction")
   , ("ai/nn/transformer/gpt/4/fiction",          "GPT-4 fiction")
-  , ("ai/nn/transformer/gpt/4/sydney",           "Sydney AI")
+  , ("ai/nn/transformer/gpt/4/sydney",           "Bing Sydney AI")
   , ("ai/nn/transformer/gpt/4",                  "GPT-4")
   , ("ai/nn/transformer/gpt/3/fiction",          "GPT-3 fiction")
   , ("ai/nn/transformer/gpt/3/nonfiction",       "GPT-3 nonfiction")
@@ -690,7 +691,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("newest", "newest links")
   ]
 
--- testing: unique keys
+-- Testing: unique keys
 shortTagTestSuite :: [(String, String)]
 shortTagTestSuite = setLike
  [("active-learning", "reinforcement-learning/exploration/active-learning")

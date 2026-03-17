@@ -163,7 +163,7 @@ mininumLinkBibliographyFragment = 3
 userAgent :: String
 userAgent = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:110.0) Gecko/20100101 Firefox/112.0"
 
--- testing: unique keys
+-- Testing: unique keys
 tooltipToMetadataTestcases :: [((String,String),(String,String,String))]
 tooltipToMetadataTestcases =
  setLike [(("","‘Title1 Title2's First Word Title3’, Foo et al 2020a"),    ("Title1 Title2's First Word Title3","Foo, et al","2020"))
@@ -189,7 +189,7 @@ tooltipToMetadataTestcases =
       , (("/doc/cs/css/2007-adobe-parametersforopeningpdffiles.pdf#page=5","Parameters for Opening PDF Files: You can open a PDF document with a command or URL that specifies exactly what to display (a named destination or specific page), and how to display it (using such characteristics as a specific view, scrollbars, bookmarks, annotations, or highlighting)"), ("Parameters for Opening PDF Files: You can open a PDF document with a command or URL that specifies exactly what to display (a named destination or specific page), and how to display it (using such characteristics as a specific view, scrollbars, bookmarks, annotations, or highlighting)", "", ""))
       ]
 
--- testing: unique keys
+-- Testing: unique keys
 cycleTestCases :: [([(Int, Int)], Bool)]
 cycleTestCases = [ ([], False) -- no rules, no cycles
      , ([(1, 2)], False) -- one rule, no cycles
@@ -247,7 +247,7 @@ minimumAnnotationLength = 250
 --
 -- 'significan✱' in Arxiv abstracts typically doesn't mean statistically-significant, but 'important' or 'large'; unfortunately,
 -- this is puffery applied to every single advance, and in an Arxiv abstract, is meaningless.
--- testing: unique keys
+-- Testing: unique keys
 cleanArxivAbstracts :: [(String, String)]
 cleanArxivAbstracts = setLike [(" significant", ""), (" significantly", ""), (" significance", "")
                        , ("more significant", "important")
@@ -264,7 +264,7 @@ cleanArxivAbstracts = setLike [(" significant", ""), (" significantly", ""), (" 
                        , ("significance metric", "statistical-significance metric")
                       ]
 
--- testing: unique keys, keys valid regexp
+-- Testing: unique keys, keys valid regexp
 arxivAbstractRegexps, arxivAbstractFixedRewrites :: [(String,String)]
 arxivAbstractRegexps = setLike [("\\\\citep?\\{([[:graph:]]*)\\}", "(\\texttt\\{\\1})")
                        , ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt\\{\\1})")
