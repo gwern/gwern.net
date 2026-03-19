@@ -4,7 +4,7 @@
 # seriate.py: semantically sort, or 'seriate', a list in a logical fashion
 # Author: Gwern Branwen
 # Date: 2025-01-02
-# When:  Time-stamp: "2026-01-17 16:53:11 gwern"
+# When:  Time-stamp: "2026-03-19 12:49:10 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python seriate.py
@@ -149,7 +149,7 @@ Input list to seriate:
 - <input>""" + target + "</input>\n<output>"
 
     completion = client.chat.completions.create(
-        model="gpt-5-mini",
+        model="gpt-5.4-mini",
         timeout=60,
         messages=[
             {"role": "developer", "content": "You are an analyst and editor, reordering inputs logically."},

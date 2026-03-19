@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-03-10 22:25:29 gwern"
+# When:  Time-stamp: "2026-03-19 12:49:14 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -888,6 +888,8 @@ About Us
 ""
 - "https://howisfelix.today/ howisFelix.today?—Felix Krause"
 "howisFelix.today?"
+- "https://apenwarr.ca/log/20260316 Every layer of review makes you 10x slower - apenwarr"
+"Every layer of review makes you 10x slower"
 
 Task:
 
@@ -897,7 +899,7 @@ Input title to clean:
 
 completion = client.chat.completions.create(
   temperature=1, # temperature=0,
-  model="gpt-5-mini",
+  model="gpt-5.4-mini",
   messages=[
     {"role": "system", "content": "You are a researcher and web developer, compiling a bibliography."},
     {"role": "user", "content": prompt }

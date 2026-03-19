@@ -88,7 +88,7 @@ def _looks_ok(original: str, candidate: str) -> bool:
 
 try:
     completion = client.chat.completions.create(
-  model="gpt-4o-mini",
+  model="gpt-5.4-mini",
   temperature=0,          # deterministic line-breaking
   top_p=1,
   messages=[

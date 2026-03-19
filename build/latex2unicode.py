@@ -4,7 +4,7 @@
 # latex2unicode.py: Convert a simple inline TeX/LaTeX (aimed at ArXiv abstracts) into Unicode+HTML+CSS, using the OA API.
 # Author: Gwern Branwen
 # Date: 2023-06-28
-# When:  Time-stamp: "2026-03-17 19:03:09 gwern"
+# When:  Time-stamp: "2026-03-19 12:50:15 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python latex2unicode.py
@@ -276,13 +276,15 @@ DyT(<em>x</em>) = tanh(α<em>x</em>)
 32℃
 - '$\\binom{m}{2}$'
 (<span class="subsup"><sup><em>m</em></sup><sub>2</sub></span>)
+- '\\(391,562\\)'
+391,562
 
 Task:
 
 - '""" + target + "'\n"
 
 completion = client.chat.completions.create(
-  model="gpt-4.1-mini", # we use GPT-4 because the outputs are short, we want the highest accuracy possible, we provide a lot of examples & instructions which may overload dumber models, and reviewing for correctness can be difficult, so we are willing to spend a few pennies to avoid the risk of a lower model
+  model="gpt-5.4-mini",
   messages=[
     {"role": "system", "content": "You are a skilled mathematician & tasteful typographer, expert in LaTeX."},
     {"role": "user", "content": prompt }
