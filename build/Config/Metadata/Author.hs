@@ -902,6 +902,7 @@ canonicals = M.fromList $ setLike
   , ("Stanislaw Ulam", "Stanisław Ulam")
   , ("GPT-5.4", "GPT-5.4 Pro")
   , ("Bellard", "Fabrice Bellard")
+  , ("Avery Pennarun", "apenwarr")
   ]
 
 -- tests: unique
@@ -1893,6 +1894,7 @@ authorLinkDB = M.fromList $
     , ("Gemini-2.5-pro", "https://blog.google/technology/google-deepmind/gemini-model-thinking-updates-march-2025/#gemini-2-5-thinking")
     , ("Gemini-2.5-pro-0325", "https://blog.google/technology/google-deepmind/gemini-model-thinking-updates-march-2025/")
     , ("Gemini-3-pro-preview", "https://blog.google/products/gemini/gemini-3/")
+    , ("Gemini-3.1-pro-preview", "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-1-pro/")
     , ("Time Magazine", "https://en.wikipedia.org/wiki/Time_(magazine)")
     , ("Martha Duffy", "https://www.nytimes.com/1997/06/17/arts/martha-duffy-61-arts-editor-and-writer-at-time-magazine.html")
     , ("Sander Dieleman", "https://sander.ai/about/")
@@ -2178,13 +2180,15 @@ authorLinkDB = M.fromList $
     , ("Gregory Clark", "https://en.wikipedia.org/wiki/Gregory_Clark_(economist)")
     , ("Mathew John Wedel", "https://en.wikipedia.org/wiki/Matt_Wedel")
     , ("Elizabeth van Nostrand", "https://acesounderglass.com/about-me-2/")
-    , ("Aaaron Silverbook", "https://aaronsilverbook.com/")
+    , ("Aaron Silverbook", "https://aaronsilverbook.com/")
     , ("Ralph S. Baric", "https://en.wikipedia.org/wiki/Ralph_S._Baric")
     , ("Daniel Litt", "https://www.daniellitt.com/")
     , ("niplav", "https://niplav.site/")
     , ("Lionel Dricot", "https://fr.wikipedia.org/wiki/Lionel_Dricot")
     , ("Jack D. Cowan", "https://en.wikipedia.org/wiki/Jack_D._Cowan")
     , ("Paul C. Bressloff", "https://en.wikipedia.org/wiki/Paul_Bressloff")
+    , ("apenwarr", "https://apenwarr.ca/log/")
+    , ("Chelsea Zou", "https://bosonphoton.github.io/")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3479,4 +3483,4 @@ authorWpLinkDB = setLike
     , "Herbert H. Clark", "Jean E. Fox Tree", "Mikhail Bulgakov", "David Shor", "Rudolf Sloboda", "Frank Bidart"
     , "Gary McGraw", "Liisa Keltikangas-Järvinen", "fnnch", "Philipp Holliger", "Zbigniew Herbert", "Branko Grünbaum"
     , "Bali Pulendran", "Yascha Mounk", "Peter B. Andrews", "Marty Golubitsky", "Volker Haucke", "Stanisław Ulam"
-    , "Edward H. Clarke", "Ghislaine Dehaene-Lambertz", "Greg Turk", "Leonardo de Moura", "Google"]
+    , "Edward H. Clarke", "Ghislaine Dehaene-Lambertz", "Greg Turk", "Leonardo de Moura", "Google", "Jacy Reese Anthis"]

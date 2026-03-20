@@ -2,7 +2,7 @@
 # compressGIF: compress a GIF with gifsicle if the savings are worthwhile.
 # Author: Gwern Branwen
 # Date: 2024-02-26
-# When:  Time-stamp: "2026-03-11 10:10:44 gwern"
+# When:  Time-stamp: "2026-03-18 15:57:46 gwern"
 # License: CC-0
 #
 # Usage: stdin or file arguments.
@@ -20,10 +20,6 @@ get_image_files () {
                             | sort --version-sort)
 }
 args=("$@")
-if [ ${#args[@]} -eq 0 ] && ! [ -t 0 ]; then
-    mapfile -t args
-    green "Reading from stdin: ${args[*]}"
-fi
 if [ ${#args[@]} -eq 0 ]; then
     get_image_files args
     green "Attempting to use implied arguments: ${args[*]}"
