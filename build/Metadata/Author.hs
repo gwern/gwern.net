@@ -3,7 +3,7 @@
 {- Metadata.Author.hs: module for managing 'author' metadata & hyperlinking author names in annotations
 Author: Gwern Branwen
 Date: 2024-04-14
-When:  Time-stamp: "2025-11-28 09:46:53 gwern"
+When:  Time-stamp: "2026-03-22 12:55:24 gwern"
 License: CC-0
 
 Authors are useful to hyperlink in annotations, but pose some problems: author names are often ambiguous in both colliding and having many non-canonical versions, are sometimes extremely high frequency & infeasible to link one by one, and there can be a large number of authors (sometimes hundreds or even thousands in some scientific fields).
@@ -35,6 +35,7 @@ This could further come with some browser automation like searching Wikipedia + 
 
 module Metadata.Author where
 
+import Control.Concurrent (forkIO)
 import Control.Monad (filterM, void, unless)
 import Data.Char (isLetter, toUpper)
 import Data.List (intersperse, intercalate)
@@ -216,8 +217,8 @@ authorsUnknownPrint auts = do let missing = authorsUnknown $ splitOn ", " auts
                                                                     let urls = map (T.unpack . toWikipediaEnURL . T.pack) missingInWikipedia
                                                                     mapM_ putStrLn urls
 
-                 -- and open in web browser:
-                                                                    mapM_ (\aut -> void $ runShellCommand "./" Nothing "chromium" [aut]) urls
+                 -- and open in web browser, using forkIO to ensure we don't block the main Hakyll process:
+                                                                    mapM_ (\aut -> forkIO $ void $ runShellCommand "./" Nothing "chromium" [aut]) urls
 
 -- final database of alias→author rewrites: combine the handwritten with the generated.
 -- WARNING: the two databases are required to be unique and non-overlapping; we could override generated with manual, but that kind of conflict indicates a semantic issue and must be dealt with by the user.
@@ -275,11 +276,11 @@ authorBrowseTopN md n = do let mdl = M.toList md
 -- search for an author in various search engines to conveniently define a URL for an author:
 -- generally, we want the WP article first, then a GS profile is often second-best, and if we can't find anything there, something in the wild west of the general Internet may be the only option.
 authorBrowseSearchEngines :: [T.Text] -> IO ()
-authorBrowseSearchEngines [] = error "Metadata.Author.authorBrowseSearchEngines: passed an empty list; this should never happen!"
+authorBrowseSearchEngines []   = error "Metadata.Author.authorBrowseSearchEngines: passed an empty list; this should never happen!"
 authorBrowseSearchEngines [""] = error "Metadata.Author.authorBrowseSearchEngines: passed an empty string; this should never happen!"
-authorBrowseSearchEngines authors = let urls = concatMap authorURLs authors
-                                       in void $ runShellCommand "./" (Just [("DISPLAY", ":0")]) "chromium"
-                                          (map T.unpack urls)
+authorBrowseSearchEngines authors =
+  let urls = concatMap authorURLs authors in
+    void $ forkIO $ void $ runShellCommand "./" (Just [("DISPLAY", ":0")]) "chromium" (map T.unpack urls)
  where authorURLs :: T.Text -> [T.Text]
        authorURLs "" = error "Metadata.Author.authorURLs: passed an empty string for an author; this should never happen!"
        authorURLs author = let escapedAuthor = T.pack $ urlEncode $ T.unpack author
