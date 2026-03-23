@@ -4,7 +4,7 @@
 # italicizer.py: reformat a string to add italics as semantically appropriate (eg. book titles) using LLMs
 # Author: Gwern Branwen
 # Date: 2025-01-17
-# When:  Time-stamp: "2026-03-22 19:20:58 gwern"
+# When:  Time-stamp: "2026-03-23 18:33:35 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python italicizer.py
@@ -1332,6 +1332,18 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - "Penalization for small n problems: case study of Steam games—Clear Language, Clear Mind"
 "Penalization for small <em>n</em> problems: case study of Steam games—Clear Language, Clear Mind"
+- "‘Gooning Towards the Führer’ as policy coordination"
+""
+- "Project Play survey: Family spending on youth sports rises 46% over 5 years - Project Play"
+""
+- "Thoughts on Meaning and Writing"
+""
+- "Adapting to AI: Reflections on Productivity"
+""
+- "Welcome to the Internet—Bo Burnham (from “Inside”—ALBUM OUT NOW)" # songs are not italicized, but albums/shows are
+"Welcome to the Internet—Bo Burnham (from <em>Inside</em>—ALBUM OUT NOW)"
+- "A Billionaire-Backed Startup Wants to Grow ‘Organ Sacks’ to Replace Animal Testing"
+""
 
 [End of examples. Reminder: your only task is to add missing italics you are SURE of.]
 

@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-03-18 16:18:27 gwern"
+# When:  Time-stamp: "2026-03-24 09:38:21 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -893,7 +893,7 @@ else
             "link-bibliography-context" "extract-not" "fraction" "separator-inline" "dark-mode-invert" "dark-mode-enable-when-here" "dark-mode" "light-mode-re-enable-when-here"
             "prefetch" "prefetch-not" "filesize-not" "poem" "poem-html" "redirect-from-id" "toc-not" "index" "editorial" "wrap-not"
         )
-        html_dataattributes_whitelist=("data-filesize-bytes" "data-link-icon" "data-amount-current" "data-amount-original" "data-aspect-ratio" "data-filesize-bytes" "data-filesize-percentage" "data-href-mobile" "data-image-height" "data-image-width" "data-include-selector-not" "data-include-template" "data-inflation" "data-link-content-type" "data-link-icon" "data-link-icon-color" "data-link-icon-type" "data-progress-percentage" "data-redirect-from-id" "data-target-id" "data-url-archive" "data-url-iframe" "data-url-original" "data-year-current" "data-year-original" "data-icon-x-position" "data-amount-current" "data-aspect-ratio" "data-demo-type" "data-doi")
+        html_dataattributes_whitelist=("data-filesize-bytes" "data-link-icon" "data-amount-current" "data-amount-original" "data-aspect-ratio" "data-filesize-bytes" "data-filesize-percentage" "data-href-mobile" "data-image-height" "data-image-width" "data-include-selector-not" "data-include-template" "data-inflation" "data-link-content-type" "data-link-icon" "data-link-icon-color" "data-link-icon-type" "data-progress-percentage" "data-redirect-from-id" "data-target-id" "data-url-archive" "data-url-iframe" "data-url-original" "data-year-current" "data-year-original" "data-icon-x-position" "data-aspect-ratio" "data-demo-type" "data-doi")
         html_classes_regexpattern=$(IFS='|'; echo "${html_classes_whitelist[*]}" "${html_dataatributes_whitelist[*]}")
         html_classes=$(echo "$PAGES_ALL" | xargs --max-procs=0 --max-args=500 ./static/build/htmlAttributesExtract.py | tr ' ' '\n' | sort --unique)
 
@@ -1218,7 +1218,7 @@ else
             -e '=“”' -e '““{' -e '““}' -e '““[' -e '““]' -e 'Ã' -e '’S ' -e '<span id="#' -e 'href=/' -e 'href=http' \
             -e '<n/em>' -e '!=' -e '%3Cem%3E' -e '%3C/em%3E' -e '%3Cstrong%3E' -e '%3C/strong%3E' \
             -e ' r-squared' -e ' R-squared' -e '&gt ' -e '&lt ' -e '&lte ' -e '&gte ' -e 'Error occurred. Exception: ' \
-            -e '"editorial"[' -e ' data-;' -e ' data-$' -e ' data-1' -e ' data-2' -e 'ttle="' -- ./metadata/*.gtx | \
+            -e '"editorial"[' -e ' data-;' -e ' data-$' -e ' data-1' -e ' data-2' -e 'ttle="' -e ' href"https' -- ./metadata/*.gtx | \
              gfv -e 'popular_shelves' -e 'Le corps dans les étoiles: l’homme zodiacal';
          gf -e ' TeX' -e ' LaTeX' -e '>><' -e '</>' -e '<stronge>' -- ./metadata/*.gtx | gfv -e 'logotype-';
        }

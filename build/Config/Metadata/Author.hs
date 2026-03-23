@@ -534,6 +534,7 @@ canonicals = M.fromList $ setLike
   , ("Arfan Ikram", "M. Arfan Ikram")
   , ("bmk", "Leo Gao")
   , ("bmk.sh", "Leo Gao")
+  , ("leogao", "Leo Gao")
   , ("G. Davies", "Gail Davies")
   , ("sashachapin", "Sasha Chapin")
   , ("Daníel Fannar Guðbjartsson", "Daniel F. Gudbjartsson")
@@ -904,6 +905,7 @@ canonicals = M.fromList $ setLike
   , ("GPT-5.4", "GPT-5.4 Pro")
   , ("Bellard", "Fabrice Bellard")
   , ("Avery Pennarun", "apenwarr")
+  , ("Brett Taylor", "Bret Taylor")
   ]
 
 -- tests: unique
@@ -2190,6 +2192,10 @@ authorLinkDB = M.fromList $
     , ("Paul C. Bressloff", "https://en.wikipedia.org/wiki/Paul_Bressloff")
     , ("apenwarr", "https://apenwarr.ca/log/")
     , ("Chelsea Zou", "https://bosonphoton.github.io/")
+    , ("Daniel M. Ziegler", "https://scholar.google.com/citations?user=YzfbfDgAAAAJ&hl=en")
+    , ("Girish Sastry", "https://girishsastry.com/")
+    , ("Tom Henighan", "https://www.tomhenighan.com/")
+    , ("Christopher Hesse", "https://scholar.google.com/citations?user=SgbbTp4AAAAJ&hl=en&oi=ao")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3485,4 +3491,4 @@ authorWpLinkDB = setLike
     , "Gary McGraw", "Liisa Keltikangas-Järvinen", "fnnch", "Philipp Holliger", "Zbigniew Herbert", "Branko Grünbaum"
     , "Bali Pulendran", "Yascha Mounk", "Peter B. Andrews", "Marty Golubitsky", "Volker Haucke", "Stanisław Ulam"
     , "Edward H. Clarke", "Ghislaine Dehaene-Lambertz", "Greg Turk", "Leonardo de Moura", "Google", "Jacy Reese Anthis"
-    , "Ulric Neisser", "Leila Chatti"]
+    , "Ulric Neisser", "Leila Chatti", "Bo Burnham"]
