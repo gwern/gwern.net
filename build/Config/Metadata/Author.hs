@@ -825,6 +825,7 @@ canonicals = M.fromList $ setLike
   , ("polynoamial", "Noam Brown")
   , ("Crémieux", "Cremieux")
   , ("cremieuxrecueil", "Cremieux")
+  , ("cremieux", "Cremieux")
   , ("AHomelyHouse", "Joel Trumbo")
   , ("GPT-5.1-pro", "GPT-5.1 Pro")
   , ("GPT-5.1-Pro", "GPT-5.1 Pro")
@@ -3483,4 +3484,5 @@ authorWpLinkDB = setLike
     , "Herbert H. Clark", "Jean E. Fox Tree", "Mikhail Bulgakov", "David Shor", "Rudolf Sloboda", "Frank Bidart"
     , "Gary McGraw", "Liisa Keltikangas-Järvinen", "fnnch", "Philipp Holliger", "Zbigniew Herbert", "Branko Grünbaum"
     , "Bali Pulendran", "Yascha Mounk", "Peter B. Andrews", "Marty Golubitsky", "Volker Haucke", "Stanisław Ulam"
-    , "Edward H. Clarke", "Ghislaine Dehaene-Lambertz", "Greg Turk", "Leonardo de Moura", "Google", "Jacy Reese Anthis"]
+    , "Edward H. Clarke", "Ghislaine Dehaene-Lambertz", "Greg Turk", "Leonardo de Moura", "Google", "Jacy Reese Anthis"
+    , "Ulric Neisser", "Leila Chatti"]
