@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-03-24 09:44:10 gwern"
+# When:  Time-stamp: "2026-03-24 20:00:01 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -892,6 +892,8 @@ About Us
 "Every layer of review makes you 10x slower"
 - https://haskellforall.com/2026/03/a-sufficiently-detailed-spec-is-code Haskell for all: A sufficiently detailed spec is code"
 "A sufficiently detailed spec is code"
+- "ssrajadh/sentrysearch: Semantic search over videos using Gemini Embedding 2."
+"ssrajadh/sentrysearch: Semantic search over videos using Gemini Embedding 2"
 
 Task:
 

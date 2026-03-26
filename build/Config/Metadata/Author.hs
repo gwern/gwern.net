@@ -2196,6 +2196,7 @@ authorLinkDB = M.fromList $
     , ("Girish Sastry", "https://girishsastry.com/")
     , ("Tom Henighan", "https://www.tomhenighan.com/")
     , ("Christopher Hesse", "https://scholar.google.com/citations?user=SgbbTp4AAAAJ&hl=en&oi=ao")
+    , ("K. A. Hays", "https://www.kahays.com/bio")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3491,4 +3492,4 @@ authorWpLinkDB = setLike
     , "Gary McGraw", "Liisa Keltikangas-Järvinen", "fnnch", "Philipp Holliger", "Zbigniew Herbert", "Branko Grünbaum"
     , "Bali Pulendran", "Yascha Mounk", "Peter B. Andrews", "Marty Golubitsky", "Volker Haucke", "Stanisław Ulam"
     , "Edward H. Clarke", "Ghislaine Dehaene-Lambertz", "Greg Turk", "Leonardo de Moura", "Google", "Jacy Reese Anthis"
-    , "Ulric Neisser", "Leila Chatti", "Bo Burnham"]
+    , "Ulric Neisser", "Leila Chatti", "Bo Burnham", "Daniele Macuglia", "Morteza Dehghani"]

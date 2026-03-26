@@ -4,7 +4,7 @@
 # italicizer.py: reformat a string to add italics as semantically appropriate (eg. book titles) using LLMs
 # Author: Gwern Branwen
 # Date: 2025-01-17
-# When:  Time-stamp: "2026-03-23 18:33:35 gwern"
+# When:  Time-stamp: "2026-03-25 20:49:29 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python italicizer.py
@@ -1343,6 +1343,12 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 - "Welcome to the Internet—Bo Burnham (from “Inside”—ALBUM OUT NOW)" # songs are not italicized, but albums/shows are
 "Welcome to the Internet—Bo Burnham (from <em>Inside</em>—ALBUM OUT NOW)"
 - "A Billionaire-Backed Startup Wants to Grow ‘Organ Sacks’ to Replace Animal Testing"
+""
+- "A Ramsey-style Problem on Hypergraphs"
+""
+- "Scaling Karpathy’s Autoresearch: What Happens When the Agent Gets a GPU Cluster"
+""
+- "American Diner Gothic"
 ""
 
 [End of examples. Reminder: your only task is to add missing italics you are SURE of.]
