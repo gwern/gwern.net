@@ -959,7 +959,7 @@ canonicalsWithInitials = setLike
   , "Hunter S. Thompson", "Robert C. Kaplan", "Richard N. Bergman", "Philip B. Mitchell", "Peter S. Chines"
   , "Patrick S. Li", "Noah D. Goodman", "Nitish Shirish Keskar", "Clint M. Sergi", "Mary K. Wojczynski"
   , "M. Saiful Bari", "Robert A. Freitas", "Roland G. Fryer", "Leslie Stephen Coles", "Mathew John Wedel"
-  , "Ralph S. Baric", "Jack D. Cowan", "Paul C. Bressloff"]
+  , "Ralph S. Baric", "Jack D. Cowan", "Paul C. Bressloff", "Claire N. Spottiswoode"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -2192,11 +2192,16 @@ authorLinkDB = M.fromList $
     , ("Paul C. Bressloff", "https://en.wikipedia.org/wiki/Paul_Bressloff")
     , ("apenwarr", "https://apenwarr.ca/log/")
     , ("Chelsea Zou", "https://bosonphoton.github.io/")
-    , ("Daniel M. Ziegler", "https://scholar.google.com/citations?user=YzfbfDgAAAAJ&hl=en")
+    , ("Daniel M. Ziegler", "https://scholar.google.com/citations?user=YzfbfDgAAAAJ")
     , ("Girish Sastry", "https://girishsastry.com/")
     , ("Tom Henighan", "https://www.tomhenighan.com/")
-    , ("Christopher Hesse", "https://scholar.google.com/citations?user=SgbbTp4AAAAJ&hl=en&oi=ao")
+    , ("Christopher Hesse", "https://scholar.google.com/citations?user=SgbbTp4AAAAJ")
     , ("K. A. Hays", "https://www.kahays.com/bio")
+    , ("Pranav Shyam", "https://scholar.google.com/citations?user=TAomEzQAAAAJ&hl=en&oi=ao")
+    , ("Arvind Neelakantan", "https://scholar.google.com/citations?user=ygTCc6cAAAAJ&hl=en&oi=ao")
+    , ("Ariel Herbert-Voss", "https://adversariel.ai/about/")
+    , ("Nick Ryder", "https://scholar.google.com/citations?user=rLp0oucAAAAJ&hl=en&oi=ao")
+    , ("Claire N. Spottiswoode", "https://en.wikipedia.org/wiki/Claire_Spottiswoode")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3492,4 +3497,4 @@ authorWpLinkDB = setLike
     , "Gary McGraw", "Liisa Keltikangas-Järvinen", "fnnch", "Philipp Holliger", "Zbigniew Herbert", "Branko Grünbaum"
     , "Bali Pulendran", "Yascha Mounk", "Peter B. Andrews", "Marty Golubitsky", "Volker Haucke", "Stanisław Ulam"
     , "Edward H. Clarke", "Ghislaine Dehaene-Lambertz", "Greg Turk", "Leonardo de Moura", "Google", "Jacy Reese Anthis"
-    , "Ulric Neisser", "Leila Chatti", "Bo Burnham", "Daniele Macuglia", "Morteza Dehghani"]
+    , "Ulric Neisser", "Leila Chatti", "Bo Burnham", "Daniele Macuglia", "Morteza Dehghani", "Richard Creath", "Nadine Dupérré", "Danica Kragic", "Aude Billard"]

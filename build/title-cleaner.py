@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-03-24 20:00:01 gwern"
+# When:  Time-stamp: "2026-03-30 22:32:41 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -894,6 +894,12 @@ About Us
 "A sufficiently detailed spec is code"
 - "ssrajadh/sentrysearch: Semantic search over videos using Gemini Embedding 2."
 "ssrajadh/sentrysearch: Semantic search over videos using Gemini Embedding 2"
+- "https://www.theguardian.com/lifeandstyle/2026/mar/26/ai-chatbot-users-lives-wrecked-by-delusion Marriage over, €100,000 down the drain: the AI users whose lives were wrecked by delusion | Health &amp; wellbeing"
+"Marriage over, €100,000 down the drain: the AI users whose lives were wrecked by delusion"
+- "https://projectzero.google/2015/06/what-is-good-memory-corruption.html What is a “good” memory corruption vulnerability? - Project Zero"
+"What is a “good” memory corruption vulnerability?"
+- "https://www.bartaking.com/zen-zomics/hyakujos-fox/ <em>Hyakujo’s Fox</em> : Bart King: King Cartoon Electric"
+"<em>Hyakujo’s Fox</em>"
 
 Task:
 
