@@ -14,7 +14,7 @@ import Text.Pandoc.Walk (walk)
 
 import Cycle (isCycleLess, findCycles)
 import Inflation (isInflationURL)
-import Utils (replaceManyT, anyPrefixT, fixedPoint, inlinesToText, deleteT)
+import Utils (replaceManyT, anyPrefixT, anySuffixT, fixedPoint, inlinesToText, deleteT)
 import qualified Config.Interwiki as C (redirectDB, quoteOverrides, testCases)
 
 import Network.HTTP.Simple (parseRequest, httpLBS, getResponseBody, Response, getResponseStatusCode, addRequestHeader) -- http-conduit
@@ -143,6 +143,7 @@ wpURLRewrites ref
   | "'s" `T.isSuffixOf` ref || "’s" `T.isSuffixOf` ref = T.init $ T.init ref
   -- WP seems to not permit double or single quotation marks at the beginning of article titles, so we don't have to worry about whitelisting; any leading quotation mark means to strip the surrounding pair
   | anyPrefixT ref ["\"", "'", "‘", "’", "“", "”"]     = T.tail $ T.init ref
+  | anySuffixT ref ["\"", "'", "‘", "’", "“", "”"]     = T.init ref
   | otherwise                                          = ref
     where overrides' = C.quoteOverrides ++ map (T.replace "'" "‘") C.quoteOverrides ++ map (T.replace "'" "’") C.quoteOverrides
 

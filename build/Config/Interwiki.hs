@@ -100,6 +100,8 @@ testCases = setLike [
       Link ("", ["link-live"], []) [Emph [Str "‘The Two Cultures’"]] ("https://en.wikipedia.org/wiki/The_Two_Cultures", ""))
     , (Link nullAttr [Emph [Str "’The Two Cultures‘"]] ("!Wikipedia",""),
       Link ("", ["link-live"], []) [Emph [Str "’The Two Cultures‘"]] ("https://en.wikipedia.org/wiki/The_Two_Cultures", ""))
+    , (Link nullAttr [Emph [Str "Rhadamanthys'"]] ("!Wikipedia",""),
+      Link ("", ["link-live"], []) [Emph [Str "Rhadamanthys'"]] ("https://en.wikipedia.org/wiki/Rhadamanthys", ""))
 
    -- <https://en.wikipedia.org/wiki/$ARTICLE>
   , (Link nullAttr [Str "Pondicherry"] ("https://en.wikipedia.org/wiki/Pondicherry",""),
