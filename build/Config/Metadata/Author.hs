@@ -2197,10 +2197,10 @@ authorLinkDB = M.fromList $
     , ("Tom Henighan", "https://www.tomhenighan.com/")
     , ("Christopher Hesse", "https://scholar.google.com/citations?user=SgbbTp4AAAAJ")
     , ("K. A. Hays", "https://www.kahays.com/bio")
-    , ("Pranav Shyam", "https://scholar.google.com/citations?user=TAomEzQAAAAJ&hl=en&oi=ao")
-    , ("Arvind Neelakantan", "https://scholar.google.com/citations?user=ygTCc6cAAAAJ&hl=en&oi=ao")
+    , ("Pranav Shyam", "https://scholar.google.com/citations?user=TAomEzQAAAAJ")
+    , ("Arvind Neelakantan", "https://scholar.google.com/citations?user=ygTCc6cAAAAJ")
     , ("Ariel Herbert-Voss", "https://adversariel.ai/about/")
-    , ("Nick Ryder", "https://scholar.google.com/citations?user=rLp0oucAAAAJ&hl=en&oi=ao")
+    , ("Nick Ryder", "https://scholar.google.com/citations?user=rLp0oucAAAAJ")
     , ("Claire N. Spottiswoode", "https://en.wikipedia.org/wiki/Claire_Spottiswoode")
     ]
 
@@ -3497,4 +3497,6 @@ authorWpLinkDB = setLike
     , "Gary McGraw", "Liisa Keltikangas-Järvinen", "fnnch", "Philipp Holliger", "Zbigniew Herbert", "Branko Grünbaum"
     , "Bali Pulendran", "Yascha Mounk", "Peter B. Andrews", "Marty Golubitsky", "Volker Haucke", "Stanisław Ulam"
     , "Edward H. Clarke", "Ghislaine Dehaene-Lambertz", "Greg Turk", "Leonardo de Moura", "Google", "Jacy Reese Anthis"
-    , "Ulric Neisser", "Leila Chatti", "Bo Burnham", "Daniele Macuglia", "Morteza Dehghani", "Richard Creath", "Nadine Dupérré", "Danica Kragic", "Aude Billard"]
+    , "Ulric Neisser", "Leila Chatti", "Bo Burnham", "Daniele Macuglia", "Morteza Dehghani", "Richard Creath"
+    , "Nadine Dupérré", "Danica Kragic", "Aude Billard", "Thierry Depaulis", "Jorge Nuno Silva", "Eddie Duggan", "David Parlett"
+    , "Bertram Gawronski"]

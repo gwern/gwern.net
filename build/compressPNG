@@ -3,7 +3,7 @@
 # png.sh: compress a PNG with pngnq & optipng if the savings are worthwhile.
 # Author: Gwern Branwen
 # Date: 2013-01-01
-# When:  Time-stamp: "2026-02-05 22:48:23 gwern"
+# When:  Time-stamp: "2026-03-31 19:14:19 gwern"
 # License: CC-0
 
 set -euo pipefail
@@ -37,7 +37,7 @@ pngOne () {
         nice --adjustment=19 pngnq -v -s1 "$temp_file"
         optimized_file="${temp_file%.*}"-nq8.png
         if [ -f "$optimized_file" ]; then
-            nice --adjustment=19 optipng -o9 "$optimized_file"
+            nice --adjustment=19 optipng -fix -o9 "$optimized_file"
             new_size=$(stat --printf="%s" "$optimized_file")
             # calculate the percentage difference
             diff=$(echo "scale=2; 100*(($orig_size - $new_size)/$orig_size)" | bc)

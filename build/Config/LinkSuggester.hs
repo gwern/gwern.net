@@ -228,7 +228,7 @@ badAnchorStrings = setLike ["", " ", "\n", "&", "#8", "#facebook", "& AI", "/r/S
              , "Its", "its", "news", "ITS", "NEWS", "heavy use", "seamless", "My proposal", "sinister"
              , "in the morning", "to be false", "surprisingly close", "really learning", "an economist", "the launch"
              , "similar datapoints", "it turns out", "Another article", "that other", "personalization", "a critic"
-             , "I agree", "minimal impact", "blog posts", "it turned out", "can be", "an example"]
+             , "I agree", "minimal impact", "blog posts", "it turned out", "can be"]
 
 -- a whitelist of (URL, [possible anchors]) pairs which would be filtered out normally by the heuristic checks, but are valid anyway. Instances can be found looking at the generated `linkSuggests-deleted.hs` database, or written by hand when I notice useful links not being suggested in the formatting phase of writing annotations.
 whiteListDB :: M.Map T.Text [T.Text]
