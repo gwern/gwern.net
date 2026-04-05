@@ -4,7 +4,7 @@
 # italicizer.py: reformat a string to add italics as semantically appropriate (eg. book titles) using LLMs
 # Author: Gwern Branwen
 # Date: 2025-01-17
-# When:  Time-stamp: "2026-04-01 21:25:47 gwern"
+# When:  Time-stamp: "2026-04-05 17:06:21 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python italicizer.py
@@ -1373,6 +1373,40 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 - "Sidestepping Evaluation Awareness and Anticipating Misalignment with Production Evaluations"
 ""
 - "It Is Your Responsibility to Follow Up"
+""
+- "MIRAGE: The Illusion of Visual Understanding"
+""
+- "SlopCodeBench: Benchmarking How Coding Agents Degrade Over Long-Horizon Iterative Tasks"
+""
+- "Piezoelectric Bagworm Silk"
+""
+- "Absolute Borderline: The Early Days of Evangelion Fandom, Part Three"
+""
+- "What I love about Scrooge: In praise of misers"
+""
+- "The Most Important Woman in Kant’s Life - Daniel Andreas"
+""
+- "Claude Code Found a Linux Vulnerability Hidden for 23 Years"
+""
+- "An Orgy, but with Reward Points: The arc of history is long but it bends towards Spreadsheet Simulator 2000"
+"An Orgy, but with Reward Points: The arc of history is long but it bends towards <em>Spreadsheet Simulator 2000</em>"
+- "Pasteur et le choléra des poules: révision critique d’un récit historique"
+"<em>Pasteur et le choléra des poules: révision critique d’un récit historique</em>"
+- "AutoResearch vs Classical Hyperparameter Tuning"
+""
+- "How Does Naming Affect LLMs on Code Analysis Tasks?"
+""
+- "And Yet a Trace of the True Self Exists in the False Self / Circle of Life"
+""
+- "Steering Might Stop Working Soon"
+""
+- "AT-AT"
+""
+- "The M and M Ageement"
+""
+- "Chapter B. The Loma Prieta, California, Earthquake of October 17, 1989"
+""
+- "Doc-to-LoRA: Learning to Instantly Internalize Contexts"
 ""
 
 [End of examples. Reminder: your only task is to add missing italics you are SURE of.]

@@ -28,4 +28,7 @@ linkIDOverrides = setLike
   , ("/fiction/this-last-pain", "gwern-2025-this-last-pain")
   , ("/system-prompts-2025", "gwern-2025-system-prompts")
   , ("/problem-14", "gwern-et-al-2022-problem-14")
+  , ("/fiction/alice", "gwern-2026-alice")
+  , ("/doc/ai/nn/diffusion/imagen/2026-04-04-gwern-gemini31propreview-nanobananapro-linocut-portofoaklandlowprofileaframecrane-illustration.jpg", "gwern-gemini31propreview-portofoakland")
+  , ("/fiction/craneyard", "gwern-2026-craneyard")
   ]
