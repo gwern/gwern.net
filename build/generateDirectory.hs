@@ -150,8 +150,9 @@ generateDirectory newestp am md ldb sortDB dirs dir'' = do
   when (thumbnailPath /= "" && head thumbnailPath /= '/') $
     error $ "generateDirectory.hs.generateDirectory.thumbnail: invalid thumbnail path: " ++ show thumbnailPath ++ "; directory was: " ++ show dir''
   let thumbnailText = delete "fig:" $ if null imageFirst then "" else "thumbnail-text: '" ++ replace "'" "''" (T.unpack (safeImageExtractCaption (head imageFirst))) ++ "'"
+  let thumbnailCSS = if null thumbnail then "" else "thumbnail-css: \"outline\"" -- the thumbnails of tag-directories are usually screenshots of graphs/figures/software, so we will default to `.outline` for them
 
-  let header = generateYAMLHeader parentDirectory' previous next tagSelf (minimum $ getDatesModified linksAll) (maximum $ getDatesModified linksAll) (length (dirsChildren++dirsSeeAlsos), length titledLinks, length untitledLinks) thumbnail thumbnailText
+  let header = generateYAMLHeader parentDirectory' previous next tagSelf (minimum $ getDatesModified linksAll) (maximum $ getDatesModified linksAll) (length (dirsChildren++dirsSeeAlsos), length titledLinks, length untitledLinks) thumbnail thumbnailText thumbnailCSS
   let sectionDirectoryChildren = generateDirectoryItems (Just parentDirectory') dir'' dirsChildren
   let sectionDirectorySeeAlsos = generateDirectoryItems Nothing dir'' dirsSeeAlsos
   let sectionDirectory = Div ("see-alsos", ["directory-indexes", "columns"], []) [BulletList $ sectionDirectoryChildren ++ sectionDirectorySeeAlsos]
@@ -249,8 +250,8 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,_,_),lb)  =
                else Code nullAttr (T.pack f') : Str ":" : Space : Link nullAttr [RawInline (Format "html") (T.pack $ Typography.titleWrap t)] (T.pack f, "") : author
     in [Para link, Para [Span ("", ["collapse", "tag-index-link-bibliography-block"], []) [Link ("",["id-not", "include-even-when-collapsed"],[]) [Str "link-bibliography"] (T.pack lb,"Directory-tag link-bibliography for link " `T.append` T.pack f)]]]
 
-generateYAMLHeader :: FilePath -> FilePath -> FilePath -> FilePath -> String -> String -> (Int,Int,Int) -> String -> String -> String
-generateYAMLHeader parent previous next d dateCreated dateModified (directoryN,annotationN,linkN) thumbnail thumbnailText
+generateYAMLHeader :: FilePath -> FilePath -> FilePath -> FilePath -> String -> String -> (Int,Int,Int) -> String -> String -> String -> String
+generateYAMLHeader parent previous next d dateCreated dateModified (directoryN,annotationN,linkN) thumbnail thumbnailText thumbnailCSS
   = unlines $ filter (not . null) [ "---"
              , "title: '‘" ++ (if d=="" then "docs" else T.unpack (abbreviateTag (T.pack (delete "doc/" d)))) ++ "’ "++directoryType++"'" -- using double quotes is tricky because sometimes we substitute in complex formatting using <span>s.
              , "description: \"Bibliography for "++directoryType++" <code>" ++ (if d=="" then "docs" else d) ++ "</code>, most recent first: " ++
@@ -261,7 +262,7 @@ generateYAMLHeader parent previous next d dateCreated dateModified (directoryN,a
                ".\""
              , thumbnail
              , thumbnailText
-             , "thumbnail-css: \"outline\"" -- the thumbnails of tag-directories are usually screenshots of graphs/figures/software, so we will default to `.outline` for them
+             , thumbnailCSS
              , "created: " ++ dateCreated
              , "modified: " ++ dateModified
              , "status: in progress"

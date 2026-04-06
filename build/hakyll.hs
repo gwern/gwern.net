@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2026-03-11 10:07:08 gwern"
+When: Time-stamp: "2026-04-06 12:22:21 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -405,7 +405,7 @@ validateYAMLMetadata hakyllMeta filepath = do
       when (wordCount >= C.pageTitleMaxWords) $
         error $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'title' must be <"++ show C.pageTitleMaxWords++" words, got " ++ show wordCount ++ ": " ++ title
 
-  -- description: length range limits
+  -- `description`: length range limits
   case getString "description" of
     Nothing -> return ()
     -- /blog/ posts are deliberate exceptions to the description rule, because they exist to be 'lightweight' pages which skip polish like descriptions. It would be nice if all blog posts had descriptions, and maybe at some point I'll make an LLM pass for that, but they don't.
@@ -415,38 +415,38 @@ validateYAMLMetadata hakyllMeta filepath = do
       when (length desc < C.pageDescriptionMinLength) $
         error $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'description' should be >"++show C.pageDescriptionMinLength++" characters: " ++ show desc
 
-  -- created: YYYY-MM-DD or N/A
+  -- `created`: YYYY-MM-DD or N/A
   case getString "created" of
     Nothing -> return ()
     Just created -> unless ((isDate created && isDatePossibleGwernnet created) || created == "N/A") $
       error $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'created' must be a plausible YYYY-MM-DD, got: " ++ created
 
-  -- modified: YYYY-MM-DD (optional field)
+  -- `modified`: YYYY-MM-DD (optional field)
   case getString "modified" of
     Nothing -> return ()
     Just modified -> unless ((isDate modified && isDatePossibleGwernnet modified) || modified == "N/A") $
       error $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'modified' must be a plausible YYYY-MM-DD, got: " ++ modified
 
-  -- status: enumerated
+  -- `status`: enumerated
   case getString "status" of
     Nothing -> return ()
     Just status -> unless (status `elem` C.yamlValidStatuses) $
       error $ "hakyll.validateYAMLMetadata C.yamlValidStatuses (" ++ filepath ++ "): 'status' must be one of " ++ show C.yamlValidStatuses ++ ", got: " ++ status
 
-  -- confidence: Kesselman estimative word
+  -- `confidence`: Kesselman estimative word
   case getString "confidence" of
     Nothing -> return ()
     Just conf -> unless (conf `elem` C.yamlValidConfidences) $
       error $ "hakyll.validateYAMLMetadata C.yamlValidConfidences (" ++ filepath ++ "): 'confidence' must be a Kesselman word from " ++ show C.yamlValidConfidences ++ ", got: " ++ conf
 
-  -- importance: 0-10
+  -- `importance`: 0–10
   case getString "importance" of
     Nothing -> return ()
     Just imp -> case reads imp of
       [(n, "")] | n >= (0 :: Int) && n <= 10 -> return ()
       _ -> error $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'importance' must be 0-10, got: " ++ imp
 
-  -- css-extension: known classes only
+  -- `css-extension`: known classes only
   case getString "css-extension" of
     Nothing -> return ()
     Just cssExt -> do
@@ -455,7 +455,7 @@ validateYAMLMetadata hakyllMeta filepath = do
       unless (null unknown) $
         error $ "hakyll.validateYAMLMetadata C.yamlValidCssExtensions (" ++ filepath ++ "): 'css-extension' has unknown classes: " ++ show unknown
 
-  -- thumbnail: absolute path
+  -- `thumbnail`: absolute path
   case getString "thumbnail" of
     Nothing -> return ()
     Just thumb -> do
@@ -464,6 +464,17 @@ validateYAMLMetadata hakyllMeta filepath = do
       existsp <- System.Directory.doesFileExist (tail thumb)
       unless (existsp && Image.isImageFilename thumb) $
         error $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'thumbnail' filename either not an image filename or doesn't exist, got: " ++ thumb
+
+  -- `thumbnail-text` / `thumbnail-css`: only valid when `thumbnail` is defined, because otherwise, what are they styling...?
+  case getString "thumbnail" of
+    Just _  -> return ()
+    Nothing -> do
+      case getString "thumbnail-text" of
+        Just tt -> error $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'thumbnail-text' defined but no 'thumbnail' set: " ++ tt
+        Nothing -> return ()
+      case getString "thumbnail-css" of
+        Just tc -> error $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'thumbnail-css' defined but no 'thumbnail' set: " ++ tc
+        Nothing -> return ()
 
 -- | Make headers into links to themselves, so they can be clicked on or copy-pasted easily. Put the displayed text into title-case if not already.
 --
