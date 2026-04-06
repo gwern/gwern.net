@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2026-04-06 12:22:21 gwern"
+When: Time-stamp: "2026-04-06 21:30:31 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -57,6 +57,7 @@ import qualified Config.Misc as C (cd, currentYear, todayDayStringUnsafe, isOlde
 import Metadata.Date (dateRangeDuration, isDate, isDatePossibleGwernnet)
 import LinkID (writeOutID2URLdb)
 import Blog (writeOutBlogEntries)
+import Utext (rawMarkdown2Utext)
 
 -- imports just to write 'symlinkFileCompiler':
 import Hakyll.Core.Writable (Writable(write))
@@ -349,15 +350,21 @@ descField escape d d' = field d' $ \item -> do
                   let descMaybe = lookupString d metadata
                   case descMaybe of
                     Nothing -> noResult "no description field"
-                    Just desc ->
-                     let cleanedDesc = runPure $ do
-                              pandocDesc <- readMarkdown def{readerExtensions=pandocExtensions} (T.pack desc)
-                              let pandocDesc' = convertInterwikiLinks $ linebreakingTransform pandocDesc
-                              htmlDesc <- writeHtml5String safeHtmlWriterOptions pandocDesc' -- NOTE: we need 'safeHtmlWriterOptions' here because while descriptions are always very simple & will never have anything complex like tables, they *usually* are long enough to trigger line-wrapping, which causes problems for anyone parsing <meta> tags
-                              return $ (\t -> if escape then escapeHtml t else t) $ T.unpack htmlDesc
-                      in case cleanedDesc of
-                         Left _          -> noResult "no description field"
-                         Right finalDesc -> return $ deleteMany ["<p>", "</p>", "&lt;p&gt;", "&lt;/p&gt;"] finalDesc -- strip <p></p> wrappers (both forms)
+                    Just desc
+                      | escape ->
+                          -- For <meta> tags (og:description, etc): render to plain Unicode text
+                          -- via Utext, stripping all HTML/Markdown formatting like <span> wrappers.
+                          return $ escapeHtml $ T.unpack $ rawMarkdown2Utext (T.pack desc)
+                      | otherwise ->
+                          let cleanedDesc = runPure $ do
+                                pandocDesc <- readMarkdown def{readerExtensions=pandocExtensions} (T.pack desc)
+                                let pandocDesc' = convertInterwikiLinks $ linebreakingTransform pandocDesc
+                                -- NOTE: we need 'safeHtmlWriterOptions' here because while descriptions are always very simple & will never have anything complex like tables, they *usually* are long enough to trigger line-wrapping, which causes problems for anyone parsing <meta> tags
+                                htmlDesc <- writeHtml5String safeHtmlWriterOptions pandocDesc'
+                                return $ T.unpack htmlDesc
+                          in case cleanedDesc of
+                               Left _          -> noResult "no description field"
+                               Right finalDesc -> return $ deleteMany ["<p>", "</p>", "&lt;p&gt;", "&lt;/p&gt;"] finalDesc
 
 pandocTransform :: Metadata -> ArchiveMetadata -> SizeDB -> String -> Pandoc -> IO Pandoc
 pandocTransform md adb sizes indexp' p = -- linkAuto needs to run before `convertInterwikiLinks` so it can add in all of the WP links and then convertInterwikiLinks will add link-annotated as necessary; it also must run before `typographyTransformTemporary`, because that will decorate all the 'et al's into <span>s for styling, breaking the LinkAuto regexp matches for paper citations like 'Brock et al 2018'

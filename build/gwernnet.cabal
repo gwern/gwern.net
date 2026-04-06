@@ -122,6 +122,7 @@ library
       Text.Regex
       Typography
       Unique
+      Utext
       Utils
       XOfTheDay
 
