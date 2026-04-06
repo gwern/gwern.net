@@ -4,7 +4,7 @@
 # italicizer.py: reformat a string to add italics as semantically appropriate (eg. book titles) using LLMs
 # Author: Gwern Branwen
 # Date: 2025-01-17
-# When:  Time-stamp: "2026-04-05 17:06:21 gwern"
+# When:  Time-stamp: "2026-04-06 21:18:15 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python italicizer.py
@@ -1192,7 +1192,7 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - "Ruby’s Ultimate Guide to Thoughtful Gifts"
 ""
-- "Japanese game developers face ridiculously high font license fees following US acquisition of major domestic provider. Live-service gamesto take the biggest blow"
+- "Japanese game developers face ridiculously high font license fees following US acquisition of major domestic provider. Live-service games to take the biggest blow"
 ""
 - "Honeybees Mesmerizing Defensive Wave"
 ""
@@ -1220,7 +1220,7 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - "Hymn of Breaking Strain" # Kipling poem
 ""
-- "Alcohol Consumption As Self-Medication Against Blood-Borne Parasites In The Fruitfly"
+- "Alcohol Consumption As Self-Medication Against Blood-Borne Parasites In The Fruit fly"
 ""
 - "Star Wars"
 "<em>Star Wars</em>"
@@ -1322,8 +1322,8 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - "Sparse VideoGen—Version Selection"
 ""
-- "Flash-KMeans: Fast and Memory-Efficient Exact K-Means"
-"Flash-KMeans: Fast and Memory-Efficient Exact <em>K</em>-Means"
+- "Flash-Kmeans: Fast and Memory-Efficient Exact K-Means"
+"Flash-Kmeans: Fast and Memory-Efficient Exact <em>K</em>-Means"
 - "New Links"
 ""
 - "Haskell for all: A sufficiently detailed spec is code"
@@ -1392,7 +1392,7 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 "An Orgy, but with Reward Points: The arc of history is long but it bends towards <em>Spreadsheet Simulator 2000</em>"
 - "Pasteur et le choléra des poules: révision critique d’un récit historique"
 "<em>Pasteur et le choléra des poules: révision critique d’un récit historique</em>"
-- "AutoResearch vs Classical Hyperparameter Tuning"
+- "Autoresearch vs Classical Hyperparameter Tuning"
 ""
 - "How Does Naming Affect LLMs on Code Analysis Tasks?"
 ""
@@ -1402,11 +1402,17 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - "AT-AT"
 ""
-- "The M and M Ageement"
+- "The M and M Agreement"
 ""
 - "Chapter B. The Loma Prieta, California, Earthquake of October 17, 1989"
 ""
 - "Doc-to-LoRA: Learning to Instantly Internalize Contexts"
+""
+- "The Ones who Feed their Children"
+""
+- "Copulation in antiarch placoderms and the origin of gnathostome internal fertilization"
+""
+- "I Would Cure My Autism"
 ""
 
 [End of examples. Reminder: your only task is to add missing italics you are SURE of.]

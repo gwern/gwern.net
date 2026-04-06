@@ -2203,6 +2203,7 @@ authorLinkDB = M.fromList $
     , ("Nick Ryder", "https://scholar.google.com/citations?user=rLp0oucAAAAJ")
     , ("Claire N. Spottiswoode", "https://en.wikipedia.org/wiki/Claire_Spottiswoode")
     , ("Zhu Min", "https://en.wikipedia.org/wiki/Min_Zhu_(paleontologist)")
+    , ("Michael Newman", "https://www.uu.se/en/department/organismal-biology/research/devonian-world/the-team/michael-newman-bsc")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3500,4 +3501,5 @@ authorWpLinkDB = setLike
     , "Edward H. Clarke", "Ghislaine Dehaene-Lambertz", "Greg Turk", "Leonardo de Moura", "Google", "Jacy Reese Anthis"
     , "Ulric Neisser", "Leila Chatti", "Bo Burnham", "Daniele Macuglia", "Morteza Dehghani", "Richard Creath"
     , "Nadine Dupérré", "Danica Kragic", "Aude Billard", "Thierry Depaulis", "Jorge Nuno Silva", "Eddie Duggan", "David Parlett"
-    , "Bertram Gawronski", "Fei-Fei Li", "Euan Ashley", "John A. Long", "Elga Mark-Kurik",  "Per E. Ahlberg", "Roger Jones", "Kate Trinajstic"]
+    , "Bertram Gawronski", "Fei-Fei Li", "Euan Ashley", "John A. Long", "Elga Mark-Kurik",  "Per E. Ahlberg"
+    , "Roger Jones", "Kate Trinajstic"]

@@ -188,6 +188,7 @@ generateDirectoryBlog targets = do
                        , "modified: " ++ lastEntryDate
                        , "status: finished"
                        , "importance: 0"
+                       , "confidence: log"
                        , "css-extension: dropcaps-not toc-not"
                        , "backlink: False"
                        , "placeholder: True"
