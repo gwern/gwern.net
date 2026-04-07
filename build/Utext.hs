@@ -33,12 +33,15 @@ module Utext
     -- * IO API (Math via latex2unicode.py)
   , pandocToUtextIO
   , rawText2UtextIO
+  -- tests
+  , utextTestSuite
   ) where
 
 import Data.Char (chr, isAsciiLower, isAsciiUpper, isDigit, ord, toLower)
+import Debug.Trace (trace)
 import qualified Data.Map.Strict as M (lookup, findWithDefault, fromList, Map)
 import Data.Text (Text)
-import qualified Data.Text as T (concat, concatMap, intercalate, lines, map, null, pack, singleton, strip, take, unpack)
+import qualified Data.Text as T (concat, concatMap, intercalate, isInfixOf, isPrefixOf, lines, map, null, pack, singleton, strip, take, unpack)
 import System.Exit (ExitCode(..))
 import System.Process (readProcessWithExitCode)
 import Text.Pandoc.Class (runPure)
@@ -202,7 +205,7 @@ defaultStyle = Style False False
 renderBlocks :: Style -> [Block] -> Text
 renderBlocks s = T.intercalate "\n\n" . concatMap (renderBlock s)
 
--- Supported block constructs. Anything not listed here is a fatal error.
+-- Supported block constructs. Unsupported ones degrade gracefully with trace warnings.
 renderBlock :: Style -> Block -> [Text]
 renderBlock s (Para inlines)         = [renderInlines s inlines]
 renderBlock s (Plain inlines)        = [renderInlines s inlines]
@@ -215,27 +218,86 @@ renderBlock s (OrderedList _ items)  = zipWith (\n item -> T.pack (show n) <> ".
 renderBlock _ (CodeBlock _ code)     = [mapText codeMono code]
 renderBlock _ HorizontalRule         = ["———"]
 renderBlock s (Div _ blocks)         = [renderBlocks s blocks]
--- Unsupported block constructs: error immediately so we know what needs handling.
+-- Unsupported block constructs: warn via trace and degrade gracefully.
 -- RawBlock "html": attempt to re-parse and render (handles stray HTML from
 -- metadata or latex2unicode.py output).
 renderBlock s (RawBlock (Format "html") html) =
   case runPure (readHtml def html) of
     Right (Pandoc _ blocks) -> concatMap (renderBlock s) blocks
-    Left _ -> error $ "Utext: unparseable RawBlock html: " ++ show (T.take 80 html)
-renderBlock _ (RawBlock fmt t)       = error $ "Utext: unsupported RawBlock (" ++ show fmt ++ "): " ++ show (T.take 80 t)
-renderBlock _ (Table {})             = error   "Utext: unsupported Table"
-renderBlock _ (Figure _ _ _)         = error   "Utext: unsupported Figure"
-renderBlock _ (DefinitionList _)     = error   "Utext: unsupported DefinitionList"
+    Left _ -> trace ("Utext: unparseable RawBlock html: " ++ show (T.take 80 html)) []
+renderBlock _ (RawBlock fmt t)       = trace ("Utext: unsupported RawBlock (" ++ show fmt ++ "): " ++ show (T.take 80 t)) []
+renderBlock _ (Table {})             = trace  "Utext: unsupported Table (dropped)"             []
+renderBlock _ (Figure _ _ _)         = trace  "Utext: unsupported Figure (dropped)"            []
+renderBlock s (DefinitionList defs)  = trace  "Utext: unsupported DefinitionList (best-effort)" $
+  -- Best-effort: render each term followed by its definitions.
+  concatMap (\(term, defBlocks) -> [renderInlines s term <> ": " <>
+      T.intercalate "; " (map (renderBlocks s) defBlocks)]) defs
 
 -----------------------------------------------------------------------
 -- Inline rendering
 -----------------------------------------------------------------------
 
 renderInlines :: Style -> [Inline] -> Text
-renderInlines s = T.concat . map (renderInline s)
+renderInlines s = T.concat . map (renderInline s) . reassembleHtmlInlines
 
--- Supported inline constructs. Anything not listed here is a fatal error.
+-- Supported inline constructs. Unsupported ones degrade gracefully with trace warnings.
 renderInline :: Style -> Inline -> Text
+
+-- | Reassemble paired RawInline "html" open/close tags into native Pandoc
+-- constructors. Pandoc's Markdown reader keeps inline HTML like @\<em\>...\<\/em\>@
+-- as separate RawInline nodes rather than converting to Emph, Strong, etc.
+-- This function finds matching pairs and wraps the intervening inlines in the
+-- appropriate constructor, enabling proper Utext rendering.
+--
+-- Handles: em\/i → Emph, strong\/b → Strong, code → Code, sub → Subscript,
+-- sup → Superscript, del\/s\/strike → Strikeout, u → Underline,
+-- span.smallcaps → SmallCaps.
+--
+-- Unmatched or unrecognized tags pass through unchanged (the existing
+-- RawInline handler will deal with them).
+reassembleHtmlInlines :: [Inline] -> [Inline]
+reassembleHtmlInlines [] = []
+reassembleHtmlInlines (RawInline (Format "html") tag : rest)
+  | Just (constructor, closeTag) <- matchOpenTag tag
+  , Just (inner, after) <- splitAtClose closeTag rest
+  = constructor (reassembleHtmlInlines inner) : reassembleHtmlInlines after
+reassembleHtmlInlines (x:xs) = x : reassembleHtmlInlines xs
+
+-- | Match an opening HTML tag to its Pandoc constructor and closing tag string.
+-- Handles tags with or without attributes (eg. @\<em\>@, @\<span class="smallcaps"\>@).
+matchOpenTag :: Text -> Maybe ([Inline] -> Inline, Text)
+matchOpenTag t
+  | t == "<em>"                        = Just (Emph,        "</em>")
+  | t == "<i>"                         = Just (Emph,        "</i>")
+  | t == "<strong>"                    = Just (Strong,      "</strong>")
+  | t == "<b>"                         = Just (Strong,      "</b>")
+  | t == "<sub>"                       = Just (Subscript,   "</sub>")
+  | t == "<sup>"                       = Just (Superscript, "</sup>")
+  | t == "<del>"                       = Just (Strikeout,   "</del>")
+  | t == "<s>"                         = Just (Strikeout,   "</s>")
+  | t == "<strike>"                    = Just (Strikeout,   "</strike>")
+  | t == "<u>"                         = Just (Underline,   "</u>")
+  | t == "<code>"                      = Just (codeWrap,    "</code>")
+  | "<span" `T.isPrefixOf` t
+  , "smallcaps" `T.isInfixOf` t        = Just (SmallCaps,   "</span>")
+  | otherwise                          = Nothing
+  where
+    codeWrap inlines = Code nullAttr (inlinesToPlain inlines)
+    inlinesToPlain = T.concat . map inlineToPlain
+    inlineToPlain (Str s) = s
+    inlineToPlain Space = " "
+    inlineToPlain SoftBreak = " "
+    inlineToPlain _ = ""
+
+-- | Split an inline list at the first occurrence of a closing RawInline HTML tag.
+-- Returns Nothing if the closing tag is not found.
+splitAtClose :: Text -> [Inline] -> Maybe ([Inline], [Inline])
+splitAtClose closeTag = go []
+  where
+    go _acc [] = Nothing
+    go acc (RawInline (Format "html") t : rest)
+      | t == closeTag = Just (reverse acc, rest)
+    go acc (x:xs) = go (x:acc) xs
 renderInline s (Str t)                = mapText (styleChar s) t
 renderInline s (Emph inlines)         = renderInlines (s { sItalic = True }) inlines
 renderInline s (Strong inlines)       = renderInlines (s { sBold = True }) inlines
@@ -258,9 +320,8 @@ renderInline s (Quoted DoubleQuote inlines) = "\x201C" <> renderInlines s inline
 renderInline s (Link _ inlines _)    = renderInlines s inlines -- intentional: extract text only
 renderInline s (Span attr inlines)
   | hasClass "smallcaps" attr        = renderInline s (SmallCaps inlines)
-  | hasClass "subsup" attr           = renderInlines s inlines   -- sub+sup rendered sequentially
-  | hasStyle attr                    = error $ "Utext: unsupported Span with inline style: "
-                                        ++ show (getKvs attr)
+  | hasClass "subsup" attr           = renderInlines s inlines   -- sub+sup rendered sequentially, without attempting to vertically stack, so the `subsup` wrapper is just ignored
+  | hasStyle attr                    = renderInlines s inlines -- we will simply ignore styles for now, and not attempt to parse or compile arbitrary CSS even if it could map onto something like italics...
   | otherwise                        = renderInlines s inlines
 -- RawInline "html": attempt to re-parse and render. This handles HTML fragments
 -- from latex2unicode.py that survive Pandoc's HTML reader as raw nodes (eg.
@@ -268,13 +329,13 @@ renderInline s (Span attr inlines)
 renderInline s (RawInline (Format "html") html) =
   case parseHtmlInlines html of
     Right inlines -> renderInlines s inlines
-    Left _        -> error $ "Utext: unparseable RawInline html: " ++ show (T.take 80 html)
--- Unsupported inline constructs: error immediately.
-renderInline _ (RawInline fmt t)     = error $ "Utext: unsupported RawInline (" ++ show fmt ++ "): " ++ show (T.take 80 t)
-renderInline _ (Note _)              = error   "Utext: unsupported Note (footnote)"
-renderInline _ (Math fmt t)          = error $ "Utext: unsupported Math (" ++ show fmt ++ "): " ++ show (T.take 80 t)
-renderInline _ (Image _ _ (url, _))  = error $ "Utext: unsupported Image: " ++ show (T.take 80 url)
-renderInline _ (Cite cs _)          = error $ "Utext: unsupported Cite: " ++ show (length cs) ++ " citation(s)"
+    Left _        -> trace ("Utext: unparseable RawInline html: " ++ show (T.take 80 html)) ""
+-- Unsupported inline constructs: warn via trace and degrade gracefully.
+renderInline _ (RawInline fmt t)     = trace ("Utext: unsupported RawInline (" ++ show fmt ++ "): " ++ show (T.take 80 t)) ""
+renderInline _ (Note _)              = trace  "Utext: unsupported Note (footnote, dropped)" ""
+renderInline _ (Math _fmt t)         = trace ("Utext: unsupported Math (raw LaTeX fallback): " ++ show (T.take 80 t)) t
+renderInline _ (Image _ _ (_url, _)) = trace ("Utext: unsupported Image (dropped)") ""
+renderInline s (Cite _ inlines)      = trace ("Utext: unsupported Cite (rendering visible text only)") (renderInlines s inlines)
 
 hasClass :: Text -> Attr -> Bool
 hasClass cls (_, classes, _) = cls `elem` classes
@@ -282,8 +343,8 @@ hasClass cls (_, classes, _) = cls `elem` classes
 hasStyle :: Attr -> Bool
 hasStyle (_, _, kvs) = any (\(k, _) -> k == "style") kvs
 
-getKvs :: Attr -> [(Text, Text)]
-getKvs (_, _, kvs) = kvs
+-- getKvs :: Attr -> [(Text, Text)]
+-- getKvs (_, _, kvs) = kvs
 
 -- | Parse an HTML fragment and extract the body inlines. Used for re-parsing
 -- RawInline "html" nodes. Returns Right [] for empty/whitespace input.
@@ -435,3 +496,273 @@ charToSmallCap c
 
 mapText :: (Char -> Char) -> Text -> Text
 mapText = T.map
+
+
+-- {-# LANGUAGE OverloadedStrings #-}
+-- | Unit tests for "Utext". Exports 'utextTestSuite' for use in @Test.hs@.
+--
+-- Test cases are split into:
+--
+-- * 'supportedTests': features that compile to fancy Unicode (italics, bold,
+--   bold-italic, monospace, super\/subscripts, strikethrough, underline,
+--   small caps, smart quotes, links, block-level constructs, HTML-in-Markdown).
+--
+-- * 'unsupportedTests': constructs that degrade gracefully with a @trace@
+--   warning (Math, Note, Table, Figure, DefinitionList). These are exercised
+--   to verify they produce sensible fallback output rather than crashing.
+-- module UtextTest (utextTestSuite) where
+
+-- import Data.Text (Text)
+
+-- import Utext (rawMarkdown2Utext)
+
+-----------------------------------------------------------------------
+-- Public API
+-----------------------------------------------------------------------
+
+-- | Run the full test suite via 'rawMarkdown2Utext'. Returns a list of
+-- failures as @(input, expected, actual)@ triples. Empty list = all pass.
+--
+-- Usage in Test.hs:
+--
+-- @
+-- unless (null utextTestSuite) $ printRed ("Utext test suite has errors in: " ++ show utextTestSuite)
+-- @
+utextTestSuite :: [(Text, Text, Text)]
+utextTestSuite = filter (\(_, expected, actual) -> expected /= actual)
+                   [ (input, expected, rawMarkdown2Utext input)
+                   | (input, expected) <- supportedTests ++ unsupportedTests ]
+
+-----------------------------------------------------------------------
+-- Supported: features that compile to fancy Unicode
+-----------------------------------------------------------------------
+
+supportedTests :: [(Text, Text)]
+supportedTests = concat
+  [ identityTests
+  , italicTests
+  , boldTests
+  , boldItalicTests
+  , monoTests
+  , superscriptTests
+  , subscriptTests
+  , strikethroughTests
+  , underlineTests
+  , smallcapsTests
+  , smartQuoteTests
+  , linkTests
+  , htmlInMarkdownTests
+  , blockTests
+  , nonAsciiTests
+  , digitTests
+  , edgeCaseTests
+  ]
+
+-- Plain text and empty input
+identityTests :: [(Text, Text)]
+identityTests =
+  [ (""                , "")
+  , ("hello"           , "hello")
+  , ("hello world"     , "hello world")
+  -- ASCII apostrophe becomes smart right single quote:
+  , ("it's"            , "it\x2019s")
+  -- Pre-existing em dash passes through:
+  , ("foo—bar"    , "foo—bar")
+  ]
+
+-- *italic* and <em> → sans-serif italic (A=U+1D608, a=U+1D622)
+-- No italic digits in Unicode; digits pass through unchanged.
+italicTests :: [(Text, Text)]
+italicTests =
+  [ ("*hello*"             , "\x1D629\x1D626\x1D62D\x1D62D\x1D630")
+  , ("*A*"                 , "\x1D608")
+  , ("*z*"                 , "\x1D63B")
+  , ("*foo bar*"           , "\x1D627\x1D630\x1D630 \x1D623\x1D622\x1D633")
+  , ("*test123*"           , "𝘵𝘦𝘴𝘵123")
+  ]
+
+-- **bold** and <strong> → sans-serif bold (A=U+1D5D4, a=U+1D5EE, 0=U+1D7EC)
+boldTests :: [(Text, Text)]
+boldTests =
+  [ ("**hi**"                , "\x1D5F5\x1D5F6")
+  , ("**A**"                 , "\x1D5D4")
+  , ("**z**"                 , "\x1D607")
+  , ("**OK**"                , "\x1D5E2\x1D5DE")
+  , ("**9**"                 , "\x1D7F5")
+  , ("**0**"                 , "\x1D7EC")
+  ]
+
+-- ***bold italic*** → sans-serif bold italic (A=U+1D63C, a=U+1D656; digits→bold)
+boldItalicTests :: [(Text, Text)]
+boldItalicTests =
+  [ ("***ab***"              , "\x1D656\x1D657")
+  , ("***Z***"               , "\x1D655")
+  , ("***5***"               , "\x1D7F1")
+  ]
+
+-- `code` and <code> → mathematical monospace (A=U+1D670, a=U+1D68A, 0=U+1D7F6)
+monoTests :: [(Text, Text)]
+monoTests =
+  [ ("`hi`"                  , "\x1D691\x1D692")
+  , ("`A`"                   , "\x1D670")
+  , ("`z`"                   , "\x1D6A3")
+  , ("`0`"                   , "\x1D7F6")
+  , ("`hello world`"         , "\x1D691\x1D68E\x1D695\x1D695\x1D698 \x1D6A0\x1D698\x1D69B\x1D695\x1D68D")
+  ]
+
+-- ^superscript^ and <sup>
+superscriptTests :: [(Text, Text)]
+superscriptTests =
+  [ ("x^2^"                  , "x\x00B2")
+  , ("x^10^"                 , "x\x00B9\x2070")
+  , ("x^n^"                  , "x\x207F")
+  , ("x^i^"                  , "x\x2071")
+  , ("<sup>+</sup>"          , "\x207A")
+  , ("<sup>-</sup>"          , "\x207B")
+  -- Uppercase falls back to lowercase superscript form:
+  , ("<sup>A</sup>"          , "\x1D43")
+  ]
+
+-- ~subscript~ and <sub>
+subscriptTests :: [(Text, Text)]
+subscriptTests =
+  [ ("H~2~O"                 , "H\x2082O")
+  , ("<sub>0</sub>"          , "\x2080")
+  , ("<sub>n</sub>"          , "\x2099")
+  , ("x~i~"                  , "x\x1D62")
+  ]
+
+-- ~~strikethrough~~ and <del>/<s>/<strike> → combining short stroke overlay (U+0336)
+strikethroughTests :: [(Text, Text)]
+strikethroughTests =
+  [ ("~~no~~"                , "n\x0336o\x0336")
+  -- NOTE: standalone "<del>x</del>" is not tested because Pandoc's Markdown
+  -- reader promotes it to a block-level RawBlock, and re-parsing via readHtml
+  -- loses the strikethrough. Works fine embedded in surrounding text (tested
+  -- in htmlInMarkdownTests). Use Markdown ~~…~~ for standalone strikethrough.
+  , ("<s>ab</s>"             , "a\x0336\&b\x0336")
+  ]
+
+-- <u>underline</u> → combining low line (U+0332)
+underlineTests :: [(Text, Text)]
+underlineTests =
+  [ ("<u>hi</u>"             , "h\x0332i\x0332")
+  ]
+
+-- [text]{.smallcaps} and <span class="smallcaps"> → IPA small capitals
+-- Uppercase letters pass through unchanged.
+smallcapsTests :: [(Text, Text)]
+smallcapsTests =
+  [ ("[hello]{.smallcaps}"                          , "\x029C\x1D07\x029F\x029F\x1D0F")
+  , ("[AB]{.smallcaps}"                             , "AB")
+  , ("<span class=\"smallcaps\">de</span>"          , "\x1D05\x1D07")
+  ]
+
+-- Pandoc smart typography
+smartQuoteTests :: [(Text, Text)]
+smartQuoteTests =
+  [ ("\"hello\""             , "\x201Chello\x201D")
+  , ("it's"                  , "it\x2019s")
+  -- En dash:
+  , ("foo--bar"              , "foo–bar")
+  -- Em dash:
+  , ("foo---bar"             , "foo—bar")
+  -- Ellipsis:
+  , ("foo..."                , "foo…")
+  ]
+
+-- Links: extract text, discard URL and title
+linkTests :: [(Text, Text)]
+linkTests =
+  [ ("[click here](https://example.com)"     , "click here")
+  , ("[*italic link*](https://example.com)"  , "\x1D62A\x1D635\x1D622\x1D62D\x1D62A\x1D624 \x1D62D\x1D62A\x1D62F\x1D62C")
+  ]
+
+-- HTML tags inside Markdown: the bug that motivated this test suite.
+-- Pandoc's Markdown reader keeps <em> etc. as RawInline "html" pairs;
+-- reassembleHtmlInlines stitches them into native constructors.
+htmlInMarkdownTests :: [(Text, Text)]
+htmlInMarkdownTests =
+  [ ("mistakes in <em>Death Note</em> and fixes"
+    , "mistakes in \x1D60B\x1D626\x1D622\x1D635\x1D629 \x1D615\x1D630\x1D635\x1D626 and fixes")
+  , ("<strong>bold</strong> word"
+    , "\x1D5EF\x1D5FC\x1D5F9\x1D5F1 word")
+  , ("a <sub>2</sub> b"
+    , "a \x2082 b")
+  , ("a <sup>3</sup> b"
+    , "a \x00B3 b")
+  , ("a <del>old</del> b"
+    , "a o\x0336l\x0336\&d\x0336 b")
+  , ("a <u>ul</u> b"
+    , "a u\x0332l\x0332 b")
+  , ("<code>mono</code> text"
+    , "\x1D696\x1D698\x1D697\x1D698 text")
+  -- Nested HTML tags in Markdown:
+  , ("<em><strong>both</strong></em>"
+    , "\x1D657\x1D664\x1D669\x1D65D")
+  ]
+
+-- Block-level constructs
+blockTests :: [(Text, Text)]
+blockTests =
+  [ -- Headers render as bold:
+    ("# Title"               , "\x1D5E7\x1D5F6\x1D601\x1D5F9\x1D5F2")
+  -- Code blocks render as monospace:
+  , ("```\nfoo\n```"         , "\x1D68F\x1D698\x1D698")
+  ]
+
+-- Non-ASCII: pass through unchanged (no mathematical-alphabet mapping exists)
+nonAsciiTests :: [(Text, Text)]
+nonAsciiTests =
+  [ ("\x00E9"                , "\x00E9")
+  , ("\x4E16\x754C"          , "\x4E16\x754C")
+  -- Non-ASCII inside italic: only ASCII letters get mapped
+  , ("*caf\x00E9*"           , "\x1D624\x1D622\x1D627\x00E9")
+  ]
+
+-- Digit handling across styles
+digitTests :: [(Text, Text)]
+digitTests =
+  [ ("**42**"                , "\x1D7F0\x1D7EE")
+  , ("`99`"                  , "\x1D7FF\x1D7FF")
+  -- Italic digits pass through (no italic digits in Unicode):
+  , ("*7*"                   , "7")
+  -- Superscript digits:
+  , ("x^0^"                  , "x\x2070")
+  , ("x^1^"                  , "x\x00B9")
+  , ("x^2^"                  , "x\x00B2")
+  , ("x^3^"                  , "x\x00B3")
+  -- Subscript digits:
+  , ("H~0~"                  , "H\x2080")
+  ]
+
+-- Miscellaneous edge cases
+edgeCaseTests :: [(Text, Text)]
+edgeCaseTests =
+  [ -- Punctuation passes through inside bold:
+    ("**hello, world!**"     , "\x1D5F5\x1D5F2\x1D5F9\x1D5F9\x1D5FC, \x1D604\x1D5FC\x1D5FF\x1D5F9\x1D5F1!")
+  -- Nested Markdown: **a *b* c** → bold a, bold-italic b, bold c
+  , ("**a *b* c**"           , "\x1D5EE \x1D657 \x1D5F0")
+  ]
+
+-----------------------------------------------------------------------
+-- Unsupported: graceful degradation (trace warning + fallback output)
+--
+-- These constructs are not fully supported but no longer crash. Each test
+-- documents the expected fallback behavior. The trace warnings go to stderr,
+-- which is visible during builds but invisible in the test output.
+-----------------------------------------------------------------------
+unsupportedTests :: [(Text, Text)]
+unsupportedTests =
+  [ -- Math (inline): falls back to raw LaTeX string.
+    ("$x^2$"                                      , "x^2")
+  -- Math (display): same raw-LaTeX fallback.
+  , ("$$y=mx+b$$"                                  , "y=mx+b")
+  -- Footnote: Note node is dropped; surrounding text survives.
+  , ("text[^1]\n\n[^1]: footnote"                  , "text")
+  -- Table: entire block is dropped (empty output).
+  , ("| a | b |\n|---|---|\n| 1 | 2 |"             , "")
+  -- Definition list: best-effort "term: definition" rendering.
+  , ("Term\n:   Definition"                         , "Term: Definition")
+  ]
+
