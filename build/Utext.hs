@@ -1,14 +1,52 @@
 {-# LANGUAGE OverloadedStrings #-}
 -- | Utext: compile Pandoc AST to Unicode-rich plain text.
+-- Author: gwern
+-- Date: 2026-04-06
+-- When: Time-stamp: "2026-04-07 23:30:45 gwern"
+-- License: CC-0
 --
 -- Intended for social media cards, Open Graph descriptions, and other contexts
 -- where HTML is stripped but Unicode renders. Converts Pandoc inline formatting
 -- to Unicode mathematical alphanumeric symbols (bold, italic, bold-italic,
 -- monospace), combining characters (strikethrough, underline), Unicode
 -- super/subscripts, and IPA-derived small capitals.
+-- Background: <https://gwern.net/utext>
 --
--- Pure API (trace-warns on unsupported or lossy nodes like Math, Table,
--- some RawInline/RawBlock cases):
+-- Output grammar:
+--
+-- * Links render as @label (<url>)@ or @label (“title”: <url>)@.
+-- * Images render as @(label: <url>)@ or @(label, “title”: <url>)@.
+-- * Simple image figures render like images; when both caption and alt text are
+--   present, the rendered caption wins.
+-- * Ligatures apply to visible text and quoted titles, never to literal URLs.
+--
+-- Examples:
+--
+-- * @[office](https://example.com/office)@ renders as
+--   @oﬃce (<https://example.com/office>)@.
+-- * A figure whose caption is @Caption@, alt text is @Alt@, URL is @image.png@,
+--   and title is @Title@ renders as @(Caption, “Title”: <image.png>)@.
+--
+-- Known lossy behavior:
+--
+-- * Pure mode leaves Math as raw LaTeX with a trace warning; IO mode shells out
+--   to @latex2unicode.py@ first.
+-- * Footnotes are dropped.
+-- * Tables are dropped (TODO: flatten simple tables to plain text).
+-- * Definition lists are flattened to @term: definition@ lines.
+-- * Ordered-list start numbers / numbering styles are ignored.
+-- * Arbitrary CSS in @Span@/@style=@ is ignored.
+-- * Standalone block-level raw HTML wrappers like @<del>...</del>@ are still
+--   only partially handled (TODO: block-level analogue of
+--   'reassembleHtmlInlines').
+-- * Complex figures are rendered best-effort only (with a trace warning).
+--
+-- Pragmatic note: Unicode's official mathematical italic small @h@ is @ℎ@
+-- (U+210E), but some browser/font combinations render it badly beside the
+-- other mathematical italic letters. Utext uses sans-serif italic @𝘩@ instead
+-- for more consistent prose output.
+--
+-- Pure API (Math falls back to raw LaTeX with a trace warning):
 --   pandocToUtext :: Pandoc -> T.Text
 --   inlinesToUtext :: [Inline] -> T.Text
 --   inlineToUtext :: Inline -> T.Text
@@ -16,7 +54,7 @@
 --   rawHtml2Utext :: T.Text -> T.Text
 --   rawMarkdown2Utext :: T.Text -> T.Text
 --
--- IO API (shells out to latex2unicode.py for Math):
+-- IO API (Math via latex2unicode.py):
 --   pandocToUtextIO :: Pandoc -> IO T.Text
 --   rawText2UtextIO :: T.Text -> IO T.Text
 --   rawHtml2UtextIO :: T.Text -> IO T.Text
@@ -28,7 +66,7 @@
 -- back to the lowercase super/sub form when available, otherwise to ^X / _X
 -- notation.
 module Utext
-  ( -- * Pure API (no Math support)
+  ( -- * Pure API (Math falls back to raw LaTeX)
     pandocToUtext
   , inlinesToUtext
   , inlineToUtext
@@ -40,16 +78,38 @@ module Utext
   , rawText2UtextIO
   , rawHtml2UtextIO
   , rawMarkdown2UtextIO
-  -- tests
+    -- * Tests
   , utextTestSuite
   ) where
 
 import Data.Char (chr, isAlphaNum, isAsciiLower, isAsciiUpper, isDigit, ord, toLower)
-import Data.List (foldl')
+import Data.List (foldl') -- NOTE: re-exported from Prelude since base 4.16 / GHC 9.2; drop this import if it causes a redundant-import warning
 import Debug.Trace (trace)
-import qualified Data.Map.Strict as M (lookup, findWithDefault, fromList, Map)
+import qualified Data.Map.Strict as M (Map, findWithDefault, fromList, lookup)
 import Data.Text (Text)
-import qualified Data.Text as T (concat, concatMap, drop, dropEnd, intercalate, isInfixOf, isPrefixOf, isSuffixOf, lines, map, null, pack, replace, singleton, span, strip, stripEnd, stripStart, take, toLower, unpack)
+import qualified Data.Text as T
+  ( concat
+  , concatMap
+  , drop
+  , dropEnd
+  , intercalate
+  , isInfixOf
+  , isPrefixOf
+  , isSuffixOf
+  , lines
+  , map
+  , null
+  , pack
+  , replace
+  , singleton
+  , span
+  , strip
+  , stripEnd
+  , stripStart
+  , take
+  , toLower
+  , unpack
+  )
 import System.Exit (ExitCode(..))
 import System.Process (readProcessWithExitCode)
 import Text.Pandoc.Class (runPure)
@@ -66,6 +126,7 @@ import Text.Pandoc.Walk (walkM)
 renderPandoc :: Pandoc -> Text
 renderPandoc (Pandoc _meta blocks) = renderBlocks defaultStyle blocks
 
+-- | Render a Pandoc document to Utext.
 pandocToUtext :: Pandoc -> Text
 pandocToUtext = renderPandoc
 
@@ -101,7 +162,7 @@ parseTextFallback t = case parseMarkdown t of
 -- @
 -- -- eg. title: "Statistical <em>Literacy</em> is <strong>Hard</strong>"
 -- ogTitle = rawText2Utext (lookupMetaString "title" meta)
--- -- => "Statistical 𝘓𝘪𝘵𝘦𝘳𝘢𝘤𝘺 is 𝗛𝗮𝗿𝗱"
+-- -- => "Statistical 𝐿𝑖𝑡𝑒𝑟𝑎𝑐𝑦 is 𝐇𝐚𝐫𝐝"
 -- @
 rawText2Utext :: Text -> Text
 rawText2Utext t
@@ -131,6 +192,15 @@ parseHtml t = case runPure (readHtml def t) of
   Left err  -> Left (T.pack (show err))
   Right doc -> Right doc
 
+-- | Parse an HTML fragment and return its top-level blocks.
+-- Returns Right [] for empty/whitespace input.
+parseHtmlBlocks :: Text -> Either Text [Block]
+parseHtmlBlocks html
+  | T.null (T.strip html) = Right []
+  | otherwise = case parseHtml html of
+      Left err                -> Left err
+      Right (Pandoc _ blocks) -> Right blocks
+
 -- Pandoc Markdown with the full standard extension set (handles inline HTML,
 -- strikethrough, superscript, subscript, smallcaps via bracketed spans, etc.)
 markdownOpts :: ReaderOptions
@@ -141,14 +211,14 @@ markdownOpts = def { readerExtensions = pandocExtensions }
 -----------------------------------------------------------------------
 
 -- | Like 'pandocToUtext', but preprocesses Math nodes by shelling out to
--- @latex2unicode.py@ (which calls GPT-4.1-mini to convert LaTeX → HTML).
--- The HTML output is then parsed and rendered to Utext.
+-- @latex2unicode.py@ to convert LaTeX to HTML. The HTML output is then parsed
+-- and rendered to Utext.
 --
 -- Expects @static/build/latex2unicode.py@ to be callable from the current
 -- working directory (ie. the site repo root), matching the existing
 -- @Utils.hs@ convention.
 pandocToUtextIO :: Pandoc -> IO Text
-pandocToUtextIO doc = renderPandoc <$> walkM (inlineMathToUtext latexToUtextViaScript) doc
+pandocToUtextIO doc = pandocToUtext <$> walkM (inlineMathToUtext latexToUtextViaScript) doc
 
 -- | Like 'rawText2Utext', but handles Math via @latex2unicode.py@.
 rawText2UtextIO :: Text -> IO Text
@@ -189,12 +259,12 @@ latexToUtextViaScript tex = do
       -- latex2unicode.py returns HTML with <em>, <sup>, <sub>, <span>, etc.
       -- Parse it as HTML, then render the resulting AST to Utext.
       -- If parsing fails, that's a bug in the script output → fatal error.
-      case parseHtml html of
+      case parseHtmlBlocks html of
         Left err -> error $
           "Utext: failed to parse latex2unicode.py HTML output: " ++ show err
           ++ "\n  Input:  " ++ show (T.take traceLimit tex)
           ++ "\n  Output: " ++ show (T.take (traceLimit * 2) html)
-        Right doc -> return $ T.strip (pandocToUtext doc)
+        Right blocks -> return $ T.strip (renderBlocks defaultStyle blocks)
 
 -----------------------------------------------------------------------
 -- Style tracking
@@ -223,8 +293,9 @@ renderBlock s (LineBlock lns)        = [T.intercalate "\n" $ map (renderInlines 
 renderBlock s (Header _ _ inlines)   = [renderInlines (s { sBold = True }) inlines]
 renderBlock s (BlockQuote blocks)    = [T.intercalate "\n" $ map ("  " <>) $ T.lines $ renderBlocks s blocks]
 renderBlock s (BulletList items)     = map (\item -> "• " <> renderBlocks s item) items
+-- NOTE: ignores Pandoc's start number / style / delimiter metadata.
 renderBlock s (OrderedList _ items)  = zipWith (\n item -> T.pack (show n) <> ". " <> renderBlocks s item)
-                                              [(1::Int)..] items
+                                              [(1 :: Int) ..] items
 renderBlock _ (CodeBlock _ code)     = [T.map codeMono code]
 renderBlock _ HorizontalRule         = ["———"]
 renderBlock s (Div _ blocks)         = [renderBlocks s blocks]
@@ -236,17 +307,16 @@ renderBlock s (Div _ blocks)         = [renderBlocks s blocks]
 -- RawBlock wrappers; fixing that cleanly needs a block-level analogue of
 -- 'reassembleHtmlInlines'.
 renderBlock s (RawBlock (Format "html") html) =
-  case runPure (readHtml def html) of
-    Right (Pandoc _ blocks) -> concatMap (renderBlock s) blocks
-    Left _ -> traceWarnT "unparseable RawBlock html" html []
+  case parseHtmlBlocks html of
+    Right blocks -> concatMap (renderBlock s) blocks
+    Left _       -> traceWarnT "unparseable RawBlock html" html []
 renderBlock _ (RawBlock fmt t)       = traceWarnT ("unsupported RawBlock (" ++ show fmt ++ ")") t []
-renderBlock _ (Table {})             = traceWarn   "unsupported Table (dropped; TODO: flatten simple tables)" []
+renderBlock _ (Table {})             = traceWarn   "unsupported Table (dropped)" []
 renderBlock s (Figure _ caption blocks) =
   case T.strip (renderFigure s caption blocks) of
     "" -> []
     t  -> [t]
 renderBlock s (DefinitionList defs)  = traceWarn   "lossy DefinitionList fallback" $
-  -- Best-effort: render each term followed by its definitions.
   concatMap (\(term, defBlocks) -> [renderInlines s term <> ": " <>
       T.intercalate "; " (map (renderBlocks s) defBlocks)]) defs
 
@@ -258,6 +328,7 @@ renderFigure s caption blocks =
                              (T.strip (renderInlines s alt))
       in renderParenthesizedTarget label url title
     Nothing ->
+      traceWarn "complex Figure (best-effort fallback)" $
       joinFigureParts (T.strip (renderBlocks s blocks))
                       (T.strip (renderCaption s caption))
 
@@ -361,8 +432,9 @@ matchOpenTag t = case parseHtmlTag t of
 -- | Split an inline list at the matching closing RawInline HTML tag.
 -- Returns Nothing if the closing tag is not found.
 splitAtClose :: Text -> [Inline] -> Maybe ([Inline], [Inline])
-splitAtClose closeName = go (0::Int) []
+splitAtClose closeName = go 0 []
   where
+    go :: Int -> [Inline] -> [Inline] -> Maybe ([Inline], [Inline])
     go _ _ [] = Nothing
     go depth acc (raw@(RawInline (Format "html") t) : rest)
       | Just (HtmlTag isClosing name _) <- parseHtmlTag t
@@ -380,50 +452,54 @@ splitAtClose closeName = go (0::Int) []
 renderInlines :: Style -> [Inline] -> Text
 renderInlines s = T.concat . map (renderInline s) . reassembleHtmlInlines
 
--- | Render inline content as plain text, intentionally ignoring style wrappers
--- like Emph/Strong/SmallCaps/Superscript/Subscript. This is used when a
--- character-by-character transform should take precedence over nested styles,
--- since Unicode generally lacks composed forms like bold small-caps or italic
--- superscripts.
+-- | Render inline content as plain text, deliberately stripping style wrappers
+-- like Emph, Strong, SmallCaps, Superscript, and Subscript before any later
+-- character-by-character transform.
+--
+-- This is a policy choice: when Unicode lacks a composed form like “bold small
+-- caps” or “italic superscript”, the character-level transform wins and nested
+-- style wrappers are discarded. So @*x^n^*@ becomes italic @x@ followed by a
+-- plain superscript @n@, rather than attempting a nonexistent italic
+-- superscript @n@.
 renderPlainInlines :: [Inline] -> Text
 renderPlainInlines = T.concat . map renderInlinePlain . reassembleHtmlInlines
 
 renderInlinePlain :: Inline -> Text
-renderInlinePlain (Str t)                    = t
-renderInlinePlain (Emph inlines)             = renderPlainInlines inlines
-renderInlinePlain (Strong inlines)           = renderPlainInlines inlines
-renderInlinePlain (Underline inlines)        = renderPlainInlines inlines
-renderInlinePlain (Strikeout inlines)        = renderPlainInlines inlines
-renderInlinePlain (Superscript inlines)      = renderPlainInlines inlines
-renderInlinePlain (Subscript inlines)        = renderPlainInlines inlines
-renderInlinePlain (SmallCaps inlines)        = renderPlainInlines inlines
-renderInlinePlain (Code _ t)                 = t
-renderInlinePlain Space                      = " "
-renderInlinePlain SoftBreak                  = " "
-renderInlinePlain LineBreak                  = "\n"
+renderInlinePlain (Str t)                      = t
+renderInlinePlain (Emph inlines)               = renderPlainInlines inlines
+renderInlinePlain (Strong inlines)             = renderPlainInlines inlines
+renderInlinePlain (Underline inlines)          = renderPlainInlines inlines
+renderInlinePlain (Strikeout inlines)          = renderPlainInlines inlines
+renderInlinePlain (Superscript inlines)        = renderPlainInlines inlines
+renderInlinePlain (Subscript inlines)          = renderPlainInlines inlines
+renderInlinePlain (SmallCaps inlines)          = renderPlainInlines inlines
+renderInlinePlain (Code _ t)                   = t
+renderInlinePlain Space                        = " "
+renderInlinePlain SoftBreak                    = " "
+renderInlinePlain LineBreak                    = "\n"
 renderInlinePlain (Quoted SingleQuote inlines) = "\x2018" <> renderPlainInlines inlines <> "\x2019"
 renderInlinePlain (Quoted DoubleQuote inlines) = "\x201C" <> renderPlainInlines inlines <> "\x201D"
-renderInlinePlain (Link _ inlines _)         = renderPlainInlines inlines
-renderInlinePlain (Span _ inlines)           = renderPlainInlines inlines
+renderInlinePlain (Link _ inlines _)           = renderPlainInlines inlines
+renderInlinePlain (Span _ inlines)             = renderPlainInlines inlines
 renderInlinePlain (RawInline (Format "html") html) =
   case parseHtmlInlines html of
     Right inlines -> renderPlainInlines inlines
     Left _        -> ""
-renderInlinePlain (RawInline _ _)            = ""
-renderInlinePlain (Note _)                   = ""
-renderInlinePlain (Math _ t)                 = t
-renderInlinePlain (Image _ inlines _)        = renderPlainInlines inlines
-renderInlinePlain (Cite _ inlines)           = renderPlainInlines inlines
+renderInlinePlain (RawInline _ _)              = ""
+renderInlinePlain (Note _)                     = ""
+renderInlinePlain (Math _ t)                   = t
+renderInlinePlain (Image _ inlines _)          = renderPlainInlines inlines
+renderInlinePlain (Cite _ inlines)             = renderPlainInlines inlines
 
 -- Supported inline constructs. Unsupported ones degrade gracefully with trace warnings.
 renderInline :: Style -> Inline -> Text
-renderInline s (Str t)                = applyLigatures (T.map (styleChar s) t)
+renderInline s (Str t)
+  | s == defaultStyle = applyLigatures t
+  | otherwise         = T.map (styleChar s) t
 renderInline s (Emph inlines)         = renderInlines (s { sItalic = True }) inlines
 renderInline s (Strong inlines)       = renderInlines (s { sBold = True }) inlines
-renderInline s (Underline inlines)    = T.concatMap (\c -> T.singleton c <> "\x0332")
-                                          (renderInlines s inlines)
-renderInline s (Strikeout inlines)    = T.concatMap (\c -> T.singleton c <> "\x0336")
-                                          (renderInlines s inlines)
+renderInline s (Underline inlines)    = applyCombining '\x0332' (renderInlines s inlines)
+renderInline s (Strikeout inlines)    = applyCombining '\x0336' (renderInlines s inlines)
 renderInline _ (Superscript inlines)  = T.concatMap charToSuperscript
                                           (renderPlainInlines inlines)
 renderInline _ (Subscript inlines)    = T.concatMap charToSubscript
@@ -440,8 +516,8 @@ renderInline s (Link _ inlines (url, title)) =
   renderLinkedTarget (renderInlines s inlines) url title
 renderInline s (Span attr inlines)
   | hasClass "smallcaps" attr        = renderInline s (SmallCaps inlines)
-  | hasClass "subsup" attr           = renderInlines s inlines   -- sub+sup rendered sequentially, without attempting to vertically stack, so the `subsup` wrapper is just ignored
-  | hasStyle attr                    = renderInlines s inlines   -- ignore arbitrary CSS for now, even if some declarations could map onto italics/bold/etc.
+  | hasClass "subsup" attr           = renderInlines s inlines
+  | hasStyle attr                    = renderInlines s inlines
   | otherwise                        = renderInlines s inlines
 -- RawInline "html": attempt to re-parse and render. This handles HTML fragments
 -- from latex2unicode.py that survive Pandoc's HTML reader as raw nodes (eg.
@@ -458,6 +534,10 @@ renderInline s (Image _ inlines (url, title)) =
   renderParenthesizedTarget (renderInlines s inlines) url title
 renderInline s (Cite _ inlines)      = traceWarn   "lossy Cite fallback (visible text only)" (renderInlines s inlines)
 
+-- | Apply a single combining mark after every codepoint in the input.
+applyCombining :: Char -> Text -> Text
+applyCombining mark = T.concatMap (\c -> T.singleton c <> T.singleton mark)
+
 renderLinkedTarget :: Text -> Text -> Text -> Text
 renderLinkedTarget label url title
   | T.null url   = label
@@ -472,6 +552,8 @@ renderParenthesizedTarget label url title
   | T.null title               = "(" <> label <> ": <" <> url <> ">)"
   | otherwise                  = "(" <> label <> ", " <> renderTitle title <> ": <" <> url <> ">)"
 
+-- | Render a quoted link/image title. Titles are visible text, so ligatures
+-- apply here even though literal URLs stay untouched.
 renderTitle :: Text -> Text
 renderTitle title = "\x201C" <> applyLigatures title <> "\x201D"
 
@@ -481,27 +563,20 @@ hasClass cls (_, classes, _) = cls `elem` classes
 hasStyle :: Attr -> Bool
 hasStyle (_, _, kvs) = any (\(k, _) -> k == "style") kvs
 
--- getKvs :: Attr -> [(Text, Text)]
--- getKvs (_, _, kvs) = kvs
-
 -- | Parse an HTML fragment and extract the body inlines. Used for re-parsing
--- RawInline "html" nodes. Returns Right [] for empty/whitespace input.
+-- RawInline "html" nodes.
 parseHtmlInlines :: Text -> Either Text [Inline]
-parseHtmlInlines html
-  | T.null (T.strip html) = Right []
-  | otherwise = case runPure (readHtml def html) of
-      Left err -> Left (T.pack (show err))
-      Right (Pandoc _ blocks) -> Right (blocksToInlines blocks)
+parseHtmlInlines = fmap blocksToInlines . parseHtmlBlocks
 
 -- | Flatten blocks to inlines, preserving inline content. This is a simplified
 -- version of Pandoc's own blocksToInlines, suitable for small HTML fragments.
 blocksToInlines :: [Block] -> [Inline]
 blocksToInlines = concatMap blockToInlines
   where
-    blockToInlines (Para ils)    = ils
-    blockToInlines (Plain ils)   = ils
-    blockToInlines (Div _ bs)    = concatMap blockToInlines bs
-    blockToInlines _             = [] -- drop non-inline blocks from fragments
+    blockToInlines (Para ils)  = ils
+    blockToInlines (Plain ils) = ils
+    blockToInlines (Div _ bs)  = concatMap blockToInlines bs
+    blockToInlines _           = []
 
 -----------------------------------------------------------------------
 -- Character mapping: style (bold / italic / bold-italic)
@@ -522,16 +597,13 @@ boldChar c
   | otherwise      = c
 
 -- | Serif italic: U+1D434 (A), U+1D44E (a). No italic digits in Unicode.
--- Note: Unicode unifies italic 'h' with PLANCK CONSTANT (U+210E); the
--- expected slot U+1D455 is permanently reserved/empty.
--- Unicode-correct would be '\x210E' (ℎ), but for prose-like Utext output
--- some browser/font combinations render it too differently from the
--- surrounding mathematical italic letters. Pragmatic override: use
--- sans-serif italic h instead.
+-- Unicode canonically reuses ℎ (U+210E) for mathematical italic h because the
+-- nominal U+1D455 slot is reserved. Utext deliberately uses 𝘩 (U+1D629), a
+-- sans-serif italic h, for better visual consistency in prose-like output.
 italicChar :: Char -> Char
 italicChar c
   | isAsciiUpper c = chr (ord c - ord 'A' + 0x1D434)
-  | c == 'h'       = '\x1D629'  -- 𝘩
+  | c == 'h'       = '\x1D629'
   | isAsciiLower c = chr (ord c - ord 'a' + 0x1D44E)
   | otherwise      = c
 
@@ -540,7 +612,7 @@ boldItalicChar :: Char -> Char
 boldItalicChar c
   | isAsciiUpper c = chr (ord c - ord 'A' + 0x1D468)
   | isAsciiLower c = chr (ord c - ord 'a' + 0x1D482)
-  | isDigit c      = chr (ord c - ord '0' + 0x1D7CE) -- no bold-italic digits; use bold
+  | isDigit c      = chr (ord c - ord '0' + 0x1D7CE)
   | otherwise      = c
 
 -- | Mathematical monospace: U+1D670 (A), U+1D68A (a), U+1D7F6 (0)
@@ -573,14 +645,7 @@ superscriptMap = M.fromList
   ]
 
 charToSuperscript :: Char -> Text
-charToSuperscript c = case M.lookup c superscriptMap of
-  Just c' -> T.singleton c'
-  Nothing
-    | isAsciiUpper c -> case M.lookup (toLower c) superscriptMap of
-        Just c' -> T.singleton c' -- imperfect but better than fallback
-        Nothing -> T.pack ['^', c]
-    | c == ' '       -> " "
-    | otherwise      -> T.singleton c -- pass through punctuation, Unicode, etc.
+charToSuperscript = charToScript superscriptMap '^'
 
 -----------------------------------------------------------------------
 -- Character mapping: subscript
@@ -602,12 +667,19 @@ subscriptMap = M.fromList
   ]
 
 charToSubscript :: Char -> Text
-charToSubscript c = case M.lookup c subscriptMap of
+charToSubscript = charToScript subscriptMap '_'
+
+-- | Shared fallback logic for super/subscript rendering.
+-- If a character has no dedicated script form, ASCII uppercase tries the
+-- lowercase form first; failing that, it falls back to ^X / _X. Other
+-- characters pass through unchanged.
+charToScript :: M.Map Char Char -> Char -> Char -> Text
+charToScript table fallbackPrefix c = case M.lookup c table of
   Just c' -> T.singleton c'
   Nothing
-    | isAsciiUpper c -> case M.lookup (toLower c) subscriptMap of
+    | isAsciiUpper c -> case M.lookup (toLower c) table of
         Just c' -> T.singleton c'
-        Nothing -> T.pack ['_', c]
+        Nothing -> T.pack [fallbackPrefix, c]
     | c == ' '       -> " "
     | otherwise      -> T.singleton c
 
@@ -633,7 +705,7 @@ smallCapMap = M.fromList
 charToSmallCap :: Char -> Text
 charToSmallCap c
   | isAsciiLower c = T.singleton $ M.findWithDefault (chr (ord c - 32)) c smallCapMap
-  | otherwise      = T.singleton c  -- uppercase and non-ASCII pass through
+  | otherwise      = T.singleton c
 
 -----------------------------------------------------------------------
 -- Utilities
@@ -668,27 +740,8 @@ ligatureReplacements =
   , ("fi",  "ﬁ")
   ]
 
-
--- {-# LANGUAGE OverloadedStrings #-}
--- | Unit tests for "Utext". Exports 'utextTestSuite' for use in @Test.hs@.
---
--- Test cases are split into:
---
--- * 'supportedTests': features that compile to fancy Unicode (italics, bold,
---   bold-italic, monospace, super\/subscripts, strikethrough, underline,
---   small caps, smart quotes, links, block-level constructs, HTML-in-Markdown).
---
--- * 'unsupportedTests': constructs that degrade gracefully with a @trace@
---   warning (Math, Note, Table, DefinitionList). These are exercised to
---   verify they produce sensible fallback output rather than crashing.
--- module UtextTest (utextTestSuite) where
-
--- import Data.Text (Text)
-
--- import Utext (rawMarkdown2Utext)
-
 -----------------------------------------------------------------------
--- Public API
+-- Tests
 -----------------------------------------------------------------------
 
 -- | Run the full test suite via 'rawMarkdown2Utext'. Returns a list of
@@ -739,17 +792,18 @@ identityTests =
   -- ASCII apostrophe becomes smart right single quote:
   , ("it's"            , "it\x2019s")
   -- Pre-existing em dash passes through:
-  , ("foo—bar"    , "foo—bar")
+  , ("foo—bar"         , "foo—bar")
   ]
 
--- *italic* and <em> → serif italic (A=U+1D434, a=U+1D44E, h=U+210E)
+-- *italic* and <em> → mathematical italic letters, with a pragmatic
+-- sans-serif-italic override for h (U+1D629).
 -- No italic digits in Unicode; digits pass through unchanged.
 italicTests :: [(Text, Text)]
 italicTests =
-  [ ("*hello*"             , "𝘩\x1D452\x1D459\x1D459\x1D45C")
+  [ ("*hello*"             , "\x1D629\x1D452\x1D459\x1D459\x1D45C")
   , ("*A*"                 , "\x1D434")
   , ("*z*"                 , "\x1D467")
-  , ("*h*"                 , "𝘩")  -- PLANCK CONSTANT (Unicode hole at U+1D455)
+  , ("*h*"                 , "\x1D629")  -- pragmatic h override; Unicode-correct would be ℎ
   , ("*foo bar*"           , "\x1D453\x1D45C\x1D45C \x1D44F\x1D44E\x1D45F")
   , ("*test123*"           , "\x1D461\x1D452\x1D460\x1D461\&123")
   ]
@@ -826,9 +880,9 @@ underlineTests =
 -- Uppercase letters pass through unchanged.
 smallcapsTests :: [(Text, Text)]
 smallcapsTests =
-  [ ("[hello]{.smallcaps}"                          , "\x029C\x1D07\x029F\x029F\x1D0F")
-  , ("[AB]{.smallcaps}"                             , "AB")
-  , ("<span class=\"smallcaps\">de</span>"          , "\x1D05\x1D07")
+  [ ("[hello]{.smallcaps}"                 , "\x029C\x1D07\x029F\x029F\x1D0F")
+  , ("[AB]{.smallcaps}"                    , "AB")
+  , ("<span class=\"smallcaps\">de</span>" , "\x1D05\x1D07")
   ]
 
 -- Pandoc smart typography
@@ -844,7 +898,8 @@ smartQuoteTests =
   , ("foo..."                , "foo\x2026")
   ]
 
--- Links: render text followed by URL/title in parentheses
+-- Links: render text followed by URL/title in parentheses.
+-- Visible text/title still get ligatures; literal URLs stay untouched.
 linkTests :: [(Text, Text)]
 linkTests =
   [ ("[click here](https://example.com)"
@@ -853,9 +908,11 @@ linkTests =
     , "\x1D456\x1D461\x1D44E\x1D459\x1D456\x1D450 \x1D459\x1D456\x1D45B\x1D458 (<https://example.com>)")
   , ("[foo](https://bar.com \"Title\")"
     , "foo (\x201CTitle\x201D: <https://bar.com>)")
-  -- Visible text/title still get ligatures; literal URLs must stay untouched.
   , ("[office](https://example.com/office \"Office filing\")"
     , "oﬃce (\x201COﬃce ﬁling\x201D: <https://example.com/office>)")
+  -- Ligatures apply in label and title but never in the literal URL:
+  , ("[find](https://fi.example.com \"Official\")"
+    , "ﬁnd (\x201COﬃcial\x201D: <https://fi.example.com>)")
   ]
 
 -- HTML tags inside Markdown: the bug that motivated this test suite.
@@ -864,7 +921,7 @@ linkTests =
 htmlInMarkdownTests :: [(Text, Text)]
 htmlInMarkdownTests =
   [ ("mistakes in <em>Death Note</em> and fixes"
-    , "mistakes in \x1D437\x1D452\x1D44E\x1D461𝘩 \x1D441\x1D45C\x1D461\x1D452 and \xFB01xes")
+    , "mistakes in \x1D437\x1D452\x1D44E\x1D461\x1D629 \x1D441\x1D45C\x1D461\x1D452 and \xFB01xes")
   , ("<strong>bold</strong> word"
     , "\x1D41B\x1D428\x1D425\x1D41D word")
   , ("a <sub>2</sub> b"
@@ -884,6 +941,13 @@ htmlInMarkdownTests =
     , "\x1D483\x1D490\x1D495\x1D489")
   , ("<em>foo <em>bar</em> baz</em>"
     , "\x1D453\x1D45C\x1D45C \x1D44F\x1D44E\x1D45F \x1D44F\x1D44E\x1D467")
+  -- Tag variants handled by matchOpenTag:
+  , ("a <i>word</i> b"
+    , "a \x1D464\x1D45C\x1D45F\x1D451 b")
+  , ("a <b>word</b> b"
+    , "a \x1D430\x1D428\x1D42B\x1D41D b")
+  , ("a <strike>xy</strike> b"
+    , "a x\x0336y\x0336 b")
   ]
 
 -- Block-level constructs
@@ -895,9 +959,25 @@ blockTests =
   , ("```\nfoo\n```"         , "\x1D68F\x1D698\x1D698")
   -- Standalone images become Figures with implicit_figures; render them like
   -- images-with-captions either way.
-  , ("![Caption](image.png)"   , "(Caption: <image.png>)")
+  , ("![Caption](image.png)"
+    , "(Caption: <image.png>)")
   , ("![Caption](image.png \"Title\")"
     , "(Caption, \x201CTitle\x201D: <image.png>)")
+  -- Bullet list:
+  , ("- one\n- two"
+    , "• one\n\n• two")
+  -- Ordered list (note "first" → "ﬁrst" via ligatures):
+  , ("1. first\n2. second"
+    , "1. \xFB01rst\n\n2. second")
+  -- Block quote (needs surrounding context so T.strip doesn't eat the indent):
+  , ("before\n\n> quote\n\nafter"
+    , "before\n\n  quote\n\nafter")
+  -- Line block:
+  , ("| line one\n| line two"
+    , "line one\nline two")
+  -- Horizontal rule (needs context to avoid being swallowed by T.strip):
+  , ("before\n\n***\n\nafter"
+    , "before\n\n\x2014\x2014\x2014\n\nafter")
   ]
 
 -- Non-ASCII: pass through unchanged (no mathematical-alphabet mapping exists)
@@ -939,11 +1019,11 @@ edgeCaseTests =
   ]
 
 -- Ligature replacement: fi→ﬁ, fl→ﬂ, ff→ﬀ, ffi→ﬃ, ffl→ﬄ
--- Only affects plain (unstyled) ASCII text; styled characters are in SMP
--- and don't match the ASCII digraphs.
+-- Only affects plain (unstyled) ASCII text and quoted titles; styled
+-- characters are in the SMP and do not match the ASCII digraphs.
 ligatureTests :: [(Text, Text)]
 ligatureTests =
-  [ ("fine"               , "ﬁne")
+  [ ("fine"                  , "ﬁne")
   , ("offline"               , "oﬄine")
   , ("waffle"                , "waﬄe")
   , ("office"                , "oﬃce")
@@ -962,14 +1042,14 @@ ligatureTests =
 unsupportedTests :: [(Text, Text)]
 unsupportedTests =
   [ -- Math (inline): falls back to raw LaTeX string.
-    ("$x^2$"                                      , "x^2")
+    ("$x^2$"                                    , "x^2")
   -- Math (display): same raw-LaTeX fallback.
-  , ("$$y=mx+b$$"                                  , "y=mx+b")
+  , ("$$y=mx+b$$"                               , "y=mx+b")
   -- Footnote: Note node is dropped; surrounding text survives.
-  , ("text[^1]\n\n[^1]: footnote"                  , "text")
+  , ("text[^1]\n\n[^1]: footnote"               , "text")
   -- Table: entire block is dropped (empty output).
-  , ("| a | b |\n|---|---|\n| 1 | 2 |"             , "")
+  , ("| a | b |\n|---|---|\n| 1 | 2 |"          , "")
   -- Definition list: best-effort "term: definition" rendering.
-  , ("Term\n:   Definition"                         , "Term: Deﬁnition")
+  , ("Term\n:   Definition"                     , "Term: Deﬁnition")
   ]
 
