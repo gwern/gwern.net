@@ -259,33 +259,33 @@
 	font-family: 'Nimbus Mono';
 	font-weight: normal;
 	font-style: normal;
-	src: url('/static/font/nimbus-mono/NimbusMonoLUN-BASIC-Regular.ttf?v=1767824559') format('truetype');
+	src: url('/static/font/nimbus-mono/NimbusMonoLUN-BASIC-Regular.ttf?v=1775772017') format('truetype');
 	font-display: swap;
-	unicode-range: U+0020-007E, U+00A0-00A1, U+00A7, U+00B6, U+00BF, U+00C0-00CB, U+00E0-00EB, U+00F6, U+014C-014D, U+016A-016B, U+02C6-02DD, U+2013-2026, U+2039-203A, U+2122, U+2212, U+221A, U+221E, U+EA11-EA6A;
+	unicode-range: U+0020-007E, U+00A0-00A1, U+00A7, U+00B6, U+00BF, U+00C0-00CB, U+00DE, U+00E0-00EB, U+00F6, U+00FE, U+014C-014D, U+016A-016B, U+02C6-02DD, U+2013-2026, U+2039-203A, U+2122, U+2212, U+221A, U+221E, U+EA11-EA6A;
 }
 @font-face {
 	font-family: 'Nimbus Mono';
 	font-weight: normal;
 	font-style: italic;
-	src: url('/static/font/nimbus-mono/NimbusMonoLUN-BASIC-RegularItalic.ttf?v=1767824559') format('truetype');
+	src: url('/static/font/nimbus-mono/NimbusMonoLUN-BASIC-RegularItalic.ttf?v=1775772017') format('truetype');
 	font-display: swap;
-	unicode-range: U+0020-007E, U+00A0-00A1, U+00A7, U+00B6, U+00BF, U+00C0-00CB, U+00E0-00EB, U+00F6, U+014C-014D, U+016A-016B, U+02C6-02DD, U+2013-2026, U+2039-203A, U+2122, U+2212, U+221A, U+221E, U+EA11-EA6A;
+	unicode-range: U+0020-007E, U+00A0-00A1, U+00A7, U+00B6, U+00BF, U+00C0-00CB, U+00DE, U+00E0-00EB, U+00F6, U+00FE, U+014C-014D, U+016A-016B, U+02C6-02DD, U+2013-2026, U+2039-203A, U+2122, U+2212, U+221A, U+221E, U+EA11-EA6A;
 }
 @font-face {
 	font-family: 'Nimbus Mono';
 	font-weight: bold;
 	font-style: normal;
-	src: url('/static/font/nimbus-mono/NimbusMonoLUN-BASIC-Bold.ttf?v=1767824559') format('truetype');
+	src: url('/static/font/nimbus-mono/NimbusMonoLUN-BASIC-Bold.ttf?v=1775772017') format('truetype');
 	font-display: swap;
-	unicode-range: U+0020-007E, U+00A0-00A1, U+00A7, U+00B6, U+00BF, U+00C0-00CB, U+00E0-00EB, U+00F6, U+014C-014D, U+016A-016B, U+02C6-02DD, U+2013-2026, U+2039-203A, U+2122, U+2212, U+221A, U+221E, U+EA11-EA6A;
+	unicode-range: U+0020-007E, U+00A0-00A1, U+00A7, U+00B6, U+00BF, U+00C0-00CB, U+00DE, U+00E0-00EB, U+00F6, U+00FE, U+014C-014D, U+016A-016B, U+02C6-02DD, U+2013-2026, U+2039-203A, U+2122, U+2212, U+221A, U+221E, U+EA11-EA6A;
 }
 @font-face {
 	font-family: 'Nimbus Mono';
 	font-weight: bold;
 	font-style: italic;
-	src: url('/static/font/nimbus-mono/NimbusMonoLUN-BASIC-BoldItalic.ttf?v=1767824559') format('truetype');
+	src: url('/static/font/nimbus-mono/NimbusMonoLUN-BASIC-BoldItalic.ttf?v=1775772017') format('truetype');
 	font-display: swap;
-	unicode-range: U+0020-007E, U+00A0-00A1, U+00A7, U+00B6, U+00BF, U+00C0-00CB, U+00E0-00EB, U+00F6, U+014C-014D, U+016A-016B, U+02C6-02DD, U+2013-2026, U+2039-203A, U+2122, U+2212, U+221A, U+221E, U+EA11-EA6A;
+	unicode-range: U+0020-007E, U+00A0-00A1, U+00A7, U+00B6, U+00BF, U+00C0-00CB, U+00DE, U+00E0-00EB, U+00F6, U+00FE, U+014C-014D, U+016A-016B, U+02C6-02DD, U+2013-2026, U+2039-203A, U+2122, U+2212, U+221A, U+221E, U+EA11-EA6A;
 }
 
 /***********/
@@ -295,7 +295,7 @@
 @font-face {
 	font-family: 'Quivira';
 	font-weight: normal;
-	src: url('/static/font/quivira/Quivira-SUBSETTED.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/quivira/Quivira-SUBSETTED.otf?v=1775772274') format('opentype');
 	font-display: swap;
 }
 
@@ -306,7 +306,7 @@
 @font-face {
 	font-family: 'Noto Emoji';
 	font-weight: normal;
-	src: url('/static/font/noto-emoji/NotoEmoji-Bold-SUBSETTED.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/noto-emoji/NotoEmoji-Bold-SUBSETTED.ttf?v=1775770403') format('truetype');
 	font-display: swap;
 }
 

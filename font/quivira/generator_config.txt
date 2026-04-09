@@ -1,5 +1,1 @@
-# Font Squirrel Font-face Generator Configuration File
-# Upload this file to the generator to recreate the settings
-# you used to create these fonts.
-
-{"mode":"expert","formats":["ttf"],"tt_instructor":"keep","fix_vertical_metrics":"N","metrics_ascent":"","metrics_descent":"","metrics_linegap":"","fallback":"none","fallback_custom":"100","options_subset":"advanced","subset_custom":"","subset_custom_range":"203D,2042,207B,21A9,2501,26E8,2E2E,1D62D","subset_ot_features_list":"","css_stylesheet":"stylesheet.css","filename_suffix":"","spacing_adjustment":"0","rememberme":"Y"}
+pyftsubset Quivira.otf --unicodes=203D,2042,207B,21A9,22A5,2501,25FC,26E8,2E2E,1D62D --output-file=Quivira-SUBSETTED.otf

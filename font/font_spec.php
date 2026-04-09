@@ -99,13 +99,13 @@ Nimbus Mono
 ttf
 font-display	swap
 italic			/$/		Italic
-unicode-range	U+0020-007E, U+00A0-00A1, U+00A7, U+00B6, U+00BF, U+00C0-00CB, U+00E0-00EB, U+00F6, U+014C-014D, U+016A-016B, U+02C6-02DD, U+2013-2026, U+2039-203A, U+2122, U+2212, U+221A, U+221E, U+EA11-EA6A
+unicode-range	U+0020-007E, U+00A0-00A1, U+00A7, U+00B6, U+00BF, U+00C0-00CB, U+00DE, U+00E0-00EB, U+00F6, U+00FE, U+014C-014D, U+016A-016B, U+02C6-02DD, U+2013-2026, U+2039-203A, U+2122, U+2212, U+221A, U+221E, U+EA11-EA6A
 `normal			Regular
 `bold			Bold
 
 Quivira
 /static/font/quivira/Quivira-
-ttf
+otf
 font-display	swap
 `normal			SUBSETTED
 
