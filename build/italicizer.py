@@ -4,7 +4,7 @@
 # italicizer.py: reformat a string to add italics as semantically appropriate (eg. book titles) using LLMs
 # Author: Gwern Branwen
 # Date: 2025-01-17
-# When:  Time-stamp: "2026-04-06 21:18:15 gwern"
+# When:  Time-stamp: "2026-04-10 23:43:45 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python italicizer.py
@@ -1413,6 +1413,48 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 - "Copulation in antiarch placoderms and the origin of gnathostome internal fertilization"
 ""
 - "I Would Cure My Autism"
+""
+- "Six Lessons for a Cogent Science of Implicit Bias and Its Criticism"
+""
+- "Thorn (letter)"
+""
+- "Kimi K2.5 Tech Blog: Visual Agentic Intelligence"
+""
+- "Parse, don’t validate"
+""
+- "Do Posts with Links Affect Content Performance on X?"
+""
+- "Linux Kernel Recency Matters, CVE Severity Doesn’t, and History Fades"
+""
+- "The Clock"
+""
+- "The Cathedral, the Bazaar, and the Winchester Mystery House"
+""
+- "How Costco Won In Japan"
+""
+- "Paws, Pee and Pests: Cats among Medieval Manuscripts"
+""
+- "Claude Mythos Preview"
+""
+- "Wit, unker, git: The lost medieval pronouns of English intimacy" # 3 Old English pronouns, now foreign to English
+"<em>Wit</em>, <em>unker</em>, <em>git</em>: The lost medieval pronouns of English intimacy"
+- "The American Society of Cinematographers"
+""
+- "Opus’s Schelling Steganography Has Amplifiable Secrecy Against Weaker Eavesdroppers"
+""
+- "We lose again: Windham-Campbell Prize manqué"
+""
+- "4RH1T3CT0R7/ttf-doom: A 3D raycasting engine running inside a TrueType font’s hinting virtual machine"
+""
+- "The effects of caffeine consumption do not decay with a ~5 hour half-life"
+""
+- "Clinical utility and validity of minoxidil response testing in androgenetic alopecia"
+""
+- "The Blessed Isle"
+""
+- "Olympic Odes—Armand D’Angour"
+""
+- "Uniformity Illusion"
 ""
 
 [End of examples. Reminder: your only task is to add missing italics you are SURE of.]

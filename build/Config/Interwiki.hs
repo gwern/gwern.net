@@ -6028,4 +6028,6 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("Shellshock", "Shellshock_(software_bug)")
         , ("Her", "Her_(2013_film)")
         , ("Marginalize", "Marginal_distribution")
+        , ("Erdős", "Paul Erdős")
+        , ("Paul Erdos", "Paul Erdős")
         ]

@@ -2,7 +2,7 @@
 -- | Utext: compile Pandoc AST to Unicode-rich plain text.
 -- Author: gwern
 -- Date: 2026-04-06
--- When: Time-stamp: "2026-04-07 23:30:45 gwern"
+-- When: Time-stamp: "2026-04-08 15:29:38 gwern"
 -- License: CC-0
 --
 -- Intended for social media cards, Open Graph descriptions, and other contexts
@@ -65,6 +65,40 @@
 -- generally pass through unchanged; unmapped ASCII uppercase letters fall
 -- back to the lowercase super/sub form when available, otherwise to ^X / _X
 -- notation.
+{- Claude-4.6-opus suggestions on extensions:
+
+#. **Footnote markers instead of dropping**: currently `Note` is silently dropped. Could render the footnote reference as a superscript circled number (➀➁➂ or ❶❷❸, as the page specifically suggests for footnotes versus hyperlink numbering).
+
+    The footnote body can be appended at the end or dropped for OG-description contexts, but the marker appearing inline preserves reading flow. Requires a counter threaded through rendering (or switch to `State`).
+#. **Fancier ordered-list markers**: the page mentions PARENTHESIZED DIGIT ONE ⑴⑵⑶⑷ and circled digits ①②③…⑳. Currently just `"1. "`. Unicode provides circled digits 1--20 (U+2460--U+2473) and more; fall back to `"N. "` beyond 20.
+#. **Fancier horizontal rules**: `"———"` works but the page showcases box-drawing characters. `"─────────"` (BOX DRAWINGS LIGHT HORIZONTAL, U+2500) or ornamental dingbats like `"✦ ✦ ✦"` would be more in the Utext spirit.
+
+    Trivial one-line change.
+#. **Double underline**: the page explicitly demonstrates d̳o̳u̳b̳l̳e̳ underline using COMBINING DOUBLE LOW LINE (U+0333). Currently no Pandoc construct maps to this, but a `{.double-underline}` span class could trigger it.
+
+    Very cheap to add the character mapping; the question is what triggers it.
+#. **Header hierarchy**: all header levels render as bold. The page describes a progression: italic → underlined → bold → bold+underlined. Could differentiate: H1 = bold+underline, H2 = bold, H3 = italic+bold, H4+ = italic.
+
+    Small change to `renderBlock (Header level _ inlines)`.
+#. **Table rendering**: the page discusses box-drawing tables at length.
+
+    A minimal version: render each cell as plain text, separate columns with ` │ `, rows with newlines, and optionally a `─┼─` separator after the header row. Pandoc provides full table structure (headers, alignment, rows). Even a pipe-separated fallback (`a | b`) would beat dropping.
+#. **Fraktur / Script / Double-struck alphabet variants**: the page lists these as stylistic variations. Unicode provides Mathematical Fraktur (U+1D504), Script/Calligraphic (U+1D49C), Double-Struck (U+1D538).
+
+    Could be triggered by `{.fraktur}`, `{.script}`, `{.double-struck}` span classes, analogous to `{.smallcaps}`. Each needs a character mapping table like `boldChar`/`italicChar`.
+#. **Monochrome code syntax highlighting**: the page notes bold/italic/underline can reproduce ALGOL 60-style monochrome syntax highlighting.
+
+    Pandoc's `CodeBlock` carries language info and the `skylighting` library can tokenize. Map token types: keywords → bold, comments → italic, strings → underline, etc. All output stays in monospace (mathematical monospace bold, italic variants exist but are sparse).
+#. **ZWSP soft line-wrapping**: insert U+200B at word boundaries for viewers that don't word-wrap.
+#. **Soft hyphenation**: insert U+00AD SOFT HYPHEN using Knuth-Liang dictionaries. Same scope caveat as ZWSP.
+#. **Unicode Tags for comments**: the page describes using the Tags block (U+E0001--U+E007F) to embed invisible ASCII comments.
+#. **ASCII art headers / dropcaps**: the page envisions large headers rendered as text-art using FIGlet-style fonts, and dropcaps as boxed upscaled letters.
+
+    Deep rabbit hole; depends on an ASCII art font library.
+#. **LLM-based text rewriting for justification**: the page's most speculative feature: using LLMs to rewrite text with synonyms for better monospace justification.
+
+    Research project, not a compiler TODO.
+-}
 module Utext
   ( -- * Pure API (Math falls back to raw LaTeX)
     pandocToUtext
@@ -348,7 +382,7 @@ joinFigureParts :: Text -> Text -> Text
 joinFigureParts body cap
   | T.null body = cap
   | T.null cap  = body
-  | otherwise   = body <> " — " <> cap
+  | otherwise   = body <> "—" <> cap
 
 chooseText :: Text -> Text -> Text
 chooseText primary fallback
@@ -1052,4 +1086,3 @@ unsupportedTests =
   -- Definition list: best-effort "term: definition" rendering.
   , ("Term\n:   Definition"                     , "Term: Deﬁnition")
   ]
-

@@ -352,7 +352,7 @@ descField escape d d' = field d' $ \item -> do
                     Nothing -> noResult "no description field"
                     Just desc
                       | escape ->
-                          -- For <meta> tags (og:description, etc): render to plain Unicode text
+                          -- For <meta> tags (og:description, etc.): render to plain Unicode text
                           -- via Utext, stripping all HTML/Markdown formatting like <span> wrappers.
                           return $ escapeHtml $ T.unpack $ rawMarkdown2Utext (T.pack desc)
                       | otherwise ->

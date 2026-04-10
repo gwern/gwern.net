@@ -76,7 +76,9 @@ badStrings = setLike ["", " ", "Quanta Magazine", "OSF", "CAIDA Resource Catalog
      , "No Moods, Ads or Cutesy Fucking Icons", "Bloomberg", "PROSPERO", "archive.is", "Notion", "Yahoo", "inc.com"
      , "Colin Woodbury", "Machine Learning", "Discovery", "Client Challenge", "X Cancelled", "Minusx", "Mariano Gappa’s Blog"
      , "HAMIDI USA", "Shtetl-Optimized", "Signals and Threads", "The Yale Review", "archive.ph", "Renato Athaydes", "Rate limit"
-     , "The Anime Cafe", "life in a monospace typeface", "News Details", "GlyphDrawing.Club -blog", "Informasi Resmi Game Online Terkini Cuan", "Zotero", "Sign in - Google Accounts", "Virgin and Child", "Michael Wolf", "L.B.Stanza", "Blog Post - Alex Litzenberger"]
+     , "The Anime Cafe", "life in a monospace typeface", "News Details", "GlyphDrawing.Club -blog"
+     , "Informasi Resmi Game Online Terkini Cuan", "Zotero", "Sign in - Google Accounts", "Virgin and Child"
+     , "Michael Wolf", "L.B.Stanza", "Blog Post - Alex Litzenberger", "The American Society of Cinematographers"]
 
 -- A list of bad substrings to remove. Note this is used with `Utils.deleteMixedMany` to specialize down to either prefix or suffix deletion based on the trailing vs leading space (respectively). This should greatly reduce the risk of unintended deletions.
 -- Testing: unique list
@@ -192,4 +194,4 @@ stringDelete = setLike [" - The Public Domain Review"
             , "—by Scott Alexander", "Brian B.'s Climate Blog: ", "Fortunate Son: ", " - Sam Patterson"
             , " - Famous poems, famous poets. - All Poetry", " - Instructables", " - steph :)", " - Kotaku", " - Clarissa's Blog"
             , " - Unsung", " - The Shamblog", " - Felix Krause", " - apenwarr", "—Clear Language, Clear Mind", " - Project Play"
-            , "Haskell for all: ", " | Health &amp; wellbeing", " | Health & wellbeing", " - Project Zero"]
+            , "Haskell for all: ", " | Health &amp; wellbeing", " | Health & wellbeing", " - Project Zero", " - Armand D’Angour"]

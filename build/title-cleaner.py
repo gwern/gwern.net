@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-03-30 22:32:41 gwern"
+# When:  Time-stamp: "2026-04-10 23:27:30 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -900,6 +900,10 @@ About Us
 "What is a “good” memory corruption vulnerability?"
 - "https://www.bartaking.com/zen-zomics/hyakujos-fox/ <em>Hyakujo’s Fox</em> : Bart King: King Cartoon Electric"
 "<em>Hyakujo’s Fox</em>"
+- "https://theasc.com/articles/fantastic-voyage-creating-the-futurescape-for-the-fifth-element The American Society of Cinematographers"
+""
+- "https://www.armand-dangour.com/pindaric-odes/ Olympic Odes - Armand D’Angour"
+"Olympic Odes"
 
 Task:
 

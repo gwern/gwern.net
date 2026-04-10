@@ -906,6 +906,8 @@ canonicals = M.fromList $ setLike
   , ("Bellard", "Fabrice Bellard")
   , ("Avery Pennarun", "apenwarr")
   , ("Brett Taylor", "Bret Taylor")
+  , ("Benjamin Chess", "Ben Chess")
+  , ("Benjamin Mann", "Ben Mann")
   ]
 
 -- tests: unique
@@ -959,7 +961,7 @@ canonicalsWithInitials = setLike
   , "Hunter S. Thompson", "Robert C. Kaplan", "Richard N. Bergman", "Philip B. Mitchell", "Peter S. Chines"
   , "Patrick S. Li", "Noah D. Goodman", "Nitish Shirish Keskar", "Clint M. Sergi", "Mary K. Wojczynski"
   , "M. Saiful Bari", "Robert A. Freitas", "Roland G. Fryer", "Leslie Stephen Coles", "Mathew John Wedel"
-  , "Ralph S. Baric", "Jack D. Cowan", "Paul C. Bressloff", "Claire N. Spottiswoode"]
+  , "Ralph S. Baric", "Jack D. Cowan", "Paul C. Bressloff", "Claire N. Spottiswoode", "Clemens L. Winter", "Hervey M. Cleckley"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -2204,6 +2206,16 @@ authorLinkDB = M.fromList $
     , ("Claire N. Spottiswoode", "https://en.wikipedia.org/wiki/Claire_Spottiswoode")
     , ("Zhu Min", "https://en.wikipedia.org/wiki/Min_Zhu_(paleontologist)")
     , ("Michael Newman", "https://www.uu.se/en/department/organismal-biology/research/devonian-world/the-team/michael-newman-bsc")
+    , ("ChatGPT-3.5", "https://openai.com/blog/chatgpt/")
+    , ("GPT-3.5", "https://platform.openai.com/docs/models/gpt-3")
+    , ("Clemens L. Winter", "https://clemenswinter.com/")
+    , ("Christopher Berner", "https://www.cberner.com/about/")
+    , ("Mateusz Litwin", "https://scholar.google.com/citations?user=YTPyXHAAAAAJ")
+    , ("Ben Chess", "https://www.linkedin.com/in/ben-chess-69bba21")
+    , ("Jane Phillips", "https://scholar.google.com/citations?user=ogPewOkAAAAJ")
+    , ("Ben Mann", "https://scholar.google.com/citations?user=McBoXK0AAAAJ&hl=en&oi=ao")
+    , ("Melanie Subbiah", "https://melaniesubbiah.github.io/")
+    , ("Eric Sigler", "https://bigdatatechwarsaw.eu/prelegenci/eric-sigler/")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -2700,7 +2712,7 @@ authorWpLinkDB = setLike
     ,"Jan Pawlowski", "Jan Richter", "Jan Vijg", "Jan te Nijenhuis", "Jan van der Laan"
     ,"Jan-Emmanuel De Neve", "Jan-Eric Gustafsson", "Jan-\197ke Gustafsson", "Jane A. Cauley", "Jane C. Charlton"
     ,"Jane Cauley", "Jane Gibson", "Jane Greaves", "Jane Hurst", "Jane Hutton"
-    ,"Jane Kim", "Jane Loevinger", "Jane Murray", "Jane Phillips", "Jane Wardle"
+    ,"Jane Kim", "Jane Loevinger", "Jane Murray", "Jane Wardle"
     ,"Jane-Ling Wang", "Janet Coles", "Janet D. Elashoff", "Janet Kelso", "Janet M. Thornton"
     ,"Janet Pierrehumbert", "Janet Seeley", "Janet Shibley Hyde", "Janet Treasure", "Janey L. Wiggs"
     ,"Janice Chen", "Janice K. Kiecolt-Glaser", "Janina Jeff", "Janina M. Jeff", "Janos Galambos"
@@ -3502,4 +3514,4 @@ authorWpLinkDB = setLike
     , "Ulric Neisser", "Leila Chatti", "Bo Burnham", "Daniele Macuglia", "Morteza Dehghani", "Richard Creath"
     , "Nadine Dupérré", "Danica Kragic", "Aude Billard", "Thierry Depaulis", "Jorge Nuno Silva", "Eddie Duggan", "David Parlett"
     , "Bertram Gawronski", "Fei-Fei Li", "Euan Ashley", "John A. Long", "Elga Mark-Kurik",  "Per E. Ahlberg"
-    , "Roger Jones", "Kate Trinajstic"]
+    , "Roger Jones", "Kate Trinajstic", "Hervey M. Cleckley"]
