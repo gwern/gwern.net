@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-03-14 17:53:54 gwern"
+# When:  Time-stamp: "2026-04-11 00:22:16 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -546,34 +546,97 @@ crop-pad-black () { crop "$@" && pad-black "$@"; }
 
 # convert black background to white:  `mogrify -fuzz 5% -fill white -draw "color 0,0 floodfill"`
 
-# Image combination utilities: use ImageMagick to stitch together sets of images horizontally, vertically, or in grids.
+# Image combination utilities: use ImageMagick to stitch together sets of images into grids.
 #
-# Commands: 'combine', 'combiner'/'cr', 'combinev'/'cv', 'combinevr'/'cvr', 'combinev2r'/'cv2r', 'combinev2'/'cv2', 'combinev4'/'cv4', 'combineSquare', 'combine-unstack'/'combine-unstack-last'.
-# Mnemonics: 'r' for reverse command-line order ('combine 1.jpg 2.jpg' = 'combiner 2.jpg 1.jpg'); 'v' for 'stack vertically up-to-down rather than horizontally left-to-right'; '2' for '2 at a time' ('combine2 1.jpg 2.jpg 3.jpg 4.jpg ...' = 'combine 1.jpg 2.jpg && combine 3.jpg 4.jpg && ...') and '4' for '4 at a time (in a 2x2 grid). And 'combinev4' combines images intelligently, trying to combine in either 2x2 or 1x4 based on aspect ratio to achieve a square.
+# These helpers are how Gwern.net grids, screenshot mosaics, comic strips, and sample galleries
+# get assembled. They integrate with 'pad', 'upload', 'compressJPG', etc.: a typical workflow
+# might be 'pad *.jpg && cv4 && upload *.jpg' to pad, tile, and publish a batch of images.
 #
-# So, 'cv' stands for 'combine vertically'; 'cv2' means 'combine vertically in pairs, 1x2'; 'cv4' means 'combine in a 2x2 pattern'. 'combine' means 'combine horizontally left to right'. 'combiner' means 'combine horizontally in reverse order'. 'cv2r' means 'combine vertically like cv2 but #2 is on top and #1 is on bottom'.
-# For further convenience, if image arguments are not specified, they default to combining 'all images in the working directory'.
-# And they include a safeguard against images which are still being downloaded, as when mirroring or copying multiple large images from web browsers, sometimes it can take surprisingly long to write an image out to disk and operating on them would corrupt or truncate the final result.
+# DESIGN
+# ------
+# A single core command, 'combine', takes a layout pattern and a list of images.
+# The pattern is a tiny DSL: slot numbers (1-indexed, referring to images within a batch)
+# arranged left-to-right, with '-' as a row separator and '_' as an explicit blank cell.
+# Slot numbers may appear in any order, so reordering like '4 1 - 3 2' is valid. What is
+# disallowed is a sparse set like '1 3': batching is by the highest referenced slot, so that
+# would silently consume slot 2. Use '_' for a real blank cell instead.
+# The pattern tiles automatically across the input images, consuming the highest referenced
+# slot number per batch.
 #
-# These helper functions are how I make all the Gwern.net grids and combinations of screenshots and samples etc., and integrates with the other tools.
-# If I want to upload a bunch of dropcaps 8 at a time to the temp directory, say for Obormot to look at, I just do 'cv4 && cv2 && upload *.jpg'; then it'll print out a bunch of URLs which contain 4x2 grids and open them in Firefox etc.
-# If I want to save 4 newspaper comics from a paywall as a vertical strip with whitespace padding, for me it'd be something like right-click/click 4 times, `pad *.jpg && cv *.jpg && mv *.jpg 1975-berkeleybreathed-bloomcounty-unclebucktalkstotheyoungrepublicansondrugs.jpg && upload *.jpg humor`.
+#   combine PATTERN -- [FILES...]
+#
+# The '--' separates pattern from files. If FILES is omitted, all images in cwd are used
+# (sorted by version-sort). If '--' is absent entirely, all arguments are treated as files
+# and combined into a single horizontal row (legacy/convenience behavior).
+#
+# Output format is inferred from the first input file's extension. The first file in each
+# batch is overwritten with the combined result; the rest are deleted. Mismatched dimensions
+# are handled by centering on a black background.
+#
+# A download guard ('_combine_wait_ready') waits up to 50s for files still being written to
+# disk, preventing corruption when images are being saved from a browser concurrently.
+#
+# PATTERN DSL
+# -----------
+# Tokens:
+#   N    - slot number (1-indexed): which image in the current batch occupies this cell
+#   _    - explicit blank cell: black placeholder, does not consume an input image
+#   -    - row break: start a new row below
+#
+# Within a row, slots are joined horizontally (+append). Rows are stacked vertically (-append).
+# Slot numbers can appear in any order, enabling reversal/permutation without reordering the
+# file arguments themselves.
+#
+# EXAMPLES
+# --------
+#   combine -- *.jpg                   # all images in one horizontal row
+#   combine 1 2 -- *.jpg               # horizontal pairs, batched
+#   combine 1 - 2 -- *.jpg             # vertical pairs, batched
+#   combine 1 2 - 3 4 -- *.jpg         # 2×2 grid, batched
+#   combine 1 2 - 3 _ -- *.jpg         # 3-image 2×2 grid with blank lower-right
+#   combine 4 1 - 3 2 -- *.jpg         # 2×2 grid with batch-local permutation
+#   combine 2 1 -- a.jpg b.jpg         # horizontal pair, reversed order
+#   combine 1 - 2 - 3 - 4 -- *.jpg     # vertical stack of 4, batched
+#   combine a.jpg b.jpg c.jpg          # (no '--') horizontal, all at once
+#
+# Leftover images that don't fill a complete batch are skipped with a message.
+#
+# ALIASES
+# -------
+# Short wrappers for common patterns, for interactive muscle memory:
+#   combine2       →  combine 1 2 --              (horizontal pairs)
+#   combiner / cbr →  combine, file args reversed (horizontal, reversed)
+#   combinev / cv  →  combine 1 - 2 - ... - N --  (vertical, all)
+#   combinevr / cvr → combinev, file args reversed
+#   combinev2 / cv2 → combine 1 - 2 --            (vertical pairs)
+#   combinev2r/cv2r → combinev2, file args reversed
+#   combineSquare  →  combine 1 2 - 3 4 --        (2×2 grid)
+#   combinev4 / cv4 → smart: per batch, picks 2×2 (or 3+blank) vs 1×4 / 1×3
+#
+# SEPARATE COMMANDS (not part of the DSL)
+# ----------------------------------------
+# combine-unstack       - destructive crop: split a 2×2 grid image into 4 tiles, re-stack as 1×4
+# combine-unstack-last  - same, but delete the 4th tile (assumed blank) before re-stacking
+# These operate on the image file itself (mogrify), not on multiple files.
+#
+# GIF files are excluded from auto-discovery because they may be animations requiring
+# special handling (conversion to MP4, frame extraction, etc.).
 
-# Helper function to get image files without white-spacing/weird characters worries (NOTE: assumes no newlines in filenames; GIF excluded due to potential for animations which require special handling and user input to decide whether to convert to MP4 or JPG, etc.):
+# Collect image files in cwd into a named Bash array variable (default: REPLY).
+# Usage: get_image_files myarray  →  populates $myarray; get_image_files  →  populates $REPLY.
+# Finds .jpg/.jpeg/.png/.webp/.avif (non-recursive, version-sorted). GIF excluded because
+# animations need special handling (MP4 conversion, frame extraction). Assumes no newlines in filenames.
 get_image_files () {
-    mapfile -t "$1" < <(find . -maxdepth 1 -type f \
-                             \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" -o -iname "*.avif" \) \
-                            | sort --version-sort)
+    local _varname="${1:-REPLY}"
+    mapfile -t "$_varname" < <(find . -maxdepth 1 -type f                              \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" -o -iname "*.avif" \)                             | sort --version-sort)
 }
 get_ext () {
     local f="$1"
-    # Check if filename contains a dot
     if [[ "$f" != *.* ]]; then
         red "Error: File '$f' has no extension. Cannot determine output format." >&2
         return 1
     fi
     local extension="${f##*.}"
-    # Check for empty extension (e.g. "file.")
     if [[ -z "$extension" ]]; then
         red "Error: File '$f' has an empty extension." >&2
         return 1
@@ -581,210 +644,472 @@ get_ext () {
     echo "$extension"
 }
 
-# combine images left-right: use ImageMagick to stitch together horizontally _n_ images, overwriting the first and deleting the rest; mostly useful for concatenating two images A B = A++B.
-#
-# NOTE: no 'c' alias analogous to 'cv', because that collides with a pre-existing 'cd' alias shortcut
-combine () { local args=("$@")
-    if [ ${#args[@]} -eq 0 ]; then
-        get_image_files args
+# Wait for a file to exist, be non-empty, and remain untouched for ~3s.
+# Second argument is a timeout in seconds, unlike the global 'is_downloading' helper.
+_combine_wait_ready () {
+    local file="$1"
+    local timeout="${2:-50}"
+    local deadline=$((SECONDS + timeout))
+    local modified elapsed
+
+    while true; do
+        if [[ -s "$file" ]]; then
+            modified=$(stat -c %Y "$file") || return 1
+            elapsed=$(( $(date +%s) - modified ))
+            if (( elapsed >= 3 )); then
+                return 0
+            fi
+        fi
+        if (( SECONDS >= deadline )); then
+            red "combine: timed out waiting for '$file' to finish being written." >&2
+            return 1
+        fi
+        sleep 1
+    done
+}
+
+# Make a black blank tile matching the reference image dimensions.
+_combine_make_blank () {
+    local ref="$1"
+    local ext="$2"
+    local T w h
+
+    read -r w h < <(identify -ping -format "%w %h" -- "$ref" 2>/dev/null)
+    if [[ -z "$w" || -z "$h" ]]; then
+        red "combine: failed to read dimensions of blank reference '$ref'." >&2
+        return 1
     fi
-    if [ ${#args[@]} -lt 2 ]; then
-        red "combine: ≥2 arguments required but not supplied; erroring out." >&2 && return 1
+
+    T=$(mktemp "/tmp/XXXXXXX.$ext") || return 1
+    if convert -size "${w}x${h}" xc:black "$T"; then
+        echo "$T"
     else
-        for IMG in "${args[@]}"; do is_downloading "$IMG" 50 || return 2; done
+        rm --force -- "$T"
+        return 1
+    fi
+}
+
+# ── Core combiner ──────────────────────────────────────────────────────────
+#
+# combine [PATTERN...] [-- [FILES...]]
+#
+# PATTERN tokens: positive integers (slot numbers), '_' (explicit blank cells), and '-'
+# (row separator). If '--' is absent, all arguments are treated as files and combined
+# horizontally (legacy). If FILES is empty after '--', defaults to all images in cwd.
+# If PATTERN is empty (bare 'combine -- ...'), combines all files horizontally.
+combine () {
+    local -a pattern=() files=() rows=()
+    local seen_sep=false
+    local arg i token current_row="" max_slot=0 last_token_was_row_break=false
+    local -a slot_seen=()
+
+    # ── parse: split on '--' ──
+    for arg in "$@"; do
+        if [[ "$arg" == "--" ]]; then
+            seen_sep=true
+            continue
+        fi
+        if $seen_sep; then
+            files+=("$arg")
+        else
+            pattern+=("$arg")
+        fi
+    done
+
+    # No '--': legacy mode, all args are files, horizontal combine-all.
+    if ! $seen_sep; then
+        files=("${pattern[@]}")
+        pattern=()
+    fi
+
+    # Default files: all images in cwd.
+    if (( ${#files[@]} == 0 )); then
+        get_image_files files
+    fi
+    if (( ${#files[@]} == 0 )); then
+        red "combine: no images found." >&2
+        return 1
+    fi
+    if (( ${#files[@]} == 1 )); then
+        red "combine: ≥2 images required but got 1." >&2
+        return 1
+    fi
+
+    # Default pattern: single row of all files (horizontal combine-all).
+    if (( ${#pattern[@]} == 0 )); then
+        for ((i=1; i<=${#files[@]}; i++)); do
+            pattern+=("$i")
+        done
+    fi
+
+    # ── parse pattern into rows and batch_size ──
+    for token in "${pattern[@]}"; do
+        if [[ "$token" == "-" ]]; then
+            if [[ -z "$current_row" ]]; then
+                red "combine: empty row in pattern." >&2
+                return 1
+            fi
+            rows+=("$current_row")
+            current_row=""
+            last_token_was_row_break=true
+        elif [[ "$token" == "_" ]]; then
+            current_row+="${current_row:+ }_"
+            last_token_was_row_break=false
+        elif [[ "$token" =~ ^[0-9]+$ ]] && (( token >= 1 )); then
+            current_row+="${current_row:+ }$token"
+            (( token > max_slot )) && max_slot=$token
+            slot_seen[token]=1
+            last_token_was_row_break=false
+        else
+            red "combine: invalid pattern token '$token'." >&2
+            return 1
+        fi
+    done
+    if $last_token_was_row_break; then
+        red "combine: pattern cannot end with '-'." >&2
+        return 1
+    fi
+    [[ -n "$current_row" ]] && rows+=("$current_row")
+
+    if (( ${#rows[@]} == 0 )); then
+        red "combine: empty or invalid pattern." >&2
+        return 1
+    fi
+    if (( max_slot == 0 )); then
+        red "combine: pattern references no images; use numeric slots as well as '_' blanks." >&2
+        return 1
+    fi
+    for ((i=1; i<=max_slot; i++)); do
+        if [[ -z "${slot_seen[i]:-}" ]]; then
+            red "combine: sparse slot set; missing slot ${i} between 1 and ${max_slot}. Reordering is fine, but sparse numbering like '1 3' is ambiguous; use '_' for blanks." >&2
+            return 1
+        fi
+    done
+
+    local batch_size=$max_slot
+
+    # ── download guard ──
+    local IMG
+    for IMG in "${files[@]}"; do
+        _combine_wait_ready "$IMG" 50 || return 2
+    done
+
+    # ── process batches ──
+    local offset=0
+    local processed_any=false
+    while (( offset + batch_size <= ${#files[@]} )); do
+        local -a batch=("${files[@]:offset:batch_size}")
         local ext
-        ext=$(get_ext "${args[0]}") || return 1
-        local TARGET=$(mktemp "/tmp/XXXXXXX.$ext")
-        convert -background black -gravity center +append -- "${args[@]}" "$TARGET" && \
-            (mv -- "$TARGET" "${args[0]}" && rm -- "${args[@]:1}") || { rm --force -- "$TARGET"; return 3; }
-    fi; }
-# convenience: reverse of `combine`, for A B C = C++B++A
-combiner () {
+        ext=$(get_ext "${batch[0]}") || return 1
+
+        # Build each row via +append, then stack rows via -append.
+        local -a row_temps=()
+        local ok=true
+        local row row_ref T target
+        for row in "${rows[@]}"; do
+            local -a slots=() row_files=() row_generated=()
+            local slot blank_temp
+
+            read -ra slots <<< "$row"
+            row_ref="${batch[0]}"
+            for slot in "${slots[@]}"; do
+                if [[ "$slot" != "_" ]]; then
+                    row_ref="${batch[$((slot - 1))]}"
+                    break
+                fi
+            done
+
+            for slot in "${slots[@]}"; do
+                if [[ "$slot" == "_" ]]; then
+                    blank_temp=$(_combine_make_blank "$row_ref" "$ext") || {
+                        ok=false
+                        break
+                    }
+                    row_files+=("$blank_temp")
+                    row_generated+=("$blank_temp")
+                else
+                    row_files+=("${batch[$((slot - 1))]}")
+                fi
+            done
+            if ! $ok; then
+                if (( ${#row_generated[@]} > 0 )); then
+                    rm --force -- "${row_generated[@]}"
+                fi
+                break
+            fi
+
+            T=$(mktemp "/tmp/combine-row-XXXXXX.${ext}") || {
+                if (( ${#row_generated[@]} > 0 )); then
+                    rm --force -- "${row_generated[@]}"
+                fi
+                return 1
+            }
+            if (( ${#row_files[@]} == 1 )); then
+                cp -- "${row_files[0]}" "$T" || ok=false
+            else
+                convert -background black -gravity center +append -- "${row_files[@]}" "$T" || ok=false
+            fi
+
+            if (( ${#row_generated[@]} > 0 )); then
+                rm --force -- "${row_generated[@]}"
+            fi
+
+            if $ok; then
+                row_temps+=("$T")
+            else
+                rm --force -- "$T"
+                break
+            fi
+        done
+
+        if ! $ok; then
+            if (( ${#row_temps[@]} > 0 )); then
+                rm --force -- "${row_temps[@]}"
+            fi
+            return 3
+        fi
+
+        target=$(mktemp "/tmp/combine-target-XXXXXX.${ext}") || {
+            if (( ${#row_temps[@]} > 0 )); then
+                rm --force -- "${row_temps[@]}"
+            fi
+            return 1
+        }
+        if (( ${#row_temps[@]} == 1 )); then
+            mv -- "${row_temps[0]}" "$target"
+        else
+            if ! convert -background black -gravity center -append -- "${row_temps[@]}" "$target"; then
+                rm --force -- "$target" "${row_temps[@]}"
+                return 3
+            fi
+            rm --force -- "${row_temps[@]}"
+        fi
+
+        if ! mv -- "$target" "${batch[0]}"; then
+            rm --force -- "$target"
+            return 3
+        fi
+        if (( ${#batch[@]} > 1 )); then
+            rm -- "${batch[@]:1}" || return 3
+        fi
+
+        processed_any=true
+        offset=$((offset + batch_size))
+    done
+
+    # Leftovers
+    local leftover=$(( ${#files[@]} - offset ))
+    if (( leftover > 0 )); then
+        local -a skipped=("${files[@]:offset}")
+        echo "(Skipping ${leftover} leftover image(s): ${skipped[*]})"
+        if ! $processed_any; then
+            return 1
+        fi
+    fi
+}
+
+# ── Wrappers ───────────────────────────────────────────────────────────────
+
+# Build a pattern string dynamically: _combine_all_pattern N "-" → "1 - 2 - ... - N"
+#                                      _combine_all_pattern N ""  → "1 2 ... N"
+_combine_all_pattern () {
+    local n="$1"
+    local sep="${2:-}"
+    local i
+    local pattern=()
+
+    for ((i=1; i<=n; i++)); do
+        pattern+=("$i")
+        if [[ -n "$sep" ]] && (( i < n )); then
+            pattern+=("$sep")
+        fi
+    done
+    echo "${pattern[*]}"
+}
+
+# Reverse file args, then delegate.
+_combine_reversed () {
+    local wrapper="$1"
+    shift
+
     local args=("$@")
-    if [ ${#args[@]} -eq 0 ]; then
+    local reversed=()
+    local i
+
+    if (( ${#args[@]} == 0 )); then
         get_image_files args
     fi
-    local reversed=()
     for ((i=${#args[@]}-1; i>=0; i--)); do
         reversed+=("${args[i]}")
     done
-    combine "${reversed[@]}"
+    "$wrapper" "${reversed[@]}"
 }
-alias cr="combiner"
 
-# combine vertically
+# Fail loudly when explicitly supplied files cannot fill whole fixed-size batches.
+_combine_require_explicit_multiple () {
+    local batch_size="$1"
+    shift
+
+    if (( $# == 0 )); then
+        return 0
+    fi
+    if (( $# < batch_size || $# % batch_size != 0 )); then
+        red "combine: explicit file count $# is not a multiple of ${batch_size}." >&2
+        return 1
+    fi
+}
+
+# combine vertically (all images into one column)
 combinev () {
- local args=("$@")
-    if [ ${#args[@]} -eq 0 ]; then
+    local args=("$@")
+    local pat_str
+    local pat=()
+
+    if (( ${#args[@]} == 0 )); then
+        get_image_files args
+    fi
+    pat_str=$(_combine_all_pattern "${#args[@]}" "-")
+    read -ra pat <<< "$pat_str"
+    combine "${pat[@]}" -- "${args[@]}"
+}
+alias cv="combinev"
+
+# combine horizontally, reversed
+combiner () { _combine_reversed combine "$@"; }
+alias cbr="combiner" # we can't use 'cr' because that collides with 'crossref'
+
+# combine vertically, reversed
+combinevr () { _combine_reversed combinev "$@"; }
+alias cvr="combinevr"
+
+# combine horizontally in pairs
+combine2 () {
+    _combine_require_explicit_multiple 2 "$@" || return 1
+    combine 1 2 -- "$@"
+}
+alias c2="combine2"
+
+# combine vertically in pairs
+combinev2 () {
+    _combine_require_explicit_multiple 2 "$@" || return 1
+    combine 1 - 2 -- "$@"
+}
+alias cv2="combinev2"
+
+# combine vertically in pairs, reversed
+combinev2r () { _combine_reversed combinev2 "$@"; }
+alias cv2r="combinev2r"
+
+# 2×2 grid, batched
+combineSquare () {
+    _combine_require_explicit_multiple 4 "$@" || return 1
+    combine 1 2 - 3 4 -- "$@"
+}
+
+# True if every image in the batch is wider than tall.
+_combine_batch_is_wide () {
+    local img w h
+    for img in "$@"; do
+        _combine_wait_ready "$img" 50 || return 2
+        read -r w h < <(identify -ping -format "%w %h" -- "$img" 2>/dev/null)
+        if [[ -z "$w" || -z "$h" ]]; then
+            red "combinev4: failed to read dimensions of '$img'." >&2
+            return 2
+        fi
+        if (( w <= h )); then
+            return 1
+        fi
+    done
+    return 0
+}
+
+_combinev4_next_chunk_size () {
+    local remaining="$1"
+    case "$remaining" in
+        2|3|4)
+            echo "$remaining"
+            ;;
+        *)
+            if (( remaining - 4 == 1 )); then
+                echo 3
+            else
+                echo 4
+            fi
+            ;;
+    esac
+}
+
+_combinev4_run_batch () {
+    local batch=("$@")
+    local pattern=()
+
+    case ${#batch[@]} in
+        2)
+            pattern=(1 - 2)
+            ;;
+        3)
+            if _combine_batch_is_wide "${batch[@]}"; then
+                pattern=(1 - 2 - 3)
+            else
+                pattern=(1 2 - 3 _)
+            fi
+            ;;
+        4)
+            if _combine_batch_is_wide "${batch[@]}"; then
+                pattern=(1 - 2 - 3 - 4)
+            else
+                pattern=(1 2 - 3 4)
+            fi
+            ;;
+        *)
+            red "combinev4: expected 2-4 images in a batch, got ${#batch[@]}." >&2
+            return 1
+            ;;
+    esac
+
+    combine "${pattern[@]}" -- "${batch[@]}"
+}
+
+# Smart 2×2 or 1×4 based on aspect ratio, decided per batch.
+combinev4 () {
+    local args=("$@")
+    local offset=0 remaining chunk_size
+    local batch=()
+
+    if (( ${#args[@]} == 0 )); then
         get_image_files args
     fi
     if (( ${#args[@]} < 2 )); then
-        red "Need at least 2 files, exiting."
+        red "combinev4: ≥2 images required but got ${#args[@]}." >&2
         return 1
     fi
 
-    for IMG in "${args[@]}"; do is_downloading "$IMG" 50 || return 2; done
-        local ext
-        ext=$(get_ext "${args[0]}") || return 1
-        local TARGET
-        TARGET=$(mktemp "/tmp/XXXXXXX.$ext")
-    convert -background black -gravity center -append -- "${args[@]}" "$TARGET" && (mv -- "$TARGET" "${args[0]}" && rm -- "${args[@]:1}") \
-        || { rm --force -- "$TARGET"; return 3; }; }
-alias cv="combinev"
-combineSquare () {
-    local args=("$@")
-    if [ ${#args[@]} -eq 0 ]; then get_image_files args; fi
-    if [ ${#args[@]} -eq 0 ]; then red "No image arguments available! Exiting." && return 1; fi
-
-    # If < 4, we can't make a 2x2 square. Warn and exit (or you could fallback to combinev2?)
-    if [ ${#args[@]} -lt 4 ]; then
-        echo "combineSquare: ≥4 arguments required to make a square; stopping." >&2 && return 0
-    fi
-
-    for IMG in "${args[@]}"; do is_downloading "$IMG" 50 || return 2; done
-
-    # Take only the first 4 images
-    local first_four=("${args[@]:0:4}")
-    local ext
-    ext=$(get_ext "${args[0]}") || return 1
-    local TARGET
-    TARGET=$(mktemp "/tmp/XXXXXXX.$ext")
-
-    montage -background black -tile 2x2 -geometry +2+2 -- "${first_four[@]}" "$TARGET" && \
-        (mv -- "$TARGET" "${first_four[0]}" && rm -- "${first_four[@]:1}") || { rm --force -- "$TARGET"; return 3; }
-
-    # Recursion: process remaining images
-    if [ ${#args[@]} -gt 4 ]; then
-        local remaining=("${args[@]:4}")
-        combineSquare "${remaining[@]}"
-    fi
-}
-# if passed 3 images, it will combine them into a 2x2 with a lower-right black square or if all are wide, 1x3:
-combinev4 () {
-   local args=("$@")
-    if [ ${#args[@]} -eq 0 ]; then
-        get_image_files args
-    fi
-    for IMG in "${args[@]}"; do is_downloading "$IMG" 50 || return 2; done
-    if [ ${#args[@]} -eq 2 ]; then
-        combinev2 "${args[@]:0:2}"
-        return 0
-        # we may have processed all available images so we're done:
-    elif [ ${#args[@]} -lt 3 ]; then
-        echo "(Skipping final leftover images: ${args[*]})"
-        return 0
-    fi
-    # Take only the first 3–4 images
-    local first_four=("${args[@]:0:4}")
-    local ext
-    ext=$(get_ext "${args[0]}") || return 1
-    local TARGET
-    TARGET=$(mktemp "/tmp/XXXXXXX.$ext")
-
-    # Check if images are wider than they are tall
-    local is_wide=true
-    for img in "${first_four[@]}"; do
-        read -r w h < <(identify -format "%w %h" -- "$img" 2>/dev/null)
-        if [[ -z "$w" || -z "$h" ]]; then
-            red "combinev4: Failed to read dimensions of $img; this should never happen, so erroring out rather than continuing any further!" >&2
-            return 1
-        fi
-        if (( w <= h )); then
-            is_wide=false
-            break
-        fi
+    while (( offset < ${#args[@]} )); do
+        remaining=$(( ${#args[@]} - offset ))
+        chunk_size=$(_combinev4_next_chunk_size "$remaining")
+        batch=("${args[@]:offset:chunk_size}")
+        _combinev4_run_batch "${batch[@]}" || return $?
+        offset=$((offset + chunk_size))
     done
-
-    if $is_wide; then
-        # For wide images, combine vertically (1x4)
-        convert -background black -gravity center -append -- "${first_four[@]}" "$TARGET"
-    else
-        # For square or tall images, use the original 2x2 layout
-        montage -background black -tile 2x2 -geometry +2+2 -- "${first_four[@]}" "$TARGET"
-    fi && mv -- "$TARGET" "${first_four[0]}" &&
-        rm -- "${first_four[@]:1}" || { rm --force -- "$TARGET"; return 3; }
-    # If there are remaining arguments, call combinev4 again
-    if [ ${#args[@]} -gt 4 ]; then # WARNING: do not use `shift`!
-        local remaining=("${args[@]:4}")  # Create new array with remaining elements
-        combinev4 "${remaining[@]}"       # Pass the array elements correctly
-    fi
 }
 alias cv4="combinev4"
 
-# combine pairs of arbitrarily many images vertically in Imagemagick with no border, but if not identical width, center with a black background:
-combinev2 () {
-    local args=("$@")
-    if [ ${#args[@]} -eq 0 ]; then
-        get_image_files args
-    fi
-    if [ ${#args[@]} -eq 0 ]; then
-        red "combinev2: At least 2 images are required but received no explicit or implicit image arguments!" >&2
-        return 1
-    fi
-    if [ ${#args[@]} -eq 1 ]; then
-        echo "Only 1 image available, perhaps a left-over? Exiting."
-        return 0
-    fi
-    for IMG in "${args[@]}"; do is_downloading "$IMG" 50 || return 2; done
-    # Take only the first 2 images
-    local first_two=("${args[@]:0:2}")
-    local ext
-    ext=$(get_ext "${args[0]}") || return 1
-    local TARGET
-    TARGET=$(mktemp "/tmp/XXXXXXX.$ext")
-    convert -background black -gravity center -append -- "${first_two[@]}" "$TARGET" &&
-    (mv -- "$TARGET" "${first_two[0]}" &&
-         rm -- "${first_two[1]}") || { rm --force -- "$TARGET"; return 3; };
-    # If there are remaining arguments, call 'combinev2' again
-    if [ ${#args[@]} -gt 2 ]; then # WARNING: cannot just call `shift`
-        local remaining=("${args[@]:2}")
-        combinev2 "${remaining[@]}"
-    fi; }
-# [A,B,C,D] → [D,C,B,A]; then pairing yields (D-over-C), (B-over-A)
-combinev2r () {
-    local args=("$@")
-    if [ ${#args[@]} -eq 0 ]; then
-        get_image_files args
-    fi;
-    local reversed=()
-    for ((i=${#args[@]}-1; i>=0; i--)); do
-        reversed+=("${args[i]}")
-    done
-    combinev2 "${reversed[@]}"; }
-alias cv2="combinev2"
-alias cv2r="combinev2r"
-
-combinevr () {
-    local args=("$@")
-    [[ ${#args[@]} -eq 0 ]] && get_image_files args
-
-    local reversed=()
-    for ((i=${#args[@]}-1; i>=0; i--)); do
-        reversed+=("${args[i]}")
-    done
-    combinev "${reversed[@]}"
-}
-alias cvr="combinevr"
-
+# ── Unstacking (destructive crops, not compositions) ───────────────────────
 # used in feh:
-# rotate a 2x2=4 images → 1x4
+# rotate a 2×2=4 images → 1×4
 combine-unstack () {
     local args=("$@")
-    if [ ${#args[@]} -eq 0 ]; then
-        get_image_files args
-    fi
-
-    for IMG in "${args[@]}"; do is_downloading "$IMG" 50 || return 2; done
-    for FILE in "${args[@]}"; do mogrify -crop 50%x50% +repage -append -- "$FILE"; done; }
+    if (( ${#args[@]} == 0 )); then get_image_files args; fi
+    for IMG in "${args[@]}"; do _combine_wait_ready "$IMG" 50 || return 2; done
+    for FILE in "${args[@]}"; do mogrify -crop 50%x50% +repage -append -- "$FILE"; done
+}
 # rotate, and delete the last square, under the assumption that it is a 4-square with a blank black final square:
 combine-unstack-last () {
     local args=("$@")
-    if [ ${#args[@]} -eq 0 ]; then
-        get_image_files args
-    fi
-
-    for IMG in "${args[@]}"; do is_downloading "$IMG" 50 || return 2; done
-    for FILE in "${args[@]}"; do mogrify -crop 50%x50% +repage -delete 3 -append -- "$FILE"; done; }
+    if (( ${#args[@]} == 0 )); then get_image_files args; fi
+    for IMG in "${args[@]}"; do _combine_wait_ready "$IMG" 50 || return 2; done
+    for FILE in "${args[@]}"; do mogrify -crop 50%x50% +repage -delete 3 -append -- "$FILE"; done
+}
 
 # convert an animated GIF to MP4; MP4s are preferred on Gwern.net for efficiency and controllability.
 # Uses H.264 with web-optimized settings (faststart, yuv420p, CRF 23).
