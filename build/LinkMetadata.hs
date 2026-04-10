@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2026-03-22 17:50:43 gwern"
+When:  Time-stamp: "2026-04-10 22:56:37 gwern"
 License: CC-0
 -}
 
@@ -637,16 +637,16 @@ addClassPopupNot miscMetadata x = case lookup "css-extension" miscMetadata of
                                     Nothing        -> x
 
 -- checks if a Link was recently modified & sets a '.link-modified-recently' class (with usual negation '.link-modified-recently-not') for CSS styling.
--- Exclusions: indexes/tag-directories, because they churn far too frequently (and contain intrinsically dated contents) to be worth highlighting to readers.
+-- Exclusions: indexes/tag-directories, because they churn far too frequently (and contain intrinsically dated contents) to be worth highlighting to readers; Wikipedia links (too numerous).
 addRecentlyChanged :: MetadataItem -> Inline -> Inline
-addRecentlyChanged (_,_,_,"",       _,_,_) x = x
-addRecentlyChanged (_,_,_,dtChanged,_,_,_) x@(Link _ _ (url,_)) =
-  if dtChanged < C.currentMonthAgo || hasClass "link-modified-recently-not" x || "/index" `T.isInfixOf` url then x
+addRecentlyChanged (_,_,_,"",       _,_,_) x                     = x
+addRecentlyChanged (u,_,_,dtChanged,_,_,_) x@(Link _ _ (url,_))  =
+  if dtChanged < C.currentMonthAgo || hasClass "link-modified-recently-not" x || "/index" `T.isInfixOf` url || "wikipedia.org/wiki/" `isInfixOf` u then x
   else addClass "link-modified-recently" x
 addRecentlyChanged (_,_,_,dtChanged,_,_,_) x@(Image _ _ (url,_)) =
   if dtChanged < C.currentMonthAgo || hasClass "image-modified-recently-not" x || "/index" `T.isInfixOf` url then x
   else addClass "image-modified-recently" x
-addRecentlyChanged _ x = x
+addRecentlyChanged _ x                                           = x
 
 -- was this link given either a partial or full annotation?
 wasAnnotated :: Inline -> Bool
