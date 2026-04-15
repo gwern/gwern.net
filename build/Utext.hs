@@ -2,7 +2,7 @@
 -- | Utext: compile Pandoc AST to Unicode-rich plain text.
 -- Author: gwern
 -- Date: 2026-04-06
--- When: Time-stamp: "2026-04-08 15:29:38 gwern"
+-- When: Time-stamp: "2026-04-14 20:11:01 gwern"
 -- License: CC-0
 --
 -- Intended for social media cards, Open Graph descriptions, and other contexts
@@ -158,7 +158,7 @@ import Text.Pandoc.Walk (walkM)
 -----------------------------------------------------------------------
 
 renderPandoc :: Pandoc -> Text
-renderPandoc (Pandoc _meta blocks) = renderBlocks defaultStyle blocks
+renderPandoc (Pandoc _meta blocks) = renderBlocks (Style True True) blocks -- disable ligatures by default
 
 -- | Render a Pandoc document to Utext.
 pandocToUtext :: Pandoc -> Text
