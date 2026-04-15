@@ -2,7 +2,7 @@
 -- | Utext: compile Pandoc AST to Unicode-rich plain text.
 -- Author: gwern
 -- Date: 2026-04-06
--- When: Time-stamp: "2026-04-14 20:11:01 gwern"
+-- When: Time-stamp: "2026-04-15 14:20:21 gwern"
 -- License: CC-0
 --
 -- Intended for social media cards, Open Graph descriptions, and other contexts
@@ -158,7 +158,7 @@ import Text.Pandoc.Walk (walkM)
 -----------------------------------------------------------------------
 
 renderPandoc :: Pandoc -> Text
-renderPandoc (Pandoc _meta blocks) = renderBlocks (Style True True) blocks -- disable ligatures by default
+renderPandoc (Pandoc _meta blocks) = renderBlocks defaultStyle blocks
 
 -- | Render a Pandoc document to Utext.
 pandocToUtext :: Pandoc -> Text
@@ -307,10 +307,11 @@ latexToUtextViaScript tex = do
 data Style = Style
   { sBold   :: !Bool
   , sItalic :: !Bool
+  , sLigature :: !Bool
   } deriving (Eq, Show)
 
 defaultStyle :: Style
-defaultStyle = Style False False
+defaultStyle = Style False False True
 
 -----------------------------------------------------------------------
 -- Block rendering
@@ -527,9 +528,7 @@ renderInlinePlain (Cite _ inlines)             = renderPlainInlines inlines
 
 -- Supported inline constructs. Unsupported ones degrade gracefully with trace warnings.
 renderInline :: Style -> Inline -> Text
-renderInline s (Str t)
-  | s == defaultStyle = applyLigatures t
-  | otherwise         = T.map (styleChar s) t
+renderInline s (Str t) = renderStyledText s t
 renderInline s (Emph inlines)         = renderInlines (s { sItalic = True }) inlines
 renderInline s (Strong inlines)       = renderInlines (s { sBold = True }) inlines
 renderInline s (Underline inlines)    = applyCombining '\x0332' (renderInlines s inlines)
@@ -567,6 +566,13 @@ renderInline _ (Math _fmt t)         = traceWarnT  "unsupported Math (raw LaTeX 
 renderInline s (Image _ inlines (url, title)) =
   renderParenthesizedTarget (renderInlines s inlines) url title
 renderInline s (Cite _ inlines)      = traceWarn   "lossy Cite fallback (visible text only)" (renderInlines s inlines)
+
+renderStyledText :: Style -> Text -> Text
+renderStyledText s t =
+  let styled = T.map (styleChar s) t
+  in if sLigature s
+       then applyLigatures styled
+       else styled
 
 -- | Apply a single combining mark after every codepoint in the input.
 applyCombining :: Char -> Text -> Text
@@ -617,10 +623,10 @@ blocksToInlines = concatMap blockToInlines
 -----------------------------------------------------------------------
 
 styleChar :: Style -> Char -> Char
-styleChar (Style True  True)  = boldItalicChar
-styleChar (Style True  False) = boldChar
-styleChar (Style False True)  = italicChar
-styleChar (Style False False) = id
+styleChar (Style True  True _)  = boldItalicChar
+styleChar (Style True  False _) = boldChar
+styleChar (Style False True _)  = italicChar
+styleChar (Style False False _) = id
 
 -- | Serif bold: U+1D400 (A), U+1D41A (a), U+1D7CE (0)
 boldChar :: Char -> Char
