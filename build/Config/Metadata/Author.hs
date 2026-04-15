@@ -2213,7 +2213,7 @@ authorLinkDB = M.fromList $
     , ("Mateusz Litwin", "https://scholar.google.com/citations?user=YTPyXHAAAAAJ")
     , ("Ben Chess", "https://www.linkedin.com/in/ben-chess-69bba21")
     , ("Jane Phillips", "https://scholar.google.com/citations?user=ogPewOkAAAAJ")
-    , ("Ben Mann", "https://scholar.google.com/citations?user=McBoXK0AAAAJ&hl=en&oi=ao")
+    , ("Ben Mann", "https://scholar.google.com/citations?user=McBoXK0AAAAJ")
     , ("Melanie Subbiah", "https://melaniesubbiah.github.io/")
     , ("Eric Sigler", "https://bigdatatechwarsaw.eu/prelegenci/eric-sigler/")
     ]
@@ -3514,4 +3514,4 @@ authorWpLinkDB = setLike
     , "Ulric Neisser", "Leila Chatti", "Bo Burnham", "Daniele Macuglia", "Morteza Dehghani", "Richard Creath"
     , "Nadine Dupérré", "Danica Kragic", "Aude Billard", "Thierry Depaulis", "Jorge Nuno Silva", "Eddie Duggan", "David Parlett"
     , "Bertram Gawronski", "Fei-Fei Li", "Euan Ashley", "John A. Long", "Elga Mark-Kurik",  "Per E. Ahlberg"
-    , "Roger Jones", "Kate Trinajstic", "Hervey M. Cleckley"]
+    , "Roger Jones", "Kate Trinajstic", "Hervey M. Cleckley", "May Berenbaum"]
