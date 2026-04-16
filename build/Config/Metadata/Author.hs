@@ -961,7 +961,8 @@ canonicalsWithInitials = setLike
   , "Hunter S. Thompson", "Robert C. Kaplan", "Richard N. Bergman", "Philip B. Mitchell", "Peter S. Chines"
   , "Patrick S. Li", "Noah D. Goodman", "Nitish Shirish Keskar", "Clint M. Sergi", "Mary K. Wojczynski"
   , "M. Saiful Bari", "Robert A. Freitas", "Roland G. Fryer", "Leslie Stephen Coles", "Mathew John Wedel"
-  , "Ralph S. Baric", "Jack D. Cowan", "Paul C. Bressloff", "Claire N. Spottiswoode", "Clemens L. Winter", "Hervey M. Cleckley"]
+  , "Ralph S. Baric", "Jack D. Cowan", "Paul C. Bressloff", "Claire N. Spottiswoode", "Clemens L. Winter"
+  , "Hervey M. Cleckley", "Miriam A. Mosing", "Murray B. Stein"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -2213,9 +2214,15 @@ authorLinkDB = M.fromList $
     , ("Mateusz Litwin", "https://scholar.google.com/citations?user=YTPyXHAAAAAJ")
     , ("Ben Chess", "https://www.linkedin.com/in/ben-chess-69bba21")
     , ("Jane Phillips", "https://scholar.google.com/citations?user=ogPewOkAAAAJ")
-    , ("Ben Mann", "https://scholar.google.com/citations?user=McBoXK0AAAAJ&hl=en&oi=ao")
+    , ("Ben Mann", "https://scholar.google.com/citations?user=McBoXK0AAAAJ")
     , ("Melanie Subbiah", "https://melaniesubbiah.github.io/")
     , ("Eric Sigler", "https://bigdatatechwarsaw.eu/prelegenci/eric-sigler/")
+    , ("Miriam A. Mosing", "https://ki.se/en/people/miriam-mosing")
+    , ("Song Han", "https://hanlab.mit.edu/songhan")
+    , ("Fabian Streit", "https://scholar.google.com/citations?user=UsYAHmYAAAAJ&hl=en&oi=ao")
+    , ("Murray B. Stein", "https://profiles.ucsd.edu/murray.stein")
+    , ("James Campbell", "https://jamescampbell.me/")
+    , ("lsusr", "https://www.lesswrong.com/users/lsusr")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3514,4 +3521,4 @@ authorWpLinkDB = setLike
     , "Ulric Neisser", "Leila Chatti", "Bo Burnham", "Daniele Macuglia", "Morteza Dehghani", "Richard Creath"
     , "Nadine Dupérré", "Danica Kragic", "Aude Billard", "Thierry Depaulis", "Jorge Nuno Silva", "Eddie Duggan", "David Parlett"
     , "Bertram Gawronski", "Fei-Fei Li", "Euan Ashley", "John A. Long", "Elga Mark-Kurik",  "Per E. Ahlberg"
-    , "Roger Jones", "Kate Trinajstic", "Hervey M. Cleckley"]
+    , "Roger Jones", "Kate Trinajstic", "Hervey M. Cleckley", "May Berenbaum"]

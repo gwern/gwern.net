@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-04-10 23:27:30 gwern"
+# When:  Time-stamp: "2026-04-13 14:45:17 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -904,6 +904,8 @@ About Us
 ""
 - "https://www.armand-dangour.com/pindaric-odes/ Olympic Odes - Armand D’Angour"
 "Olympic Odes"
+- "https://archiveofourown.org/works/82943941 archiveofourown.org"
+""
 
 Task:
 

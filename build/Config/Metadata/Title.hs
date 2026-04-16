@@ -78,7 +78,7 @@ badStrings = setLike ["", " ", "Quanta Magazine", "OSF", "CAIDA Resource Catalog
      , "HAMIDI USA", "Shtetl-Optimized", "Signals and Threads", "The Yale Review", "archive.ph", "Renato Athaydes", "Rate limit"
      , "The Anime Cafe", "life in a monospace typeface", "News Details", "GlyphDrawing.Club -blog"
      , "Informasi Resmi Game Online Terkini Cuan", "Zotero", "Sign in - Google Accounts", "Virgin and Child"
-     , "Michael Wolf", "L.B.Stanza", "Blog Post - Alex Litzenberger", "The American Society of Cinematographers"]
+     , "Michael Wolf", "L.B.Stanza", "Blog Post - Alex Litzenberger", "The American Society of Cinematographers", "archiveofourown.org"]
 
 -- A list of bad substrings to remove. Note this is used with `Utils.deleteMixedMany` to specialize down to either prefix or suffix deletion based on the trailing vs leading space (respectively). This should greatly reduce the risk of unintended deletions.
 -- Testing: unique list
