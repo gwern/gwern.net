@@ -274,6 +274,39 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 							|| normalizedRef.startsWith(entry[0]))
 						&& entry[0] != normalizedRef
 					);
+
+					/*	Two-author fallback: when the user queries for
+						`FOO-YYYY` but the actual ID is `FOO-BAR-YYYY` (a
+						second author), prefix matching misses it because
+						the stored ID is neither a prefix nor a suffix of
+						the query. Splice the stored suffix (surname +
+						year) against the query's year so the reader does
+						not have to guess the second surname. The year
+						tail allows the optional single-letter suffix
+						`generateID`/`dateSuffix` appends for same-year
+						disambiguation (e.g. `2020a`). Surnames use `\S`
+						to cover diacritics and hyphenated names already
+						present in `generateID` output. See #19.
+					 */
+					let twoAuthorPatternParts = normalizedRef.match(/^(\S+?)-([12][0-9][0-9][0-9][a-z]?)$/);
+					if (twoAuthorPatternParts != null) {
+						let firstAuthor = twoAuthorPatternParts[1];
+						let year = twoAuthorPatternParts[2];
+						let escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+						/*	Trailing `[a-z]?` lets a suffix-less query like
+							`foo-2020` still match a disambiguated stored ID
+							such as `foo-bar-2020a`; a query that already
+							carries a suffix just matches the exact year.
+						 */
+						let twoAuthorRegex = new RegExp(`^${escapeRegExp(firstAuthor)}-\\S+?-${escapeRegExp(year)}[a-z]?$`);
+						Object.entries(event.target.response).forEach(entry => {
+							if (twoAuthorRegex.test(entry[0])
+								&& entry[0] != normalizedRef
+								&& idPrefixMatches.every(existing => existing[0] != entry[0]))
+								idPrefixMatches.push(entry);
+						});
+					}
+
 					if (idPrefixMatches.length > 1) {
 						/*	If multiple matches, list them all, transcluding
 							annotations where available (attempt in all cases, and
