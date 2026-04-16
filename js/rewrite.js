@@ -108,7 +108,7 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 		is only one result; the second being the plural-case message, to be
 		used if there are multiple results). Otherwise, it should be a string.
 	 */
-	let injectIdPrefixMatches = (matches, message) => {
+	let injectIdPartialMatches = (matches, message, normalizedRef) => {
 		if (typeof message == "object")
 			message = matches.length == 1 ? message[0] : message[1];
 		injectHelpfulErrorMessage(message);
@@ -116,7 +116,9 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 			  `<ul>`
 			+ matches.map(entry => (
 				  `<li><p>`
-				+ `<a href="/ref/${entry[0]}">${entry[0]}</a>: `
+				+ (entry[0] == normalizedRef
+				   ? `${entry[0]}: `
+				   : `<a href="/ref/${entry[0]}">${entry[0]}</a>: `)
 				+ synthesizeIncludeLink(entry[1], {
 					"class": "link-annotated include-annotation-partial-inline",
 					"data-include-selector-not": ".data-field.date, .aux-links-field-container"
@@ -270,6 +272,8 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 				let displayRelevantContentAfterMatchNotFound = () => {
 					//	Get all prefix matches (in both directions).
 					let idPrefixMatches = Object.entries(event.target.response).filter(entry =>
+						entry[0].startsWith("_") == false
+					).filter(entry =>
 						   (   entry[0].startsWith(normalizedRef)
 							|| normalizedRef.startsWith(entry[0]))
 						&& entry[0] != normalizedRef
@@ -279,12 +283,55 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 							annotations where available (attempt in all cases, and
 							those that fail will just become regular links).
 						 */
-						injectIdPrefixMatches(idPrefixMatches, "Perhaps you want one of these:");
+						injectIdPartialMatches(idPrefixMatches, "Perhaps you want one of these:");
 					} else if (idPrefixMatches.length == 1) {
 						//	If only one match, redirect to the matching /ref/ page.
 						document.head.appendChild(elementFromHTML(`<link rel="canonical" href="${URLFromString('/ref/' + idPrefixMatches.first[0]).href}">`));
 						location = URLFromString("/ref/" + idPrefixMatches.first[0]);
 					}
+
+					//	Get all partial-author matches.
+					let componentsFromId = (id) => {
+						let components = {
+							authors: [ ],
+							et_al: false,
+							year: null,
+							other: [ ]
+						};
+
+						let parts = id.split("-");
+						let part;
+						let yearRegExp = new RegExp("^[12][0-9][0-9][0-9][a-z]?$");
+						while (part = parts.shift()) {
+							if (   part == "et"
+								&& parts.first == "al") {
+								parts.shift();
+								components.et_al = true;
+							} else if (yearRegExp.test(part) == true) {
+								components.year = part;
+							} else if (   components.year == null
+									   && components.et_al == false) {
+								components.authors.push(part);
+							} else {
+								components.other.push(part);
+							}
+						}
+						
+						return components;
+					};
+					let refComponents = componentsFromId(normalizedRef);
+					let partialAuthorMatches = Object.entries(event.target.response).filter(entry =>
+						entry[0].startsWith("_") == false
+					).filter(entry => {
+						let entryComponents = componentsFromId(entry[0]);
+						return (   (   refComponents.year == null
+									|| entryComponents.year?.startsWith(refComponents.year) == true)
+								&& refComponents.authors.findIndex(author => entryComponents.authors.includes(author) == false) === -1);
+					});
+					if (partialAuthorMatches.length > 0) {
+						injectIdPartialMatches(partialAuthorMatches, "Perhaps you want one of these:", normalizedRef);
+					}
+
 					injectHelpfulSuggestion(normalizedRef.replace(/-/g, " "
 														).replace(" et al", ""
 														).split(" "
