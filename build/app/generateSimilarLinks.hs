@@ -57,7 +57,7 @@ main = do Config.Misc.cd
           -- suggested-links.)
           --
           -- eg. in a crontab, this would work:
-          -- $ `@reboot screen -d -m -S "embed" bash -c 'cd ~/wiki/; while true; do inotifywait ~/wiki/metadata/*.gtx -e attrib && sleep 10s && date && runghc -istatic/build/ ./static/build/generateSimilarLinks.hs --only-embed; done'`
+          -- $ `@reboot screen -d -m -S "embed" bash -c 'cd ~/wiki/; while true; do inotifywait ~/wiki/metadata/*.gtx -e attrib && sleep 10s && date && runghc -istatic/build/ ./static/build/app/generateSimilarLinks.hs --only-embed; done'`
           --
           -- [ie.: 'at boot, start a background daemon which monitors the annotation files and
           -- whenever one is modified, kill the monitor, wait 10s, and check for new annotations to

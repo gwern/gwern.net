@@ -2,7 +2,7 @@
 --
 -- The pages are generated as Markdown at compile-time like the tag-directory pages, and simply transclude a specified annotation.
 -- They are similar to the `/ref/` annotation lookups in spirit, but intended to act more like normal browsable essays, including having a `/blog/index` that readers can go to or monitor, and remove some of the need for /note/ or appendixes.
--- This should be called in </static/build/hakyll.hs> to update the blog entries before running the main compilation.
+-- This should be called in </static/build/app/hakyll.hs> to update the blog entries before running the main compilation.
 --
 -- Background & design rationale: The 'blog' annotation-transclusion pages address a long-standing problem in the Gwern.net paradigm: it is not easy to add in 'small' or 'one-off' blog-like writings.
 -- A top-level essay involves a lot of metadata & formatting, and also tends to imply a certain level of commitment: it must be named, given a stable permanent URL, summarized, formatted, updated, etc. Meanwhile, several of my most popular writings have been long comments on LW/HN/Reddit/etc, which I simply wrote as one-offs.

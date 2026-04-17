@@ -12,14 +12,10 @@ category:      Web
 -- Shared defaults for all components.
 common gwern-common
   default-language: Haskell2010
-  hs-source-dirs:
-      .
 
   ghc-options:
       -O2
       -Wall
-      -Wno-missing-home-modules
-      -- TODO: factor out separate source hierarchies for the executables vs library HS files: app/ and src/
 
   build-depends:
                 base
@@ -68,9 +64,14 @@ common gwern-common
               , utf8-string
               , utility-ht
               , vector
+common exe-common
+  import: gwern-common
+  hs-source-dirs: app
+  build-depends: gwernnet
 
 library
   import: gwern-common
+  hs-source-dirs: .
   exposed-modules:
       Annotation
       Annotation.Arxiv
@@ -127,51 +128,42 @@ library
       XOfTheDay
 
 executable hakyll
-  import: gwern-common
+  import: exe-common
   main-is: hakyll.hs
-  build-depends: gwernnet
   ghc-options: -threaded -rtsopts
 
 executable preprocess-markdown
-  import: gwern-common
+  import: exe-common
   main-is: preprocess-markdown.hs
-  build-depends: gwernnet
 
 executable generateLinkBibliography
-  import: gwern-common
+  import: exe-common
   main-is: generateLinkBibliography.hs
-  build-depends: gwernnet
   ghc-options: -threaded -rtsopts
 
 executable generateDirectory
-  import: gwern-common
+  import: exe-common
   main-is: generateDirectory.hs
-  build-depends: gwernnet
   ghc-options: -threaded -rtsopts
 
 executable generateBacklinks
-  import: gwern-common
+  import: exe-common
   main-is: generateBacklinks.hs
-  build-depends: gwernnet
   ghc-options: -threaded -rtsopts
 
 executable checkMetadata
-  import: gwern-common
+  import: exe-common
   main-is: checkMetadata.hs
-  build-depends: gwernnet
 
 executable guessTag
-  import: gwern-common
+  import: exe-common
   main-is: guessTag.hs
-  build-depends: gwernnet
 
 executable changeTag
-  import: gwern-common
+  import: exe-common
   main-is: changeTag.hs
-  build-depends: gwernnet
   ghc-options: -threaded -rtsopts
 
 executable generateSimilarLinks
-  import: gwern-common
+  import: exe-common
   main-is: generateSimilarLinks.hs
-  build-depends: gwernnet

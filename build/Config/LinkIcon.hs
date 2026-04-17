@@ -863,7 +863,7 @@ linkIconTestUnitsText = setLike
          , ("https://www.sciencedaily.com/releases/2007/05/070525204143.htm",  "SD","text,sans", "#004276")
          , ("https://examine.com/supplements/bacopa-monnieri/", "Eχ", "text,sans", "#5e3b76")
          , ("https://wiki.haskell.org/Xmonad/Config_archive/Gwern's_xmonad.hs",  "code","svg", purpleHaskell)
-         , ("/static/build/hakyll.hs",  "code","svg", purpleHaskell)
+         , ("/static/build/app/hakyll.hs",  "code","svg", purpleHaskell)
          , ("https://www.haskell.org/",  "\120524","text", purpleHaskell)
          , ("https://web.archive.org/web/20110415182316/http://packdeps.haskellers.com/",  "\120524","text", purpleHaskell)
          , ("https://tvtropes.org/pmwiki/pmwiki.php/Anime/MobileSuitGundamCharscounterattack",  "TV","text", "#1c6486")

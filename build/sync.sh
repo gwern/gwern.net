@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-04-15 14:29:07 gwern"
+# When:  Time-stamp: "2026-04-16 20:08:23 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -1622,7 +1622,7 @@ else
           cm "text/plain; charset=utf-8" 'https://gwern.net/doc/personal/2009-sleep.txt'
           cm "text/plain; charset=utf-8" 'https://gwern.net/static/nginx/redirect/move.conf'
           cm "text/x-adobe-acrobat-drm" 'https://gwern.net/doc/dual-n-back/2012-zhong.ebt'
-          cm "text/x-haskell; charset=utf-8" 'https://gwern.net/static/build/hakyll.hs'
+          cm "text/x-haskell; charset=utf-8" 'https://gwern.net/static/build/app/hakyll.hs'
           cm "text/x-opml; charset=utf-8" 'https://gwern.net/doc/personal/rss-subscriptions.opml'
           cm "text/x-patch; charset=utf-8" 'https://gwern.net/doc/ai/music/2019-12-22-gpt2-preferencelearning-gwern-abcmusic.patch'
           cm "text/x-r; charset=utf-8" 'https://gwern.net/doc/darknet-market/2013-05-05-moore-bitcoinexchangesurvivalanalysis.R'

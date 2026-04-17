@@ -29,7 +29,7 @@ local mirror.
 
 Details:
 
-- at compile-time, [`hakyll.hs`](https://gwern.net/static/build/hakyll.hs) reads the local
+- at compile-time, [`hakyll.hs`](https://gwern.net/static/build/app/hakyll.hs) reads the local
   database, and feeds it into a `localizeLink` function which walks the Pandoc AST and processes all
   external links
 - mirror metadata is stored in a local database (a Haskell association list read in as a

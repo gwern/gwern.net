@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2026-04-06 21:30:31 gwern"
+When: Time-stamp: "2026-04-16 13:51:25 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -108,7 +108,7 @@ main =
                  timestamp <- preprocess $ getMostRecentlyModifiedDir "metadata/annotation/id/"
 
                  preprocess $ printGreen ("Begin site compilation…" :: String)
-                 let targets = if null args' then fromGlob "**.md" .&&. complement "doc/www/**.md" -- exclude any temporary Markdown files in /doc/www/misc/ or mirrored somehow, but compile ones anywhere else
+                 let targets = if null args' then fromGlob "**.md" .&&. complement "doc/www/**.md" .&&. complement "static/**.md" -- exclude any temporary Markdown files in /doc/www/misc/ or mirrored somehow, or meant for Github, but compile ones anywhere else
                                 else fromGlob $ head args'
                  unless (null args') $ preprocess (printGreen "Essay targets specified, so compiling just: " >> print targets)
                  match targets $ do
