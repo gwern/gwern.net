@@ -14852,6 +14852,20 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 	let updatePageTitleElements = (newTitleHTML) => {
 		let newPageTitle = newDocument(newTitleHTML);
 		eventInfo.document.querySelector("title")?.replaceChildren(newPageTitle.textContent);
+
+		//	Truncate page header.
+		let lengthLimit = 80; // characters
+		if (newPageTitle.textContent.length > lengthLimit) {
+			let words = newPageTitle.textContent.split(" ");
+			let word;
+			let newTextContent = [ ];
+			while (   (word = words.shift())
+				   && (word.length + newTextContent.reduce((totalLength, word) => (totalLength + word.length), 0)) <= lengthLimit) {
+				newTextContent.push(word);
+			}
+			newTextContent.push("…");
+			newPageTitle.textContent = newTextContent.join(" ");
+		}
 		eventInfo.document.querySelector("header h1")?.replaceChildren(newPageTitle);
 	};
 
