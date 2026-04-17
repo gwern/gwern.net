@@ -1,11 +1,12 @@
-External contributor rules for the Gwern.net source code repo. (Contributions to the website content are not covered by this repo or CONTRIBUTING, and should be sent to Gwern Branwen directly.)
+External contributor rules for the Gwern.net source code repo.
+(Contributions to the website content are not covered by this repo or CONTRIBUTING, and should be sent to Gwern Branwen directly.)
 
 1. **Security disclosure**: Security issues should not be filed publicly; for security issues or contributions, please [contact Gwern Branwen directly](https://gwern.net/me#contact).
-2. **Licensing**: all contributions must be licensed under the same terms as the file they modify; generally, CC-0, or MIT where CC-0 is legally problematic
+2. **Licensing**: all contributions must be licensed under the same terms as the file they modify; generally, [CC-0](https://creativecommons.org/public-domain/cc0/), or MIT where CC-0 is legally problematic
 
     By opening a PR, you affirm you have the right to license the contribution under the appropriate license, including any rights that might be claimed by an employer or AI tool provider. If you are unsure about the applicable license, open an issue first.
-3. **issue-first**: substantial PRs should have an issue filed first for discussion; trivial fixes (typos, obvious bugs) can go straight to PR.
-4. **clean style code** (see [the Gwern.net Manual of Style](https://gwern.net/style-guide) in general for source code guidelines):
+3. **Issue-first**: substantial PRs should have an issue filed first for discussion; trivial fixes (typos, obvious bugs) can go straight to PR.
+4. **Clean style code** (see [the Gwern.net Manual of Style](https://gwern.net/style-guide) in general for source code guidelines):
 
     - *no runtime warnings*: default compilation/execution should never print warnings/errors (eg. new CSS & JS should not trigger browser console warnings in the latest Chromium/Firefox, PHP/R code should not print warnings when run on Gwern's Ubuntu Linux LTS OS)
     - no *compile-time warnings*: further, all source code must be `-Wall`-clean or explicitly whitelisted as relevant for each language:
@@ -13,6 +14,7 @@ External contributor rules for the Gwern.net source code repo. (Contributions to
         - `Haskell`: should be `ghc -Wall`-clean and [hlint-clean](https://github.com/ndmitchell/hlint)
         - `Bash`: should be [shellcheck-clean](https://github.com/koalaman/shellcheck)
         - `Elisp`: byte-compile without warnings
+    - *no editing generated files* directly: all `*-VERSIONED.ext`, `*-GENERATED.ext` etc. files should be touched only by the PHP scripts which generate them via the pre-commit hook.
 5. **House style**: all contributions should follow language-specific guidelines (see again the MoS). Currently:
 
     - Markdown/HTML
@@ -31,3 +33,4 @@ External contributor rules for the Gwern.net source code repo. (Contributions to
     They may be banned from the repo if a contribution has serious errors (eg. fabricated citations, inserted malware/exfiltration, license violations, silent data deletion, repeated submissions of unreviewed AI output...), or just at my sole discretion.
     Bans are not appealable.
 9. **PR Rejection Policy**: We get to things when we get to them. We will explicitly reject PRs which are unacceptable. Pinging after 30 days is fine.
+

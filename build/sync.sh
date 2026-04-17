@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-04-16 20:08:23 gwern"
+# When:  Time-stamp: "2026-04-16 21:33:14 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -14,7 +14,7 @@
 # key dependencies: GHC, Hakyll, emacs, curl, tidy (HTML5 version), git, regex-compat-tdfa (Unicode Haskell regexps), urlencode
 # ('gridsite-clients' package), linkchecker, fdupes, ImageMagick, exiftool, mathjax-node-page (eg.
 # `npm i -g mathjax-node-page`), parallel, xargs, php-cli, php-xml, php-masterminds-html5, libreoffice, gifsicle, tidy, libxml2-utils…
-
+set -x
 cd ~/wiki/
 # shellcheck source=~/wiki/static/build/bash.sh
 . ./static/build/bash.sh # import a bunch of Bash utilities for output formatting, checks, file IO etc: red/bold, wrap, gf/gfc/gfv/ge/gec/gev, png2JPGQualityCheck, gwmv...
@@ -24,9 +24,7 @@ DEPENDENCIES=(
   ghc ghci runghc hlint gifsicle git identify inotifywait jpegtran jq libreoffice
   linkchecker locate mogrify ocrmypdf pandoc parallel pdftk pdftotext img2pdf php ping
   optipng rm rsync sed tidy urlencode x-www-browser xargs xmllint xprintidle
-  anchor-checker.php generateBacklinks.hs generateDirectory.hs
-  generateLinkBibliography.hs generateSimilarLinks.hs link-extractor.hs
-  compressJPG openai chromium inkscape node pngnq advpng docker
+  anchor-checker.php openai chromium inkscape node pngnq advpng docker
   should_image_have_outline.php mp3val
 ) # ~/src/node_modules/mathjax-node-page/bin/mjpage, beautifulsoup-4
 declare -A ERROR_OUTPUTS

@@ -13,9 +13,7 @@ category:      Web
 common gwern-common
   default-language: Haskell2010
 
-  ghc-options:
-      -O2
-      -Wall
+  ghc-options: -Wall
 
   build-depends:
                 base
@@ -71,6 +69,7 @@ common exe-common
 
 library
   import: gwern-common
+  ghc-options: -O2
   hs-source-dirs: .
   exposed-modules:
       Annotation

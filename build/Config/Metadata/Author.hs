@@ -2178,6 +2178,7 @@ authorLinkDB = M.fromList $
     , ("Pangram", "https://www.pangram.com/")
     , ("LLaMA-3-70b", "https://ai.meta.com/blog/meta-llama-3/")
     , ("Claude-4.6-opus", "https://www.anthropic.com/news/claude-opus-4-6")
+    , ("Claude-4.7-opus", "https://www.anthropic.com/news/claude-opus-4-7")
     , ("Vishal Prasad", "https://substack.com/@vishalprasad1")
     , ("GPT-5.3-Codex", "https://openai.com/index/introducing-gpt-5-3-codex/")
     , ("Leslie Stephen Coles", "https://en.wikipedia.org/wiki/L._Stephen_Coles")
@@ -2219,7 +2220,7 @@ authorLinkDB = M.fromList $
     , ("Eric Sigler", "https://bigdatatechwarsaw.eu/prelegenci/eric-sigler/")
     , ("Miriam A. Mosing", "https://ki.se/en/people/miriam-mosing")
     , ("Song Han", "https://hanlab.mit.edu/songhan")
-    , ("Fabian Streit", "https://scholar.google.com/citations?user=UsYAHmYAAAAJ&hl=en&oi=ao")
+    , ("Fabian Streit", "https://scholar.google.com/citations?user=UsYAHmYAAAAJ")
     , ("Murray B. Stein", "https://profiles.ucsd.edu/murray.stein")
     , ("James Campbell", "https://jamescampbell.me/")
     , ("lsusr", "https://www.lesswrong.com/users/lsusr")
@@ -3508,10 +3509,10 @@ authorWpLinkDB = setLike
     , "Laura Hewitson", "Bjorn Merker", "Ren Xiaoping", "Sergio Canavero", "Charles Krauthammer", "Akinori Yonezawa"
     , "J Strother Moore", "Matt Kaufmann", "Ilka Agricola", "Lisanne Bainbridge", "Daniel H. Janzen", "Rachel Aviv"
     , "Oliver Sacks", "Keiichi Matsuura", "Aleksandra Faust", "Samuel S. Wilks", "Kenneth Lee Pike", "Josh Lerner"
-    , "Robert Hayden", "Michael Ondaatje", "Galway Kinnell", "Li-Young Lee", "Douwe Kiela", "Richmond Lattimore", "William T. Vollmann"
-    , "Laurence Perrine", "John Milton", "Ted Hughes", "Hunter S. Thompson", "Kevin D. Williamson", "Martin Ellison"
-    , "David E. Hoffman", "Paul Ginsparg", "Wojciech Kopczuk", "Robert J. White", "Dines Bjørner", "Hans-Joachim Voth"
-    , "Friedrich Nietzsche", "William Bialek", "E. E. Cummings", "Simon Willison", "Karen Greenlee"
+    , "Robert Hayden", "Michael Ondaatje", "Galway Kinnell", "Li-Young Lee", "Douwe Kiela", "Richmond Lattimore"
+    , "William T. Vollmann", "Laurence Perrine", "John Milton", "Ted Hughes", "Hunter S. Thompson", "Kevin D. Williamson"
+    , "Martin Ellison", "David E. Hoffman", "Paul Ginsparg", "Wojciech Kopczuk", "Robert J. White", "Dines Bjørner"
+    , "Hans-Joachim Voth", "Friedrich Nietzsche", "William Bialek", "E. E. Cummings", "Simon Willison", "Karen Greenlee"
     , "Constance Reid", "Julia Robinson", "Ianthi-Maria Tsimpli", "Graeme Mitchison", "Ravi Vakil", "Ross Koppel"
     , "Bruce G. Lindsay", "Anne Chao", "John A. Hostetler", "Brian Moriarty", "Archibald MacLeish", "Michael Drew"
     , "Herbert H. Clark", "Jean E. Fox Tree", "Mikhail Bulgakov", "David Shor", "Rudolf Sloboda", "Frank Bidart"
