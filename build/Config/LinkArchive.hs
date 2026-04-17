@@ -103,7 +103,7 @@ localizeLinktestCases = [
     , ("https://forum.effectivealtruism.org/posts/dCjz5mgQdiv57wWGz/ingredients-for-creating-disruptive-research-teams", ("", "", "https://ea.greaterwrong.com/posts/dCjz5mgQdiv57wWGz/ingredients-for-creating-disruptive-research-teams?format=preview&theme=classic", []))
     , ("https://arbital.com/p/edge_instantiation/", ("/doc/www/arbital.com/f3415bb9b168d3fcb051b458a48994ec1e8c4611.html", "", "https://arbital.greaterwrong.com/p/edge_instantiation/?format=preview&theme=classic", []))
     , ("https://www.lesswrong.com/posts/thePw6qdyabD8XR4y/interpreting-openai-s-whisper#3_1__Whisper_learns_language_modelling_bigrams", ("", "", "https://www.greaterwrong.com/posts/thePw6qdyabD8XR4y/interpreting-openai-s-whisper?format=preview&theme=classic#3_1__Whisper_learns_language_modelling_bigrams", []))
-    , ("https://www.lesswrong.com/wikitags", ("", "", "https://www.lesswrong.com/wikitags", []))
+    , ("https://www.lesswrong.com/wikitags", ("", "", "https://www.greaterwrong.com/tags?format=preview&theme=classic", []))
     ]
 
 localizeLinkTestDB :: ArchiveMetadata
@@ -168,9 +168,15 @@ transformURItoGW uri = fromMaybe uri $ do
     findMirrorPrefix :: String -> Maybe String
     findMirrorPrefix hostname = snd <$> find ((`isSuffixOf` hostname) . fst) domainMapping
 
+    rewritePath :: String -> String
+    rewritePath "/wikitags" = "/tags" -- 301 Redirects
+    rewritePath p           = p
+
     transformToMirrorURI :: String -> URI -> URIAuth -> URI
     transformToMirrorURI mirrorPrefix parsedURI auth =
-        parsedURI { uriAuthority = Just $ auth { uriRegName = mirrorPrefix ++ ".greaterwrong.com" } }
+        parsedURI { uriAuthority = Just $ auth { uriRegName = mirrorPrefix ++ ".greaterwrong.com" }
+                  , uriPath      = rewritePath (uriPath parsedURI)
+                  }
 
     handleCommentId :: URI -> URI
     handleCommentId uri' =
