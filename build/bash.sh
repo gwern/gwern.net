@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-04-11 00:22:16 gwern"
+# When:  Time-stamp: "2026-04-17 19:16:40 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -374,7 +374,7 @@ pdf-append () {
     # Check if only the first file remains (no new files added/valid)
      if [ ${#PDF_FILES[@]} -eq 1 ] && [ "${PDF_FILES[0]}" == "$TARGET_DEST_PDF" ]; then
          bold "Input consists only of the target file '$TARGET_DEST_PDF'. No changes needed." >&2
-         shopt -u nocasematch; trap - EXIT HUP INT TERM; rm --force --"$TEMP_TARGET"; rm --recursive --force -- "$TEMP_DIR"; return 0
+         shopt -u nocasematch; trap - EXIT HUP INT TERM; rm --force -- "$TEMP_TARGET"; rm --recursive --force -- "$TEMP_DIR"; return 0
      fi
 
     # --- Concatenation ---
@@ -501,7 +501,7 @@ crop_one () {
 
             mv "$tmp_file" "$file"
         else
-            rm -f "$tmp_file" # clean up
+            rm --force -- "$tmp_file" # clean up
             red "Error: Failed to crop '$file'" >&2
         fi
     fi
@@ -1547,15 +1547,40 @@ gwmvdir () {
 ## 'Move' or tag an annotation:
 ## gwtag URL [tag]
 ## eg. `gwtag https://foo iq psychology sociology`
+## As a convenience, a bare filename argument (no '/', ends in '.xxx' with 3
+## alphanumeric chars, ≥9 chars) is expanded to its '/doc/…' path by searching
+## ~/wiki/ with `find`, when exactly one readable non-empty match exists. This
+## lets you run `gwtag imagen humor 2026-04-16-gwern-foo.jpg` after `upload`
+## without having to predict the final uploaded path. Ambiguous or missing
+## names pass through unchanged (and let `changeTag` complain normally).
 alias gwt="gwtag"
 alias t="gwtag"
-gwtag () { (
-             wait; # just in case another tool might be running (eg. gwtag or gwsed)
-             cd ~/wiki/ &&
-                     # echo "---" && grep --fixed-strings -- "$1" ./metadata/*.gtx || true
-                     timeout 20m nice changeTag +RTS -N2 -RTS "$@"; echo "" # &&
-                         # echo "---" && grep --fixed-strings -- "$1" ./metadata/*.gtx
-         ); }
+gwtag () {
+    local -a args=() matches=()
+    local arg match
+    for arg in "$@"; do
+        if [[ "$arg" != */* && ${#arg} -ge 9 && "$arg" =~ ^.+\.[a-zA-Z0-9]{3}$ ]]; then
+            mapfile -t matches < <(find ~/wiki/ -type f -name "$arg" -readable ! -empty 2>/dev/null)
+            if (( ${#matches[@]} == 1 )); then
+                # Normalize '/home/gwern/wiki/doc/…' → '/doc/…' (form changeTag expects).
+                match="${matches[0]#"$HOME/wiki"}"
+                bold "gwtag: expanded '$arg' → '$match'" >&2
+                args+=("$match")
+                continue
+            elif (( ${#matches[@]} > 1 )); then
+                red "gwtag: '$arg' is ambiguous under ~/wiki/ (${#matches[@]} matches); passing through." >&2
+            fi
+        fi
+        args+=("$arg")
+    done
+    (
+        wait # just in case another tool might be running (eg. gwtag or gwsed)
+        cd ~/wiki/ &&
+            # echo "---" && grep --fixed-strings -- "$1" ./metadata/*.gtx || true
+            timeout 20m nice changeTag +RTS -N2 -RTS "${args[@]}"; echo "" # &&
+                # echo "---" && grep --fixed-strings -- "$1" ./metadata/*.gtx
+    )
+}
 
 # eg. `"ai ai/anime ai/anime/danbooru ... ai/scaling ai/scaling/economics ... japan/poetry/shotetsu japan/poetry/teika ... technology/digital-antiquarian ... zeo/short-sleeper"`
 GWERNNET_DIRS_FULL="$(cd ~/ && find wiki/doc/ -type d | grep --fixed-strings -v -e 'doc/rotten.com' -e 'doc/www/' \
