@@ -4,7 +4,7 @@
 # seriate.py: semantically sort, or 'seriate', a list in a logical fashion
 # Author: Gwern Branwen
 # Date: 2025-01-02
-# When:  Time-stamp: "2026-03-19 12:49:10 gwern"
+# When:  Time-stamp: "2026-04-17 21:50:49 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python seriate.py
@@ -13,35 +13,40 @@
 #
 # In a classic sorting, we sort 'ACB'→'ABC'; but in a seriation, we might instead seriate 'Dog, Horse, Kitty' → 'Kitty, Dog, Horse'. (It might be hard to say in exactly what sense the second seriated version could be considered 'sorted'—size? phylogenetic similarity?—but it clearly makes more sense and is less confusing to read.)
 #
-# We seriate by asking the LLM to resort the list in a logical way, whatever that might mean in a given context, and we keep doing so to a fixed point (ie. the list stops changing). After that, we do a simple weak check that nothing was lost by looking at character-based set (ie. that the final output is a permutation of the input), to try to ensure a lossless transformation which preserved everything aside from improved seriation.
+# We seriate by asking the LLM to resort the list in a logical way, whatever that might mean in a given context, and we keep doing so to a fixed point (ie. the list stops changing). After that, we do a simple weak check that nothing was lost by looking at the word-multiset (ie. that the final output is a permutation of the input), to try to ensure a lossless transformation which preserved everything aside from improved seriation.
 #
 # For example, images or paragraphs or lists of similar essays can be put into clearly more or less 'sorted' order, which cluster similar items, without obeying any obvious comparison function like a lexicographic sorting function. This sort of distance minimization is known as 'seriation' (or 'ordination'), and can be seen as a generalization of regular sorting; see <https://en.wikipedia.org/wiki/Seriation_(archaeology)>/<https://en.wikipedia.org/wiki/Ordination_(statistics)>/<https://www.jstatsoft.org/article/view/v025i03> (and its inverse, maximizing distance, can be seen as a kind of seriation too, although things get fuzzier there, see <https://gwern.net/unsort>).
 #
 # This can be done by hand, and should, because it makes such lists easier to read; but as usual, is too much work for a subtle benefit, and can only be done for static lists. So, we want to automate it.
 # This may also be a useful primitive for LLM writing, by enabling a *seriation* pass: a first pass which cleans up text input by constraining edits to seriate it, *without modifying any words*. (For example, one could ask ChatGPT to clean up notes from a conversation or from brainstorming or jotting down text fragments, but invariably, ChatGPT will do more than just reorganize, and will wind up omitting parts, or rewriting into ChatGPTese. If one could first make ChatGPT seriate the notes, and then summarize it recursively to create a hierarchical Table of Contents & an abstract, and only *then* start rewriting it, the results might be much better.)
 
+import re
 import sys
+import unicodedata
+
 from openai import OpenAI
 client = OpenAI()
 
 def is_permutation(a, b):
-    return sorted(a) == sorted(b)
+    # word-multiset comparison under NFKC: robust to smart-quote/em-dash
+    # substitution and whitespace normalization, while still catching actual
+    # content loss. Loses sensitivity to pure punctuation changes but those
+    # are rarely the failure mode.
+    norm = lambda s: sorted(unicodedata.normalize('NFKC', s).split())
+    return norm(a) == norm(b)
 
 def seriate_once(target):
     prompt = """Task: 'seriate' inputs, by sorting them into a best-effort context-dependent 'logical order', at each level of the input.
 Inputs should be seriated, but otherwise not modified. Every item should be included.
 Output only the reordered items inside '<output></output>' tags. No preface, no postscript, no additional tags or commentary.
 If multiple orders are equally good, keep the original relative order (stable seriation).
-If unsure how to seriate, or no seriation is possible, return the empty string.
+
+Be sure to properly put paragraphs into a logical order based on how a user would want to read the ideas most naturally.
+
+If the paragraphs are prefixed by comments, e.g. # for Python or ;; for lisp or // for c, etc, just assume the text was pasted without comments (for detecting paragraph ordering) and then re-add the comments once you've rearranged.
 
 Task examples:
 
-# null example:
-- <input>I like dogs and cats.</input>
-<output>""</output>
-# Single item: cannot be seriated (trivial)
-- <input>apple</input>
-<output>""</output>
 # Already seriated: return unchanged
 - <input>A, B, C, D</input>
 <output>A, B, C, D</output>
@@ -143,20 +148,38 @@ Horse</output>
 - Cat
 - Tiger
 - Car</output>
+- <input>dog horse cat</input>
+<output>cat dog horse</output>
+- <input>- In a classic sorting, we sort 'ACB'→'ABC'; but in a seriation, we might instead seriate 'Dog, Horse, Kitty' → 'Kitty, Dog, Horse'. (It might be hard to say in exactly what sense the second seriated version could be considered 'sorted'—size? phylogenetic similarity?—but it clearly makes more sense and is less confusing to read.)
+- This may also be a useful primitive for LLM writing, by enabling a *seriation* pass: a first pass which cleans up text input by constraining edits to seriate it, *without modifying any words*. (For example, one could ask ChatGPT to clean up notes from a conversation or from brainstorming or jotting down text fragments, but invariably, ChatGPT will do more than just reorganize, and will wind up omitting parts, or rewriting into ChatGPTese. If one could first make ChatGPT seriate the notes, and then summarize it recursively to create a hierarchical Table of Contents & an abstract, and only *then* start rewriting it, the results might be much better.)
+- This can be done by hand, and should, because it makes such lists easier to read; but as usual, is too much work for a subtle benefit, and can only be done for static lists. So, we want to automate it.
+- We seriate by asking the LLM to resort the list in a logical way, whatever that might mean in a given context, and we keep doing so to a fixed point (ie. the list stops changing). After that, we do a simple weak check that nothing was lost by looking at character-based set (ie. that the final output is a permutation of the input), to try to ensure a lossless transformation which preserved everything aside from improved seriation.
+- For example, images or paragraphs or lists of similar essays can be put into clearly more or less 'sorted' order, which cluster similar items, without obeying any obvious comparison function like a lexicographic sorting function. This sort of distance minimization is known as 'seriation' (or 'ordination'), and can be seen as a generalization of regular sorting; see <https://en.wikipedia.org/wiki/Seriation_(archaeology)>/<https://en.wikipedia.org/wiki/Ordination_(statistics)>/<https://www.jstatsoft.org/article/view/v025i03> (and its inverse, maximizing distance, can be seen as a kind of seriation too, although things get fuzzier there, see <https://gwern.net/unsort>).
+- Many 'lists' can be ordered in a meaningful way, to bring similar items closer together and move dissimilar items further away, but in ways which do not follow a strict comparison sort which implements a full proper ordering.</input>
+<output>- Many 'lists' can be ordered in a meaningful way, to bring similar items closer together and move dissimilar items further away, but in ways which do not follow a strict comparison sort which implements a full proper ordering.
+- In a classic sorting, we sort 'ACB'→'ABC'; but in a seriation, we might instead seriate 'Dog, Horse, Kitty' → 'Kitty, Dog, Horse'. (It might be hard to say in exactly what sense the second seriated version could be considered 'sorted'—size? phylogenetic similarity?—but it clearly makes more sense and is less confusing to read.)
+- For example, images or paragraphs or lists of similar essays can be put into clearly more or less 'sorted' order, which cluster similar items, without obeying any obvious comparison function like a lexicographic sorting function. This sort of distance minimization is known as 'seriation' (or 'ordination'), and can be seen as a generalization of regular sorting; see <https://en.wikipedia.org/wiki/Seriation_(archaeology)>/<https://en.wikipedia.org/wiki/Ordination_(statistics)>/<https://www.jstatsoft.org/article/view/v025i03> (and its inverse, maximizing distance, can be seen as a kind of seriation too, although things get fuzzier there, see <https://gwern.net/unsort>).
+- This can be done by hand, and should, because it makes such lists easier to read; but as usual, is too much work for a subtle benefit, and can only be done for static lists. So, we want to automate it.
+- We seriate by asking the LLM to resort the list in a logical way, whatever that might mean in a given context, and we keep doing so to a fixed point (ie. the list stops changing). After that, we do a simple weak check that nothing was lost by looking at character-based set (ie. that the final output is a permutation of the input), to try to ensure a lossless transformation which preserved everything aside from improved seriation.
+- This may also be a useful primitive for LLM writing, by enabling a *seriation* pass: a first pass which cleans up text input by constraining edits to seriate it, *without modifying any words*. (For example, one could ask ChatGPT to clean up notes from a conversation or from brainstorming or jotting down text fragments, but invariably, ChatGPT will do more than just reorganize, and will wind up omitting parts, or rewriting into ChatGPTese. If one could first make ChatGPT seriate the notes, and then summarize it recursively to create a hierarchical Table of Contents & an abstract, and only *then* start rewriting it, the results might be much better.)</output>
 
 Input list to seriate:
 
 - <input>""" + target + "</input>\n<output>"
 
     completion = client.chat.completions.create(
-        model="gpt-5.4-mini",
+        model="gpt-5-mini",
         timeout=60,
+        seed=0,
         messages=[
             {"role": "developer", "content": "You are an analyst and editor, reordering inputs logically."},
             {"role": "user", "content": prompt}
         ],
     )
-    return completion.choices[0].message.content.removeprefix("<output>").removesuffix("</output>")
+    content = completion.choices[0].message.content
+    # tolerate preamble / trailing commentary / chain-of-thought leak
+    match = re.search(r'<output>(.*)</output>', content, re.DOTALL)
+    return match.group(1) if match else ''
 
 maximum_iterations = 5
 
@@ -172,7 +195,8 @@ if __name__ == "__main__":
     for i in range(maximum_iterations):
         result = seriate_once(current)
         print(f"Iteration {i+1}:\n{result}\n---", file=sys.stderr)
-        if result == current:
+        # empty result = extraction failed or model gave up; fall back to current
+        if result == '' or result == current:
             break
         if result in seen:
             print(f"ERROR: cycle detected at iteration {i+1}", file=sys.stderr)
@@ -185,3 +209,4 @@ if __name__ == "__main__":
         sys.exit(1)
 
     print(current)
+
