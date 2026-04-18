@@ -18,17 +18,10 @@ affiliationAnchors = setLike ["ai21", "adobe", "alibaba", "allen", "amazon", "an
 linkIDOverrides :: [(String, T.Text)]
 linkIDOverrides = setLike
   [
-  ("/gpt-2-music", "gwern-presser-2019-music")
-  , ("/blog/index", "gwern-2009-blog-index")
-  , ("/fiction/your-hands-and-mine", "gwern-2025-hands")
-  , ("/fiction/silver-bird", "gwern-2025-silver-bird")
-  , ("/fiction/lab-animals", "gwern-2025-apollonian-1")
-  , ("/fiction/tilakkhana", "gwern-2025-tilakkhana")
-  , ("/fiction/this-last-pain-graveyard", "gwern-2025-this-last-pain-graveyard")
-  , ("/fiction/this-last-pain", "gwern-2025-this-last-pain")
-  , ("/system-prompts-2025", "gwern-2025-system-prompts")
-  , ("/problem-14", "gwern-et-al-2022-problem-14")
-  , ("/fiction/alice", "gwern-2026-alice")
-  , ("/doc/ai/nn/diffusion/imagen/2026-04-04-gwern-gemini31propreview-nanobananapro-linocut-portofoaklandlowprofileaframecrane-illustration.jpg", "gwern-gemini31propreview-portofoakland")
-  , ("/fiction/craneyard", "gwern-2026-craneyard")
   ]
+
+
+
+
+
+

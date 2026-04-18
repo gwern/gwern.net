@@ -4,7 +4,7 @@
 # date-guesser.py: extract recent dates in YYYY[[-MM]-DD] format from natural language inputs or structured text like URLs
 # Author: Gwern Branwen
 # Date: 2024-08-21
-# When:  Time-stamp: "2026-04-11 21:32:49 gwern"
+# When:  Time-stamp: "2026-04-18 12:24:59 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo 'https://erikbern.com/2016/04/04/nyc-subway-math' | python date-guesser.py
@@ -1166,6 +1166,8 @@ Task examples (with explanations in '#' comments):
 - "https://old.reddit.com/r/ClaudeAI/comments/1s6mm8o/what_are_dead_giveaways_for_ai_slop_websites/ What are dead giveaways for AI slop websites?"
 ""
 - "https://notes.npilk.com/chatgpt-is-my-ssg ChatGPT is my static site generator" # 2025-06
+""
+- "https://www.lesswrong.com/posts/Jkb4CBB7rf4XYP5eb/claude-knows-who-you-are" # 2026-04-18; but impossible to guess even the year, because truesight exists since ~2020 so could be any Claude version...
 ""
 
 Task:

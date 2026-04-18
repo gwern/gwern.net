@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-04-18 15:02:36 gwern"
+# When:  Time-stamp: "2026-04-18 22:08:52 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -547,7 +547,7 @@ else
       | LC_ALL=C awk '!seen[$0]++' \
       | LC_ALL=C sort > ./metadata/unicode-all.txt
     λ(){ UNICODE_N=$(cat ./metadata/unicode-all.txt | wc --lines);
-         [ "$UNICODE_N" -le 2180 ] && echo "$UNICODE_N"; }
+         [ "$UNICODE_N" -le 2100 ] && echo "$UNICODE_N"; }
     wrap λ "Many Unicode characters stopped being used?"
 
     bold "Generating HTML previews of document types (like MS Word)…"
@@ -666,9 +666,9 @@ else
     # essays only:
     ## eg. './2012-election.md \n...\n ./doc/cs/cryptography/1955-nash.md \n...\n ./newsletter/2022/09.md \n...\n ./review/mcnamara.md \n...\n ./wikipedia-and-knol.md \n...\n ./zeo/zma.md'
     PAGES="$(find . -type f -name "*.md" | gfv -e '_site/' -e 'index' -e '#' | sort --unique)"
-    # essays+tags+annotations+similars+backlinks:
+    # essays+tags+annotations+similars+backlinks, excluding Github-only files like '/static/{README,CONTRIBUTING}.md'
     # eg. "_site/2012-election _site/2014-spirulina _site/3-grenades ... _site/doc/ai/text-style-transfer/index ... _site/doc/anime/2010-sarrazin ... _site/fiction/erl-king ... _site/lorem-admonition ... _site/newsletter/2013/12 ... _site/note/attention ... _site/review/umineko ... _site/zeo/zma"
-    PAGES_ALL="$(find ./ -type f -name "*.md" | gfv -e '_site' -e '#' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'; find _site/metadata/annotation/ -type f -name '*.html' | gfv '/metadata/annotation/id/')"
+    PAGES_ALL="$(find ./ -type f -name "*.md" | gfv -e '_site' -e '#' -e 'static/' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'; find _site/metadata/annotation/ -type f -name '*.html' | gfv '/metadata/annotation/id/')"
 
     ## Pandoc/Skylighting by default adds empty self-links to line-numbered code blocks to make them clickable (as opposed to just setting a span ID, which it also does). These links *would* be hidden except that self links get marked up with up/down arrows, so arrows decorate the code-blocks. We have no use for them and Pandoc/skylighting has no option or way to disable them, so we strip them.
     bold "Stripping self-links from syntax-highlighted HTML…"
