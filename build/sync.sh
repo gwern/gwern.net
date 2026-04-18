@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-04-16 21:33:14 gwern"
+# When:  Time-stamp: "2026-04-17 22:43:56 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -14,7 +14,7 @@
 # key dependencies: GHC, Hakyll, emacs, curl, tidy (HTML5 version), git, regex-compat-tdfa (Unicode Haskell regexps), urlencode
 # ('gridsite-clients' package), linkchecker, fdupes, ImageMagick, exiftool, mathjax-node-page (eg.
 # `npm i -g mathjax-node-page`), parallel, xargs, php-cli, php-xml, php-masterminds-html5, libreoffice, gifsicle, tidy, libxml2-utils…
-set -x
+
 cd ~/wiki/
 # shellcheck source=~/wiki/static/build/bash.sh
 . ./static/build/bash.sh # import a bunch of Bash utilities for output formatting, checks, file IO etc: red/bold, wrap, gf/gfc/gfv/ge/gec/gev, png2JPGQualityCheck, gwmv...
@@ -535,6 +535,19 @@ else
          xargs urlencode -m | sed -e 's/%20/\n/g' | \
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/gwern\.net\/\1<\/loc><changefreq>monthly<\/changefreq><\/url>/';
      echo "</urlset>";) >> ./_site/sitemap.xml
+
+    bold "Documenting all Unicode points used for font subsetting purposes…"
+    rm --force -- ./metadata/unicode-all.txt &>/dev/null || true
+    ## NOTE: we only look at literals; we do not attempt to decode HTML, so any escaped-only will be skipped. This is OK because nothing bad happens if we have false negatives on very rare characters (which exist only encoded), since probably it would have to use the fallback Unicode font and look ugly regardless.
+    { find . -mindepth 1 \( -name '.*' -o -name '_*' \) -prune -o -type f -name '*.md' -exec cat {} +
+      find ./metadata/annotation/ -mindepth 1 \( -name '.*' -o -name '_*' \) -prune -o -type f -name '*.html' -exec cat {} +
+    } | LC_ALL=C grep --perl-regexp --only-matching \
+          '[\xC2-\xDF][\x80-\xBF]|[\xE0-\xEF][\x80-\xBF]{2}|[\xF0-\xF4][\x80-\xBF]{3}' \
+      | LC_ALL=C awk '!seen[$0]++' \
+      | LC_ALL=C sort > ./metadata/unicode-all.txt
+    λ(){ UNICODE_N=$(cat ./metadata/unicode-all.txt | wc --lines);
+         [ "$UNICODE_N" -le 2180 ] && echo "$UNICODE_N"; }
+    wrap λ "Many Unicode characters stopped being used?"
 
     bold "Generating HTML previews of document types (like MS Word)…"
     # For some document types, Pandoc doesn't support them, or syntax-highlighting wouldn't be too useful for preview popups. So we use LibreOffice to convert them to HTML.
