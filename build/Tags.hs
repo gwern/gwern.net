@@ -12,7 +12,7 @@ import qualified Data.Map.Strict as M (elems, map, toList )
 import qualified Data.Text as T (append, pack, unpack, Text)
 import Text.EditDistance (levenshteinDistance, defaultEditCosts)
 
-import Cycle (isCycleLess)
+import Cycle (assertCycleLess)
 import LinkMetadataTypes (Metadata)
 import Utils (anyInfix, replace, replaceChecked, sed, sedMany, trim, split, replaceMany, frequency, pairs, fixedPoint, delete)
 import qualified Config.Tags as C
@@ -199,10 +199,21 @@ shortTagTest alltags = filter (\(_, realOutput, shouldbeOutput) -> realOutput /=
   where selfTagTestSuite :: [(String,String)] -- every long tag should rewrite to itself, of course
         selfTagTestSuite = zip alltags alltags
 
+-- Explicit human-maintained aliases must not cycle.
+-- Display-derived reverse aliases may contain harmless identity edges.
+-- Resolution must terminate under guessTagFromShort.
 testTags :: IO ()
 testTags = do
-              tags <- listTagsAll
-              let results = shortTagTest tags
-              unless (null results) $ error ("Tags.testTags: shortTagTest test suite errored out with some rewrites going awry; results `[(input, current output, intended output)]`: " ++ show results)
-              let results' = isCycleLess C.tagsShort2LongRewrites
-              unless (null results) $ error ("Tags.testTags: isCycleless test suite errored out with cycles detected in `tagsShort2Long`." ++ show results')
+  tags <- listTagsAll
+
+  let results = shortTagTest tags
+  unless (null results) $
+    error ("Tags.testTags: shortTagTest test suite errored out with some rewrites going awry; results `[(input, current output, intended output)]`: " ++ show results)
+
+  -- Should be genuinely acyclic.
+  assertCycleLess "explicit tag aliases" C.tagsShort2LongRewrites
+
+  -- Display-derived aliases need weaker checks:
+  -- no duplicate keys, no bad syntax, targets exist, but identity loops are allowed/ignored.
+  let nonIdentity = filter (uncurry (/=)) C.tagsShort2Long
+  assertCycleLess "all non-identity tag aliases" nonIdentity

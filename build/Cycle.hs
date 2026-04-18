@@ -11,6 +11,12 @@ import Utils (fixedPoint)
 testInfixRewriteLoops :: (Show a, Eq a, Ord a) => [(a,a)] -> (a -> a) -> [(a,a,a)]
 testInfixRewriteLoops rewrites f = map (\(a,b) -> (a,b,fixedPoint f a)) $ reverse rewrites
 
+assertCycleLess :: (Ord a, Show a) => String -> [(a,a)] -> IO ()
+assertCycleLess label xs =
+  case findCycles xs of
+    []  -> pure ()
+    bad -> error (label ++ ": rewrite-rule cycle(s): " ++ show bad)
+
 isCycleLess :: (Eq a, Ord a, Show a) => [(a,a)] -> [(a,a)]
 isCycleLess xs = if not (cycleExists xs) then xs else
   error ("Error: Association list of rewrite-rules has cycles! Errors related to:" ++ show (findCycles xs))
