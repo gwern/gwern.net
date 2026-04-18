@@ -5315,7 +5315,8 @@ function renderProgressPercentageIcon(progressIndicatorElement) {
 	progressIndicatorElement.querySelector(".progress-indicator-icon")?.remove();
 	progressIndicatorElement.appendChild(newElement("SPAN", {
 		class: "progress-indicator-icon icon-special",
-		style: `--icon-url: url("data:image/svg+xml;utf8,${encodeURIComponent(svgSrc)}")`
+		style: `--icon-url: url("data:image/svg+xml;utf8,${encodeURIComponent(svgSrc)}")`,
+		title: `${progressPercentage}%`
 	}));
 	progressIndicatorElement.classList.add("progress-percentage-rendered");
 }
