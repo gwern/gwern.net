@@ -2,7 +2,7 @@ External contributor rules for the Gwern.net source code repo.
 (Contributions to the website content are not covered by this repo or CONTRIBUTING, and should be sent to Gwern Branwen directly.)
 
 1. **Security disclosure**: Security issues should not be filed publicly; for security issues or contributions, please [contact Gwern Branwen directly](https://gwern.net/me#contact).
-2. **Licensing**: all contributions must be licensed under the same terms as the file they modify; generally, [CC-0](https://creativecommons.org/public-domain/cc0/), or MIT where CC-0 is legally problematic
+2. **Licensing**: all contributions must be licensed under the same terms as the file they modify; generally, [CC-0](https://creativecommons.org/public-domain/cc0/ "‘CC-0: Creative Commons public domain license’, Commons 2002"), or MIT where CC-0 is legally problematic
 
     By opening a PR, you affirm you have the right to license the contribution under the appropriate license, including any rights that might be claimed by an employer or AI tool provider. If you are unsure about the applicable license, open an issue first.
 3. **Issue-first**: substantial PRs should have an issue filed first for discussion; trivial fixes (typos, obvious bugs) can go straight to PR.
@@ -14,6 +14,7 @@ External contributor rules for the Gwern.net source code repo.
         - `Haskell`: should be `ghc -Wall`-clean and [hlint-clean](https://github.com/ndmitchell/hlint)
         - `Bash`: should be [shellcheck-clean](https://github.com/koalaman/shellcheck)
         - `Elisp`: byte-compile without warnings
+        - `HTML`: [HTML Tidy](https://www.html-tidy.org/) & [W3 Validator](https://validator.w3.org/) (but only a subset)
     - *no editing generated files* directly: all `*-VERSIONED.ext`, `*-GENERATED.ext` etc. files should be touched only by the PHP scripts which generate them via the pre-commit hook.
 5. **House style**: all contributions should follow language-specific guidelines (see again the MoS). Currently:
 

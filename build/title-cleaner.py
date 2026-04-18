@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-04-13 14:45:17 gwern"
+# When:  Time-stamp: "2026-04-17 23:54:17 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -841,15 +841,15 @@ About Us
 - "https://axiommath.ai/territory/from-seeing-why-to-checking-everything Axiom"
 ""
 - https://tinyhack.com/2014/03/12/implementing-a-web-server-in-a-single-printf-call/ Implementing a web server in a single printf() call - Tinyhack.com"
-"Implementing a web server in a single printf() call"
+Implementing a web server in a single printf() call
 - "https://dmvaldman.github.io/rooklift/ Writings"
 ""
 - "https://dmvaldman.github.io/rooklift/ RookLift - Writings (Training my watch to track intelligence)"
-"RookLift - Training my watch to track intelligence"
+RookLift - Training my watch to track intelligence
 - https://www.sfweekly.com/archives/the-worst-run-big-city-in-the-u-s/article_ff893b10-e35a-57cc-a52b-47162048b2c8.html The Worst-Run Big City in the US | Archives"
-"The Worst-Run Big City in the US"
+The Worst-Run Big City in the US
 - "https://mchav.github.io/learning-better-decision-tree-splits/ Learning better decision tree splits—LLMs as Heuristics for Program Synthesis - Michael Chavinda - A collection of my thoughts on the various topics I find myself interested in."
-"Learning better decision tree splits—LLMs as Heuristics for Program Synthesis"
+Learning better decision tree splits—LLMs as Heuristics for Program Synthesis
 - "https://secondthoughts.my/posts/projects/forecats/ second-thoughts/posts/projects/forecats/"
 ""
 - https://www.secretorum.life/p/japanese-death-poems <em>Japanese Death Poems</em> - by Roger’s Bacon - Secretorum"
@@ -857,55 +857,61 @@ About Us
 - https://www.secretorum.life/p/japanese-death-poems-part-2 <em>Japanese Death Poems</em> (part 2)—by Roger’s Bacon"
 "<em>Japanese Death Poems</em> (part 2)"
 - https://www.presentandcorrect.com/blogs/blog/typography-on-pencils-1-5 Typography on Pencils, 1–5.—Present &amp; Correct"
-"Typography on Pencils, 1–5"
+Typography on Pencils, 1–5
 - "https://krabat.menneske.dk/kkblog/2016/06/29/solved-auto-breaking-lines-in-epub-poetry-collections/ SOLVED… Auto-Breaking lines in ePub poetry collections! Well, sorta…—Kenneth Krabats 1000 stemmer"
-"SOLVED… Auto-Breaking lines in ePub poetry collections! Well, sorta…"
+SOLVED… Auto-Breaking lines in ePub poetry collections! Well, sorta…
 - "https://sdleffler.github.io/RustTypeSystemTuringComplete/ Rust’s Type System is Turing-Complete - Recursive Descent into Madness - A countable set of sanities and insanities, by Shea Leffler."
-"Rust’s Type System is Turing-Complete"
+Rust’s Type System is Turing-Complete
 - https://us-climate.blogspot.com/2023/05/70f-road-trip-version-20-2023.html Brian B.'s Climate Blog - 70F Road Trip version 2.0 (2023)"
 "70F Road Trip version 2.0 (2023)"
 - "https://jcdecker.blogspot.com/2017/04/tellers-magic-trick.html?m=1 Fortunate Son: Teller’s Magic Trick"
-"Teller’s Magic Trick"
+Teller’s Magic Trick
 - "https://sampatt.com/blog/2025-12-13-my-grandma-was-a-fed-lessons-from-digitizing-hundreds-of-hours-of-childhood/ My Grandma Was a Fed—Lessons from Digitizing Hundreds of Hours of Childhood—Sam Patterson"
-"My Grandma Was a Fed—Lessons from Digitizing Hundreds of Hours of Childhood"
+My Grandma Was a Fed—Lessons from Digitizing Hundreds of Hours of Childhood
 - "https://wanderingfounder.substack.com/p/the-art-of-cold-emailing-a-billionaire The art of cold-emailing a billionaire - by Andy"
-"The art of cold-emailing a billionaire"
+The art of cold-emailing a billionaire
 - "https://allpoetry.com/Mr-Cogito-And-The-Imagination Mr Cogito And The Imagination by Zbigniew Herbert—Famous poems, famous poets.—All Poetry"
-"Mr Cogito And The Imagination by Zbigniew Herbert"
+Mr Cogito And The Imagination by Zbigniew Herbert
 - "https://www.instructables.com/microwave-smelter/ Microwave Smelter : 8 Steps (with Pictures)—Instructables"
-"Microwave Smelter: 8 Steps (with Pictures)"
+Microwave Smelter: 8 Steps (with Pictures)
 - "https://stephstiner.substack.com/p/inside-the-hot-girl-economy inside the hot girl economy—steph :)"
-"Inside the hot girl economy"
+Inside the hot girl economy
 - https://kotaku.com/pokemon-ken-sugimori-original-art-red-blue-gold-silver-1850352781 Two Decades Later, <em>Pokémon</em>’s Original Iconic Art Can Finally Be Seen In Its Full Glory—<em>Kotaku</em>"
-"Two Decades Later, <em>Pokémon</em>’s Original Iconic Art Can Finally Be Seen In Its Full Glory"
+Two Decades Later, <em>Pokémon</em>’s Original Iconic Art Can Finally Be Seen In Its Full Glory
 - "I Don’™t Want to Hire Women—Clarissa’s Blog"
-"I Don’t Want to Hire Women"
+I Don’t Want to Hire Women
 - "https://unsung.aresluna.org/unsung-heroes-flickrs-urls-scheme/ Unsung heroes: Flickr’s URLs scheme - Unsung"
-"Unsung heroes: Flickr’s URLs scheme"
+Unsung heroes: Flickr’s URLs scheme
 - "https://theshamblog.com/an-ai-agent-wrote-a-hit-piece-on-me-part-4/ An AI Agent Published a Hit Piece on Me—The Operator Came Forward—The Shamblog"
-"An AI Agent Published a Hit Piece on Me—The Operator Came Forward"
+An AI Agent Published a Hit Piece on Me—The Operator Came Forward
 - "https://alexlitzenberger.com/blog/building_a_minimal_transformer_for_10_digit_addition Blog Post—Alex Litzenberger"
 ""
 - "https://howisfelix.today/ howisFelix.today?—Felix Krause"
-"howisFelix.today?"
+howisFelix.today?
 - "https://apenwarr.ca/log/20260316 Every layer of review makes you 10x slower - apenwarr"
-"Every layer of review makes you 10x slower"
+Every layer of review makes you 10x slower
 - https://haskellforall.com/2026/03/a-sufficiently-detailed-spec-is-code Haskell for all: A sufficiently detailed spec is code"
-"A sufficiently detailed spec is code"
+A sufficiently detailed spec is code
 - "ssrajadh/sentrysearch: Semantic search over videos using Gemini Embedding 2."
-"ssrajadh/sentrysearch: Semantic search over videos using Gemini Embedding 2"
+ssrajadh/sentrysearch: Semantic search over videos using Gemini Embedding 2
 - "https://www.theguardian.com/lifeandstyle/2026/mar/26/ai-chatbot-users-lives-wrecked-by-delusion Marriage over, €100,000 down the drain: the AI users whose lives were wrecked by delusion | Health &amp; wellbeing"
-"Marriage over, €100,000 down the drain: the AI users whose lives were wrecked by delusion"
+Marriage over, €100,000 down the drain: the AI users whose lives were wrecked by delusion
 - "https://projectzero.google/2015/06/what-is-good-memory-corruption.html What is a “good” memory corruption vulnerability? - Project Zero"
-"What is a “good” memory corruption vulnerability?"
+What is a “good” memory corruption vulnerability?
 - "https://www.bartaking.com/zen-zomics/hyakujos-fox/ <em>Hyakujo’s Fox</em> : Bart King: King Cartoon Electric"
 "<em>Hyakujo’s Fox</em>"
 - "https://theasc.com/articles/fantastic-voyage-creating-the-futurescape-for-the-fifth-element The American Society of Cinematographers"
 ""
 - "https://www.armand-dangour.com/pindaric-odes/ Olympic Odes - Armand D’Angour"
-"Olympic Odes"
+Olympic Odes
 - "https://archiveofourown.org/works/82943941 archiveofourown.org"
 ""
+- "https://www.linkedin.com/in/ben-chess-69bba21 Ben Chess - Crusoe"
+Ben Chess - Crusoe
+- "https://godplaysdice.blogspot.com/2009/09/hidden-mathematics-of-bathrooms.html "<em>God Plays Dice</em>: The hidden mathematics of bathrooms"
+The hidden mathematics of bathrooms
+- "https://knifepoint.substack.com/p/the-reluctant-grandmaster THE RELUCTANT GRANDMASTER"
+The Reluctant Grandmaster
 
 Task:
 

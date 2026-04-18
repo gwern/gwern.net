@@ -194,4 +194,5 @@ stringDelete = setLike [" - The Public Domain Review"
             , "—by Scott Alexander", "Brian B.'s Climate Blog: ", "Fortunate Son: ", " - Sam Patterson"
             , " - Famous poems, famous poets. - All Poetry", " - Instructables", " - steph :)", " - Kotaku", " - Clarissa's Blog"
             , " - Unsung", " - The Shamblog", " - Felix Krause", " - apenwarr", "—Clear Language, Clear Mind", " - Project Play"
-            , "Haskell for all: ", " | Health &amp; wellbeing", " | Health & wellbeing", " - Project Zero", " - Armand D’Angour"]
+            , "Haskell for all: ", " | Health &amp; wellbeing", " | Health & wellbeing", " - Project Zero", " - Armand D’Angour"
+            , "God Plays Dice: "]

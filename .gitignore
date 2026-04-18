@@ -22,3 +22,4 @@ redirect/**/*.html
 /.htaccess
 /asset.log
 build/dist-newstyle/
+metadata/unicode-all.txt
