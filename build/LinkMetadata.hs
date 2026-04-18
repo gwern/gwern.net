@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2026-04-10 22:56:37 gwern"
+When:  Time-stamp: "2026-04-18 15:00:12 gwern"
 License: CC-0
 -}
 
@@ -666,12 +666,13 @@ generateAnnotationBlock md am (f, ann) blp slp lb =
      -- Just (_,    _,_,_,_,_,"") -> nonAnnotatedLink
      Just x@(tle,aut,dt,_,kvs,ts,abst) ->
        let tle' = if null tle then "<code>"++f++"</code>" else Typography.titleWrap tle
-           lid = let tmpID = generateID md f aut dt in
-                   if tmpID=="" then error ("LinkMetadata.generateAnnotationBlock: `generateID` failed to yield a non-empty ID on a link. (I'm not sure whether this should be impossible, so we are currently fatally erroring out on it to see what happens.) Input was: " ++ show x) else T.pack "link-bibliography-" `T.append` tmpID
+           lid  = generateID md f aut dt
+           lid' = if lid/="" then T.pack "annotation-" `T.append` lid else
+                     error ("LinkMetadata.generateAnnotationBlock: `generateID` failed to yield a non-empty ID on a link. Input was: " ++ show x)
            -- NOTE: we cannot link to an anchor fragment in ourselves, like just link in the annotation header to `#backlink-transclusion`, because it would severely complicate all the anchor-rewriting logic (how would it know if `#backlink-transclusion` refers to something *in* the annotation, or is a section or anchor inside the annotated URL?). But fortunately, by the logic of caching, it doesn't much matter if we link the same URL twice and pop it up the first time vs transclude it inside the popup/popover the second time.
-           lidBacklinkFragment    = if lid=="" then "" else "backlink-transclusion-"    `T.append` lid
-           lidSimilarLinkFragment = if lid=="" then "" else "similarlink-transclusion-" `T.append` lid
-           lidLinkBibLinkFragment = if lid=="" then "" else "link-bibliography-transclusion-" `T.append` lid
+           lidBacklinkFragmentID    = if lid=="" then "" else "backlink-transclusion-"    `T.append` lid
+           lidSimilarLinkFragmentID = if lid=="" then "" else "similarlink-transclusion-" `T.append` lid
+           lidLinkBibLinkFragmentID = if lid=="" then "" else "link-bibliography-transclusion-" `T.append` lid
            author = authorCollapse aut
 
            dt' = dateTruncateBad dt
@@ -689,7 +690,7 @@ generateAnnotationBlock md am (f, ann) blp slp lb =
            doi = kvDOI kvs
            values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
            link = addRecentlyChanged x $ linkLive $ unsafePerformIO $ localizeLink am $ -- HACK: force archiving & link-living because it is not firing reliably (particularly on Twitter partials); another Raw HTML issue? it's suspicious that we have that RawInline right there… which might disable walks?
-             Link (lid, [if null abst then "link-annotated-partial" else "link-annotated"], values) [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
+             Link (lid', [if null abst then "link-annotated-partial" else "link-annotated"], ("id-ref",lid):values) [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
            -- make sure every abstract is wrapped in paragraph tags for proper rendering:
            abst' = if null abst || anyPrefix abst ["<p>", "<ul", "<ol", "<h2", "<h3", "<bl", "<figure", "<div"] then abst else "<p>" ++ abst ++ "</p>"
        in
@@ -705,9 +706,9 @@ generateAnnotationBlock md am (f, ann) blp slp lb =
                   else [BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst') `T.append`
                                                    if (blp++slp++lb)=="" then ""
                                                    else
-                                                        ((if blp=="" then "" else ("<div class=\"backlinks-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidBacklinkFragment `T.append` "\" " `T.append` ">\n<p><a class=\"id-not include-even-when-collapsed\" href=\"" `T.append` T.pack blp `T.append` "\"><strong>Backlinks</strong>:</a></p>\n</div>")) `T.append`
-                                                         (if slp=="" then "" else ("<div class=\"similars-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidSimilarLinkFragment `T.append` "\" " `T.append` ">\n<p><a class=\"id-not include-even-when-collapsed\" href=\"" `T.append` T.pack slp `T.append` "\"><strong>Similar Links:</strong></a></p>\n</div>")) `T.append`
-                                                          (if lb=="" then "" else ("<div class=\"link-bibliography-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidLinkBibLinkFragment `T.append` "\" " `T.append` ">\n<p><a class=\"id-not include-even-when-collapsed\" href=\"" `T.append` T.pack lb `T.append` "\"><strong>Bibliography:</strong></a></p>\n</div>")))
+                                                        ((if blp=="" then "" else ("<div class=\"backlinks-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidBacklinkFragmentID `T.append` "\" " `T.append` ">\n<p><a class=\"id-not include-even-when-collapsed\" href=\"" `T.append` T.pack blp `T.append` "\"><strong>Backlinks</strong>:</a></p>\n</div>")) `T.append`
+                                                         (if slp=="" then "" else ("<div class=\"similars-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidSimilarLinkFragmentID `T.append` "\" " `T.append` ">\n<p><a class=\"id-not include-even-when-collapsed\" href=\"" `T.append` T.pack slp `T.append` "\"><strong>Similar Links:</strong></a></p>\n</div>")) `T.append`
+                                                          (if lb=="" then "" else ("<div class=\"link-bibliography-append aux-links-append collapse\"" `T.append` " id=\"" `T.append` lidLinkBibLinkFragmentID `T.append` "\" " `T.append` ">\n<p><a class=\"id-not include-even-when-collapsed\" href=\"" `T.append` T.pack lb `T.append` "\"><strong>Bibliography:</strong></a></p>\n</div>")))
                                                               )]
                        ]) ++
                 generateFileTransclusionBlock am (f, x)
