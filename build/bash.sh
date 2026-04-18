@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-04-17 19:16:40 gwern"
+# When:  Time-stamp: "2026-04-18 23:53:30 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -598,8 +598,20 @@ crop-pad-black () { crop "$@" && pad-black "$@"; }
 #   combine 2 1 -- a.jpg b.jpg         # horizontal pair, reversed order
 #   combine 1 - 2 - 3 - 4 -- *.jpg     # vertical stack of 4, batched
 #   combine a.jpg b.jpg c.jpg          # (no '--') horizontal, all at once
+#   combine --small-only *.jpg         # combine only if every input has <$COMBINE_SMALL_ONLY_THRESHOLD pixels
 #
 # Leftover images that don't fill a complete batch are skipped with a message.
+#
+# FLAGS
+# -----
+#   --small-only   Must be the FIRST argument. Skip the combine (return 0) if any
+#                  input image has width×height ≥ $COMBINE_SMALL_ONLY_THRESHOLD
+#                  (default 2880×1800 = 5,184,000 pixels ⧸ 4 = 1,296,000). All-or-nothing: the
+#                  check runs once on the full input before any batching. Accepted
+#                  by 'combine' and every batched wrapper (combine2, combinev,
+#                  combinev2, combinev4/cv4, combineSquare, and their reversed
+#                  variants; reversed variants preserve the flag position and only
+#                  reverse the file list).
 #
 # ALIASES
 # -------
@@ -642,6 +654,47 @@ get_ext () {
         return 1
     fi
     echo "$extension"
+}
+
+# Pixel-count threshold for '--small-only' mode: 2880×1800 (laptop screen) = 5,184,000.
+# We'll define 'small' as a quarter that.
+# Images whose width×height meet or exceed this are considered "big" and cause
+# '--small-only' combines to skip.
+COMBINE_SMALL_ONLY_THRESHOLD=1296000
+
+# Remove a leading '--small-only' token from a named Bash array in place.
+# Usage: _combine_pop_small_only args   # modifies $args, sets COMBINE_SMALL_ONLY_FLAG.
+# COMBINE_SMALL_ONLY_FLAG is set to 1 if the first element was '--small-only', else 0.
+# Flag must be the first argument; '--small-only' appearing later is silently
+# treated as a regular argument (likely triggering a downstream "file not found"
+# or "invalid pattern token" error, which is the correct response to misuse).
+_combine_pop_small_only () {
+    local _varname="$1"
+    local -n _arr="$_varname"
+    COMBINE_SMALL_ONLY_FLAG=0
+    if (( ${#_arr[@]} > 0 )) && [[ "${_arr[0]}" == "--small-only" ]]; then
+        COMBINE_SMALL_ONLY_FLAG=1
+        _arr=("${_arr[@]:1}")
+    fi
+}
+
+# Return 0 if every file has width*height < COMBINE_SMALL_ONLY_THRESHOLD, else 1.
+# Returns 2 on read error. Prints an informative skip message when any image is too big.
+_combine_all_small () {
+    local img w h pixels
+    for img in "$@"; do
+        read -r w h < <(identify -ping -format "%w %h" -- "$img" 2>/dev/null)
+        if [[ -z "$w" || -z "$h" ]]; then
+            red "combine: --small-only: failed to read dimensions of '$img'." >&2
+            return 2
+        fi
+        pixels=$((w * h))
+        if (( pixels >= COMBINE_SMALL_ONLY_THRESHOLD )); then
+            yellow "combine: --small-only: '$img' is ${w}×${h} (${pixels}px ≥ ${COMBINE_SMALL_ONLY_THRESHOLD}px); skipping combine."
+            return 1
+        fi
+    done
+    return 0
 }
 
 # Wait for a file to exist, be non-empty, and remain untouched for ~3s.
@@ -702,9 +755,13 @@ combine () {
     local seen_sep=false
     local arg i token current_row="" max_slot=0 last_token_was_row_break=false
     local -a slot_seen=()
+    local -a _args=("$@")
+
+    # ── extract flag: '--small-only' must be the first argument if present ──
+    _combine_pop_small_only _args
 
     # ── parse: split on '--' ──
-    for arg in "$@"; do
+    for arg in "${_args[@]}"; do
         if [[ "$arg" == "--" ]]; then
             seen_sep=true
             continue
@@ -787,6 +844,11 @@ combine () {
     done
 
     local batch_size=$max_slot
+
+    # ── --small-only: bail cleanly if any input image is ≥ threshold ──
+    if (( COMBINE_SMALL_ONLY_FLAG == 1 )); then
+        _combine_all_small "${files[@]}" || return 0
+    fi
 
     # ── download guard ──
     local IMG
@@ -933,6 +995,15 @@ _combine_reversed () {
     shift
 
     local args=("$@")
+    local -a prefix=()
+    # Preserve a leading '--small-only' at the front of the delegated call,
+    # so reversal only affects the file list and the flag keeps its required
+    # first position.
+    if (( ${#args[@]} > 0 )) && [[ "${args[0]}" == "--small-only" ]]; then
+        prefix=(--small-only)
+        args=("${args[@]:1}")
+    fi
+
     local reversed=()
     local i
 
@@ -942,7 +1013,7 @@ _combine_reversed () {
     for ((i=${#args[@]}-1; i>=0; i--)); do
         reversed+=("${args[i]}")
     done
-    "$wrapper" "${reversed[@]}"
+    "$wrapper" "${prefix[@]}" "${reversed[@]}"
 }
 
 # Fail loudly when explicitly supplied files cannot fill whole fixed-size batches.
@@ -965,8 +1036,12 @@ combinev () {
     local pat_str
     local pat=()
 
+    _combine_pop_small_only args
     if (( ${#args[@]} == 0 )); then
         get_image_files args
+    fi
+    if (( COMBINE_SMALL_ONLY_FLAG == 1 )); then
+        _combine_all_small "${args[@]}" || return 0
     fi
     pat_str=$(_combine_all_pattern "${#args[@]}" "-")
     read -ra pat <<< "$pat_str"
@@ -984,15 +1059,27 @@ alias cvr="combinevr"
 
 # combine horizontally in pairs
 combine2 () {
-    _combine_require_explicit_multiple 2 "$@" || return 1
-    combine 1 2 -- "$@"
+    local args=("$@")
+    _combine_pop_small_only args
+    _combine_require_explicit_multiple 2 "${args[@]}" || return 1
+    if (( COMBINE_SMALL_ONLY_FLAG == 1 )); then
+        if (( ${#args[@]} == 0 )); then get_image_files args; fi
+        _combine_all_small "${args[@]}" || return 0
+    fi
+    combine 1 2 -- "${args[@]}"
 }
 alias c2="combine2"
 
 # combine vertically in pairs
 combinev2 () {
-    _combine_require_explicit_multiple 2 "$@" || return 1
-    combine 1 - 2 -- "$@"
+    local args=("$@")
+    _combine_pop_small_only args
+    _combine_require_explicit_multiple 2 "${args[@]}" || return 1
+    if (( COMBINE_SMALL_ONLY_FLAG == 1 )); then
+        if (( ${#args[@]} == 0 )); then get_image_files args; fi
+        _combine_all_small "${args[@]}" || return 0
+    fi
+    combine 1 - 2 -- "${args[@]}"
 }
 alias cv2="combinev2"
 
@@ -1002,8 +1089,14 @@ alias cv2r="combinev2r"
 
 # 2×2 grid, batched
 combineSquare () {
-    _combine_require_explicit_multiple 4 "$@" || return 1
-    combine 1 2 - 3 4 -- "$@"
+    local args=("$@")
+    _combine_pop_small_only args
+    _combine_require_explicit_multiple 4 "${args[@]}" || return 1
+    if (( COMBINE_SMALL_ONLY_FLAG == 1 )); then
+        if (( ${#args[@]} == 0 )); then get_image_files args; fi
+        _combine_all_small "${args[@]}" || return 0
+    fi
+    combine 1 2 - 3 4 -- "${args[@]}"
 }
 
 # True if every image in the batch is wider than tall.
@@ -1076,12 +1169,18 @@ combinev4 () {
     local offset=0 remaining chunk_size
     local batch=()
 
+    _combine_pop_small_only args
+
     if (( ${#args[@]} == 0 )); then
         get_image_files args
     fi
     if (( ${#args[@]} < 2 )); then
         red "combinev4: ≥2 images required but got ${#args[@]}." >&2
         return 1
+    fi
+
+    if (( COMBINE_SMALL_ONLY_FLAG == 1 )); then
+        _combine_all_small "${args[@]}" || return 0
     fi
 
     while (( offset < ${#args[@]} )); do
