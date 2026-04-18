@@ -4,7 +4,7 @@
 # italicizer.py: reformat a string to add italics as semantically appropriate (eg. book titles) using LLMs
 # Author: Gwern Branwen
 # Date: 2025-01-17
-# When:  Time-stamp: "2026-04-16 12:28:48 gwern"
+# When:  Time-stamp: "2026-04-17 23:43:42 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python italicizer.py
@@ -41,37 +41,45 @@ else:
 completion = client.chat.completions.create(
   # temperature=0,
     model="gpt-5.4-mini", # TODO: is GPT-4.1 better than o3-mini here? the 4o/o1-mini models aren't smart enough but o1 is too expensive 😢; we compromise with 'o1-preview' which benefits from <https://platform.openai.com/docs/guides/prompt-caching> to cut its price when we run a lot of title-cleaning. Why is that when this seems like such an easy task, albeit a little fiddly? The smaller models seem to fail catastrophically on paper titles, no matter how many I put in, so my best guess is that this is 'tail dropping' behavior from the very aggressive shrinking of small models, to eliminate as much factual/memorized knowledge as possible. (ie. they've forgotten all these papers, which the original large models knew from pretraining on said papers, or at least metadata of those papers or on other papers referencing them)
-  messages=[
+    seed=0,
+    messages=[
     # {"role": "system", "content": "You are a Wikipedia copyeditor. When in doubt, consult MOS:ITALIC <https://en.wikipedia.org/wiki/Wikipedia:Manual_of_Style/Text_formatting#Italic_type>."},
       {"role": "user", "content":
-f"""Task: reformatting text to add missing italics.
+f"""Task: Add HTML <em></em> italics to text according to formal English style.
 
-Summary: Add (HTML <em></em>) italics to text with un-italicized words or phrases.
-Follow standard English formal writing style in italicizing.
-Words which should be italicized include:
+Italicize ONLY these specific categories:
 
-- titles: book, movie, long poem, TV show, periodical, game
-- names: ship, plane, spaceship
-- words: unfamiliar foreign word or phrase
-- science: variables, scientific names like species names
-- musical terms
+- Long works: novels, films, TV shows, plays, operas, musicals, video games, albums, book-length poems.
+- Periodicals: newspapers, magazines, academic journals, and named recurring blogs or newsletters treated as publications.
+- Visual works: paintings, sculptures, curated named art exhibitions.
+- Named individual vehicles: specific ships, aircraft, spacecraft, or automobiles identified by name (USS Enterprise, HMS Victory, Millennium Falcon, La Baleine). Not model or class names.
+- Scientific usage: binomial species names (Drosophila melanogaster); variables in running text (the r parameter; Nth-great-grandmother).
+- Foreign words and phrases not naturalized into English; foreign-language titles in their native form.
+- Musical direction terms used descriptively (molto ritardando).
 
-Words which should not be italicized:
+Do NOT italicize (these are the most common over-italicization errors):
 
-- personal names or location names (whether or not foreign)
-- software/database
-- short works: short stories, poems, symphonies
-- loanwords (or other common foreign terms a reader would not need defined)
-- brands
-- punctuation which is not part of the italicized phrase
-- abbreviated titles or acronyms
+- Academic paper, preprint, or conference paper titles, however grand-sounding.
+- Essay, blog post, news article, magazine article, chapter, and section titles — including canonical essays (e.g., "Politics and the English Language").
+- Short stories and short poems, advertisements
+- Conference and workshop names (SIGGRAPH, ICML, workshops at named venues).
+- Legal cases; laws, treaties, constitutions, declarations.
+- Proper names of people, places, pets, buildings, businesses, or fictional characters — even when the name coincides with a work title or a foreign word (Hamnet = Shakespeare's son; Foss = a cat; Moby = a musician; Medieval Times = a restaurant chain).
+- Products, companies, websites, platforms, brands, services, AI models (OK Soda, iPhone, Bloomberg, Aeon, Suno, Veo, Gemini 3).
+- Symphonies, concertos, numbered classical works (Symphony No. 5).
+- Software, databases, libraries, tools, programming languages, benchmarks, datasets.
+- Font names.
+- Common foreign loanwords familiar to English readers (sushi, yoga, kung fu, faux pas, en route, sudoku, karaoke).
+- Acronyms and abbreviated forms, even when the expanded form would be italicized.
 
-If the text is correct or you are unsure what to italicize, return the empty string.
-(It is better to leave text unchanged than italicize incorrectly.)
-If punctuation follows an italicized phrase, keep punctuation outside the <em> tags.
+Key decision rule: A capitalized multi-word phrase is NOT a reliable signal of an italicizable work. Most title-case multi-word phrases are papers, essays, articles, or products — none of which are italicized. If the input could plausibly be any of the Do-Not-Italicize categories above, return "" rather than guessing.
 
-Do not add quote marks, or make any other corrections.
-Do not add extra explanation or disclaimers.
+Output format:
+- If italicization is needed: return the full text with <em></em> tags inserted around the italicized span. Keep trailing punctuation outside the tags.
+- Otherwise (no italicization needed, or text is already correct): return the empty string "".
+- Do not add quotes, correct spelling, or make other changes.
+- Do not explain.
+
 When in doubt, consult MOS:ITALIC <https://en.wikipedia.org/wiki/Wikipedia:Manual_of_Style/Text_formatting#Italic_type>.
 
 Examples:
@@ -264,9 +272,9 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - <text>The Iron Law Of Evaluation And Other Metallic Rules</text>
 ""
-- <text>GPT-3 Creative Fiction \167 Dare To Be Stupid?</text>
+- <text>GPT-3 Creative Fiction § Dare To Be Stupid?</text>
 ""
-- <text>GPT-3 Creative Fiction \167 Book of Jobs</text>
+- <text>GPT-3 Creative Fiction § Book of Jobs</text>
 ""
 - <text>Progress In Beauty</text>
 ""
@@ -274,7 +282,7 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - <text>The Second Apocalypse: Freedom In An Unfree Universe</text>
 <em>The Second Apocalypse</em>: Freedom In An Unfree Universe
-- <text>Amusing Ourselves to Death? \167 Waller Et Al <span class=\"date-range\">1995<sub><span title=\"1995 was 29 years ago.\">29ya</span></sub></span>, 8216Occupational and Leisure Time Interests, and Personality8217</text>
+- <text>Amusing Ourselves to Death? § Waller Et Al <span class=\"date-range\">1995<sub><span title=\"1995 was 29 years ago.\">29ya</span></sub></span>, ‘Occupational and Leisure Time Interests, and Personality’</text>
 ""
 - <text>The Kelly Coin-Flipping Game: Exact Solutions</text>
 ""
@@ -284,17 +292,17 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - <text>MLP:FiM: S9E23: The Big Mac Question</text>
 ""
-- <text>Miscellaneous \167 D&amp;D Game #2 Log</text>
+- <text>Miscellaneous § D&amp;D Game #2 Log</text>
 ""
 - <text>NGE TV, Episode 6: \"Showdown in Tokyo-3\"/\"Rei-3\"</text>
 ""
 - <text>Scott and Scurvy: How the Cure for Scurvy Was Lost</text>
 ""
-- <text>Nature8217s Spoils: The underground food movement ferments revolution</text>
+- <text>Nature’s Spoils: The underground food movement ferments revolution</text>
 ""
 - <text>On the Origin and Evolution of Life in the Galaxy</text>
 ""
-- <text>Why Cats Love Earwax \167 East Asian Survey</text>
+- <text>Why Cats Love Earwax § East Asian Survey</text>
 ""
 - <text>Why To Not Write A Boo</text>
 ""
@@ -302,7 +310,7 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - <text>The Science of Visual Data Communication: What Works</text>
 ""
-- <text>"Psychology at Michigan: The Pillsbury years, 18978211&1947 \167 John F. Shepard"</text>
+- <text>Psychology at Michigan: The Pillsbury years, 1897–1947 § John F. Shepard</text>
 ""
 - <text>Coprophagia and Allied Phenomena</text>
 ""
@@ -318,7 +326,7 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - <text>The Perfect Heist: Recipes from Around the World [combined papers + slides]</text>
 ""
-- <text>The Great Paper Caper: Years of running drugs and boosting cars left Frank Bourassa thinking: There8217s got to be an easier way to earn a dishonest living. That8217s when he nerved up the idea to make his fortune. (Literally.) Which is how Frank became the most prolific counterfeiter in American history8212a guy with more than $200 million in nearly flawless fake twenties stuffed in a garage. How he got away with it all, well, that8217s even crazier.</text>
+- <text>The Great Paper Caper: Years of running drugs and boosting cars left Frank Bourassa thinking: There’s got to be an easier way to earn a dishonest living. That’s when he nerved up the idea to make his fortune. (Literally.) Which is how Frank became the most prolific counterfeiter in American history—a guy with more than $200 million in nearly flawless fake twenties stuffed in a garage. How he got away with it all, well, that’s even crazier.</text>
 ""
 - <text>or genotype–environment interaction or G×E</text>
 ""
@@ -410,7 +418,7 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - <text>FRACTRAN: A Simple Universal Programming Language for Arithmetic</text>
 ""
-- <text>Folklore</text>
+- <text>Folklore</text> # far too common a word to risk italicizing
 ""
 - <text>Forgotten books: The application of unseen species models to the survival of culture</text>
 ""
@@ -418,7 +426,7 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - <text>Generating images from caption and vice versa via CLIP-Guided Generative Latent Space Search</text>
 ""
-- <text>Glowworm Attack: Optical TEMPEST Sound Recovery via a Device8217s Power Indicator LED</text>
+- <text>Glowworm Attack: Optical TEMPEST Sound Recovery via a Device’s Power Indicator LED</text>
 ""
 - <text>Going, Going, Gone: Lost Internet References</text>
 ""
@@ -436,7 +444,7 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - <text>Improving the Interpretability of fMRI Decoding using Deep Neural Networks and Adversarial Robustness</text>
 ""
-- <text>It8217s the Latency, Stupid</text>
+- <text>It’s the Latency, Stupid</text>
 ""
 - <text>Large Scale Adversarial Representation Learning</text>
 ""
@@ -492,7 +500,7 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - <text>Noisy Sorting Without Resampling</text>
 ""
-- <text>Notes on a Strange World: Houdini8217s Impossible Demonstration</text>
+- <text>Notes on a Strange World: Houdini’s Impossible Demonstration</text>
 ""
 - <text>Offline Reinforcement Learning: Tutorial, Review, and Perspectives on Open Problems</text>
 ""
@@ -552,7 +560,7 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - <text>Sparse Networks from Scratch: Faster Training without Losing Performance</text>
 ""
-- <text>Spearman8217s Rho for the AMH Copula: a Beautiful Formula</text>
+- <text>Spearman’s Rho for the AMH Copula: a Beautiful Formula</text>
 ""
 - <text>Spot Me if You Can: Uncovering Spoken Phrases in Encrypted VoIP Conversations</text>
 ""
@@ -594,7 +602,7 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - <text>The Recursive Universe</text>
 ""
-- <text>The Skinny on Celebrities: Parasocial Relationships Moderate the Effects of Thin Media Figures on Women8217s Body Image</text>
+- <text>The Skinny on Celebrities: Parasocial Relationships Moderate the Effects of Thin Media Figures on Women’s Body Image</text>
 ""
 - <text>The Value Equivalence Principle for Model-Based Reinforcement Learning</text>
 ""
@@ -614,7 +622,7 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - <text>Universal Entropy of Word Ordering Across Linguistic Families</text>
 ""
-- <text>Video-Based Cryptanalysis: Extracting Cryptographic Keys from Video Footage of a Device8217s Power LED</text>
+- <text>Video-Based Cryptanalysis: Extracting Cryptographic Keys from Video Footage of a Device’s Power LED</text>
 ""
 - <text>Weight Agnostic Neural Networks</text>
 ""
@@ -664,7 +672,7 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - <text>Chimes at Midnight</text>
 ""
-- <text>Anomalous Tokens in DeepSeek-V3 and r1</text>"
+- <text>Anomalous Tokens in DeepSeek-V3 and r1</text>
 ""
 - <text>When therapy causes harm</text>
 ""
@@ -712,7 +720,7 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - <text>Learning To Be Me</text>
 ""
-- <text>https://kenbertagnolli.com/2025/02/09/how-we-achieved-a-1000x-improvement-in-performance/ Three Orders of Magnitude: Transforming PDC Technology at US Synthetic - Ken Bertagnolli</text>
+- <text>Three Orders of Magnitude: Transforming PDC Technology at US Synthetic - Ken Bertagnolli</text> # https://kenbertagnolli.com/2025/02/09/how-we-achieved-a-1000x-improvement-in-performance/
 ""
 - <text>Nil Communication: How to Send a Message without Sending Anything at All</text>
 ""
@@ -720,753 +728,763 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - <text>Pondering the ‘Dyson Slingshot’</text>
 ""
-- "https://en.wikipedia.org/wiki/Ecology_of_fear Ecology of fear"
+- <text>Ecology of fear</text> # https://en.wikipedia.org/wiki/Ecology_of_fear
 ""
-- "The Ecology of Fear: Optimal Foraging, Game Theory, and Trophic Interactions"
+- <text>The Ecology of Fear: Optimal Foraging, Game Theory, and Trophic Interactions</text>
 ""
-- "Fixing the Internet for Real Time Applications: Part I"
+- <text>Fixing the Internet for Real Time Applications: Part I</text>
 ""
-- "Fixing the Internet for Real-Time Applications: Part III"
+- <text>Fixing the Internet for Real-Time Applications: Part III</text>
 ""
-- "DS R1 is not on par with o1, and the difference is qualitative, not quantitative"
+- <text>DS R1 is not on par with o1, and the difference is qualitative, not quantitative</text>
 ""
-- "Pulling Out The Big Guns For Needle Phobia In An Insane World Where Nobody Seems To Take It Seriously"
+- <text>Pulling Out The Big Guns For Needle Phobia In An Insane World Where Nobody Seems To Take It Seriously</text>
 ""
-- "What’s Wrong With This Lagrangean?"
+- <text>What’s Wrong With This Lagrangean?</text>
 ""
-- "Foundations of algorithmic thermodynamics"
+- <text>Foundations of algorithmic thermodynamics</text>
 ""
-- "Meditating More Made me Sleep Better and Feel Worse"
+- <text>Meditating More Made me Sleep Better and Feel Worse</text>
 ""
-- "When Falsification is the Only Path to Truth"
+- <text>When Falsification is the Only Path to Truth</text>
 ""
-- "Power Lies Trembling: a 3-book review"
+- <text>Power Lies Trembling: a 3-book review</text>
 ""
-- "‘Bring Me the Poison’: On the Trail With Trump’s Inner Circle of Suck-Ups"
+- <text>‘Bring Me the Poison’: On the Trail With Trump’s Inner Circle of Suck-Ups</text>
 ""
-- "Medieval Manuscripts Provenance: The RECEPTIO-Rossi Affair IV: My ‘Accusations’"
+- <text>Medieval Manuscripts Provenance: The RECEPTIO-Rossi Affair IV: My ‘Accusations’</text>
 ""
-- "A Firsthand Account of What Homelessness in America Is Really Like"
+- <text>A Firsthand Account of What Homelessness in America Is Really Like</text>
 ""
-- "Writing Backwards: The Novels of William Hope Hodgson"
+- <text>Writing Backwards: The Novels of William Hope Hodgson</text>
 ""
-- "Learning-Logic: Casting the Cortex of the Human Brain in Silicon"
+- <text>Learning-Logic: Casting the Cortex of the Human Brain in Silicon</text>
 ""
-- "Clearing up Mysteries—The Original Goal"
+- <text>Clearing up Mysteries—The Original Goal</text>
 ""
-- "Probability Theory as Logic"
+- <text>Probability Theory as Logic</text>
 ""
-- "lechmazur/elimination_game: A multi-player tournament benchmark that tests LLMs in social reasoning, strategy, and deception. Players engage in public and private conversations, form alliances, and vote to eliminate each other"
+- <text>lechmazur/elimination_game: A multi-player tournament benchmark that tests LLMs in social reasoning, strategy, and deception. Players engage in public and private conversations, form alliances, and vote to eliminate each other</text>
 ""
-- "Troubleshooting: The Skill That Never Goes Obsolete"
+- <text>Troubleshooting: The Skill That Never Goes Obsolete</text>
 ""
-- "Decisions under Risk Are Decisions under Complexity: Comment by Daniel Banki, Uri Simonsohn, Robert Walatka, George Wu"
+- <text>Decisions under Risk Are Decisions under Complexity: Comment by Daniel Banki, Uri Simonsohn, Robert Walatka, George Wu</text>
 ""
-- "The Golden Age of Japanese Pencils, 1952–1967"
+- <text>The Golden Age of Japanese Pencils, 1952–1967</text>
 ""
-- "On Writing #1"
+- <text>On Writing #1</text>
 ""
-- "Keeping the Family Fortune: How Bureaucratic Practices Preserve Elite Multigenerational Wealth"
+- <text>Keeping the Family Fortune: How Bureaucratic Practices Preserve Elite Multigenerational Wealth</text>
 ""
-- "Computer Games: Vol 3 No 2 (1984-06) (Carnegie Publications) (US)"
-"<em>Computer Games</em>: Vol 3 No 2 (1984-06) (Carnegie Publications) (US)"
-- "https://www.amazon.com/Elon-Musk-SpaceX-Fantastic-Future/dp/006230125X Elon Musk: Tesla, SpaceX, and the Quest for a Fantastic Future"
-"<em>Elon Musk: Tesla, SpaceX, and the Quest for a Fantastic Future</em>"
-- "Life in HD: An investigation of the <em>jhanas</em>’ impact on Jhourney retreat attendees"
+- <text>Computer Games: Vol 3 No 2 (1984-06) (Carnegie Publications) (US)</text>
+<em>Computer Games</em>: Vol 3 No 2 (1984-06) (Carnegie Publications) (US)
+- <text>Elon Musk: Tesla, SpaceX, and the Quest for a Fantastic Future</text> # https://www.amazon.com/Elon-Musk-SpaceX-Fantastic-Future/dp/006230125X
+<em>Elon Musk: Tesla, SpaceX, and the Quest for a Fantastic Future</em>
+- <text>Life in HD: An investigation of the <em>jhanas</em>’ impact on Jhourney retreat attendees</text>
 ""
-- "Osmothèque"
-"<em>Osmothèque</em>"
-- "Robert Bunsen’s Sweet Tooth"
+- <text>Osmothèque</text>
+<em>Osmothèque</em>
+- <text>Robert Bunsen’s Sweet Tooth</text>
 ""
-- "https://www.gq.com/story/how-the-worlds-heaviest-man-lost-it-all How the World’s Heaviest Man Lost it All"
+- <text>How the World’s Heaviest Man Lost it All</text> # https://www.gq.com/story/how-the-worlds-heaviest-man-lost-it-all
 ""
-- "Too Much of a Good Thing: What Mania Feels Like"
+- <text>Too Much of a Good Thing: What Mania Feels Like</text>
 ""
-- "The Burning Of The Leaves by Robert Laurence Binyon"
+- <text>The Burning Of The Leaves by Robert Laurence Binyon</text>
 ""
-- "Kerning, the Hard Way"
+- <text>Kerning, the Hard Way</text>
 ""
-- "Mister Rogers’s Simple Set of Rules for Talking to Kids"
+- <text>Mister Rogers’s Simple Set of Rules for Talking to Kids</text>
 ""
-- "The Fat Magician"
+- <text>The Fat Magician</text>
 ""
-- "Barking Up the Wrong Tree: Human Perception of Dog Emotions Is Influenced by Extraneous Factors"
+- <text>Barking Up the Wrong Tree: Human Perception of Dog Emotions Is Influenced by Extraneous Factors</text>
 ""
-- "The Dead Planet Theory"
+- <text>The Dead Planet Theory</text>
 ""
-- "Coaching for the Scholastic Aptitude Test: Further Synthesis and Appraisal"
+- <text>Coaching for the Scholastic Aptitude Test: Further Synthesis and Appraisal</text>
 ""
-- "The Unbearable Loudness of Chewing"
+- <text>The Unbearable Loudness of Chewing</text>
 ""
-- "ByteCraft: Generating video games and animations through bytes"
+- <text>ByteCraft: Generating video games and animations through bytes</text>
 ""
-- "Quaker Practice for the Aspiring Rationalist"
+- <text>Quaker Practice for the Aspiring Rationalist</text>
 ""
-- "The Monk Who Thinks the World Is Ending"
+- <text>The Monk Who Thinks the World Is Ending</text>
 ""
-- "The Light upon the Candlestick"
-"<em>The Light upon the Candlestick</em>"
-- "Redirecting The Scholar’s Stage"
+- <text>The Light upon the Candlestick</text>
+<em>The Light upon the Candlestick</em>
+- <text>Redirecting The Scholar’s Stage</text>
 ""
-- "Crossing the God Divide"
+- <text>Crossing the God Divide</text>
 ""
-- "The Zombie Lexicon"
+- <text>The Zombie Lexicon</text>
 ""
-- "http://www.duntemann.com/lovesong.htm The Love Song of J. Random Hacker, 1995"
+- <text>The Love Song of J. Random Hacker, 1995</text> # http://www.duntemann.com/lovesong.htm
 ""
-- "Those White Plastic Chairs—The Monobloc and the Context-Free Object - Ethan Zuckerman"
+- <text>Those White Plastic Chairs—The Monobloc and the Context-Free Object - Ethan Zuckerman</text>
 ""
-- "Illustration for Eurema’s Dam!"
-"Illustration for <em>Eurema’s Dam</em>!"
-- "Kid Goth: Neil Gaiman’s Fantasies"
+- <text>Illustration for Eurema’s Dam!</text>
+Illustration for <em>Eurema’s Dam</em>!
+- <text>Kid Goth: Neil Gaiman’s Fantasies</text>
 ""
-- "A Theory of Usable Information Under Computational Constraints"
+- <text>A Theory of Usable Information Under Computational Constraints</text>
 ""
-- "The Silver Elves: Who Were the Elf Queen’s Daughters?"
+- <text>The Silver Elves: Who Were the Elf Queen’s Daughters?</text>
 ""
-- "Sex and Suffering: The Tragic Life of the Courtesan in Japan’s Floating World"
+- <text>Sex and Suffering: The Tragic Life of the Courtesan in Japan’s Floating World</text>
 ""
-- "The Secret Life of Walter Mitty"
+- <text>The Secret Life of Walter Mitty</text> # judgment call: the movie is more famous now than the short story
+<em>The Secret Life of Walter Mitty</em>
+- <text>The Prospero Challenge</text>
 ""
-- "The Prospero Challenge"
+- <text>An Incomplete Primer of Caselaw Appertaining To Bigfoot, AKA Sasquatch, LNU</text>
 ""
-- "An Incomplete Primer of Caselaw Appertaining To Bigfoot, AKA Sasquatch, LNU"
+- <text>Kant on Killing Bastards, on Masturbation, on Wives and Servants, on Organ Donation, Homosexuality, and Tyrants</text>
 ""
-- "Kant on Killing Bastards, on Masturbation, on Wives and Servants, on Organ Donation, Homosexuality, and Tyrants"
+- <text>Alien Abduction: A Medical Hypothesis</text>
 ""
-- "Alien Abduction: A Medical Hypothesis"
+- <text>Conquest of the Incas—Matt Lakeman</text> # https://mattlakeman.org/2025/03/24/conquest-of-the-incas/
 ""
-- https://mattlakeman.org/2025/03/24/conquest-of-the-incas/ Conquest of the Incas—Matt Lakeman"
+- <text>Reinforcement Learning Based Oscillation Dampening: Scaling up Single-Agent RL algorithms to a 100 AV highway field operational test</text>
 ""
-- "Reinforcement Learning Based Oscillation Dampening: Scaling up Single-Agent RL algorithms to a 100 AV highway field operational test"
+- <text>Simulating Time With Square-Root Space</text>
 ""
-- "Simulating Time With Square-Root Space"
+- <text>Navigation by Moonlight—by Jacob Falkovich</text>
 ""
-- "Navigation by Moonlight—by Jacob Falkovich"
+- <text>Solitary Gourmet</text> # https://en.wikipedia.org/wiki/Solitary_Gourmet
+<em>Solitary Gourmet</em>
+- <text>Learning in War-Time</text>
 ""
-- "https://en.wikipedia.org/wiki/Solitary_Gourmet Solitary Gourmet"
-"<em>Solitary Gourmet</em>"
-- "Learning in War-Time"
+- <text>On Learning How to Learn Learning Strategies: Technical Report FKI-198-94 (revised)</text>
 ""
-- "On Learning How to Learn Learning Strategies: Technical Report FKI-198-94 (revised)"
+- <text>A Survey of the Works of Herbert Quain</text>
 ""
-- "A Survey of the Works of Herbert Quain"
+- <text>/doc/fiction/gene-wolfe/2007-farrell.pdf The Distant Suns of Gene Wolfe</text>
 ""
-- "/doc/fiction/gene-wolfe/2007-farrell.pdf The Distant Suns of Gene Wolfe"
+- <text>Nonexistent compounds : compounds of low stability</text>
+<em>Nonexistent compounds : compounds of low stability</em>
+- <text>13 Animals Made From 13 Circles</text>
 ""
-- "Nonexistent compounds : compounds of low stability"
-"<em>Nonexistent compounds : compounds of low stability</em>"
-- "13 Animals Made From 13 Circles"
+- <text>Igo Hatsuyōron</text> # https://en.wikipedia.org/wiki/Igo_Hatsuy%C5%8Dron
+<em>Igo Hatsuyōron</em>
+- <text>Mazes Without Minotaurs</text>
 ""
-- "https://en.wikipedia.org/wiki/Igo_Hatsuy%C5%8Dron Igo Hatsuyōron"
-"<em>Igo Hatsuyōron</em>"
-- "Mazes Without Minotaurs"
+- <text>Yuxi on the Wired</text> # https://yuxi-liu-wired.github.io/
 ""
-- "https://yuxi-liu-wired.github.io/ Yuxi on the Wired"
+- <text>Octachron/roguetype: The first ever rogue-like written in the OCaml type system</text>
 ""
-- "lechmazur/elimination_game: A multi-player tournament benchmark that tests LLMs in social reasoning, strategy, and deception. Players engage in public and private conversations, form alliances, and vote to eliminate each other"
+- <text>Sayaka Murata’s Alien Eye</text>
 ""
-- "Octachron/roguetype: The first ever rogue-like written in the OCaml type system"
+- <text>Sayaka Murata’s Alien Eye: The author of “Convenience Store Woman” has gained a cult following by seeing the ordinary world as science fiction</text>
+Sayaka Murata’s Alien Eye: The author of <em>Convenience Store Woman</em> has gained a cult following by seeing the ordinary world as science fiction
+- <text>Doing a Job—The Management Philosophy of Admiral Hyman G. Rickover</text>
 ""
-- "Sayaka Murata’s Alien Eye"
+- <text>Hayek: A Critique</text>
 ""
-- "Sayaka Murata’s Alien Eye: The author of “Convenience Store Woman” has gained a cult following by seeing the ordinary world as science fiction"
-"Sayaka Murata’s Alien Eye: The author of <em>Convenience Store Woman</em> has gained a cult following by seeing the ordinary world as science fiction"
-- "Doing a Job—The Management Philosophy of Admiral Hyman G. Rickover"
+- <text>Gnome Files: A detailed UI examination</text>
 ""
-- "Hayek: A Critique"
+- <text>The Decline of Usability: Revisited</text>
 ""
-- "Gnome Files: A detailed UI examination"
+- <text>Modern Babylon: Ziggurat Skyscrapers and Hugh Ferriss’ Retrofuturism</text>
 ""
-- "The Decline of Usability: Revisited"
+- <text>The Pigeon Lottery</text>
 ""
-- "Modern Babylon: Ziggurat Skyscrapers and Hugh Ferriss’ Retrofuturism"
+- <text>Garfield Minus Garfield</text>
+<em>Garfield Minus Garfield</em>
+- <text>Playing in the Creek</text>
 ""
-- "The Pigeon Lottery"
+- <text>Billy Ray Waldon § Poliespo</text>
 ""
-- "Garfield Minus Garfield"
-"<em>Garfield Minus Garfield</em>"
-- "Playing in the Creek"
+- <text>Vietnam Veterans 3 Years after Vietnam: How Our Study Changed Our View of Heroin [2010 republication]</text>
 ""
-- "Billy Ray Waldon § Poliespo"
+- <text>Natural Kinds § pg9</text>
 ""
-- "Vietnam Veterans 3 Years after Vietnam: How Our Study Changed Our View of Heroin [2010 republication]"
+- <text>Pierre Menard, Author of the Quixote</text>
+Pierre Menard, Author of the <em>Quixote</em>
+- <text>The Analytical Language of John Wilkins</text>
 ""
-- "Natural Kinds § pg9"
+- <text>A New Refutation of Time</text>
 ""
-- "Pierre Menard, Author of the Quixote"
-"Pierre Menard, Author of the <em>Quixote</em>"
-- "The Analytical Language of John Wilkins"
+- <text>Celestial Emporium of Benevolent Knowledge</text>
 ""
-- "A New Refutation of Time"
+- <text>The Influence of Predation on Primate and Early Human Evolution: Impetus for Cooperation</text>
 ""
-- "Celestial Emporium of Benevolent Knowledge"
+- <text>Cat Vs Printer (with the original sound)</text>
 ""
-- "The Influence of Predation on Primate and Early Human Evolution: Impetus for Cooperation"
+- <text>The Return of the Eunuch</text>
 ""
-- "Cat Vs Printer (with the original sound)"
+- <text>Kezurou-kai #39</text>
+<em>Kezurou-kai</em> #39
+- <text>Philip K. Dick. Return Match</text>
 ""
-- "The Return of the Eunuch"
+- <text>Emigre: Oblong Font Family</text>
 ""
-- "Kezurou-kai #39"
-"<em>Kezurou-kai</em> #39"
-- "Philip K. Dick. Return Match"
+- <text>Emigre: Lo-Res Outlined Font Family</text>
 ""
-- "Emigre: Oblong Font Family"
+- <text>Emigre: Lo-Res Monospaced Font Family</text>
 ""
-- "Emigre: Lo-Res Outlined Font Family"
+- <text>Emigre: Lo-Res Font Family</text>
 ""
-- "Emigre: Lo-Res Monospaced Font Family"
+- <text>All Souls: The toughest test you’ll ever take</text>
 ""
-- "Emigre: Lo-Res Font Family"
+- <text>Insight in patients with bipolar disorder: Findings from the bipolar disorder course and outcome study from India (BiD-CoIN study)</text>
 ""
-- "All Souls: The toughest test you’ll ever take"
+- <text>Fire and the Sword: the Technique of Destruction</text>
 ""
-- "Insight in patients with bipolar disorder: Findings from the bipolar disorder course and outcome study from India (BiD-CoIN study)"
+- <text>A Red Letter Way: Color, Writing, and Reading in Antiquity and the Middle Ages</text>
 ""
-- "Fire and the Sword: the Technique of Destruction"
+- <text>Medieval Manuscripts: Henry VIII’s personal calendar</text>
 ""
-- "A Red Letter Way: Color, Writing, and Reading in Antiquity and the Middle Ages"
+- <text>How a Biofilm’s Strange Shape Emerges From Cellular Geometry</text>
 ""
-- "Medieval Manuscripts: Henry VIII’s personal calendar"
+- <text>Corrupted by Reasoning: Reasoning Language Models Become Free-Riders in Public Goods Games</text>
 ""
-- "How a Biofilm’s Strange Shape Emerges From Cellular Geometry"
+- <text>The Hamming Experience</text>
 ""
-- "Corrupted by Reasoning: Reasoning Language Models Become Free-Riders in Public Goods Games"
+- <text>WIND ROSE—Diggy Diggy Hole (Official Video)</text> # https://www.youtube.com/watch?v=34CZjsEI1yU
 ""
-- "The Hamming Experience"
-""
-- https://www.youtube.com/watch?v=34CZjsEI1yU WIND ROSE—Diggy Diggy Hole (Official Video)"
-""
-- "2005 interview I did with Gene Wolfe for Hellnotes"
+- <text>2005 interview I did with Gene Wolfe for Hellnotes</text>
 "2005 interview I did with Gene Wolfe for <em>Hellnotes</em>"
-- "https://en.wikipedia.org/wiki/Lachryphagy Lachryphagy"
+- <text>Lachryphagy</text> # https://en.wikipedia.org/wiki/Lachryphagy
 ""
-- "The Math of Hunting Lions"
+- <text>The Math of Hunting Lions</text>
 ""
-- "Green Hill Zone"
+- <text>Green Hill Zone</text>
 ""
-- "The Weird World of Mummy Parties"
+- <text>The Weird World of Mummy Parties</text>
 ""
-- "Victorian Party People Unrolled Mummies For Fun"
+- <text>Victorian Party People Unrolled Mummies For Fun</text>
 ""
-- "Unraveling The Mystery Of The Metal Sculpture Found In Utah"
+- <text>Unraveling The Mystery Of The Metal Sculpture Found In Utah</text>
 ""
-- "Eulogy to the Obits"
+- <text>Eulogy to the Obits</text>
 ""
-- "‘The Drug of War’—a historical review of the use of Ketamine in military conflicts"
+- <text>‘The Drug of War’—a historical review of the use of Ketamine in military conflicts</text>
 ""
-- "Hypercycle (chemistry)"
+- <text>Hypercycle (chemistry)</text>
 ""
-- "We Are Sorry to Inform You..."
+- <text>We Are Sorry to Inform You...</text>
 ""
-- "A Meta-Doomsday Argument: Uncertainty About the Validity of the Probabilistic Prediction of the End of the World"
+- <text>A Meta-Doomsday Argument: Uncertainty About the Validity of the Probabilistic Prediction of the End of the World</text>
 ""
-- "Out to Get You"
+- <text>Out to Get You</text>
 ""
-- "Kumiko—The Art of Wood setting"
-"<em>Kumiko</em>—The Art of Wood setting"
-- "Life in a Germ-Free World: Isolating Life from the Laboratory Animal to the Bubble Boy"
+- <text>Kumiko—The Art of Wood setting</text>
+<em>Kumiko</em>—The Art of Wood setting
+- <text>Life in a Germ-Free World: Isolating Life from the Laboratory Animal to the Bubble Boy</text>
 ""
-- "How I Learned to Stop Worrying and Love LA"
+- <text>How I Learned to Stop Worrying and Love LA</text>
 ""
-- "https://goodsniff.substack.com/p/creating-bluey-tales-from-the-art-891 Creating Bluey: Tales from the Art Director"
-"Creating <em>Bluey</em>: Tales from the Art Director"
-- "Empathy, Science Fiction, and the Jehovah’s Witnesses (a Reminiscence)"
+- <text>Creating Bluey: Tales from the Art Director</text> # https://goodsniff.substack.com/p/creating-bluey-tales-from-the-art-891
+Creating <em>Bluey</em>: Tales from the Art Director
+- <text>Empathy, Science Fiction, and the Jehovah’s Witnesses (a Reminiscence)</text>
 ""
-- "https://www.tubeopedia.co.uk/labyrinth-locations Labyrinth Locations" # Mark Wallinger artwork
-"<em>Labyrinth</em> Locations"
-- "Creative Arabic Calligraphy: Square Kufic"
+- <text>Labyrinth Locations</text> # Mark Wallinger artwork # https://www.tubeopedia.co.uk/labyrinth-locations
+<em>Labyrinth</em> Locations
+- <text>Creative Arabic Calligraphy: Square Kufic</text>
 ""
-- "Enfilade datastructure (Xanadu)"
+- <text>Enfilade datastructure (Xanadu)</text>
 ""
-- "Tangled Dürer: The 6 Knots (ca. before 1521)"
+- <text>Tangled Dürer: The 6 Knots (ca. before 1521)</text>
 ""
-- "Cursor---Rules"
+- <text>Cursor---Rules</text>
 ""
-- "Testing AI’s GeoGuessr Genius"
+- <text>Testing AI’s GeoGuessr Genius</text>
 ""
-- "The Killer Tag"
+- <text>The Killer Tag</text>
 ""
-- "Is there a Half-Life for the Success Rates of AI Agents?"
+- <text>Is there a Half-Life for the Success Rates of AI Agents?</text>
 ""
-- "30 Weird Chess Algorithms: Elo World"
+- <text>30 Weird Chess Algorithms: Elo World</text>
 ""
-- "Sonderkommando Elbe"
-"<em>Sonderkommando Elbe</em>"
-- "Generating Physically Stable and Buildable LEGO Designs from Text"
+- <text>Sonderkommando Elbe</text>
+<em>Sonderkommando Elbe</em>
+- <text>Generating Physically Stable and Buildable LEGO Designs from Text</text>
 ""
-- "Nail (anatomy) § Growth"
+- <text>Nail (anatomy) § Growth</text>
 ""
-- "A Chain of Endless Tigers: Borges at the University of Wisconsin-Milwaukee, April 9, 1976⁠"
+- <text>A Chain of Endless Tigers: Borges at the University of Wisconsin-Milwaukee, April 9, 1976⁠</text>
 ""
-- "The Falcon Series of Open Language Models"
+- <text>The Falcon Series of Open Language Models</text>
 ""
-- "Operation Sea-Spray"
+- <text>Operation Sea-Spray</text>
 ""
-- "The costs and benefits of predator inspection behavior in Thomson’s gazelles"
+- <text>The costs and benefits of predator inspection behavior in Thomson’s gazelles</text>
 ""
-- "Predatory Price Cutting: The Standard Oil (N. J.) Case"
+- <text>Predatory Price Cutting: The Standard Oil (N. J.) Case</text>
 ""
-- "The Illuminatus! Trilogy"
-"<em>The Illuminatus! Trilogy</em>"
-- https://en.wikipedia.org/wiki/Langue_and_parole Langue and parole"
-"<em>Langue</em> and <em>parole</em>"
-- "In The Future, Everyone Will Be Famous To 15 People"
+- <text>The Illuminatus! Trilogy</text>
+<em>The Illuminatus! Trilogy</em>
+- <text>Langue and parole</text> # https://en.wikipedia.org/wiki/Langue_and_parole
+<em>Langue</em> and <em>parole</em>
+- <text>In The Future, Everyone Will Be Famous To 15 People</text>
 ""
-- "Noodle Incident"
+- <text>Noodle Incident</text>
 ""
-- "Hegewisch and East Side Newspaper Collection"
+- <text>Hegewisch and East Side Newspaper Collection</text>
 ""
-- "Legacy of Citizen Kane"
-"Legacy of <em>Citizen Kane</em>"
-- "The Human Chair"
+- <text>Legacy of Citizen Kane</text>
+Legacy of <em>Citizen Kane</em>
+- <text>The Human Chair</text>
 ""
-- "Aeon"
+- <text>Aeon</text> # a magazine but also a word and philosophy etc.
 ""
-- "Cagot"
-"<em>Cagot</em>"
-- "Bloomberg"
+- <text>Cagot</text>
+<em>Cagot</em>
+- <text>Bloomberg</text> # <em>Bloomberg News</em>/<em>Bloomberg Businessweek</em> are italicized; the company or man is not.
 ""
-- "Comparative effectiveness of GLP-1 receptor agonists on glycaemic control, body weight, and lipid profile for type 2 diabetes: systematic review and network meta-analysis"
+- <text>Comparative effectiveness of GLP-1 receptor agonists on glycaemic control, body weight, and lipid profile for type 2 diabetes: systematic review and network meta-analysis</text>
 ""
-- "Evolution of parasitism along convergent lines: from ecology to genomics"
+- <text>Evolution of parasitism along convergent lines: from ecology to genomics</text>
 ""
-- "A History of Violence: The Culture of Honor and Homicide in the US South"
+- <text>A History of Violence: The Culture of Honor and Homicide in the US South</text>
 ""
-- "The Aleph § pg8"
+- <text>The Aleph § pg8</text>
 ""
-- "‘We’re Not Slowing down for You’: Behind the Scenes With the YES Production Crew during a Nets Game"
+- <text>‘We’re Not Slowing down for You’: Behind the Scenes With the YES Production Crew during a Nets Game</text>
 ""
-- "Caesar’s Last Breath"
+- <text>Caesar’s Last Breath</text>
 ""
-- "Colmcille and the Battle of the Book: Technology, Law and Access to Knowledge in 6<sup>th</sup> Century Ireland"
+- <text>Colmcille and the Battle of the Book: Technology, Law and Access to Knowledge in 6<sup>th</sup> Century Ireland</text>
 ""
-- "I Am An Audience, First and Foremost"
+- <text>I Am An Audience, First and Foremost</text>
 ""
-- "The Retinex Theory of Color Vision: A retina-and-cortex system (retinex) may treat a color as a code for a 3-part report from the retina, independent of the flux of radiant energy but correlated with the reflectance of objects"
+- <text>The Retinex Theory of Color Vision: A retina-and-cortex system (retinex) may treat a color as a code for a 3-part report from the retina, independent of the flux of radiant energy but correlated with the reflectance of objects</text>
 ""
-- "Gary Busey on Motorcycle Accident, Trump and Playing God in New Musical"
+- <text>Gary Busey on Motorcycle Accident, Trump and Playing God in New Musical</text>
 ""
-- "The Evolution of a Haskell Programmer"
+- <text>The Evolution of a Haskell Programmer</text>
 ""
-- "VideoGameBench: Can Vision-Language Models complete popular video games?"
+- <text>VideoGameBench: Can Vision-Language Models complete popular video games?</text>
 ""
-- "The Visual World of ‘Samurai Jack’"
-"The Visual World of <em>Samurai Jack</em>"
-- "Operation Spider’s Web"
+- <text>The Visual World of ‘Samurai Jack’</text>
+The Visual World of <em>Samurai Jack</em>
+- <text>Operation Spider’s Web</text>
 ""
-- "That Survivorship Bias Plane: The exact backstory to that picture of an airplane with red dots on top of it"
+- <text>That Survivorship Bias Plane: The exact backstory to that picture of an airplane with red dots on top of it</text>
 ""
-- "The Economics of Invention: A Survey of the Literature"
+- <text>The Economics of Invention: A Survey of the Literature</text>
 ""
-- "The Small World of English: Building a 1.5M Word Semantic Network for Language Games"
+- <text>The Small World of English: Building a 1.5M Word Semantic Network for Language Games</text>
 ""
-- "Wikipedia:List of Wikipedian contradictions and paradoxes"
+- <text>Wikipedia:List of Wikipedian contradictions and paradoxes</text>
 ""
-- "FE-Schrift"
-"<em>FE-Schrift</em>"
-- "Geoengineering (Wrong 2)"
+- <text>FE-Schrift</text>
+<em>FE-Schrift</em>
+- <text>Geoengineering (Wrong 2)</text>
 ""
-- "The Art of Hanakami, or Flower-Petal Folding"
-"The Art of <em>Hanakami</em>, or Flower-Petal Folding"
-- "Foss (cat)"
+- <text>The Art of Hanakami, or Flower-Petal Folding</text>
+The Art of <em>Hanakami</em>, or Flower-Petal Folding
+- <text>Foss (cat)</text>
 ""
-- "Rule of 3 (writing)"
+- <text>Rule of 3 (writing)</text>
 ""
-- "Time Machine as Existential Risk"
+- <text>Time Machine as Existential Risk</text>
 ""
-- "Phantom Corsair"
+- <text>Phantom Corsair</text>
 ""
-- "On Cooling the Mark Out: Some Aspects of Adaptation to Failure"
+- <text>On Cooling the Mark Out: Some Aspects of Adaptation to Failure</text>
 ""
-- "The Logic of Quantum Mechanics"
+- <text>The Logic of Quantum Mechanics</text>
 ""
-- "The Black Hole Case: The Injunction Against the End of the World"
+- <text>The Black Hole Case: The Injunction Against the End of the World</text>
 ""
-- "The Grugbrained CEO"
+- <text>The Grugbrained CEO</text>
 ""
-- "Looking for Alice"
+- <text>Looking for Alice</text> # a movie, but also a blog post
 ""
-- "Towel Day: The Aerodynamics of Freefalling Sperm Whale"
+- <text>Towel Day: The Aerodynamics of Freefalling Sperm Whale</text>
 ""
-- "The Politics of Contagion"
+- <text>The Politics of Contagion</text>
 ""
-- "Eurocops shutter dark web drug shop Archetyp, arrest 8"
+- <text>Eurocops shutter dark web drug shop Archetyp, arrest 8</text>
 ""
-- "Cues of upper body strength account for most of the variance in men’s bodily attractiveness"
+- <text>Cues of upper body strength account for most of the variance in men’s bodily attractiveness</text>
 ""
-- "Can Large Language Models Play Text Games Well? Current State-of-the-Art and Open Questions"
+- <text>Can Large Language Models Play Text Games Well? Current State-of-the-Art and Open Questions</text>
 ""
-- "Silver Ghosts"
+- <text>Silver Ghosts</text>
 ""
-- "Show HN: I AI-coded a tower defense game and documented the whole process"
+- <text>Show HN: I AI-coded a tower defense game and documented the whole process</text>
 ""
-- "Perfume"
+- <text>Perfume</text> # too common to risk
 ""
-- "Hello Muddah, Hello Fadduh (A Letter from Camp)"
+- <text>Hello Muddah, Hello Fadduh (A Letter from Camp)</text>
 ""
-- "Number 16 (spider)"
+- <text>Number 16 (spider)</text>
 ""
-- "So You Think You’ve Awoken ChatGPT"
+- <text>So You Think You’ve Awoken ChatGPT</text>
 ""
-- "IQ is the most predictive variable in social science*—Clear Language, Clear Mind"
+- <text>IQ is the most predictive variable in social science*—Clear Language, Clear Mind</text>
 ""
-- "The Making Of Dario Amodei"
+- <text>The Making Of Dario Amodei</text>
 ""
-- "I Drank Every Cocktail"
+- <text>I Drank Every Cocktail</text>
 ""
-- "Show HN: Wordle-style game for Fermi questions"
+- <text>Show HN: Wordle-style game for Fermi questions</text>
 ""
-- "The arcane alphabets of Black Sabbath"
+- <text>The arcane alphabets of Black Sabbath</text>
 ""
-- "https://web.archive.org/web/20250815222145/https://www.idnes.cz/zpravy/domaci/tomas-jirikovsky-ministerstvo-spravedlnosti-bitcoiny.A250815_120212_domaci_tty Policie zabavila Jiřikovskému BMW, počítače i telefony"
-"<em>Policie zabavila Jiřikovskému BMW, počítače i telefony</em>"
-- "https://www.youtube.com/watch?v=fvHcqEhY5sM Кошки-мышки: кто нас создал, и во что нам это обошлось—Станислав Дробышевский"
-"<em>Кошки-мышки: кто нас создал, и во что нам это обошлось—Станислав Дробышевский</em>"
-- "The Relation of Heart Size to the Time Intervals of the Heart Beat, with Particular Reference to the Elephant and the Whale"
+- <text>Policie zabavila Jiřikovskému BMW, počítače i telefony</text> # https://web.archive.org/web/20250815222145/https://www.idnes.cz/zpravy/domaci/tomas-jirikovsky-ministerstvo-spravedlnosti-bitcoiny.A250815_120212_domaci_tty
+<em>Policie zabavila Jiřikovskému BMW, počítače i telefony</em>
+- <text>Кошки-мышки: кто нас создал, и во что нам это обошлось—Станислав Дробышевский</text> # https://www.youtube.com/watch?v=fvHcqEhY5sM
+<em>Кошки-мышки: кто нас создал, и во что нам это обошлось—Станислав Дробышевский</em>
+- <text>The Relation of Heart Size to the Time Intervals of the Heart Beat, with Particular Reference to the Elephant and the Whale</text>
 ""
-- "https://blog.google/products/maps/sheep-view-where-theres-wool-theres-way/ Sheep View: Where there’s a wool, there’s a way"
+- <text>Sheep View: Where there’s a wool, there’s a way</text> # https://blog.google/products/maps/sheep-view-where-theres-wool-theres-way/
 ""
-- "/doc/design/typography/2025-04-07-tanakosiyabong-experimospecimen.pdf Experimo Specimen"
+- <text>/doc/design/typography/2025-04-07-tanakosiyabong-experimospecimen.pdf Experimo Specimen</text>
 ""
-- "Effect of Semaglutide on Physical Function, Body Composition, and Biomarkers of Aging in Older Adults With Overweight and Insulin Resistance: Protocol for an Open-Labeled Randomized Controlled Trial"
+- <text>Effect of Semaglutide on Physical Function, Body Composition, and Biomarkers of Aging in Older Adults With Overweight and Insulin Resistance: Protocol for an Open-Labeled Randomized Controlled Trial</text>
 ""
-- "https://arxiv.org/abs/2505.24867 Time Blindness: Why Video-Language Models Can’t See What Humans Can?"
+- <text>Time Blindness: Why Video-Language Models Can’t See What Humans Can?</text> # https://arxiv.org/abs/2505.24867
 ""
-- "Codebreaker: A deeply personal quest made Matthew Might a leader in precision medicine and brought him to UAB"
+- <text>Codebreaker: A deeply personal quest made Matthew Might a leader in precision medicine and brought him to UAB</text>
 ""
-- "The Color of the Future"
+- <text>The Color of the Future</text>
 ""
-- "https://en.wikipedia.org/wiki/Tamagoyaki Tamagoyaki" # unusual Japanese word familiar only to sushi aficionados
-"<em>Tamagoyaki</em>"
-- "How Noiseless Props Are Made For Movies And TV Shows"
+- <text>Tamagoyaki</text> # unusual Japanese word familiar only to sushi aficionados # https://en.wikipedia.org/wiki/Tamagoyaki
+<em>Tamagoyaki</em>
+- <text>How Noiseless Props Are Made For Movies And TV Shows</text>
 ""
-- "The Wind, a Pole, and the Dragon"
+- <text>The Wind, a Pole, and the Dragon</text>
 ""
-- "Evidence for autism in folklore?"
+- <text>Evidence for autism in folklore?</text>
 ""
-- "Veo (text-to-video model)"
+- <text>Veo (text-to-video model)</text>
 ""
-- "Evolution in Sexual and Asexual Populations"
+- <text>Evolution in Sexual and Asexual Populations</text>
 ""
-- "https://archivebinge.com/ Archive Binge"
+- <text>Archive Binge</text> # https://archivebinge.com/
 ""
-- "Situational Awareness: A One-Year Retrospective" # Leopold Aschenbrenner’s SA was a book-length whitepaper and should be italicized
-"<em>Situational Awareness</em>: A One-Year Retrospective"
-- "Obstructions to Reality: Torsors &amp; Visual Paradox"
+- <text>Situational Awareness: A One-Year Retrospective</text> # Leopold Aschenbrenner’s SA was a book-length whitepaper and should be italicized
+<em>Situational Awareness</em>: A One-Year Retrospective
+- <text>Obstructions to Reality: Torsors &amp; Visual Paradox</text>
 ""
-- "Singing The Blues"
+- <text>Singing The Blues</text>
 ""
-- "Lord of the Roths: How Tech Mogul Peter Thiel Turned a Retirement Account for the Middle Class Into a $5 Billion Tax-Free Piggy Bank"
+- <text>Lord of the Roths: How Tech Mogul Peter Thiel Turned a Retirement Account for the Middle Class Into a $5 Billion Tax-Free Piggy Bank</text>
 ""
-- "My Antichrist Lecture"
+- <text>My Antichrist Lecture</text>
 ""
-- "https://harpers.org/archive/2025/11/the-goon-squad-daniel-kolitz-porn-masturbation-loneliness/ The Goon Squad, by Daniel Kolitz"
+- <text>The Goon Squad, by Daniel Kolitz</text> # https://harpers.org/archive/2025/11/the-goon-squad-daniel-kolitz-porn-masturbation-loneliness/
 ""
-- "29. Kasina Practice"
+- <text>29. Kasina Practice</text>
 "29. <em>Kasina</em> Practice"
-- "Suno (platform)" # while 'suno' is a Japanese term, Suno AI is a proper English noun and so not italicized.
+- <text>Suno (platform)</text> # while 'suno' is a Japanese term, Suno AI is a proper English noun and so not italicized
 ""
-- "Night of the Moon Suits: The Shulgins, the DEA, and Their Ally, “Tulsa”"
+- <text>Night of the Moon Suits: The Shulgins, the DEA, and Their Ally, “Tulsa”</text>
 ""
-- "The LL game: The curious preference for low quality and its norms"
+- <text>The LL game: The curious preference for low quality and its norms</text>
 ""
-- "Politics and the English Language" # famous Orwell essay, but essays are not italicized
+- <text>Politics and the English Language</text> # famous Orwell essay, but essays are not italicized
 ""
-- "Olo (color)"
+- <text>Olo (color)</text>
 ""
-- "Becoming A Whorelord: The Overly Analytical Guide To Escorting"
+- <text>Becoming A Whorelord: The Overly Analytical Guide To Escorting</text>
 ""
-- "Can a Rubik’s Cube be brute-forced?"
+- <text>Can a Rubik’s Cube be brute-forced?</text>
 ""
-- "Placebo Emporium: 2025 Annual Shareholder Letter" # proper noun company title, not media work
+- <text>Placebo Emporium: 2025 Annual Shareholder Letter</text> # proper noun company title, not media work
 ""
-- "Gemini 3: Introducing the latest Gemini AI model from Google"
+- <text>Gemini 3: Introducing the latest Gemini AI model from Google</text>
 ""
-- "Guilt" # too vague and common a title to risk italicizing
+- <text>Guilt</text> # too vague and common a title to risk italicizing
 ""
-- "The American Psychiatric Association Says Disney Adults Don’t Have to Worry About This Problem Anymore"
+- <text>The American Psychiatric Association Says Disney Adults Don’t Have to Worry About This Problem Anymore</text>
 ""
-- "small clever rooms: 10 Thousand Lifetimes with Roguelikes"
+- <text>small clever rooms: 10 Thousand Lifetimes with Roguelikes</text>
 ""
-- "Ruby’s Ultimate Guide to Thoughtful Gifts"
+- <text>Ruby’s Ultimate Guide to Thoughtful Gifts</text>
 ""
-- "Japanese game developers face ridiculously high font license fees following US acquisition of major domestic provider. Live-service games to take the biggest blow"
+- <text>Japanese game developers face ridiculously high font license fees following US acquisition of major domestic provider. Live-service games to take the biggest blow</text>
 ""
-- "Honeybees Mesmerizing Defensive Wave"
+- <text>Honeybees Mesmerizing Defensive Wave</text>
 ""
-- "Stranger in Parodies: Weird Al and the Law of Musical Satire"
+- <text>Stranger in Parodies: Weird Al and the Law of Musical Satire</text>
 ""
-- "/doc/science/chemistry/2010-oleary.pdf Where ‘Things Go The Other Way’: The Stereochemistry of Lewis Carroll’s Looking-Glass World" # the title of the novel is 'Through the Looking-Glass', not 'Looking-Glass World'
+- <text>/doc/science/chemistry/2010-oleary.pdf Where ‘Things Go The Other Way’: The Stereochemistry of Lewis Carroll’s Looking-Glass World</text> # the title of the novel is 'Through the Looking-Glass', not 'Looking-Glass World'
 ""
-- "An Adventure in Stereochemistry: Alice in Mirror Image Land"
+- <text>An Adventure in Stereochemistry: Alice in Mirror Image Land</text>
 ""
-- "Diplomacy and Domestic Politics: The Logic of Two-Level Games"
+- <text>Diplomacy and Domestic Politics: The Logic of Two-Level Games</text>
 ""
-- "The Missing 9: Why Some Movies Have a Hole in Their IMDb Ratings"
+- <text>The Missing 9: Why Some Movies Have a Hole in Their IMDb Ratings</text>
 ""
-- "The Man in the Snow White Cell"
+- <text>The Man in the Snow White Cell</text>
 ""
-- "Mr. Roberts Goes to Hollywood, Part 2: The Producer"
+- <text>Mr. Roberts Goes to Hollywood, Part 2: The Producer</text>
 ""
-- "Postcard From 1952"
+- <text>Postcard From 1952</text>
 ""
-- "windfucker"
+- <text>windfucker</text>
 ""
-- "Nano Banana: Image editing in Google Gemini gets a major upgrade"
+- <text>Nano Banana: Image editing in Google Gemini gets a major upgrade</text>
 ""
-- "—And He Built a Crooked House" # Heinlein short story
+- <text>—And He Built a Crooked House</text> # Heinlein short story
 ""
-- "Hymn of Breaking Strain" # Kipling poem
+- <text>Hymn of Breaking Strain</text> # Kipling poem
 ""
-- "Alcohol Consumption As Self-Medication Against Blood-Borne Parasites In The Fruit fly"
+- <text>Alcohol Consumption As Self-Medication Against Blood-Borne Parasites In The Fruit fly</text>
 ""
-- "Star Wars"
-"<em>Star Wars</em>"
-- "The Official Star Wars Fan Film Awards"
-"The Official <em>Star Wars</em> Fan Film Awards"
-- "Weighting systems for linear functions of correlated variables when there is no dependent variable"
+- <text>Star Wars</text>
+<em>Star Wars</em>
+- <text>The Official Star Wars Fan Film Awards</text>
+The Official <em>Star Wars</em> Fan Film Awards
+- <text>Weighting systems for linear functions of correlated variables when there is no dependent variable</text>
 ""
-- "Coming Home (advertisement)"
+- <text>Coming Home (advertisement)</text>
 ""
-- "Positive Bias: Look Into the Dark"
+- <text>Positive Bias: Look Into the Dark</text>
 ""
-- "Phenibut: The Soviet smart drug"
+- <text>Phenibut: The Soviet smart drug</text>
 ""
-- "Tajwid" # Arabic Quran term
-"<em>Tajwid</em>"
-- "Genesis B § Relationship with Paradise Lost"
-"<em>Genesis B</em> § Relationship with <em>Paradise Lost</em>"
-- "The Dice Lab Unique Designs"
+- <text>Tajwid</text> # foreign Arabic Quran term
+<em>Tajwid</em>
+- <text>Genesis B § Relationship with Paradise Lost</text>
+<em>Genesis B</em> § Relationship with <em>Paradise Lost</em>
+- <text>The Dice Lab Unique Designs</text>
 ""
-- "Capital in the 22<sup>nd</sup> Century"
+- <text>Capital in the 22<sup>nd</sup> Century</text>
 ""
-- "Highway to Hitler"
+- <text>Highway to Hitler</text>
 ""
-- "Olaf: Bringing an Animated Character to Life in the Physical World
+- <text>Olaf: Bringing an Animated Character to Life in the Physical World</text>
 ""
-- "Virgin and Child"
+- <text>Virgin and Child</text>
 ""
-- "The Living Dead: Anencephaly and Organ Donation"
+- <text>The Living Dead: Anencephaly and Organ Donation</text>
 ""
-- "Surprising Trends in Lego Pricing"
+- <text>Surprising Trends in Lego Pricing</text>
 ""
-- "Akin’s Laws of Spacecraft Design"
+- <text>Akin’s Laws of Spacecraft Design</text>
 ""
-- "Digital Health: Tracking Physiomes and Activity Using Wearable Biosensors Reveals Useful Health-Related Information"
+- <text>Digital Health: Tracking Physiomes and Activity Using Wearable Biosensors Reveals Useful Health-Related Information</text>
 ""
-- "A font with built-in <span class="logotype-tex">T<sub>e</sub>X</span> syntax highlighting — Soliloquies"
+- <text>A font with built-in <span class='logotype-tex'>T<sub>e</sub>X</span> syntax highlighting — Soliloquies</text>
 ""
-- "Apollonian 1: The Counted and the Crowned"
+- <text>Apollonian 1: The Counted and the Crowned</text>
 ""
-- "Maneki Neko" # Japanese phrase
-"<em>Maneki Neko</em>"
-- "The Secret of the Machines"
+- <text>Maneki Neko</text> # Japanese phrase
+<em>Maneki Neko</em>
+- <text>The Secret of the Machines</text>
 ""
-- "Lies, Damned Lies, and Proofs: Formal Methods are not Slopless"
+- <text>Lies, Damned Lies, and Proofs: Formal Methods are not Slopless</text>
 ""
-- "The Population Frequencies Of Species And The Estimation Of Population Parameters"
+- <text>The Population Frequencies Of Species And The Estimation Of Population Parameters</text>
 ""
-- "Chapter 4: Estimating species richness § pg2"
+- <text>Chapter 4: Estimating species richness § pg2</text>
 ""
-- "The Dilbert Afterlife"
+- <text>The Dilbert Afterlife</text>
 ""
-- "psDooM: DooM for Sys A’s" # italicize game title, but not tool; preserve typo
-"psDooM: <em>DooM</em> for Sys A’s"
-- "Ur (programming language)" # proper noun, even if a foreign German/Mesopotamian word
+- <text>psDooM: DooM for Sys A’s</text> # italicize game title, but not tool; preserve typo
+psDooM: <em>DooM</em> for Sys A’s
+- <text>Ur (programming language)</text> # proper noun, even if a foreign German/Mesopotamian word
 ""
-- "Mystery of the Head Activator"
+- <text>Mystery of the Head Activator</text>
 ""
-- "Your Brain on ChatGPT: Accumulation of Cognitive Debt when Using an AI Assistant for Essay Writing Task"
+- <text>Your Brain on ChatGPT: Accumulation of Cognitive Debt when Using an AI Assistant for Essay Writing Task</text>
 ""
-- "Best Of Moltbook — by Scott Alexander" # Moltbook is a website, not a book
+- <text>Best Of Moltbook — by Scott Alexander</text> # Moltbook is a website, not a book
 ""
-- "https://jcdecker.blogspot.com/2017/04/tellers-magic-trick.html?m=1 Fortunate Son: Teller’s Magic Trick"
+- <text>Fortunate Son: Teller’s Magic Trick</text> # https://jcdecker.blogspot.com/2017/04/tellers-magic-trick.html?m=1
 ""
-- "Anime in 2025: Is the Crunchyroll Cage Real?"
+- <text>Anime in 2025: Is the Crunchyroll Cage Real?</text>
 ""
-- "Rented Virtue"
+- <text>Rented Virtue</text>
 ""
-- "Mr Cogito And The Imagination by Zbigniew Herbert—Famous poems, famous poets.—All Poetry"
+- <text>Mr Cogito And The Imagination by Zbigniew Herbert—Famous poems, famous poets.—All Poetry</text>
 ""
-- "Field Notes from the AI Village: The Drama and Dysfunction of Gemini 2.5 Pro &amp; Gemini 3 Pro"
+- <text>Field Notes from the AI Village: The Drama and Dysfunction of Gemini 2.5 Pro &amp; Gemini 3 Pro</text>
 ""
-- "The Name of the Game is Self-Cultivation"
+- <text>The Name of the Game is Self-Cultivation</text>
 ""
-- "Book test § Method"
+- <text>Book test § Method</text>
 ""
-- "Charlatan Labyrinth"
+- <text>Charlatan Labyrinth</text>
 ""
-- "Trends in Conflict: Uniform Crime Reports, the National Crime Victimization Surveys, and the Lethality of Violent Crime"
+- <text>Trends in Conflict: Uniform Crime Reports, the National Crime Victimization Surveys, and the Lethality of Violent Crime</text>
 ""
-- "Singles ditch dating apps to flirt with knights at Medieval Times" # name of a company/business, not a movie or book
+- <text>Singles ditch dating apps to flirt with knights at Medieval Times</text> # name of a company/business, not a movie or book
 ""
-- "The Academy Now"
+- <text>The Academy Now</text>
 ""
-- "The Hunt for Dark Breakfast"
+- <text>The Hunt for Dark Breakfast</text>
 ""
-- "The Biggest Trackmania Pathfinding Competition"
-"The Biggest <em>Trackmania</em> Pathfinding Competition"
-- "Shellshock"
+- <text>The Biggest Trackmania Pathfinding Competition</text>
+The Biggest <em>Trackmania</em> Pathfinding Competition
+- <text>Shellshock</text>
 ""
-- "‘Human Knowledge Compression Contest: FAQ’, Hutter Prize"
+- <text>‘Human Knowledge Compression Contest: FAQ’, Hutter Prize</text>
 ""
-- "Bad Map Projection: Zero Declination"
+- <text>Bad Map Projection: Zero Declination</text>
 ""
-- "(Maybe) A Bag of Heuristics is All There Is &amp; A Bag of Heuristics is All You Need"
+- <text>(Maybe) A Bag of Heuristics is All There Is &amp; A Bag of Heuristics is All You Need</text>
 ""
-- "Kanban board" # outside corporate tech environments, still an unfamiliar Japanese word
-"<em>Kanban</em> board"
-- "Effects of Oveporexton, an Orexin Receptor 2–Selective Agonist, on Cognition in Narcolepsy Type 1: A Secondary Analysis of a Randomized Clinical Trial" # paper title
+- <text>Kanban board</text> # outside corporate tech environments, it's still an unfamiliar Japanese word
+<em>Kanban</em> board
+- <text>Effects of Oveporexton, an Orexin Receptor 2–Selective Agonist, on Cognition in Narcolepsy Type 1: A Secondary Analysis of a Randomized Clinical Trial</text> # paper title
 ""
-- "Sparse VideoGen—Version Selection"
+- <text>Sparse VideoGen—Version Selection</text>
 ""
-- "Flash-Kmeans: Fast and Memory-Efficient Exact K-Means"
-"Flash-Kmeans: Fast and Memory-Efficient Exact <em>K</em>-Means"
-- "New Links"
+- <text>Flash-Kmeans: Fast and Memory-Efficient Exact K-Means</text>
+Flash-Kmeans: Fast and Memory-Efficient Exact <em>K</em>-Means
+- <text>New Links</text>
 ""
-- "Haskell for all: A sufficiently detailed spec is code"
+- <text>Haskell for all: A sufficiently detailed spec is code</text>
 ""
-- "Understanding when and why agents scheme"
+- <text>Understanding when and why agents scheme</text>
 ""
-- "Penalization for small n problems: case study of Steam games—Clear Language, Clear Mind"
-"Penalization for small <em>n</em> problems: case study of Steam games—Clear Language, Clear Mind"
-- "‘Gooning Towards the Führer’ as policy coordination"
+- <text>Penalization for small n problems: case study of Steam games—Clear Language, Clear Mind</text>
+Penalization for small <em>n</em> problems: case study of Steam games—Clear Language, Clear Mind
+- <text>‘Gooning Towards the Führer’ as policy coordination</text>
 ""
-- "Project Play survey: Family spending on youth sports rises 46% over 5 years - Project Play"
+- <text>Project Play survey: Family spending on youth sports rises 46% over 5 years - Project Play</text>
 ""
-- "Thoughts on Meaning and Writing"
+- <text>Thoughts on Meaning and Writing</text>
 ""
-- "Adapting to AI: Reflections on Productivity"
+- <text>Adapting to AI: Reflections on Productivity</text>
 ""
-- "Welcome to the Internet—Bo Burnham (from “Inside”—ALBUM OUT NOW)" # songs are not italicized, but albums/shows are
-"Welcome to the Internet—Bo Burnham (from <em>Inside</em>—ALBUM OUT NOW)"
-- "A Billionaire-Backed Startup Wants to Grow ‘Organ Sacks’ to Replace Animal Testing"
+- <text>Welcome to the Internet—Bo Burnham (from “Inside”—ALBUM OUT NOW)</text> # songs are not italicized, but albums/shows are
+Welcome to the Internet—Bo Burnham (from <em>Inside</em>—ALBUM OUT NOW)
+- <text>A Billionaire-Backed Startup Wants to Grow ‘Organ Sacks’ to Replace Animal Testing</text>
 ""
-- "A Ramsey-style Problem on Hypergraphs"
+- <text>A Ramsey-style Problem on Hypergraphs</text>
 ""
-- "Scaling Karpathy’s Autoresearch: What Happens When the Agent Gets a GPU Cluster"
+- <text>Scaling Karpathy’s Autoresearch: What Happens When the Agent Gets a GPU Cluster</text>
 ""
-- "American Diner Gothic"
+- <text>American Diner Gothic</text>
 ""
-- "Personal Encyclopedias"
+- <text>Personal Encyclopedias</text>
 ""
-- "Optimization lessons from a Minecraft structure locator"
-"Optimization lessons from a <em>Minecraft</em> structure locator"
-- "The Pitt’s Shabana Azeez Wants to Be the Next Robert Pattinson"
-"<em>The Pitt</em>’s Shabana Azeez Wants to Be the Next Robert Pattinson"
-- "Every ACX House Party"
+- <text>Optimization lessons from a Minecraft structure locator</text>
+Optimization lessons from a <em>Minecraft</em> structure locator
+- <text>The Pitt’s Shabana Azeez Wants to Be the Next Robert Pattinson</text>
+<em>The Pitt</em>’s Shabana Azeez Wants to Be the Next Robert Pattinson
+- <text>Every ACX House Party</text>
 ""
-- "Learned use of an innate sound-meaning association in birds"
+- <text>Learned use of an innate sound-meaning association in birds</text>
 ""
-- "A Couple Million Lines of Haskell: Production Engineering at Mercury"
+- <text>A Couple Million Lines of Haskell: Production Engineering at Mercury</text>
 ""
-- "Hyakujo’s Fox"
+- <text>Hyakujo’s Fox</text>
 ""
-- "Foundations of Digital Archæoludology"
+- <text>Foundations of Digital Archæoludology</text>
 ""
-- "Why No AI Games?"
+- <text>Why No AI Games?</text>
 ""
-- "The Elect"
+- <text>The Elect</text>
 ""
-- "Sidestepping Evaluation Awareness and Anticipating Misalignment with Production Evaluations"
+- <text>Sidestepping Evaluation Awareness and Anticipating Misalignment with Production Evaluations</text>
 ""
-- "It Is Your Responsibility to Follow Up"
+- <text>It Is Your Responsibility to Follow Up</text>
 ""
-- "MIRAGE: The Illusion of Visual Understanding"
+- <text>MIRAGE: The Illusion of Visual Understanding</text>
 ""
-- "SlopCodeBench: Benchmarking How Coding Agents Degrade Over Long-Horizon Iterative Tasks"
+- <text>SlopCodeBench: Benchmarking How Coding Agents Degrade Over Long-Horizon Iterative Tasks</text>
 ""
-- "Piezoelectric Bagworm Silk"
+- <text>Piezoelectric Bagworm Silk</text>
 ""
-- "Absolute Borderline: The Early Days of Evangelion Fandom, Part Three"
+- <text>Absolute Borderline: The Early Days of Evangelion Fandom, Part Three</text>
 ""
-- "What I love about Scrooge: In praise of misers"
+- <text>What I love about Scrooge: In praise of misers</text>
 ""
-- "The Most Important Woman in Kant’s Life - Daniel Andreas"
+- <text>The Most Important Woman in Kant’s Life - Daniel Andreas</text>
 ""
-- "Claude Code Found a Linux Vulnerability Hidden for 23 Years"
+- <text>Claude Code Found a Linux Vulnerability Hidden for 23 Years</text>
 ""
-- "An Orgy, but with Reward Points: The arc of history is long but it bends towards Spreadsheet Simulator 2000"
-"An Orgy, but with Reward Points: The arc of history is long but it bends towards <em>Spreadsheet Simulator 2000</em>"
-- "Pasteur et le choléra des poules: révision critique d’un récit historique"
-"<em>Pasteur et le choléra des poules: révision critique d’un récit historique</em>"
-- "Autoresearch vs Classical Hyperparameter Tuning"
+- <text>An Orgy, but with Reward Points: The arc of history is long but it bends towards Spreadsheet Simulator 2000</text>
+An Orgy, but with Reward Points: The arc of history is long but it bends towards <em>Spreadsheet Simulator 2000</em>
+- <text>Pasteur et le choléra des poules: révision critique d’un récit historique</text>
+<em>Pasteur et le choléra des poules: révision critique d’un récit historique</em>
+- <text>Autoresearch vs Classical Hyperparameter Tuning</text>
 ""
-- "How Does Naming Affect LLMs on Code Analysis Tasks?"
+- <text>How Does Naming Affect LLMs on Code Analysis Tasks?</text>
 ""
-- "And Yet a Trace of the True Self Exists in the False Self / Circle of Life"
+- <text>And Yet a Trace of the True Self Exists in the False Self / Circle of Life</text>
 ""
-- "Steering Might Stop Working Soon"
+- <text>Steering Might Stop Working Soon</text>
 ""
-- "AT-AT"
+- <text>AT-AT</text>
 ""
-- "The M and M Agreement"
+- <text>The M and M Agreement</text>
 ""
-- "Chapter B. The Loma Prieta, California, Earthquake of October 17, 1989"
+- <text>Chapter B. The Loma Prieta, California, Earthquake of October 17, 1989</text>
 ""
-- "Doc-to-LoRA: Learning to Instantly Internalize Contexts"
+- <text>Doc-to-LoRA: Learning to Instantly Internalize Contexts</text>
 ""
-- "The Ones who Feed their Children"
+- <text>The Ones who Feed their Children</text>
 ""
-- "Copulation in antiarch placoderms and the origin of gnathostome internal fertilization"
+- <text>Copulation in antiarch placoderms and the origin of gnathostome internal fertilization</text>
 ""
-- "I Would Cure My Autism"
+- <text>I Would Cure My Autism</text>
 ""
-- "Six Lessons for a Cogent Science of Implicit Bias and Its Criticism"
+- <text>Six Lessons for a Cogent Science of Implicit Bias and Its Criticism</text>
 ""
-- "Thorn (letter)"
+- <text>Thorn (letter)</text>
 ""
-- "Kimi K2.5 Tech Blog: Visual Agentic Intelligence"
+- <text>Kimi K2.5 Tech Blog: Visual Agentic Intelligence</text>
 ""
-- "Parse, don’t validate"
+- <text>Parse, don’t validate</text>
 ""
-- "Do Posts with Links Affect Content Performance on X?"
+- <text>Do Posts with Links Affect Content Performance on X?</text>
 ""
-- "Linux Kernel Recency Matters, CVE Severity Doesn’t, and History Fades"
+- <text>Linux Kernel Recency Matters, CVE Severity Doesn’t, and History Fades</text>
 ""
-- "The Clock"
+- <text>The Clock</text>
 ""
-- "The Cathedral, the Bazaar, and the Winchester Mystery House"
+- <text>The Cathedral, the Bazaar, and the Winchester Mystery House</text>
 ""
-- "How Costco Won In Japan"
+- <text>How Costco Won In Japan</text>
 ""
-- "Paws, Pee and Pests: Cats among Medieval Manuscripts"
+- <text>Paws, Pee and Pests: Cats among Medieval Manuscripts</text>
 ""
-- "Claude Mythos Preview"
+- <text>Claude Mythos Preview</text>
 ""
-- "Wit, unker, git: The lost medieval pronouns of English intimacy" # 3 Old English pronouns, now foreign to English
-"<em>Wit</em>, <em>unker</em>, <em>git</em>: The lost medieval pronouns of English intimacy"
-- "The American Society of Cinematographers"
+- <text>Wit, unker, git: The lost medieval pronouns of English intimacy</text> # 3 Old English pronouns, now foreign to English
+<em>Wit</em>, <em>unker</em>, <em>git</em>: The lost medieval pronouns of English intimacy
+- <text>The American Society of Cinematographers</text>
 ""
-- "Opus’s Schelling Steganography Has Amplifiable Secrecy Against Weaker Eavesdroppers"
+- <text>Opus’s Schelling Steganography Has Amplifiable Secrecy Against Weaker Eavesdroppers</text>
 ""
-- "We lose again: Windham-Campbell Prize manqué"
+- <text>We lose again: Windham-Campbell Prize manqué</text>
 ""
-- "4RH1T3CT0R7/ttf-doom: A 3D raycasting engine running inside a TrueType font’s hinting virtual machine"
+- <text>4RH1T3CT0R7/ttf-doom: A 3D raycasting engine running inside a TrueType font’s hinting virtual machine</text>
 ""
-- "The effects of caffeine consumption do not decay with a ~5 hour half-life"
+- <text>The effects of caffeine consumption do not decay with a ~5 hour half-life</text>
 ""
-- "Clinical utility and validity of minoxidil response testing in androgenetic alopecia"
+- <text>Clinical utility and validity of minoxidil response testing in androgenetic alopecia</text>
 ""
-- "The Blessed Isle"
+- <text>The Blessed Isle</text>
 ""
-- "Olympic Odes—Armand D’Angour"
+- <text>Olympic Odes—Armand D’Angour</text>
 ""
-- "Uniformity Illusion"
+- <text>Uniformity Illusion</text>
 ""
-- "No One Representation to Rule Them All: Overlapping Features of Training Methods"
+- <text>No One Representation to Rule Them All: Overlapping Features of Training Methods</text>
 ""
-- "When a Mosquito Can’t Stop Drinking Blood, the Result Isn’t Pretty"
+- <text>When a Mosquito Can’t Stop Drinking Blood, the Result Isn’t Pretty</text>
 ""
-- "Note on the Existence of Hydrogen Atoms in Higher Dimensional Euclidean Spaces"
+- <text>Note on the Existence of Hydrogen Atoms in Higher Dimensional Euclidean Spaces</text>
 ""
-- "Workers Say Listening to Music Boosts Job Satisfaction, Productivity"
+- <text>Workers Say Listening to Music Boosts Job Satisfaction, Productivity</text>
 ""
-- "Mercian hymns"
-"<em>Mercian hymns</em>"
-- "On Running a Real Business"
+- <text>Mercian hymns</text>
+<em>Mercian hymns</em>
+- <text>On Running a Real Business</text>
+""
+- <text>Issues · gwern/gwern.net</text>
+""
+- <text>TPU v4: An Optically Reconfigurable Supercomputer for Machine Learning with Hardware Support for Embeddings</text>
+""
+- <text>The Urinal Problem</text>
+""
+- <text>God Plays Dice: The hidden mathematics of bathrooms</text>
+""
+- <text>GPT-3: Imitation Learning that Imitates Learning</text>
+""
+- <text>The AI Revolution in Math Has Arrived</text>
 ""
 
 [End of examples. Reminder: your only task is to add missing italics you are SURE of.]
