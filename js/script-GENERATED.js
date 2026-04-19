@@ -14970,19 +14970,35 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 		});
 	};
 
-	/***************************/
-	/*	Main /ref/ logic begins.
+	/***********************************************************************/
+	/*	Main /ref/ logic begins. (We support lookup either by URL or by ID.)
 	 */
 
 	let ref = decodeURIComponent(eventInfo.loadLocation.pathname.slice("/ref/".length));
 	if (ref.length == 0) {
 		injectHelpfulErrorMessage("No URL or ID specified.");
 		injectHelpfulSuggestion();
-	} else if (ref.startsWithAnyOf([ "http://", "https://", "/"])) {
-		//	Strip origin from local URLs.
-		let url = URLFromString(ref);
-		if (url.hostname == location.hostname)
-			ref = url.pathname + url.hash;
+	} else if (   ref.startsWithAnyOf([ "http://", "https://", "/"])
+			   || ref.includes("/")) {
+		//	Lookup by URL.
+
+		/*	Normalize URL (should be absolute pathname plus hash if local,
+			fully qualified if foreign-site).
+		 */
+		let normalizedRef = ref;
+		if (normalizedRef.startsWithAnyOf([ "http://", "https://", "/"]) == false) {
+			//	Prefix leading slash, if absent.
+			normalizedRef = "/" + normalizedRef;
+		} else if (normalizedRef.startsWith("/") == false) {
+			//	Strip origin from local URLs.
+			let url = URLFromString(normalizedRef);
+			if (url.hostname == location.hostname)
+				normalizedRef = url.pathname + url.hash;
+		}
+
+		//	Update URL bar, if need be.
+		if (normalizedRef != ref)
+			relocate("/ref/" + normalizedRef);
 
 		//	Retrieve the big URL-to-id mapping file.
 		doAjax({
@@ -14990,7 +15006,7 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 			responseType: "json",
 			onSuccess: (event) => {
 				//	Get all prefix matches.
-				let urlPrefixMatches = Object.entries(event.target.response).filter(entry => entry[0].startsWith(ref));
+				let urlPrefixMatches = Object.entries(event.target.response).filter(entry => entry[0].startsWith(normalizedRef));
 				if (urlPrefixMatches.length > 1) {
 					/*	If multiple matches, list them all, transcluding
 						annotations where available (attempt in all cases, and
@@ -14998,7 +15014,7 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 					 */
 					updatePageTitleElements("Unknown Reference");
 					injectUrlPrefixMatches(urlPrefixMatches);
-					injectHelpfulSuggestion(ref);
+					injectHelpfulSuggestion(normalizedRef);
 				} else if (urlPrefixMatches.length == 1) {
 					//	If only one match, redirect to the matching /ref/ page.
 					document.head.appendChild(elementFromHTML(`<link rel="canonical" href="${URLFromString(urlPrefixMatches.first[1]).href}">`));
@@ -15006,12 +15022,14 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 				} else {
 					//	If no matches at all...
 					updatePageTitleElements("Invalid Query");
-					injectHelpfulErrorMessage(`No annotation exists for URL <code>${ref}</code>.`);
-					injectHelpfulSuggestion(ref);
+					injectHelpfulErrorMessage(`No annotation exists for URL <code>${normalizedRef}</code>.`);
+					injectHelpfulSuggestion(normalizedRef);
 				}
 			}
 		});
 	} else {
+		//	Lookup by ID.
+
 		let normalizedRef = ref;
 		let mappingFileBasename;
 
