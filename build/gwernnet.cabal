@@ -85,7 +85,6 @@ library
       Config.Inflation
       Config.Interwiki
       Config.LinkArchive
-      Config.LinkAuto
       Config.LinkID
       Config.LinkIcon
       Config.LinkLive
@@ -107,7 +106,6 @@ library
       Inflation
       Interwiki
       LinkArchive
-      LinkAuto
       LinkBacklink
       LinkID
       LinkIcon

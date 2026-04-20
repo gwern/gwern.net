@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2026-04-16 13:51:25 gwern"
+When: Time-stamp: "2026-04-20 10:28:53 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -45,7 +45,6 @@ import Image (imageMagickDimensions, addImgDimensions, imageLinkHeightWidthSet, 
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks)
 import LinkArchive (localizeLink, readArchiveMetadataAndCheck, ArchiveMetadata)
-import LinkAuto (linkAuto)
 import LinkBacklink (getBackLinkCheck, getLinkBibLinkCheck, getSimilarLinkCheck)
 import LinkMetadata (addPageLinkWalk, readLinkMetadataSlow, writeAnnotationFragments, createAnnotations, hasAnnotation, addCanPrefetch, annotationSizeDB, addSizeToLinks)
 import LinkMetadataTypes (Metadata, SizeDB)
@@ -367,8 +366,8 @@ descField escape d d' = field d' $ \item -> do
                                Right finalDesc -> return $ deleteMany ["<p>", "</p>", "&lt;p&gt;", "&lt;/p&gt;"] finalDesc
 
 pandocTransform :: Metadata -> ArchiveMetadata -> SizeDB -> String -> Pandoc -> IO Pandoc
-pandocTransform md adb sizes indexp' p = -- linkAuto needs to run before `convertInterwikiLinks` so it can add in all of the WP links and then convertInterwikiLinks will add link-annotated as necessary; it also must run before `typographyTransformTemporary`, because that will decorate all the 'et al's into <span>s for styling, breaking the LinkAuto regexp matches for paper citations like 'Brock et al 2018'
-                           -- tag-directories/link-bibliographies special-case: we don't need to run all the heavyweight passes, and LinkAuto has a regrettable tendency to screw up section headers, so we check to see if we are processing a document with 'index: True' set in the YAML metadata, and if we are, we slip several of the rewrite transformations:
+pandocTransform md adb sizes indexp' p =
+                           -- tag-directories/link-bibliographies special-case: we don't need to run all the heavyweight passes, so we check to see if we are processing a document with 'index: True' set in the YAML metadata, and if we are, we slip several of the rewrite transformations:
   do
      let duplicateHeaders = duplicateTopHeaders p in
        unless (null duplicateHeaders) $
@@ -376,8 +375,7 @@ pandocTransform md adb sizes indexp' p = -- linkAuto needs to run before `conver
      let indexp = indexp' == "True"
      let pw
            = if indexp then convertInterwikiLinks p else
-               walk footnoteAnchorChecker $ convertInterwikiLinks $
-                 walk linkAuto p
+               walk footnoteAnchorChecker $ convertInterwikiLinks p
      unless indexp $ createAnnotations md pw
      let pb = addPageLinkWalk pw  -- we walk local link twice: we need to run it before 'hasAnnotation' so essays don't get overridden, and then we need to add it later after all of the archives have been rewritten, as they will then be local links
      pbt <- fmap typographyTransformTemporary . walkM (localizeLink adb) $ walk (hasAnnotation md)

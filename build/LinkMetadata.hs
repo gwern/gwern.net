@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2026-04-19 20:18:19 gwern"
+When:  Time-stamp: "2026-04-20 10:29:33 gwern"
 License: CC-0
 -}
 
@@ -120,10 +120,6 @@ addPageLink x = x
 --
 -- > walkAndUpdateLinkMetadata True (\(path,(title,author,date,dateModified,kvs,tags,abst)) -> return (path,(title,author,date,dateModified,kvs,
 --      map (\t -> if t/="conscientiousness" then t else "psychology/personality/conscientiousness") tags,  abst)) )
---
--- To rerun LinkAuto.hs (perhaps because some rules were added):
---
--- > walkAndUpdateLinkMetadata True (\(a,(b,c,d,e,f,g,abst)) -> return (a,(b,c,d,e,f,g, linkAutoHtml5String abst)))
 --
 -- To do IO (eg. calling an API):
 --

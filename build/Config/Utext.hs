@@ -2,7 +2,7 @@
 -- | Utext: Markdown to Unicode-rich plain text configuration data & unit-tests
 -- Author: gwern
 -- Date: 2026-04-06
--- When: Time-stamp: "2026-04-19 17:40:22 gwern"
+-- When: Time-stamp: "2026-04-19 22:00:13 gwern"
 -- License: CC-0
 
 module Config.Utext where
@@ -32,12 +32,6 @@ defaultStyle = Style False False True
 
 -- | Run the full test suite via 'rawMarkdown2Utext'. Returns a list of
 -- failures as @(input, expected, actual)@ triples. Empty list = all pass.
---
--- Usage in Test.hs:
---
--- @
--- unless (null utextTestSuite) $ printRed ("Utext test suite has errors in: " ++ show utextTestSuite)
--- @
 utextTestSuite :: (T.Text -> T.Text) -> [(T.Text, T.Text, T.Text)]
 utextTestSuite f = filter (\(_, expected, actual) -> expected /= actual)
                    [ (input, expected, f input)

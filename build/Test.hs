@@ -30,7 +30,6 @@ import qualified Cycle (testCycleDetection)
 import Inflation (inflationDollarTestSuite)
 import Interwiki (interwikiTestSuite, interwikiCycleTestSuite, isWPArticle, isWPDisambig)
 import LinkArchive (readArchiveMetadataAndCheck, testLinkRewrites)
-import LinkAuto (linkAutoTest)
 import LinkIcon (linkIconTest)
 import LinkLive (linkLiveTest, linkLivePrioritize)
 import Tags (testTags)
@@ -49,7 +48,6 @@ import qualified Config.Typography (surnameFalsePositivesWhiteList, titleCaseTes
 import qualified Config.XOfTheDay (siteBlackList, quoteDBPath, siteDBPath)
 import qualified XOfTheDay as XOTD (readTTDB)
 import qualified Config.Inflation (bitcoinUSDExchangeRateHistory, inflationDollarLinkTestCases)
-import qualified Config.LinkAuto (custom)
 import qualified Config.LinkID (linkIDOverrides, affiliationAnchors)
 import qualified Config.Metadata.Format (htmlRewriteRegexpBefore, htmlRewriteRegexpAfter, htmlRewriteFixed, filterMetaBadSubstrings, filterMetaBadWholes, balancedBracketTestCases, htmlRewriteTestCases)
 import qualified Config.Misc (cd, tooltipToMetadataTestcases, cycleTestCases, cleanArxivAbstracts, arxivAbstractFixedRewrites, arxivAbstractRegexps)
@@ -120,8 +118,6 @@ testConfigs = sum $ map length [isUniqueList Config.Metadata.Format.filterMetaBa
               , length $ isUniqueKeys Config.Misc.arxivAbstractFixedRewrites
               , length $ isUniqueKeys Config.Inflation.bitcoinUSDExchangeRateHistory, length $ isUniqueAll Config.Inflation.inflationDollarLinkTestCases
               , length $ ensure "Test.Inflation.dates" "isDate" (isDate . fst) $ Config.Inflation.bitcoinUSDExchangeRateHistory
-              , length $ isUniqueAll Config.LinkAuto.custom
-              , length $ ensure "Test.LinkAuto.custom" "isURLAnyT" (isURLAnyT . snd) Config.LinkAuto.custom
               , length $ isUniqueAll Config.LinkID.linkIDOverrides
               , length $ ensure "Test.linkIDOverrides" "HTML identifier lambda" (\(_,ident) -> -- NOTE: HTML identifiers *must* start with `[a-zA-Z]`, and not numbers or periods etc.; they must not contain periods for CSS/JS compatibility
                                                                                         let ident' = T.unpack ident in '.' `notElem` ident' && isAlpha (head ident'))
@@ -185,7 +181,7 @@ testAll = do Config.Misc.cd
              printGreen ("Testing regexps for regex validity…" :: String)
              testRegexPatterns $
                [footnoteRegex, sectionAnonymousRegex, badUrlRegex] ++
-               (map fst $ Config.Tags.wholeTagRewritesRegexes ++ Config.Metadata.Author.cleanAuthorsRegexps ++ Config.Metadata.Format.htmlRewriteRegexpBefore ++ Config.Metadata.Format.htmlRewriteRegexpAfter ++ Config.Misc.arxivAbstractRegexps ++ map (\(a,b) -> (T.unpack a, T.unpack b)) Config.LinkAuto.custom)
+               (map fst $ Config.Tags.wholeTagRewritesRegexes ++ Config.Metadata.Author.cleanAuthorsRegexps ++ Config.Metadata.Format.htmlRewriteRegexpBefore ++ Config.Metadata.Format.htmlRewriteRegexpAfter ++ Config.Misc.arxivAbstractRegexps)
              let regexUnitTests = filter (\(before,after) -> Metadata.Format.cleanAbstractsHTML before /= after) Config.Metadata.Format.htmlRewriteTestCases
              unless (null regexUnitTests) $ printRed ("Regex rewrite unit test suite has errors in: " ++ show regexUnitTests)
              let twitterUsernameTests = filter (\(u,username) -> extractTwitterUsername u /= username) Config.Metadata.Author.extractTwitterUsernameTestSuite
@@ -237,9 +233,6 @@ testAll = do Config.Misc.cd
 
              let fileGuessResults = testGuessAuthorDate
              unless (null fileGuessResults) $ printRed ("File metadata-guessing unit-tests have errors in: " ++ show fileGuessResults)
-
-             printGreen ("Testing LinkAuto rewrites…" :: String)
-             unless (null linkAutoTest) $ printRed ("LinkAuto test-cases have errors in: " ++ show linkAutoTest)
 
              interwikiUnitTests <- do
                a <- Interwiki.isWPArticle False "https://en.wikipedia.org/wiki/George_Washington_XYZ"

@@ -4,7 +4,6 @@ import Data.List (intercalate)
 import System.Exit (ExitCode(ExitFailure))
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
 import Data.FileStore.Utils (runShellCommand)
-import LinkAuto (linkAutoHtml5String)
 
 import LinkMetadataTypes (Metadata, MetadataItem, Failure(..), Path)
 import Metadata.Format (cleanAbstractsHTML, trimTitle, checkURL)
@@ -33,7 +32,7 @@ openreview md p =
                                            | otherwise = "<!-- [Keywords: " ++ concat keywords ++ "] -->"
                                     let tldr' = cleanAbstractsHTML $ processArxivAbstract tldr
                                     let desc' = cleanAbstractsHTML $ processArxivAbstract desc
-                                    abstract <- processParagraphizer md p' $ linkAutoHtml5String $ cleanAbstractsHTML $ processArxivAbstract keywords'
+                                    abstract <- processParagraphizer md p' $ cleanAbstractsHTML $ processArxivAbstract keywords'
                                     let abstractCombined = trim $ intercalate "\n" [tldr', desc', abstract]
                                     return $ Right (p, (trimTitle title, cleanAuthors $ trim author, date, "", [], [],
                                                         -- due to pseudo-LaTeX

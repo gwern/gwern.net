@@ -21,7 +21,6 @@ import Metadata.Author (cleanAuthors)
 import Metadata.Date (isDate)
 import Utils (anyInfix, anySuffix, anyPrefix, printGreen, printRed, replace, replaceMany, sed, split, trim, delete) -- safeHtmlWriterOptions, sedMany
 import Tags (listTagDirectoriesAll, abbreviateTag)
-import LinkAuto (linkAutoHtml5String)
 -- import Query (truncateTOCHTML)
 
 import Text.HTML.TagSoup (renderTags, parseTags, isTagOpenName, Tag(TagClose,TagOpen, TagText))
@@ -201,7 +200,7 @@ gwernAbstract _ p' description toc f =
                                                 else ""
       abstrct''' = delete "<p><span class=\"print-mode-not reader-mode-not\"><strong>Note</strong>: to hide apparatus like the links, you can use reader-mode (<span class=\"reader-mode-selector-inline\"><!-- non-empty span placeholder --></span>).</div></p>" $
                    trim $ replace "href=\"#" ("href=\"/"++baseURL++"#") abstrct'' -- turn relative anchor paths into absolute paths
-      abstrct'''' = linkAutoHtml5String $ sed " id=\"fnref[0-9]+\"" "" abstrct''' -- rm footnote IDs - cause problems when transcluded
+      abstrct'''' = sed " id=\"fnref[0-9]+\"" "" abstrct''' -- rm footnote IDs - cause problems when transcluded
   in if (("#" `isInfixOf` p') && null abstrct) then (t,"") else
        if "scrape-abstract-not" `isInfixOf` renderTags abstrctRw then (t,"") else
          (t,abstrct'''') -- if shortAllowed then (t,abstrct'''') else (t,abstrct'''')

@@ -2232,7 +2232,7 @@ authorLinkDB = M.fromList $
     , ("Jürgen Wellmann", "https://orcid.org/0000-0003-3635-8584")
     , ("Todd Rogers", "https://en.wikipedia.org/wiki/Todd_Rogers_(behavioral_scientist)")
     , ("Alexander Thompson", "https://alec.freumh.org/Homepage.html")
-    , ("Benjamin Grayzel", "https://benjamingrayzel.substack.com")
+    , ("Benjamin Grayzel", "https://benjamingrayzel.substack.com/")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
