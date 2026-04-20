@@ -5,7 +5,7 @@ module Test where
 
 import Control.Monad (unless)
 import Data.Either (lefts)
-import Data.List (intersect)
+import Data.List (intersect, isInfixOf, isPrefixOf)
 import qualified Data.Map.Strict as M (keys, toList)
 import Data.Char (isAlpha, isLower)
 import qualified Data.Text as T (unpack, elem, head, pack)
@@ -35,7 +35,6 @@ import LinkIcon (linkIconTest)
 import LinkLive (linkLiveTest, linkLivePrioritize)
 import Tags (testTags)
 import Typography (titleCaseTest)
-import LinkMetadata (readLinkMetadata, fileTranscludesTest)
 import Metadata.Author (authorCollapseTest, cleanAuthorsTest, extractTwitterUsername, authorDB)
 
 -- test the tests as configuration files for duplicates etc.:
@@ -57,6 +56,8 @@ import qualified Config.Misc (cd, tooltipToMetadataTestcases, cycleTestCases, cl
 import qualified Config.Paragraph (whitelist)
 import qualified Config.Metadata.Author (authorCollapseTestCases, canonicals, canonicalsWithInitials, authorLinkDB, authorLinkBlacklist, cleanAuthorsFixedRewrites, cleanAuthorsRegexps, extractTwitterUsernameTestSuite, authorWhitelist)
 import qualified Config.Metadata.Title (badStrings, stringReplace, stringDelete)
+import LinkMetadata (readLinkMetadata, generateFileTransclusionBlock)
+import Config.LinkMetadata (fileTranscludesTest, badDOISubstrings, allowedNonHttpURLPrefixes, uriValidationExemptInfixes, ignoredMalformedURLPrefixes, badAuthorSubstrings, duplicateAffiliationWhitelist, allowedNonHttpURLPrefixes, documentPreviewableExtensions, codePreviewableExtensions, fileViewableExtensions, documentPreviewableExtensions, codePreviewableExtensions, annotationClasses, positiveAnnotationClasses)
 
 import Utext (rawMarkdown2Utext)
 import Config.Utext (utextTestSuite)
@@ -138,7 +139,22 @@ testConfigs = sum $ map length [isUniqueList Config.Metadata.Format.filterMetaBa
               , length $ isCycleLess (M.toList Config.Metadata.Author.canonicals), length $ isCycleLess (M.toList Config.Metadata.Author.authorLinkDB)
               , length $ (map T.unpack $ M.keys Config.Metadata.Author.authorLinkDB) `intersect` (M.keys Config.Metadata.Author.canonicals)
               , length $ isUniqueList Config.Metadata.Title.badStrings, length $ isUniqueList Config.Metadata.Title.stringDelete, length $ isUniqueKeys Config.Metadata.Title.stringReplace
-              , length $ isUniqueList Config.Paragraph.whitelist, length $ ensure "Test.Paragraph.whitelist" "isURLAny" isURLAny Config.Paragraph.whitelist] ++
+              , length $ isUniqueList Config.Paragraph.whitelist, length $ ensure "Test.Paragraph.whitelist" "isURLAny" isURLAny Config.Paragraph.whitelist
+              , length $ isUniqueList Config.LinkMetadata.badDOISubstrings
+              , length $ isUniqueList Config.LinkMetadata.allowedNonHttpURLPrefixes
+              , length $ isUniqueList Config.LinkMetadata.uriValidationExemptInfixes
+              , length $ isUniqueList Config.LinkMetadata.ignoredMalformedURLPrefixes
+              , length $ isUniqueList Config.LinkMetadata.badAuthorSubstrings
+              , length $ isUniqueList Config.LinkMetadata.duplicateAffiliationWhitelist
+              , length $ ensure "Config.LinkMetadata.allowedNonHttpURLPrefixes" "looks like a URI scheme/prefix" (\p -> ":" `isInfixOf` p) Config.LinkMetadata.allowedNonHttpURLPrefixes
+              , length $ isUniqueList Config.LinkMetadata.documentPreviewableExtensions
+              , length $ isUniqueList Config.LinkMetadata.codePreviewableExtensions
+              , length $ isUniqueList Config.LinkMetadata.fileViewableExtensions
+              , length $ isUniqueList Config.LinkMetadata.positiveAnnotationClasses
+              , length $ isUniqueList Config.LinkMetadata.annotationClasses
+              , length $ ensure "documentPreviewableExtensions" "leading dot" (isPrefixOf ".") Config.LinkMetadata.documentPreviewableExtensions
+              , length $ ensure "codePreviewableExtensions" "leading dot" (isPrefixOf ".") Config.LinkMetadata.codePreviewableExtensions
+              ] ++
               [sum $ map length [ ensure "goodDomainsSimple" "isDomainT" isDomainT Config.LinkLive.goodDomainsSimple
                                 , ensure "goodDomainsSub"    "isDomainT" isDomainT Config.LinkLive.goodDomainsSub
                                 , ensure "badDomainsSimple"  "isDomainT" isDomainT Config.LinkLive.badDomainsSimple
@@ -187,7 +203,7 @@ testAll = do Config.Misc.cd
              unless (null invalidIDs) $ printRed ("IDs: Some IDs are valid dates, which should never happen and indicates metadata corruption: " ++ show invalidIDs)
 
              printGreen ("Testing file-transclusions…" :: String)
-             let fileTranscludes = fileTranscludesTest md am
+             let fileTranscludes = fileTranscludesTest generateFileTransclusionBlock md am
              let fileTranscludesResults = filter (uncurry (/=)) fileTranscludes
              unless (null fileTranscludesResults) $ printRed ("File-transclude unit test suite has errors in: " ++ show fileTranscludesResults)
 

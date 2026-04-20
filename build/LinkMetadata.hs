@@ -1,15 +1,15 @@
-{- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can
+{- LinkMetadata: module for generating Pandoc links which are annotated with metadata, which can
                     then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts,
                     abstracts, article introductions etc., and make life much more pleasant for the reader—hover over
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2026-04-18 15:00:12 gwern"
+When:  Time-stamp: "2026-04-19 20:18:19 gwern"
 License: CC-0
 -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataSlow, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, walkAndUpdateLinkMetadataGTX, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readGTXFast, writeGTX, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationTransclusionBlock, authorsToCite, cleanAbstractsHTML, sortItemDate, sortItemPathDate, sortItemPathDateModified, sortItemDateModified, sortByDateModified, sortByDatePublished, lookupFallback, sortItemPathDateCreated, fileTranscludesTest, addCanPrefetch, annotationSizeDB, addSizeToLinks) where
+module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataSlow, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, walkAndUpdateLinkMetadataGTX, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readGTXFast, writeGTX, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationTransclusionBlock, authorsToCite, cleanAbstractsHTML, sortItemDate, sortItemPathDate, sortItemPathDateModified, sortItemDateModified, sortByDateModified, sortByDatePublished, lookupFallback, sortItemPathDateCreated, addCanPrefetch, annotationSizeDB, addSizeToLinks, generateFileTransclusionBlock) where
 
 import Control.Monad (unless, void, when, foldM_, (<=<))
 
@@ -37,8 +37,6 @@ import qualified Control.Monad.Parallel as Par (mapM_, mapM) -- monad-parallel
 
 import System.IO.Unsafe (unsafePerformIO)
 
-import qualified Config.LinkID (affiliationAnchors)
-import qualified Config.Misc as C (fileExtensionToEnglish, minFileSizeWarning, minimumAnnotationLength, currentMonthAgo, todayDayString, currentYear, gtxKeyValueKeyNames)
 import Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjusterHTML, isInflationURL)
 import Interwiki (convertInterwikiLinks, isWPAPI)
 import Typography (titlecase', typesetHtmlField, titleWrap)
@@ -58,7 +56,11 @@ import Annotation.Gwernnet (gwern)
 import LinkIcon (linkIcon)
 import GTX (appendLinkMetadata, readGTXFast, readGTXSlow, rewriteLinkMetadata, writeGTX, untupleize)
 import Metadata.Author (authorCollapse)
+
+import qualified Config.LinkID as CLID (affiliationAnchors)
+import qualified Config.Misc as CM (fileExtensionToEnglish, minFileSizeWarning, minimumAnnotationLength, currentMonthAgo, todayDayString, currentYear, gtxKeyValueKeyNames)
 import qualified Config.Metadata.Author as CA (authorLinkDB, authorWhitelist)
+import qualified Config.LinkMetadata as C (badDOISubstrings, badTitleLeadingChars, badTitleTrailingChars, badAuthorSubstrings, allowedNonHttpURLPrefixes, uriValidationExemptInfixes, ignoredMalformedURLPrefixes, duplicateAffiliationWhitelist, youtubeWatchPrefix, twitterHostPrefix, twitterStatusInfix, wikipediaArticleInfix, documentPreviewableExtensions, codePreviewableExtensions, fileViewableExtensions, futureYearSlack, partialAnnotationIgnoredTagCount, partialAnnotationBacklinkThreshold, partialAnnotationSimilarThreshold, annotationURLWarningLength, annotationURLPreviewLength, missingTitleAbstractMinLength, maxPrefetchBytes, annotationClasses, positiveAnnotationClasses)
 
 addSizeToLinks :: SizeDB -> Inline -> Inline
 addSizeToLinks sdb x@(Link _ _ (url,_)) = if hasClass "filesize-not" x || hasKey "filesize-bytes" x || hasKey "filesize-percentage" x then x
@@ -144,7 +146,7 @@ addPageLink x = x
 --
 -- To push hardwired link-ID overrides into the respective metadata database annotation entries:
 --
--- > let f = \x@(path,(a,b,c,d,e,f,g)) -> return $ case (lookup path Config.LinkID.linkIDOverrides) of { Nothing -> x; Just ident -> (path,(a,b,c,d,e++[("id",T.unpack ident)],f,g)) }
+-- > let f = \x@(path,(a,b,c,d,e,f,g)) -> return $ case (lookup path CLID.linkIDOverrides) of { Nothing -> x; Just ident -> (path,(a,b,c,d,e++[("id",T.unpack ident)],f,g)) }
 -- > walkAndUpdateLinkMetadata True f
 --
 -- To fix malformed dates:
@@ -207,7 +209,7 @@ readLinkMetadata = do
              half <- readGTXFast "metadata/half.gtx" -- tagged but not handwritten/cleaned-up
              auto <- readGTXFast "metadata/auto.gtx"    -- auto-generated cached definitions; can be deleted if gone stale
              -- merge the hand-written & auto-generated link annotations, and return:
-             let final = M.union (M.fromList me) $ M.union (M.fromList full) $ M.union (M.fromList half) (M.fromList auto) -- left-biased, so 'full' overrides 'half' overrides 'half' overrides 'auto'
+             let final = M.union (M.fromList me) $ M.union (M.fromList full) $ M.union (M.fromList half) (M.fromList auto) -- left-biased, so 'me overrides ''full' overrides 'half' overrides 'auto'
              return final
 
 readLinkMetadataSlow :: IO Metadata
@@ -217,7 +219,7 @@ readLinkMetadataSlow = do
              half <- readGTXSlow "metadata/half.gtx" -- tagged but not handwritten/cleaned-up
              auto <- readGTXSlow "metadata/auto.gtx"    -- auto-generated cached definitions; can be deleted if gone stale
              -- merge the hand-written & auto-generated link annotations, and return:
-             let final = M.union (M.fromList me) $ M.union (M.fromList full) $ M.union (M.fromList half) (M.fromList auto) -- left-biased, so 'full' overrides 'half' overrides 'half' overrides 'auto'
+             let final = M.union (M.fromList me) $ M.union (M.fromList full) $ M.union (M.fromList half) (M.fromList auto) -- left-biased, so 'me' overrides 'full' overrides 'half' overrides 'auto'
              return final
 
 -- read the annotation database, and do extensive semantic & syntactic checks for errors/duplicates:
@@ -225,7 +227,7 @@ readLinkMetadataSlow = do
 readLinkMetadataAndCheck :: IO Metadata
 readLinkMetadataAndCheck = do
              -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use GTX:
-             me   <- readGTXSlow "metadata/me.gtx"
+             me      <- readGTXSlow "metadata/me.gtx"
              fullGTX <- readGTXSlow "metadata/full.gtx"
              let full = me ++ fullGTX
 
@@ -281,7 +283,7 @@ readLinkMetadataAndCheck = do
              let finalL = M.toList final
 
              -- CHECK ALL (FULL+HALF+AUTO):
-             let badDoisDash = filter (\(_,(_,_,_,_,kvs,_,_)) -> anyInfix (kvDOI kvs) ["–", "—", " ", ",", "{", "}", "!", "@", "#", "$", "\"", "'", "arxiv", ".org", "http"]) finalL
+             let badDoisDash = filter (\(_,(_,_,_,_,kvs,_,_)) -> anyInfix (kvDOI kvs) C.badDOISubstrings) finalL
              unless (null badDoisDash) $ error $ "GTXes: Bad DOIs (invalid punctuation in DOI): " ++ show badDoisDash
              -- about the only requirement for DOIs, aside from being made of graphical Unicode characters (which includes spaces <https://www.compart.com/en/unicode/category/Zs>!), is that they contain one '/':
              -- <https://www.doi.org/doi_handbook/2_Numbering.html#2.2.3> "The DOI syntax shall be made up of a DOI prefix and a DOI suffix separated by a forward slash. There is no defined limit on the length of the DOI name, or of the DOI prefix or DOI suffix. The DOI name is case-insensitive and can incorporate any printable characters from the legal graphic characters of Unicode." <https://www.doi.org/doi_handbook/2_Numbering.html#2.2.1>
@@ -291,15 +293,15 @@ readLinkMetadataAndCheck = do
              unless (null badDois) $ error $ "GTXes: Invalid DOI (missing mandatory forward slash or a number): " ++ show badDois
 
              -- NOTE: titles can validly begin/end with a forward-slash if they are, say, a subreddit. Titles also often end in colons for Twitter, where it is about an implied attached screenshot or image or retweet. And '+' ends a number of technology-related titles ('Google+', 'DC++', 'C++').
-             let badTitles = filter (\(_,(t,_,_,_,_,_,_)) -> t /= "" && (last t `elem` ("<\\;,_~=-({"::String) || head t `elem` (">\\;,_~=+-)}:"::String))) finalL
+             let badTitles = filter (\(_,(t,_,_,_,_,_,_)) -> t /= "" && (last t `elem` C.badTitleTrailingChars || head t `elem` C.badTitleLeadingChars)) finalL
              unless (null badTitles) $ error $ "GTXes: Link Annotation Error: mangled title? Begins/ends in a strange character that should probably never happen a well-formed title: " ++ show badTitles
 
-             let badKVs = filter (\(_,(_,_,_,_,kvs,_,_)) -> any (\(k,v) -> k `notElem` C.gtxKeyValueKeyNames || k == "" || v == "") kvs) finalL
+             let badKVs = filter (\(_,(_,_,_,_,kvs,_,_)) -> any (\(k,v) -> k `notElem` CM.gtxKeyValueKeyNames || k == "" || v == "") kvs) finalL
              unless (null badKVs) $ error $ "GTX: bad key-values in annotations, with unknown keys (not in the whitelist `Config.Misc.gtxKeyValueKeyNames`), or null keys/values: " ++ show badKVs
 
              let urlsFinal = M.keys final
              let brokenUrlsFinal = filter (\u -> null u ||
-                                            not (head u == 'h' || head u == '/' || anyPrefix u ["mailto:", "irc://", "rsync://"]) ||
+                                            not (head u == 'h' || head u == '/' || anyPrefix u C.allowedNonHttpURLPrefixes) ||
                                             (head u == '/' && "//" `isInfixOf` u) ||
                                             ' ' `elem` u ||
                                             ('—' `elem` u) || -- EM DASH
@@ -323,7 +325,7 @@ readLinkMetadataAndCheck = do
              let urlsAll = filter (\(x,_) -> if x == "" then error "LinkMetadata.urlsAll: empty URL!" else
                                                let u = head x in
                                                if u `elem` ['/', '!'] || isInflationURL (T.pack [u]) ||
-                                                      "wikipedia.org" `isInfixOf` x || "hoogle.haskell.org" `isInfixOf` x || not (anyPrefix x ["ttps://", "ttp://", "/wiki", "wiki/", "/http"]) then False
+                                                      anyInfix x C.uriValidationExemptInfixes || not (anyPrefix x C.ignoredMalformedURLPrefixes) then False
                                                  else not (isURIReference x)) finalL
              unless (null urlsAll) $ printRed "Invalid URIs?" >> printGreen (ppShow urlsAll)
 
@@ -340,18 +342,19 @@ readLinkMetadataAndCheck = do
              mapM_ (\a -> unless (null a) $ when ((isDate a || isNumber (head a) || isPunctuation (head a)) && not (M.member (T.pack a) CA.authorLinkDB || a `elem` CA.authorWhitelist))
                                                   (printRed "Mixed up author & date?: " >> printGreen a) ) authors
              let authorsBadChars = nubOrd $ filter (\a -> a `notElem` CA.authorWhitelist &&
-                                                 (anyInfix a [";", "&", "?", "!", " >", "< ", " <"] || (last a /= '.' && isPunctuation (last a)))) $ filter (not . null) authors
+                                                 (anyInfix a C.badAuthorSubstrings || (last a /= '.' && isPunctuation (last a)))) $ filter (not . null) authors
              unless (null authorsBadChars) (printRed "Mangled author list?" >> printGreen (ppShow authorsBadChars))
 
-             let yearLimit = show (C.currentYear + 2) -- no entry should be published or created 2+ years in the future!
+             let yearLimit = show (CM.currentYear + C.futureYearSlack) -- no entry should be published or created 2+ years in the future!
              let datesBad = filter (\(_,(_,_,dt,dc,_,_,_)) -> (not (isDate dt || null dt)) || (not (isDate dc || null dc)) ||
                                                               (dt /= "" && (let y = take 4 dt
-                                                                            in y > yearLimit || y > yearLimit))
+                                                                                y' = take 4 dc
+                                                                            in y > yearLimit || y' > yearLimit))
                                    ) finalL
              unless (null datesBad) (printRed "Malformed date (not 'YYYY[-MM[-DD]]'): " >> printGreen (show datesBad))
 
              -- 'filterMeta' may delete some titles which are good; if any annotation has a long abstract, all data sources *should* have provided a valid title. Enforce that.
-             let titlesEmpty = M.filter (\(t,_,_,_,_,_,abst) -> t=="" && length abst > 100) final
+             let titlesEmpty = M.filter (\(t,_,_,_,_,_,abst) -> t=="" && length abst > C.missingTitleAbstractMinLength) final
              unless (null titlesEmpty) $ error ("Link Annotation Error: missing title despite abstract!" ++ show titlesEmpty)
 
              let tagIsNarrowerThanFilename = M.map (\(title,_,_,_,_,tags,_) -> (title,tags)) $ M.filterWithKey (\f (_,_,_,_,_,tags,_) -> if not ("/doc/" `isPrefixOf` f) then False else
@@ -409,7 +412,7 @@ writeAnnotationFragments :: ArchiveMetadata -> Metadata -> SizeDB -> Bool -> IO 
 writeAnnotationFragments am md sizes writeOnlyMissing =
   do let ml = M.toList md
      -- first pass: process all possible partials, so they are written out & on-disk for the` getAnnotationLinkCheck` in `addHasAnnotation`
-     mapM_ (uncurry $ writeAnnotationFragment am md sizes writeOnlyMissing) $ filter (\(_,(_,_,_,_,_,_,abst)) -> length abst <= C.minimumAnnotationLength) ml
+     mapM_ (uncurry $ writeAnnotationFragment am md sizes writeOnlyMissing) $ filter (\(_,(_,_,_,_,_,_,abst)) -> length abst <= CM.minimumAnnotationLength) ml
      -- second pass: process all possible annotations. (This is awkward but without building in a whole dependency system or a global database or keeping the per-annotation processing, it's hard to see how to ensure no race condition with the annotation checking.)
      mapM_ (uncurry $ writeAnnotationFragment am md sizes writeOnlyMissing) ml
 writeAnnotationFragment :: ArchiveMetadata -> Metadata -> SizeDB -> Bool -> Path -> MetadataItem -> IO ()
@@ -434,10 +437,10 @@ writeAnnotationFragment am md sdb onlyMissing u i@(a,b,c,dc,kvs,ts,abst) =
                   -- How do we decide how much miscellaneous metadata is enough? it is currently rather ad hoc. Currently, we treat each one as a kind of binary threshold, and if any are True, the partial status is true
                   blN    <- getBackLinkCount u'
                   slN    <- getSimilarLinkCount u'
-                  let partialScoring = 0 < sum [length (drop 2 ts),
+                  let partialScoring = 0 < sum [length (drop C.partialAnnotationIgnoredTagCount ts),
                                                  length abst,
-                                                 if blN > 1 then 1 else 0,
-                                                 if slN > 6 then 1 else 0]
+                                                 if blN > C.partialAnnotationBacklinkThreshold then 1 else 0,
+                                                 if slN > C.partialAnnotationSimilarThreshold then 1 else 0]
 
                   when partialScoring $ do
                       let titleHtml    = nominalToRealInflationAdjusterHTML c $ typesetHtmlField $ titlecase' a
@@ -456,8 +459,8 @@ writeAnnotationFragment am md sdb onlyMissing u i@(a,b,c,dc,kvs,ts,abst) =
                                     walkM (imageLinkHeightWidthSet <=< addCanPrefetch <=< localizeLink am) p
                       let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc'
 
-                      when (length (urlEncode u') > 273) (printRed "Warning, annotation fragment path → URL truncated!" >>
-                                                          putStrLn ("Was: " ++ urlEncode u' ++ " but truncated to: " ++ take 247 u' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"))
+                      when (length (urlEncode u') > C.annotationURLWarningLength) (printRed "Warning, annotation fragment path → URL truncated!" >>
+                                                          putStrLn ("Was: " ++ urlEncode u' ++ " but truncated to: " ++ take C.annotationURLPreviewLength u' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"))
 
                       case finalHTMLEither of
                         Left er -> error ("Writing annotation fragment failed! " ++ show u ++ " : " ++ show i ++ " : " ++ show er)
@@ -496,7 +499,7 @@ annotateLink md x@(Link (_,_,_) _ (targetT,_))
                 unless exist $ printRed ("Link error in 'LM.annotateLink': file does not exist? " ++ target''' ++ " (" ++target++")" ++ " (" ++ show x ++ ")")
 
      let annotated = M.lookup target'' md
-     today <- C.todayDayString
+     today <- CM.todayDayString
      case annotated of
        -- the link has a valid annotation already defined, so we're done: nothing changed.
        Just i  -> return (Right (target'', i))
@@ -524,7 +527,7 @@ hasAnnotationOrIDInline md inline = case inline of
     _ -> inline
   where
     hasAnyAnnotatedClass :: [T.Text] -> Bool
-    hasAnyAnnotatedClass = hasAny ["link-annotated-not", "link-annotated", "link-annotated-partial", "image-annotated", "image-annotated-not", "image-annotated-partial"]
+    hasAnyAnnotatedClass = hasAny C.annotationClasses
 
     process :: [T.Text] -> T.Text -> Inline -> Inline
     process classes url x
@@ -576,7 +579,7 @@ addCanPrefetch x@(Link (_,classes,_) _ (f,_))
  | "/metadata/" `T.isPrefixOf` f = return x
  | isLocal f && not (isFileViewable f') = return $ addClass "prefetch-not" x
  | otherwise = do size <- getFileSize $ takeWhile (/='#') $ tail f'
-                  if size < 10000000 then return x else
+                  if size < C.maxPrefetchBytes then return x else
                     -- >10MB seems a bit too much to spend speculatively, even these days
                     return $ addClass "prefetch-not" x
   where f' = T.unpack f
@@ -586,7 +589,7 @@ addCanPrefetch x = return x
 -- addHasAnnotation (title,aut,dt,_,miscMetadata,_,abstrct) x@(Link (a,b,c) e (f,g))
 --   | wasAnnotated x = x'
 --   -- WARNING: Twitter is currently handled in Config.LinkArchive, because whether a Twitter/Nitter URL is a valid 'annotation' depends on whether there is a Nitter snapshot hosted locally the JS can query. Many Nitter snapshots, sadly, fail, so it is *not* guaranteed that a Twitter URL will have a usable snapshot. TODO: when Twitter is merged into the backend, parsing the Nitter mirrors to create proper annotations, rather than using JS to parse them at runtime, this should be removed.
---   | length abstrct > C.minimumAnnotationLength  = addClassPopupNot miscMetadata $ addClass "link-annotated" x' -- full annotation, no problem.
+--   | length abstrct > CM.minimumAnnotationLength  = addClassPopupNot miscMetadata $ addClass "link-annotated" x' -- full annotation, no problem.
 --    -- may be a partial…?
 --   | not $ unsafePerformIO $ doesFileExist $ fst $ getAnnotationLink $ T.unpack f = x'
 --   -- | unsafePerformIO $ do
@@ -616,7 +619,7 @@ addHasAnnotationLinkLike :: MetadataItem
                          -> Inline
 addHasAnnotationLinkLike (title,aut,dt,_,miscMetadata,_,abstrct) prefix mkInline (a,b,c) e (f,g) x
   | wasAnnotated x = x'
-  | length abstrct > C.minimumAnnotationLength  = addClassPopupNot miscMetadata $ addClass (prefix`T.append`"-annotated") x'
+  | length abstrct > CM.minimumAnnotationLength  = addClassPopupNot miscMetadata $ addClass (prefix`T.append`"-annotated") x'
   | not $ unsafePerformIO $ doesFileExist $ fst $ getAnnotationLink $ T.unpack f = x'
   | otherwise = addClassPopupNot miscMetadata $ addClass (prefix`T.append`"-annotated-partial") x'
   where
@@ -641,10 +644,10 @@ addClassPopupNot miscMetadata x = case lookup "css-extension" miscMetadata of
 addRecentlyChanged :: MetadataItem -> Inline -> Inline
 addRecentlyChanged (_,_,_,"",       _,_,_) x                     = x
 addRecentlyChanged (u,_,_,dtChanged,_,_,_) x@(Link _ _ (url,_))  =
-  if dtChanged < C.currentMonthAgo || hasClass "link-modified-recently-not" x || "/index" `T.isInfixOf` url || "wikipedia.org/wiki/" `isInfixOf` u then x
+  if dtChanged < CM.currentMonthAgo || hasClass "link-modified-recently-not" x || "/index" `T.isInfixOf` url || "wikipedia.org/wiki/" `isInfixOf` u then x
   else addClass "link-modified-recently" x
 addRecentlyChanged (_,_,_,dtChanged,_,_,_) x@(Image _ _ (url,_)) =
-  if dtChanged < C.currentMonthAgo || hasClass "image-modified-recently-not" x || "/index" `T.isInfixOf` url then x
+  if dtChanged < CM.currentMonthAgo || hasClass "image-modified-recently-not" x || "/index" `T.isInfixOf` url then x
   else addClass "image-modified-recently" x
 addRecentlyChanged _ x                                           = x
 
@@ -654,9 +657,7 @@ wasAnnotated x@Link{}  = isAnnotatedInline x
 wasAnnotated x@Image{} = isAnnotatedInline x
 wasAnnotated x = error $ "LinkMetadata.wasAnnotated: tried to get annotation status of a non-Link/Image element, which makes no sense? " ++ show x
 isAnnotatedInline :: Inline -> Bool
-isAnnotatedInline x = -- let f = inline2Path x in
-                            hasClass "link-annotated" x ||
-                            hasClass "link-annotated-partial" x
+isAnnotatedInline x = any (`hasClass` x) C.positiveAnnotationClasses
 
 generateAnnotationBlock :: Metadata -> ArchiveMetadata -> (FilePath, Maybe MetadataItem) -> FilePath -> FilePath -> FilePath -> [Block]
 generateAnnotationBlock md am (f, ann) blp slp lb =
@@ -748,10 +749,10 @@ generateFileTransclusionBlock am x@(f, (tle,_,_,_,_,_,_)) = if null generateFile
    liveP  = alreadyLive $ linkLiveString f' -- for web pages which are link-live capable, we wish to file-transclude them; this is handled by annotations as usual, but for annotation-less URLs we have the same problem as we do for annotation-less local-file media - #Miscellaneous tag-directories get shafted. So we check for link-live here and force a fallback for links which are live but annotation-less.
    fileSizeMB       = if not localP then 0 else
                         round (fromIntegral (unsafePerformIO $ getFileSize $ takeWhile (/='#') $ tail f') / (1000000::Double)) :: Int
-   fileSizeMBString = if fileSizeMB < C.minFileSizeWarning then "" else show fileSizeMB++"MB"
-   fileTypeDescription = if "https://www.youtube.com/watch?v=" `isPrefixOf` f then "YouTube video"
-                         else if "https://x.com/" `isPrefixOf` f && "/status/" `isInfixOf` f then "Tweet"
-                              else C.fileExtensionToEnglish $ takeExtension f'
+   fileSizeMBString = if fileSizeMB < CM.minFileSizeWarning then "" else show fileSizeMB++"MB"
+   fileTypeDescription = if C.youtubeWatchPrefix `isPrefixOf` f then "YouTube video"
+                         else if C.twitterHostPrefix `isPrefixOf` f && C.twitterStatusInfix `isInfixOf` f then "Tweet"
+                              else CM.fileExtensionToEnglish $ takeExtension f'
    fileTypeDescriptionString  | fileTypeDescription/="" = fileTypeDescription
                               | liveP && not localP     = "External Link"
                               | otherwise               = "page"
@@ -760,17 +761,17 @@ generateFileTransclusionBlock am x@(f, (tle,_,_,_,_,_,_)) = if null generateFile
                                   ++ (if null fileSizeMBString then "" else " ("++fileSizeMBString ++ ")")
    title        = if null tle then Code nullAttr (T.pack f') else RawInline (Format "HTML") $ T.pack tle
    titleCaption = [Strong [Str "View ", fileDescription], Str ":"]
-   dataArguments = if "wikipedia.org/wiki/" `isInfixOf` f' && isWPAPI (T.pack f') then [("include-template", "$annotationFileIncludeTemplate")] else [] -- use special template to exclude the duplicate title when we render WP articles via the API (which is irrelevant when it's just an iframe live-link); doesn't apply to Twitter transcludes yet, but if necessary, they can get a custom one too
+   dataArguments = if C.wikipediaArticleInfix `isInfixOf` f' && isWPAPI (T.pack f') then [("include-template", "$annotationFileIncludeTemplate")] else [] -- use special template to exclude the duplicate title when we render WP articles via the API (which is irrelevant when it's just an iframe live-link); doesn't apply to Twitter transcludes yet, but if necessary, they can get a custom one too
    generateFileTransclusionBlock'
     | f' == "" = error $ "LinkMetadata.generateFileTransclusionBlock.generateFileTransclusionBlock': localized filepath (`f'`) was empty string; this should never happen! `(FilePath,MetadataItem)` input was: " ++ show x
     | isPagePath (T.pack f') = [] -- for essays, we skip the transclude block: transcluding an entire essay is a bad idea!
-    | "wikipedia.org/wiki/" `isInfixOf` f' || ("https://x.com/" `isPrefixOf` f && "/status/" `isInfixOf` f) =
+    | C.wikipediaArticleInfix `isInfixOf` f' || (C.twitterHostPrefix `isPrefixOf` f && C.twitterStatusInfix `isInfixOf` f) =
       [Para [Link ("",["id-not", "include-content"],dataArguments) [title] (T.pack f, "")]] -- NOTE: Twitter/Wikipedia special-case: we link the *original* Twitter URL, to get the JS transform of the local-archive (instead of displaying the local Nitter snapshot in an iframe as a regular web page)
     -- PDFs cannot be viewed on mobile due to poor mobile browser support + a lack of good PDF → HTML converter, so we have to hide that specifically for mobile.
     | isDocumentPreviewable f' || isCodePreviewable f' = [Div ("", "collapse":(if ".pdf" `isInfixOf` f' then ["mobile-not"] else []), [])
                                                       [Para titleCaption, Para [linkIcon $ Link ("", ["id-not", "link-annotated-not", "include-content", "include-lazy"], []) [title] (T.pack f', "")]]] -- TODO: do we need .link-annotated-not set on either of these links?
     -- image/video/audio:
-    | isMediaViewable f' || "https://www.youtube.com/watch?v=" `isPrefixOf` f =
+    | isMediaViewable f' || C.youtubeWatchPrefix `isPrefixOf` f =
       -- multimedia can be annotated; if it is (has a title & author etc.), we don't need to display additional metadata, and we just display it immediately literally:
         [Para [Link ("",["link-annotated-not", "include-content", "width-full"],[]) [title] (T.pack f', "")]]
     | otherwise = if not liveP then [] else
@@ -781,81 +782,13 @@ generateFileTransclusionBlock am x@(f, (tle,_,_,_,_,_,_)) = if null generateFile
 isDocumentPreviewable, isCodePreviewable, isMediaViewable, isFileViewable :: FilePath -> Bool
 isDocumentPreviewable f = (isLocal $ T.pack f) &&
                        (hasExtensionS ".html" f ||
-                        anyInfix f [".json", ".jsonl", ".opml", ".md", ".pdf", ".txt", ".xml"] || -- Pandoc syntax-highlighted or native-browser
+                        anyInfix f C.documentPreviewableExtensions || -- Pandoc syntax-highlighted or native-browser
                         hasHTMLSubstitute f) -- these are converted by LibreOffice to clean HTML versions for preview
 -- local source files have syntax-highlighted versions we can load. (NOTE: we cannot transclude remote files which match these, because many URLs are not 'cool URIs' and casually include extensions like '.php' or '.js' while being HTML outputs thereof.)
-isCodePreviewable     f = isLocal (T.pack f) && anySuffix f [".R", ".css", ".hs", ".js", ".patch", ".sh", ".php", ".conf"] -- we exclude `/static/*/.html` since that's not possible
+isCodePreviewable     f = isLocal (T.pack f) && anySuffix f C.codePreviewableExtensions -- we exclude `/static/*/.html` since that's not possible
 
 isMediaViewable f = Image.isImageFilename f || Image.isVideoFilename f || hasExtensionS ".mp3" f
-isFileViewable f = isLocal (T.pack f) && (anySuffix f [".html", ".pdf", ".txt"] || isMediaViewable f)
-
--- config testing: none? too many overlaps
-fileTranscludesTest :: Metadata -> ArchiveMetadata -> [([Block], [Block])]
-fileTranscludesTest md am =
-  let testFileTransclude md' am' path = let x = fromJustWithError path $ M.lookup path md'
-                                             in generateFileTransclusionBlock am' (path, x)
-      simpleTestEmpty = testFileTransclude md M.empty
-      simpleTest = testFileTransclude md am
-  in -- config test: unique-keys
-    [ (simpleTest "/review/bakker", [])
-    , (simpleTest "/review/bakker", [])
-    , (simpleTest "/index", [])
-    , (simpleTest "/doc/newest/index", [])
-    , (simpleTest "/doc/cs/algorithm/1986-aggarwal.pdf", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse","mobile-not"],[]) [Para [Strong [Str "View ",Str "PDF"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","pdf"),("link-icon-type","svg"),("link-icon-color","#f40f02")]) [RawInline (Text.Pandoc.Format "HTML") "Geometric applications of a matrix searching algorithm"] ("/doc/cs/algorithm/1986-aggarwal.pdf","")]]]])
-    -- , (simpleTest "/doc/cs/algorithm/1986-aggarwal.pdf", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse","mobile-not"],[]) [Para [Strong [Str "View ",Str "PDF"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","pdf"),("link-icon-type","svg"),("link-icon-color","#f40f02")]) [RawInline (Text.Pandoc.Format "HTML") "Geometric applications of a matrix searching algorithm"] ("/doc/cs/algorithm/1986-aggarwal.pdf","")]]]])
-    , (simpleTest "/doc/cs/algorithm/1990-galil.pdf", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse","mobile-not"],[]) [Para [Strong [Str "View ",Str "PDF"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","pdf"),("link-icon-type","svg"),("link-icon-color","#f40f02")]) [RawInline (Text.Pandoc.Format "HTML") "A linear-time algorithm for concave one-dimensional dynamic programming"] ("/doc/cs/algorithm/1990-galil.pdf","")]]]])
-    , (simpleTest "/doc/economics/2010-mankiw.pdf", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse","mobile-not"],[]) [Para [Strong [Str "View ",Str "PDF"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","pdf"),("link-icon-type","svg"),("link-icon-color","#f40f02")]) [RawInline (Text.Pandoc.Format "HTML") "The Optimal Taxation of Height: A Case Study of Utilitarian Income Redistribution"] ("/doc/economics/2010-mankiw.pdf","")]]]])
-    , (simpleTestEmpty "https://arxiv.org/abs/1505.03118", [])
-    , (simpleTest "https://blog.codinghorror.com/if-you-dont-change-the-ui-nobody-notices/", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "External Link"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon-color","#57a3e8")]) [RawInline (Text.Pandoc.Format "HTML") "If You Don\8217t Change the UI, Nobody Notices: I saw a screenshot a few days ago that made me think Windows 7 Beta might actually be worth checking out."] ("https://blog.codinghorror.com/if-you-dont-change-the-ui-nobody-notices/","")]]]])
-    , (simpleTest "https://harpers.org/archive/2022/04/night-shifts-dream-incubation-technology-sleep-research/", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "HTML"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","H"),("link-icon-type","text")]) [RawInline (Format "HTML") "Night Shifts: Can technology shape our dreams?"] ("/doc/www/harpers.org/f50360d6a34f28a00f78a7359ed4c3978afd211b.html","")]]]])
-    , (simpleTestEmpty "https://news.ycombinator.com/item?id=31274155", [])
-    , (simpleTestEmpty "https://founders.archives.gov/documents/Jefferson/03-06-02-0322", [])
-    , (simpleTestEmpty "https://arxiv.org/abs/2311.17137", [])
-    , (simpleTest "https://arxiv.org/abs/1212.6177", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse","mobile-not"],[]) [Para [Strong [Str "View ",Str "PDF"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","\120536"),("link-icon-type","text"),("link-icon-color","#b31b1b")]) [RawInline (Text.Pandoc.Format "HTML") "How Much of the Web Is Archived?"] ("/doc/www/arxiv.org/b9be349cb3d46669ca7d72f056d7180208257b74.pdf","")]]]])
-    , (simpleTest "https://openreview.net/forum?id=-WsBmzWwPee", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse","mobile-not"],[]) [Para [Strong [Str "View ",Str "PDF"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","OR"),("link-icon-type","text,sans"),("link-icon-color","#8c1b13")]) [RawInline (Text.Pandoc.Format "HTML") "Realistic Face Reconstruction from Deep Embeddings"] ("/doc/www/openreview.net/f0c4012d829fbd5ff4e6187ce9dc5d3e3e656f89.pdf","")]]]])
-    , (simpleTest "/lorem.md", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "Markdown"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","txt"),("link-icon-type","svg")]) [Code ("",[],[]) "/lorem.md"] ("/lorem.md","")]]]])
-    , (simpleTest "/doc/ai/nn/gan/stylegan/2017-royer-cartoonset-randomsamples.png", [Div ("",["aux-links-transclude-file"],[]) [Para [Link ("",["link-annotated-not","include-content","width-full"],[]) [Code ("",[],[]) "/doc/ai/nn/gan/stylegan/2017-royer-cartoonset-randomsamples.png"] ("/doc/ai/nn/gan/stylegan/2017-royer-cartoonset-randomsamples.png","")]]])
-    , (simpleTest "/doc/ai/nn/diffusion/midjourney/dropcap/dropcat/2023-10-21-gwern-midjourneyv5-cats-dark-mode-hissingkitten-edgeproblems-inverted.jpg", [Div ("",["aux-links-transclude-file"],[]) [Para [Link ("",["link-annotated-not","include-content","width-full"],[]) [Code ("",[],[]) "/doc/ai/nn/diffusion/midjourney/dropcap/dropcat/2023-10-21-gwern-midjourneyv5-cats-dark-mode-hissingkitten-edgeproblems-inverted.jpg"] ("/doc/ai/nn/diffusion/midjourney/dropcap/dropcat/2023-10-21-gwern-midjourneyv5-cats-dark-mode-hissingkitten-edgeproblems-inverted.jpg","")]]])
-    , (simpleTest "/doc/ai/nn/gan/stylegan/2020-03-26-shawnpresser-stylegan2-imagenet-run52-1394688-interpolation-7.mp4", [Div ("",["aux-links-transclude-file"],[]) [Para [Link ("",["link-annotated-not","include-content","width-full"],[]) [Code ("",[],[]) "/doc/ai/nn/gan/stylegan/2020-03-26-shawnpresser-stylegan2-imagenet-run52-1394688-interpolation-7.mp4"] ("/doc/ai/nn/gan/stylegan/2020-03-26-shawnpresser-stylegan2-imagenet-run52-1394688-interpolation-7.mp4","")]]])
-    , (simpleTest "/doc/anime/eva/notenki-memoirs/blue-blazes/10-3.webm", [Div ("",["aux-links-transclude-file"],[]) [Para [Link ("",["link-annotated-not","include-content","width-full"],[]) [Code ("",[],[]) "/doc/anime/eva/notenki-memoirs/blue-blazes/10-3.webm"] ("/doc/anime/eva/notenki-memoirs/blue-blazes/10-3.webm","")]]])
-    , (simpleTest "/doc/ai/music/2020-04-18-gpt2-midi-bigdataset-124.mp3", [Div ("",["aux-links-transclude-file"],[]) [Para [Link ("",["link-annotated-not","include-content","width-full"],[]) [Code ("",[],[]) "/doc/ai/music/2020-04-18-gpt2-midi-bigdataset-124.mp3"] ("/doc/ai/music/2020-04-18-gpt2-midi-bigdataset-124.mp3","")]]])
-    , (simpleTest "/doc/ai/nn/gan/stylegan/2020-05-05-tjukanov-mapdreameraicartography.html", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "HTML (63MB)"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","internet-archive"),("link-icon-type","svg")]) [Code ("",[],[]) "/doc/ai/nn/gan/stylegan/2020-05-05-tjukanov-mapdreameraicartography.html"] ("/doc/ai/nn/gan/stylegan/2020-05-05-tjukanov-mapdreameraicartography.html","")]]]])
-    , (simpleTest "https://nyx-ai.github.io/stylegan2-flax-tpu/", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "HTML (19MB)"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","internet-archive"),("link-icon-type","svg")]) [Code ("",[],[]) "/doc/www/nyx-ai.github.io/a95f4c42e4300722b1adcf0f494ac943437fcc56.html"] ("/doc/www/nyx-ai.github.io/a95f4c42e4300722b1adcf0f494ac943437fcc56.html","")]]]])
-    , (simpleTest "/doc/ai/anime/danbooru/2019-02-10-stylegan-holo-handselectedsamples.zip", [])
-    , (simpleTest "/doc/anime/2019-05-06-stylegan-malefaces-1ksamples.tar", [])
-    , (simpleTest "/doc/ai/anime/danbooru/2018-09-22-progan-holofaces-topdecile.tar.xz", [])
-    , (simpleTest "http://dev.kanotype.net:8003/deepdanbooru/", [])
-    , (simpleTest "https://x.com/AxSauer/status/1524325956030275586", [Div ("",["aux-links-transclude-file"],[]) [Para [Link ("",["id-not","include-content"],[]) [Code ("",[],[]) "/doc/www/localhost/a45010d731b0e6b20e5594567edcbb6978be49ab.html"] ("https://x.com/AxSauer/status/1524325956030275586","")]]])
-    , (simpleTest "https://en.wikipedia.org/wiki/Amber_Heard",
-       [Div ("",["aux-links-transclude-file"],[]) [Para [Link ("",["id-not","include-content"],[("include-template","$annotationFileIncludeTemplate")]) [RawInline (Format "HTML") "Amber Heard"] ("https://en.wikipedia.org/wiki/Amber_Heard","")]]])
-    , (simpleTest "https://en.wikipedia.org/wiki/Category:American_Quakers",
-       [Div ("",["aux-links-transclude-file"],[]) [Para [Link ("",["id-not","include-content"],[]) [RawInline (Format "HTML") "Category:American Quakers"] ("https://en.wikipedia.org/wiki/Category:American_Quakers","")]]])
-    , (simpleTest "https://www.youtube.com/watch?v=D2zjc--sDaY", [Div ("",["aux-links-transclude-file"],[]) [Para [Link ("",["link-annotated-not","include-content","width-full"],[]) [Code ("",[],[]) "https://www.youtube.com/watch?v=D2zjc--sDaY"] ("https://www.youtube.com/watch?v=D2zjc--sDaY","")]]])
-    , (simpleTest "https://www.reddit.com/r/MediaSynthesis/comments/tiil1b/xx_waifu_01_xx_loop_by_squaremusher/", [])
-    , (simpleTest "https://caniuse.com/?search=text-wrap%3A%20pretty", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "External Link"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","CanI"),("link-icon-type","text,sans,quad"),("link-icon-color","#c75000")]) [RawInline (Format "HTML") "text-wrap: pretty"] ("https://caniuse.com/?search=text-wrap%3A%20pretty","")]]]])
-    , (simpleTest "https://www.mdpi.com/2073-4409/10/7/1740/htm", [])
-    , (simpleTest "/doc/ai/anime/danbooru/2020-05-31-danbooru2019-palm-handannotations-export.jsonl", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "JSON Lines"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","txt"),("link-icon-type","svg")]) [Code ("",[],[]) "/doc/ai/anime/danbooru/2020-05-31-danbooru2019-palm-handannotations-export.jsonl"] ("/doc/ai/anime/danbooru/2020-05-31-danbooru2019-palm-handannotations-export.jsonl","")]]]])
-    , (simpleTest "/doc/touhou/2013-c85-download.json", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "JSON"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","txt"),("link-icon-type","svg")]) [Code ("",[],[]) "/doc/touhou/2013-c85-download.json"] ("/doc/touhou/2013-c85-download.json","")]]]])
-    , (simpleTest "/doc/personal/rss-subscriptions.opml", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "OPML"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","txt"),("link-icon-type","svg")]) [Code ("",[],[]) "/doc/personal/rss-subscriptions.opml"] ("/doc/personal/rss-subscriptions.opml","")]]]])
-    , (simpleTest "/doc/psychology/spaced-repetition/gwern-forgetting-curves.svg", [Div ("",["aux-links-transclude-file"],[]) [Para [Link ("",["link-annotated-not","include-content","width-full"],[]) [Code ("",[],[]) "/doc/psychology/spaced-repetition/gwern-forgetting-curves.svg"] ("/doc/psychology/spaced-repetition/gwern-forgetting-curves.svg","")]]])
-    , (simpleTest "/doc/zeo/2018-01-04-zeo-zma.csv", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "CSV"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","csv"),("link-icon-type","svg")]) [Code ("",[],[]) "/doc/zeo/2018-01-04-zeo-zma.csv"] ("/doc/zeo/2018-01-04-zeo-zma.csv","")]]]])
-    , (simpleTest "/doc/existential-risk/2011-05-10-givewell-holdenkarnofskyjaantallinn.doc", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "Word document"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","word-doc"),("link-icon-type","svg"),("link-icon-color","#277dd4")]) [Code ("",[],[]) "/doc/existential-risk/2011-05-10-givewell-holdenkarnofskyjaantallinn.doc"] ("/doc/existential-risk/2011-05-10-givewell-holdenkarnofskyjaantallinn.doc","")]]]])
-    , (simpleTest "/doc/ai/music/2019-10-23-gwern-gpt2-folkrnn-irishmusic-samples.txt", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "text"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","txt"),("link-icon-type","svg")]) [Code ("",[],[]) "/doc/ai/music/2019-10-23-gwern-gpt2-folkrnn-irishmusic-samples.txt"] ("/doc/ai/music/2019-10-23-gwern-gpt2-folkrnn-irishmusic-samples.txt","")]]]])
-    , (simpleTest "/doc/personal/google-cse.xml", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "XML"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","alphabet"),("link-icon-type","svg"),("link-icon-color","#4285f4")]) [Code ("",[],[]) "/doc/personal/google-cse.xml"] ("/doc/personal/google-cse.xml","")]]]])
-    , (simpleTest "/doc/darknet-market/2013-05-05-moore-bitcoinexchangesurvivalanalysis.R", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "R code"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","code"),("link-icon-type","svg"),("link-icon-color","#1b61b1")]) [Code ("",[],[]) "/doc/darknet-market/2013-05-05-moore-bitcoinexchangesurvivalanalysis.R"] ("/doc/darknet-market/2013-05-05-moore-bitcoinexchangesurvivalanalysis.R","")]]]])
-    , (simpleTest "/static/css/default.css", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "CSS"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","code"),("link-icon-type","svg"),("link-icon-color","#2465f1")]) [Code ("",[],[]) "/static/css/default.css"] ("/static/css/default.css","")]]]])
-    , (simpleTest "/haskell/mnemo4.hs", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "Haskell"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","code"),("link-icon-type","svg"),("link-icon-color","#5e5086")]) [Code ("",[],[]) "/haskell/mnemo4.hs"] ("/haskell/mnemo4.hs","")]]]])
-    , (simpleTest "/static/js/Hyphenopoly.js", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "JavaScript"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","code"),("link-icon-type","svg"),("link-icon-color","#f6da19")]) [Code ("",[],[]) "/static/js/Hyphenopoly.js"] ("/static/js/Hyphenopoly.js","")]]]])
-    , (simpleTest "/doc/psychology/2023-kekecs-supplement-rsos191375_si_001.docx", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "Word document"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","word-doc"),("link-icon-type","svg"),("link-icon-color","#277dd4")]) [Code ("",[],[]) "/doc/psychology/2023-kekecs-supplement-rsos191375_si_001.docx"] ("/doc/psychology/2023-kekecs-supplement-rsos191375_si_001.docx","")]]]])
-    , (simpleTest "/doc/psychology/willpower/2019-01-21-eric-socksurvey.ods", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "OpenOffice spreadsheet"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","spreadsheet"),("link-icon-type","svg"),("link-icon-color","#0586ce")]) [Code ("",[],[]) "/doc/psychology/willpower/2019-01-21-eric-socksurvey.ods"] ("/doc/psychology/willpower/2019-01-21-eric-socksurvey.ods","")]]]])
-    , (simpleTest "/doc/dual-n-back/2012-05-30-kundu-dnbrapm.xls", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "spreadsheet"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","spreadsheet"),("link-icon-type","svg"),("link-icon-color","#1ba566")]) [Code ("",[],[]) "/doc/dual-n-back/2012-05-30-kundu-dnbrapm.xls"] ("/doc/dual-n-back/2012-05-30-kundu-dnbrapm.xls","")]]]])
-    , (simpleTest "/doc/genetics/heritable/2015-polderman-supplement-2.xlsx", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "spreadsheet"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","spreadsheet"),("link-icon-type","svg"),("link-icon-color","#1ba566")]) [Code ("",[],[]) "/doc/genetics/heritable/2015-polderman-supplement-2.xlsx"] ("/doc/genetics/heritable/2015-polderman-supplement-2.xlsx","")]]]])
-    , (simpleTest "/doc/ai/music/2019-12-22-gpt2-preferencelearning-gwern-abcmusic.patch", [Div ("",["aux-links-transclude-file"],[]) [Div ("",["collapse"],[]) [Para [Strong [Str "View ",Str "patch"],Str ":"],Para [Link ("",["id-not","link-annotated-not","include-content","include-lazy"],[("link-icon","code"),("link-icon-type","svg")]) [Code ("",[],[]) "/doc/ai/music/2019-12-22-gpt2-preferencelearning-gwern-abcmusic.patch"] ("/doc/ai/music/2019-12-22-gpt2-preferencelearning-gwern-abcmusic.patch","")]]]])
-    ]
-  where
-        fromJustWithError :: (Show k, Ord k) => k -> Maybe v -> v
-        fromJustWithError key maybeVal =
-          fromMaybe (error $ "fromJust: Key not found: " ++ show key) maybeVal
+isFileViewable f = isLocal (T.pack f) && (anySuffix f C.fileViewableExtensions || isMediaViewable f)
 
 -- annotations, like </face>, often link to specific sections or anchors, like 'I clean the data with [Discriminator Ranking](#discriminator-ranking)'; when transcluded into other pages, these links are broken. But we don't want to rewrite the original abstract as `[Discriminator Ranking](/face#discriminator-ranking)` to make it absolute, because that screws with section-popups/link-icons! So instead, when we write out the body of each annotation inside the link bibliography, while we still know what the original URL was, we traverse it looking for any links starting with '#' and rewrite them to be absolute:
 -- WARNING: because of the usual RawBlock/Inline(HTML) issues, reading with Pandoc doesn't help - it just results in RawInline elements which still need to be parsed somehow. I settled for a braindead string-rewrite; in annotations, there shouldn't be *too* many cases where the href=# pattern shows up without being a div link…
@@ -866,11 +799,10 @@ rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
 findDuplicatesURLsByAffiliation :: Metadata -> [(String, [String])]
 findDuplicatesURLsByAffiliation md = let urls  = nubOrd . filter ('.' `elem`) $ map (\(u,_) -> u) $ M.toList md
                                          urlDB = M.fromListWith (++) $ map (\u -> (takeWhile (/= '#') u, [u])) urls
-                                         affiliationURLPatterns = (map (\org -> "#"++org) Config.LinkID.affiliationAnchors) ++
-                                                                   (map (\org -> "org="++org) Config.LinkID.affiliationAnchors)
-                                         affiliationWhitelist = ["page=", "lilianweng.github.io"]
+                                         affiliationURLPatterns = (map (\org -> "#"++org) CLID.affiliationAnchors) ++
+                                                                   (map (\org -> "org="++org) CLID.affiliationAnchors)
                                          affiliationURLs = M.filter (\vs -> any (\v -> anyInfix v affiliationURLPatterns) vs) urlDB
-                                     in M.toList $ M.filter (\v -> length (filter (\v' -> not (anyInfix v' affiliationWhitelist)) v) > 1) affiliationURLs
+                                     in M.toList $ M.filter (\v -> length (filter (\v' -> not (anyInfix v' C.duplicateAffiliationWhitelist)) v) > 1) affiliationURLs
 
 -- how do we handle files with appended data, which are linked like '/doc/reinforcement-learning/model-free/2020-bellemare.pdf#google' but exist as files as '/doc/reinforcement-learning/model-free/2020-bellemare.pdf'? We can't just look up the *filename* because it's missing the # fragment, and the annotation is usually for the full path including the fragment. If a lookup fails, we fallback to looking for any annotation with the file as a *prefix*, and accept the first match.
 lookupFallback :: Metadata -> String -> (FilePath, MetadataItem)
