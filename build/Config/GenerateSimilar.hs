@@ -2,6 +2,10 @@ module Config.GenerateSimilar where
 
 import Data.List (isPrefixOf, isSuffixOf)
 
+-- how much to hit our API per generateSimilarLinks invocation:
+maxEmbedAtOnce :: Int
+maxEmbedAtOnce = 500
+
 -- how many results do we want?
 bestNEmbeddings :: Int
 bestNEmbeddings = 20

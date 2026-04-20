@@ -11,17 +11,15 @@ import qualified Data.Map.Strict as M (elems, filter, fromList, lookup, toList)
 import qualified Data.Set as S (empty, fromList, member, notMember, Set)
 import System.Environment (getArgs)
 
-import qualified Config.GenerateSimilar as C (bestNEmbeddings, maxDistance)
-import qualified Config.Misc as CM (cd)
 
-import qualified GenerateSimilar as GS (Embeddings, EmbeddingIndex, embed, expireMatches, embeddings2Index, lookupPathK, missingEmbeddings, pruneEmbeddings, readEmbeddings, seriateGreedy, similaritemExistsP, stripEmbedding, writeEmbeddings, writeOutMatch)
 import LinkBacklink (Backlinks, readBacklinksDB)
 import LinkMetadata (readLinkMetadata, sortItemPathDateModified)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Utils (printGreen)
 
-maxEmbedAtOnce :: Int
-maxEmbedAtOnce = 1000
+import qualified GenerateSimilar as GS (Embeddings, EmbeddingIndex, embed, expireMatches, embeddings2Index, lookupPathK, missingEmbeddings, pruneEmbeddings, readEmbeddings, seriateGreedy, similaritemExistsP, stripEmbedding, writeEmbeddings, writeOutMatch)
+import qualified Config.GenerateSimilar as C (bestNEmbeddings, maxDistance, maxEmbedAtOnce)
+import qualified Config.Misc as CM (cd)
 
 data Mode = MissingOnly | EmbedOnly | RewriteAll deriving (Eq, Show)
 
@@ -49,7 +47,7 @@ main = do
   edb <- GS.readEmbeddings
   printGreen $ "Read databases. Mode: " ++ show mode
 
-  let todo = take maxEmbedAtOnce $ missingEmbeddingsByRecency md edb annotatedPaths
+  let todo = take C.maxEmbedAtOnce $ missingEmbeddingsByRecency md edb annotatedPaths
       todoLinks = map fst todo
       newlyEmbedded = S.fromList todoLinks
 

@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-04-19 19:25:14 gwern"
+# When:  Time-stamp: "2026-04-20 22:55:02 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -930,6 +930,8 @@ Olympic Odes
 Ben Chess - Crusoe
 - "https://godplaysdice.blogspot.com/2009/09/hidden-mathematics-of-bathrooms.html <em>God Plays Dice</em>: The hidden mathematics of bathrooms"
 The hidden mathematics of bathrooms
+- "https://www.reddit.com/r/OpenAI/comments/1srat00/image_20_is_now_online_on_chatgpt_and_its/ Reddit—Please wait for verification"
+""
 
 """
 

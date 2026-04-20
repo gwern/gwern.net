@@ -1,7 +1,7 @@
 {- Config.LinkMetadata: config data, unit-tests, for LinkMetadata
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2026-04-19 20:19:39 gwern"
+When:  Time-stamp: "2026-04-20 23:42:14 gwern"
 License: CC-0
 -}
 
@@ -15,20 +15,8 @@ import Text.Pandoc (Format(..), Block(Div, Para), Inline(Link, Str, Code, Strong
 import LinkMetadataTypes (ArchiveMetadata, Metadata, MetadataItem)
 
 annotationClasses, positiveAnnotationClasses :: [T.Text]
-annotationClasses =
-  [ "link-annotated-not"
-  , "link-annotated"
-  , "link-annotated-partial"
-  , "image-annotated"
-  , "image-annotated-not"
-  , "image-annotated-partial"
-  ]
-positiveAnnotationClasses =
-  [ "link-annotated"
-  , "link-annotated-partial"
-  , "image-annotated"
-  , "image-annotated-partial"
-  ]
+annotationClasses = ["link-annotated-not", "link-annotated", "link-annotated-partial", "image-annotated", "image-annotated-not", "image-annotated-partial"]
+positiveAnnotationClasses = ["link-annotated", "link-annotated-partial", "image-annotated", "image-annotated-partial"]
 
 -- do not prefetch large URLs:
 maxPrefetchBytes :: Integer
@@ -65,9 +53,10 @@ fileViewableExtensions = [".html", ".pdf", ".txt"]
 badDOISubstrings :: [String]
 badDOISubstrings = ["–", "—", " ", ",", "{", "}", "!", "@", "#", "$", "\"", "'", "arxiv", ".org", "http"]
 
+-- NOTE: '<' as a leading, and '>' as a trailing char, can be valid in a title due to HTML (especially italics); closed-parenthesis is a valid trailing character due to years like '<em>Film</em> (2012)'; open-parenthesis is valid leading character due to overly-cute titles (eg. "(Re)Considering Personality in Criminological Research"); '+' is a valid trailing character due to names like 'Google+' or 'C++'
 badTitleLeadingChars, badTitleTrailingChars :: String
-badTitleLeadingChars = "<\\;,_~=-({"
-badTitleTrailingChars = ">\\;,_~=+-)}:"
+badTitleLeadingChars = "\\;,_~=-{"
+badTitleTrailingChars = "\\;,_~=+-}:"
 
 badAuthorSubstrings :: [String]
 badAuthorSubstrings = [";", "&", "?", "!", " >", "< ", " <"]

@@ -3532,4 +3532,4 @@ authorWpLinkDB = setLike
     , "Nadine Dupérré", "Danica Kragic", "Aude Billard", "Thierry Depaulis", "Jorge Nuno Silva", "Eddie Duggan", "David Parlett"
     , "Bertram Gawronski", "Fei-Fei Li", "Euan Ashley", "John A. Long", "Elga Mark-Kurik",  "Per E. Ahlberg"
     , "Roger Jones", "Kate Trinajstic", "Hervey M. Cleckley", "May Berenbaum", "American Psychological Association"
-    , "Alfred Bester", "Martyn Thomas", "Nina Vasan", "Max H. Bazerman", "William Yang Wang"]
+    , "Alfred Bester", "Martyn Thomas", "Nina Vasan", "Max H. Bazerman", "William Yang Wang", "Larry Tesler"]
