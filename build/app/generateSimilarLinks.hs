@@ -1,106 +1,236 @@
 #!/usr/bin/env runghc
+{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Main where
 
-import Control.Monad (unless, when, filterM)
+import Control.Monad (filterM, when)
 import Data.Containers.ListUtils (nubOrd)
-import Data.List (isSuffixOf, sort)
-import Data.List.Split (chunksOf)
-import qualified Control.Monad.Parallel as Par (mapM_)
+import Data.List (isSuffixOf)
+import qualified Data.Map.Strict as M
+import qualified Data.Set as S
 import System.Environment (getArgs)
-import qualified Data.Map.Strict as M (fromList, lookup, filter, toList)
 
-import GenerateSimilar (embed, embeddings2Forest, findN, missingEmbeddings, readEmbeddings, similaritemExistsP, writeEmbeddings, writeOutMatch, pruneEmbeddings, expireMatches, sortSimilars, readListSortedMagic)
-import qualified Config.GenerateSimilar as C (bestNEmbeddings, iterationLimit)
-import LinkBacklink (readBacklinksDB)
+import qualified Config.GenerateSimilar as C
+  ( bestNEmbeddings
+  , maxDistance
+  )
+import qualified Config.Misc as CM (cd)
+
+import qualified GenerateSimilar as GS
+  ( Embeddings
+  , EmbeddingIndex
+  , embed
+  , expireMatches
+  , embeddings2Index
+  , lookupPathK
+  , missingEmbeddings
+  , pruneEmbeddings
+  , readEmbeddings
+  , seriateGreedy
+  , similaritemExistsP
+  , stripEmbedding
+  , writeEmbeddings
+  , writeOutMatch
+  )
+import LinkBacklink (Backlinks, readBacklinksDB)
 import LinkMetadata (readLinkMetadata, sortItemPathDateModified)
+import LinkMetadataTypes (Metadata, MetadataItem)
 import Utils (printGreen)
-import qualified Config.Misc (cd)
 
 maxEmbedAtOnce :: Int
 maxEmbedAtOnce = 2000
 
+data Mode
+  = MissingOnly
+  | EmbedOnly
+  | RewriteAll
+  deriving (Eq, Show)
+
+parseMode :: [String] -> Mode
+parseMode [] = MissingOnly
+parseMode ["--update-only-missing-embeddings"] = MissingOnly
+parseMode ["--only-embed"] = EmbedOnly
+parseMode ["--all"] = RewriteAll
+parseMode ["--rewrite-all"] = RewriteAll
+parseMode args =
+  error $ "generateSimilarLinks: unrecognized arguments: " ++ show args ++
+          "; supported modes are [], --update-only-missing-embeddings, --only-embed, --all, --rewrite-all"
+
 main :: IO ()
-main = do Config.Misc.cd
-          md  <- readLinkMetadata
-          -- prioritize the most recently modified/added non-index items:
-          let mdl = filter (\f -> not (head f == '/' && "/index" `isSuffixOf` f)) $ map fst $ reverse $ sortItemPathDateModified $ M.toList $
-                M.filter (\(_,_,_,_,_,_,abst) -> abst /= "") md -- to iterate over the annotation database's URLs, and skip outdated URLs still in the embedding database
-          mdlMissing <- filterM (fmap not . similaritemExistsP) mdl --fmap (take maxEmbedAtOnce) $ filterM (fmap not . similaritemExistsP) mdl
-          bdb <- readBacklinksDB
-          edb <- readEmbeddings
-          let edbDB = M.fromList $ map (\(a,b,c,d,e) -> (a,(b,c,d,e))) edb
-          printGreen "Read databases."
+main = do
+  CM.cd
 
-          -- update for any missing embeddings, and return updated DB for computing distances & writing out fragments:
-          let todo = take maxEmbedAtOnce $ reverse $ sort $ missingEmbeddings md edb
-          let todoLinks = map fst todo -- just the paths
-          edb'' <- if null todo then printGreen "All databases up to date." >> return edb else
-                     do
-                       printGreen $ "Embedding…\n" ++ unlines (map show todo)
-                       newEmbeddings <- mapM (embed edb md bdb) todo
-                       printGreen "Generated embeddings."
-                       let edb' = nubOrd (edb ++ newEmbeddings)
-                       -- clean up by removing any outdated embeddings whose path/URL no longer corresponds to any annotations (typically because renamed):
-                       let edb'' = pruneEmbeddings md edb'
-                       writeEmbeddings edb''
-                       printGreen "Wrote embeddings."
-                       return edb''
+  args <- getArgs
+  let !mode = parseMode args
 
-          -- if we are only updating the embeddings, then we stop there and do nothing more. (This
-          -- is useful for using `inotifywait` (from the `inotifytools` Debian package) to 'watch' the
-          -- GTX databases for new entries, and immediately embed them then & there, so
-          -- `preprocess-markdown.hs`'s single-shot mode gets updated quickly with recently-written
-          -- annotations, instead of always waiting for the nightly rebuild. When doing batches of
-          -- new annotations, they are usually all relevant to each other, but won't appear in the
-          -- suggested-links.)
-          --
-          -- eg. in a crontab, this would work:
-          -- $ `@reboot screen -d -m -S "embed" bash -c 'cd ~/wiki/; while true; do inotifywait ~/wiki/metadata/*.gtx -e attrib && sleep 10s && date && runghc -istatic/build/ ./static/build/app/generateSimilarLinks.hs --only-embed; done'`
-          --
-          -- [ie.: 'at boot, start a background daemon which monitors the annotation files and
-          -- whenever one is modified, kill the monitor, wait 10s, and check for new annotations to
-          -- embed & save; if nothing, exit & restart the monitoring.']
-          args <- getArgs
-          when (args /= ["--only-embed"] && args /= ["--update-only-missing-embeddings"] && args /= []) $
-            error $ "generateSimilarLinks: unrecognized arguments, erroring out; args were: " ++ show args
-          -- Otherwise, we keep going & compute all the suggestions.
-          -- rp-tree supports serializing the tree to disk, but unclear how to update it, and it's fast enough to construct (?) that it's not a bottleneck, so we recompute it from the embeddings every time.
-          ddb <- embeddings2Forest edb''
-          sortDB <- readListSortedMagic
-          unless (args == ["--only-embed"]) $ do
+  md <- readLinkMetadata
+  let annotatedPaths = annotatedMetadataPaths md
 
-              printGreen $ "Begin computing & writing out " ++ show (length mdlMissing) ++ " missing similarity-rankings…"
-              let mdlMissingChunks = chunksOf 10 mdlMissing
-              mapM_
-                    (mapM_ (\f ->       case M.lookup f edbDB of
-                                                 Nothing        -> return ()
-                                                 Just (b,c,d,e) -> do
-                                                                      let (path,hits) = findN ddb C.bestNEmbeddings C.iterationLimit Nothing (f,b,c,d,e)
-                                                                      -- rerank the _n_ matches to put them into a more internally-coherent ordering by pairwise distance minimization, rather than merely minimizing distance to the target URL:
-                                                                      hitsSorted <- sortSimilars edb sortDB (head hits) hits
-                                                                      let nmatchesSorted = (path, hitsSorted)
-                                                                      when (f `elem` todoLinks) $ expireMatches (snd nmatchesSorted)
-                                                                      putStrLn $ "gSL.nmatchesSorted: " ++ show nmatchesSorted
-                                                                      writeOutMatch md bdb nmatchesSorted
-                        )) mdlMissingChunks
+  bdb <- readBacklinksDB
+  edb <- GS.readEmbeddings
+  printGreen $ "Read databases. Mode: " ++ show mode
 
-              printGreen "Wrote out missing."
-              unless (args == ["--update-only-missing-embeddings"]) $ do
-                let chunkSize = 500
-                let mdlChunks = chunksOf chunkSize mdlMissing
-                printGreen ("Rewriting all embeddings:" ++ show mdlChunks)
-                printGreen "Rewriting all edb''…"
-                Par.mapM_ (writeOutMatch md bdb . findN ddb C.bestNEmbeddings C.iterationLimit Nothing) edb''
-                printGreen "Rewriting all mdlChunks…"
-                Par.mapM_ (mapM_ (\f ->
-                                    case M.lookup f edbDB of
-                                       Nothing        -> return ()
-                                       Just (b,c,d,e) -> do let (path,hits) = findN ddb C.bestNEmbeddings C.iterationLimit Nothing (f,b,c,d,e)
-                                                            hitsSorted <- sortSimilars edb sortDB (head hits) hits
-                                                            let nmatchesSorted = (path, hitsSorted)
-                                                            writeOutMatch md bdb nmatchesSorted
-                                      ))
-                  mdlChunks
-                printGreen "Done."
+  let todo = take maxEmbedAtOnce $ missingEmbeddingsByRecency md edb annotatedPaths
+      todoLinks = map fst todo
+      newlyEmbedded = S.fromList todoLinks
+
+  edbUpdated <- updateEmbeddings md bdb edb todo
+  let compactEmbeddings = map GS.stripEmbedding $ GS.pruneEmbeddings md edbUpdated
+      embeddedPaths = embeddingPathSet compactEmbeddings
+
+  case mode of
+    EmbedOnly ->
+      printGreen "Updated embeddings only."
+
+    MissingOnly -> do
+      let !ix = GS.embeddings2Index compactEmbeddings
+      pathsMissingSimilar <- filterM (fmap not . GS.similaritemExistsP) annotatedPaths
+
+      let pathsRequested = nubOrd (todoLinks ++ pathsMissingSimilar)
+          pathsToWrite = filter (`S.member` embeddedPaths) pathsRequested
+          pathsToWriteSet = S.fromList pathsToWrite
+          skipped = length pathsRequested - length pathsToWrite
+
+      printGreen $
+        "Begin computing & writing out " ++ show (length pathsToWrite) ++
+        " missing or newly-embedded similarity-rankings" ++
+        (if skipped == 0 then "" else " (skipping " ++ show skipped ++ " without embeddings)") ++
+        "…"
+
+      expired <- fmap concat $
+        mapM (writeSimilarForPath md bdb ix newlyEmbedded pathsToWriteSet) pathsToWrite
+
+      let reciprocalPaths = nubOrd $
+            filter (\p -> p `S.member` embeddedPaths && p `S.notMember` pathsToWriteSet) expired
+
+      when (not $ null reciprocalPaths) $
+        printGreen $ "Rewriting " ++ show (length reciprocalPaths) ++
+                     " reciprocal similarity-rankings expired by new embeddings…"
+
+      mapM_ (writeSimilarForPath_ md bdb ix S.empty) reciprocalPaths
+      printGreen "Done."
+
+    RewriteAll -> do
+      let !ix = GS.embeddings2Index compactEmbeddings
+          targets = filter (`S.member` embeddedPaths) annotatedPaths
+
+      printGreen $
+        "Rewriting all similarity-rankings with exact linear-scan lookup: " ++ show (length targets)
+
+      mapM_ (writeSimilarForPath_ md bdb ix S.empty) targets
+      printGreen "Done."
+
+annotatedMetadataPaths :: Metadata -> [FilePath]
+annotatedMetadataPaths md =
+  filter (not . indexPath) $
+  map fst $
+  reverse $
+  sortItemPathDateModified $
+  M.toList $
+  M.filter (\(_, _, _, _, _, _, abst) -> abst /= "") md
+ where
+  indexPath :: FilePath -> Bool
+  indexPath f = not (null f) && head f == '/' && "/index" `isSuffixOf` f
+
+missingEmbeddingsByRecency
+  :: Metadata
+  -> GS.Embeddings
+  -> [FilePath]
+  -> [(FilePath, MetadataItem)]
+missingEmbeddingsByRecency md edb annotatedPaths =
+  let missingByPath = M.fromList $ GS.missingEmbeddings md edb
+  in [ (p, mi)
+     | p <- annotatedPaths
+     , Just mi <- [M.lookup p missingByPath]
+     ]
+
+updateEmbeddings
+  :: Metadata
+  -> Backlinks
+  -> GS.Embeddings
+  -> [(FilePath, MetadataItem)]
+  -> IO GS.Embeddings
+updateEmbeddings _ _ edb [] = do
+  printGreen "All embeddings up to date."
+  return edb
+updateEmbeddings md bdb edb todo = do
+  printGreen $ "Embedding…\n" ++ unlines (map show todo)
+  newEmbeddings <- mapM (GS.embed edb md bdb) todo
+  printGreen "Generated embeddings."
+
+  let edbMerged = mergeEmbeddingsByPath $ edb ++ newEmbeddings
+      edbPruned = GS.pruneEmbeddings md edbMerged
+
+  GS.writeEmbeddings edbPruned
+  printGreen "Wrote embeddings."
+  return edbPruned
+
+mergeEmbeddingsByPath :: GS.Embeddings -> GS.Embeddings
+mergeEmbeddingsByPath es =
+  M.elems $ M.fromList [(p, e) | e@(p, _, _, _, _) <- es]
+
+embeddingPathSet :: GS.Embeddings -> S.Set FilePath
+embeddingPathSet es =
+  S.fromList [p | (p, _, _, _, vec) <- es, p /= "", not (null vec)]
+
+writeSimilarForPath_
+  :: Metadata
+  -> Backlinks
+  -> GS.EmbeddingIndex
+  -> S.Set FilePath
+  -> FilePath
+  -> IO ()
+writeSimilarForPath_ md bdb ix newlyEmbedded path = do
+  _ <- writeSimilarForPath md bdb ix newlyEmbedded S.empty path
+  return ()
+
+writeSimilarForPath
+  :: Metadata
+  -> Backlinks
+  -> GS.EmbeddingIndex
+  -> S.Set FilePath
+  -> S.Set FilePath
+  -> FilePath
+  -> IO [FilePath]
+writeSimilarForPath md bdb ix newlyEmbedded protectedTargets path =
+  case similarMatches ix path of
+    Nothing ->
+      return []
+
+    Just nmatches@(_, hitsSorted) -> do
+      expired <-
+        if path `S.member` newlyEmbedded
+          then do
+            let reciprocalHits = filter (`S.notMember` protectedTargets) hitsSorted
+            expireExistingMatches reciprocalHits
+            return reciprocalHits
+          else return []
+
+      putStrLn $ "gSL.nmatchesSorted: " ++ show nmatches
+      GS.writeOutMatch md bdb nmatches
+      return expired
+
+expireExistingMatches :: [FilePath] -> IO ()
+expireExistingMatches paths = do
+  existing <- filterM GS.similaritemExistsP paths
+  GS.expireMatches existing
+
+similarMatches
+  :: GS.EmbeddingIndex
+  -> FilePath
+  -> Maybe (FilePath, [FilePath])
+similarMatches ix path =
+  let hits =
+        map fst $
+        filter ((< C.maxDistance) . snd) $
+        GS.lookupPathK ix C.bestNEmbeddings path
+
+      hitsSorted =
+        case hits of
+          []    -> []
+          h : _ -> GS.seriateGreedy ix hits h
+  in if null hitsSorted
+       then Nothing
+       else Just (path, hitsSorted)
+

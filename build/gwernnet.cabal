@@ -47,7 +47,6 @@ common gwern-common
               , random
               , regex-base
               , regex-tdfa
-              , rp-tree
               , split
               , stm
               , tagsoup
@@ -90,6 +89,7 @@ library
       Config.LinkID
       Config.LinkIcon
       Config.LinkLive
+      Config.LinkMetadata
       Config.LinkSuggester
       Config.Metadata.Author
       Config.Metadata.Format
@@ -98,6 +98,7 @@ library
       Config.Paragraph
       Config.Tags
       Config.Typography
+      Config.Utext
       Config.XOfTheDay
       Cycle
       GTX
@@ -168,3 +169,4 @@ executable changeTag
 executable generateSimilarLinks
   import: exe-common
   main-is: generateSimilarLinks.hs
+  ghc-options: -threaded -rtsopts
