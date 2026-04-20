@@ -1,7 +1,6 @@
 module Config.GenerateSimilar where
 
 import Data.List (isPrefixOf, isSuffixOf)
-import GHC.Word (Word64)
 
 -- how many results do we want?
 bestNEmbeddings :: Int
@@ -15,46 +14,31 @@ maximumLength = 32700
 minimumSuggestions :: Int
 minimumSuggestions = 3
 
--- prevent pathological loops by requesting no more than i times:
-iterationLimit :: Int
-iterationLimit = 6
-
 embeddingsPath :: String
 embeddingsPath = "metadata/embeddings.bin"
 
--- some weird cases: for example, “Estimating the effect-size of gene dosage on cognitive ability across the coding genome” is somehow close to *every* embedding...?
+-- in case of weird retrievals: for example, at one point, “Estimating the effect-size of gene dosage on cognitive ability across the coding genome” wsa somehow close to *every* embedding...?
 blackList :: String -> Bool
 blackList p = p `elem` blackListURLs
   || "/doc/" `isPrefixOf` p && "/index" `isSuffixOf` p
   || "/newsletter/20" `isPrefixOf` p
   || "/lorem" `isPrefixOf` p
 
+-- (Only used in 'blackList' but pulled out as a separate binding for testing.)
 -- Testing: `Test` as unique-list & valid URI (`isURIReference`)
-blackListURLs :: [String] -- TODO: experiment with removing the blacklist to see if the pathologies have gone away
-blackListURLs = ["/index", "/changelog", "/help"] -- ["https://www.biorxiv.org/content/10.1101/2020.04.03.024554.full",
-                --         "/doc/genetics/heritable/correlation/2019-kandler.pdf", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4210287/",
-                --         "https://www.wired.com/1996/12/ffglass/", "https://andrewmayne.com/2021/05/18/a-simple-method-to-keep-gpt-3-focused-in-a-conversation/",
-                --         "https://www.dutchnews.nl/2022/07/german-fighter-pilot-identified-after-79-years-from-dna-on-envelope/",
-                --         "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1065034/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2653069/",
-                --         "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2925254/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2998793/",
-                --         "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4763788/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4921196/",
-                --         "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6022844/", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8931369/",
-                --         "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9232116/", "https://www.statnews.com/2022/07/28/abandoned-technique-revived-in-effort-to-make-artificial-human-eggs/",
-                --         "https://www.thenationalnews.com/health/2022/09/07/woman-who-can-smell-parkinsons-helps-scientists-develop-new-test-for-condition/",
-                --         "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4898064/"]
+blackListURLs :: [String]
+blackListURLs = ["/index", "/changelog", "/help"]
 
-minDistance, maxDistance :: Double
+maxDistance :: Double
 maxDistance = 0.95 -- [chosen ad hoc by looking at a small sample and noting there seemed to be a cliff of relevancy at ~0.60 as of 2023-09-04 using text-embedding-ada-002 - WARNING: must be rechecked for every engine change!] [rechosen 2024-08-28 for new smaller truncated embedding]
-minDistance = 0.01 -- avoids self-matches and other odd errors
 
--- on directory pages, what should be the minimum number of auto-tags/clusters inferred before we bother to show the reader it?
--- Obviously, just 1 isn't very useful at all, but 2 might not be worth the overhead, and we usually use a '3' value.
-minTagAuto :: Int
-minTagAuto = 3
-
+-- tag title guessing of clusters
 -- after 30 titles, I can't imagine that you get much better at suggesting a tag name, and then it's just wasting tokens:
 maxTitlesForTagGuessing :: Int
 maxTitlesForTagGuessing = 30
 
-randSeed :: Word64
-randSeed = 23
+-- on directory pages, what should be the minimum number of auto-tags/clusters inferred before we bother to show the reader it?
+-- Obviously, just 1 isn't very useful at all, but 2 might not be worth the overhead, and we usually use a '3' value.
+-- (Used in 'generateDirectory.hs')
+minTagAuto :: Int
+minTagAuto = 3

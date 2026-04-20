@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-04-19 17:52:48 gwern"
+# When:  Time-stamp: "2026-04-20 01:43:23 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -204,9 +204,6 @@ else
     rm ~/METADATA.txt &> /dev/null || true
     TMP_CHECK=$(mktemp /tmp/"XXXXX.txt"); ./static/build/checkMetadata >> "$TMP_CHECK" 2>&1 && mv "$TMP_CHECK" ~/METADATA.txt || true &
 
-    bold "Checking embeddings database…"
-    ghci -istatic/build/ ./static/build/GenerateSimilar.hs  -e 'e <- readEmbeddings' &>/dev/null
-
     # duplicates a later check but if we have a fatal link error, we'd rather find out now rather than 30 minutes later while generating annotations:
     λ(){ gf -e 'href=""' -e 'href="!W"></a>' -e "href='!W'></a>" -- ./metadata/*.gtx || true; }
     wrap λ "Malformed empty link in annotations?"
@@ -246,6 +243,9 @@ else
                                          sort_by_lastmodified)"
 
     if [ -z "$SKIP_DIRECTORIES" ]; then
+        bold "Updating similar-links…"
+        generateSimilarLinks +RTS -N"$N" -RTS
+
         bold "Writing missing annotations to support link-bibliography/tag-directory updates…"
         # We add new annotations daily, but all the code in link-bib/tag-directory deal with only the current annotations which have been written out to disk as HTML snippets; thus, since that is done in the main compilation phase, the default would be that annotations would be omitted the first day and only appear the next time. This is annoying and manually working around it is even more tedious, so we provide a 'one-shot' missing-annotation mode and call that phase immediately before the lb/tag phase:
         hakyll build +RTS -N"$N" -RTS --annotation-missing-one-shot

@@ -3,37 +3,14 @@
 {-# LANGUAGE TupleSections #-}
 
 -- dependencies: pandoc, filestore, vector
--- Clean exact-scan rewrite of GenerateSimilar's embedding search/seriation core.
+-- exact-scan k-nearest neighbors lookup for GenerateSimilar's embedding search/seriation core.
 
 module GenerateSimilar where
 
-import Text.Pandoc
-  ( Block(BulletList, Para)
-  , Format(..)
-  , Inline(Link, RawInline, Span, Str, Strong)
-  , Pandoc(..)
-  , def
-  , nullMeta
-  , pandocExtensions
-  , readerExtensions
-  , readHtml
-  , runPure
-  , writeHtml5String
-  )
+import Text.Pandoc (Block(BulletList, Para), Format(..), Inline(Link, RawInline, Span, Str, Strong), Pandoc(..), def, nullMeta, pandocExtensions, readerExtensions, readHtml, runPure, writeHtml5String)
 import Text.Pandoc.Walk (walk)
 
-import qualified Data.Text as T
-  ( Text
-  , append
-  , intercalate
-  , isPrefixOf
-  , length
-  , pack
-  , strip
-  , take
-  , unlines
-  , unpack
-  )
+import qualified Data.Text as T (Text, append, intercalate, isPrefixOf, length, pack, strip, take, unlines, unpack)
 import qualified Data.Text.IO as TIO (readFile)
 
 import Control.Monad (foldM)
@@ -41,12 +18,12 @@ import Data.Containers.ListUtils (nubOrd)
 import qualified Data.Binary as DB (decodeFileOrFail, encodeFile)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import Data.List ((\\), intercalate, sort, sortBy)
-import qualified Data.Map.Strict as M
+import qualified Data.Map.Strict as M (difference, elems, empty, filter, insert, keys, lookup, fromList, member, notMember, restrictKeys, toList, withoutKeys, Map)
 import Data.Maybe (catMaybes, fromJust, mapMaybe)
 import Data.Ord (comparing)
-import qualified Data.Set as S
-import qualified Data.Vector as V
-import qualified Data.Vector.Unboxed as VU
+import qualified Data.Set as S (empty, insert, fromList, member, notMember, size, Set)
+import qualified Data.Vector as V (empty, foldl', fromList, imap, length, null, toList, (!), Vector)
+import qualified Data.Vector.Unboxed as VU (ifoldl', fromList, length, map, null, unsafeIndex, Vector)
 import Network.HTTP (urlEncode)
 import System.Directory (doesFileExist, removeFile, renameFile)
 import System.Exit (ExitCode(ExitFailure))
@@ -65,29 +42,9 @@ import LinkMetadataTypes (Metadata, MetadataItem)
 import Metadata.Author (authorsTruncateString)
 import Query (extractLinks, extractURLsAndAnchorTooltips)
 import Typography (typographyTransformTemporary)
-import Utils
-  ( anyPrefixT
-  , deleteMany
-  , kvDOI
-  , printRed
-  , replace
-  , safeHtmlWriterOptions
-  , sed
-  , simplifiedDoc
-  , simplifiedString
-  , trim
-  , writeUpdatedFile
-  )
+import Utils (anyPrefixT, deleteMany, kvDOI, printRed, replace, safeHtmlWriterOptions, sed, simplifiedDoc, simplifiedString, trim, writeUpdatedFile, printGreen)
 
-import qualified Config.GenerateSimilar as C
-  ( bestNEmbeddings
-  , blackList
-  , embeddingsPath
-  , maxDistance
-  , maxTitlesForTagGuessing
-  , maximumLength
-  , minimumSuggestions
-  )
+import qualified Config.GenerateSimilar as C (bestNEmbeddings, blackList, embeddingsPath, maxDistance, maxTitlesForTagGuessing, maximumLength, minimumSuggestions)
 import qualified Config.Misc as CM (cd, todayDay)
 
 --------------------------------------------------------------------------------
@@ -598,7 +555,7 @@ expireMatches = mapM_ (removeFile . fst . getSimilarLink)
 writeOutMatch :: Metadata -> Backlinks -> (String, [String]) -> IO ()
 writeOutMatch md bdb (p, matches) =
   if length matches < C.minimumSuggestions
-    then print ("GS.writeOutMatch: skipping " ++ p) >> return ()
+    then printGreen ("GS.writeOutMatch: skipping " ++ p)
     else case M.lookup p md of
       Nothing                  -> return ()
       Just (_, _, _, _, _, _, "") -> return ()
@@ -699,7 +656,7 @@ readListName = do
  where
   validateListName :: [([FilePath], String)] -> [([FilePath], String)]
   validateListName l =
-    let errors = filter (\(f, g) -> null g || length f < 1 || any null f) l
+    let errors = filter (\(f, g) -> null g || null f || any null f) l
     in if null errors then l else error ("validateListName: read file failed sanity check: " ++ show errors)
 
 writeListName :: ListName -> IO ()
@@ -727,7 +684,7 @@ writeListSortedMagic x = CM.cd >>
 sortTagByTopic :: Metadata -> String -> IO [FilePath]
 sortTagByTopic md tag = do
   edb <- readEmbeddings
-  let edbDB = M.fromList $ map (\(a, b, c, d, e) -> (a, (b, c, d, e))) $ map stripEmbedding edb
+  let edbDB = M.fromList $ map ((\ (a, b, c, d, e) -> (a, (b, c, d, e))) . stripEmbedding) edb
       mdl = M.filter (\(_, _, _, _, _, tags, abstract) -> tag `elem` tags && abstract /= "") md
       paths = M.keys mdl
       mdlSorted = filter (\(f, _) -> M.member f edbDB) $
@@ -809,8 +766,7 @@ sortSimilarsStartingWithNewestEdb _   _  _      [a]    = return [[a]]
 sortSimilarsStartingWithNewestEdb _   _  _      [a, b] = return [[a, b]]
 sortSimilarsStartingWithNewestEdb edb md sortDB items = do
   let edbDB = M.fromList $
-        map (\(a, b, c, d, e) -> (a, (b, c, d, e))) $
-        map stripEmbedding edb
+        map ((\ (a, b, c, d, e) -> (a, (b, c, d, e))) . stripEmbedding) edb
 
       md' = M.restrictKeys md $
         S.fromList $
