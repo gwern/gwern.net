@@ -1,10 +1,10 @@
 #!/usr/bin/env runghc
 {-# LANGUAGE OverloadedStrings #-}
 
--- link-titler.hs: add titles to bare links in a Markdown file using a database of link metadata
+-- linkTitler.hs: add titles to bare links in a Markdown file using a database of link metadata
 -- Author: Gwern Branwen
 -- Date: 2022-04-01
--- When:  Time-stamp: "2025-03-26 10:18:09 gwern"
+-- When:  Time-stamp: "2026-04-20 11:08:48 gwern"
 -- License: CC-0
 --
 -- Read a Markdown page, parse links out, look up their titles, generate a standard Gwern.net-style citation ('"Title", Author1 et al Year[a-z]'),

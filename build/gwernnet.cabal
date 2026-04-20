@@ -168,3 +168,8 @@ executable generateSimilarLinks
   import: exe-common
   main-is: generateSimilarLinks.hs
   ghc-options: -threaded -rtsopts
+
+executable linkTitler
+  import: exe-common
+  main-is: linkTitler.hs
+  ghc-options: -threaded -rtsopts
