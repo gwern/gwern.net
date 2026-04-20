@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-04-17 23:54:17 gwern"
+# When:  Time-stamp: "2026-04-19 19:25:14 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -17,7 +17,10 @@
 # Note: this does not attempt to add italics even where those are obviously intended/correct, due to the complexity of English italicization rules. That is handled in a separate script, </static/build/italicizer.py>. Both accept input on stdin or as an argument, thus they can be chained, like `echo "Title" | title-cleaner.py | italicizer.py`.
 
 import sys
+import json
+
 from openai import OpenAI
+
 client = OpenAI()
 
 if len(sys.argv) == 1:
@@ -25,18 +28,35 @@ if len(sys.argv) == 1:
 else:
     target = sys.argv[1]
 
-prompt = """
+PROMPT_PREFIX = """
 Task: Clean website titles parsed from <title> tags.
 If a title input is useless or meaningless or an error, print out the empty string `""` instead of the original title.
 If the title can be fixed, remove the junk (spam, cruft, boilerplate) from the title.
 If the title has obviously been truncated, end with an ellipsis "…". Drop words (but not phrases) which are mangled by truncation and do not guess them.
 Convert inline Markdown to HTML, like '*foo*' → '<em>foo</em>'; convert inline code to use '<code>'.
 Convert straight quotes/apostrophes to curly quotes.
-Section delimiters like '»' and '-' should be replaced by '§'; but preserve dashes inside bona fide titles.
+First remove boilerplate sections such as site name, domain, author, newsletter, publisher, and platform.
 Fix initial lowercase letters in titles. (Full titlecasing is optional.)
-If the title looks good, then print out the original title.
+If the title has no junk and needs no mechanical normalization, print the original title.
+Otherwise apply only the required normalizations.
 If you are unsure how to fix it, then simply print out the original title.
 Note that for additional context, the URL may be prepended; the URL often helps indicate that part of a title may be the website name, boilerplate, the author, etc.
+
+Strip author bylines, newsletter/blog names, and platform boilerplate from ALL titles:
+
+- "- by NAME"
+- "—by NAME"
+- "- NAME’s Substack"
+- "—NEWSLETTER"
+- ‘NAME on Substack: "TITLE" URL’
+
+Keep the word “Substack” only if it is part of the actual article title, e.g. “Scamming Substack?”.
+Do not wrap non-empty outputs in double quotes. Substack examples:
+
+- "https://knifepoint.substack.com/p/the-reluctant-grandmaster THE RELUCTANT GRANDMASTER" # obvious upcasing for emphasis
+The Reluctant Grandmaster
+- "https://benjamingrayzel.substack.com/p/erdos-659 Erdős #659 - by Benjamin Grayzel - Benjamin’s Substack" # strip author-site labels
+Erdős #659
 
 Task examples (note that few-shot examples may include comments after hashes to help explain the logic):
 
@@ -92,7 +112,7 @@ Stripe’s first carbon removal purchases
 ""
 - "Page not found - PsyPost - Psychology News"
 ""
-- "Japanese north\226\128\147south gradient in IQ predicts differences in stature, skin color, income, and homicide rate - ScienceDirect\nScienceDirect"
+- "Japanese north\\226\\128\\147south gradient in IQ predicts differences in stature, skin color, income, and homicide rate - ScienceDirect\\nScienceDirect"
 Japanese north–south gradient in IQ predicts differences in stature, skin color, income, and homicide rate
 - "Notion – The all-in-one workspace for your notes, tasks, wikis, and databases."
 ""
@@ -102,7 +122,7 @@ It’s (Still) Really Hard for Robots to Autonomously Do Household Chores
 ""
 - "æ°æ°æ®é"
 ""
-- "dnmarchives directory listing\nInternet Archive logo\nDonate icon" # proper noun is lowercase
+- "dnmarchives directory listing\\nInternet Archive logo\\nDonate icon" # proper noun is lowercase
 <code>dnmarchives</code> directory listing
 - "Page not found : Stanford University"
 ""
@@ -120,11 +140,11 @@ Humboldt & Sonoma counties: Six arrested, 3,000 marijuana plants and 44 weapons 
 Aurora’s Approach to Development. Self-driving cars are an applied…
 - "An open letter to Netflix from the authors of the de-anonymization paper « 33 Bits of Entropy"
 An open letter to Netflix from the authors of the de-anonymization paper
-- "It\226\128\153s Probably Not Lithium\nspotify-podcast-badge-wht-blk-165x40"
+- "It\\226\\128\\153s Probably Not Lithium\\nspotify-podcast-badge-wht-blk-165x40"
 It’s Probably Not Lithium
 - "https://vole.wtf/scunthorpe-sans/ Scunthorpe Sans \\240\\159\\151\\175\\240\\159\\154\\171 profanity-blocking font"
 Scunthorpe Sans: profanity-blocking font
-- "&#13;\n\tMedicine &amp; Science in Sports &amp; Exercise&#13;"
+- "&#13;\\n\\tMedicine &amp; Science in Sports &amp; Exercise&#13;"
 ""
 - "Nadia Asparouhova How to do the jhanas" # strip author
 How to do the jhanas
@@ -536,7 +556,7 @@ Qitmir (dog)
 After 12 years of writing about bitcoin, here’s how my thinking has changed
 - "Spotmicro—robot dog by KDY0523—Thingiverse"
 Spotmicro—robot dog
-- "A Very Private Life—Nikolai Tolstoy Remembers Patrick O’Brian by Unseen Histories - Unseen Histories"
+- "A Very Private Life—Nikolai Tolstoy Remembers Patrick O’Brian by Unseen Histories - Unseen Histories" # not a section but a subtitle
 A Very Private Life—Nikolai Tolstoy Remembers Patrick O’Brian
 - "“AI” on a Calculator: Part 1 | Blog"
 “AI” on a Calculator: Part 1
@@ -840,30 +860,30 @@ About Us
 ""
 - "https://axiommath.ai/territory/from-seeing-why-to-checking-everything Axiom"
 ""
-- https://tinyhack.com/2014/03/12/implementing-a-web-server-in-a-single-printf-call/ Implementing a web server in a single printf() call - Tinyhack.com"
+- "https://tinyhack.com/2014/03/12/implementing-a-web-server-in-a-single-printf-call/ Implementing a web server in a single printf() call - Tinyhack.com"
 Implementing a web server in a single printf() call
 - "https://dmvaldman.github.io/rooklift/ Writings"
 ""
 - "https://dmvaldman.github.io/rooklift/ RookLift - Writings (Training my watch to track intelligence)"
 RookLift - Training my watch to track intelligence
-- https://www.sfweekly.com/archives/the-worst-run-big-city-in-the-u-s/article_ff893b10-e35a-57cc-a52b-47162048b2c8.html The Worst-Run Big City in the US | Archives"
+- "https://www.sfweekly.com/archives/the-worst-run-big-city-in-the-u-s/article_ff893b10-e35a-57cc-a52b-47162048b2c8.html The Worst-Run Big City in the US | Archives"
 The Worst-Run Big City in the US
 - "https://mchav.github.io/learning-better-decision-tree-splits/ Learning better decision tree splits—LLMs as Heuristics for Program Synthesis - Michael Chavinda - A collection of my thoughts on the various topics I find myself interested in."
 Learning better decision tree splits—LLMs as Heuristics for Program Synthesis
 - "https://secondthoughts.my/posts/projects/forecats/ second-thoughts/posts/projects/forecats/"
 ""
-- https://www.secretorum.life/p/japanese-death-poems <em>Japanese Death Poems</em> - by Roger’s Bacon - Secretorum"
-"<em>Japanese Death Poems</em>"
-- https://www.secretorum.life/p/japanese-death-poems-part-2 <em>Japanese Death Poems</em> (part 2)—by Roger’s Bacon"
-"<em>Japanese Death Poems</em> (part 2)"
-- https://www.presentandcorrect.com/blogs/blog/typography-on-pencils-1-5 Typography on Pencils, 1–5.—Present &amp; Correct"
+- "https://www.secretorum.life/p/japanese-death-poems <em>Japanese Death Poems</em> - by Roger’s Bacon - Secretorum"
+<em>Japanese Death Poems</em>
+- "https://www.secretorum.life/p/japanese-death-poems-part-2 <em>Japanese Death Poems</em> (part 2)—by Roger’s Bacon"
+<em>Japanese Death Poems</em> (part 2)
+- "https://www.presentandcorrect.com/blogs/blog/typography-on-pencils-1-5 Typography on Pencils, 1–5.—Present &amp; Correct"
 Typography on Pencils, 1–5
 - "https://krabat.menneske.dk/kkblog/2016/06/29/solved-auto-breaking-lines-in-epub-poetry-collections/ SOLVED… Auto-Breaking lines in ePub poetry collections! Well, sorta…—Kenneth Krabats 1000 stemmer"
 SOLVED… Auto-Breaking lines in ePub poetry collections! Well, sorta…
 - "https://sdleffler.github.io/RustTypeSystemTuringComplete/ Rust’s Type System is Turing-Complete - Recursive Descent into Madness - A countable set of sanities and insanities, by Shea Leffler."
 Rust’s Type System is Turing-Complete
-- https://us-climate.blogspot.com/2023/05/70f-road-trip-version-20-2023.html Brian B.'s Climate Blog - 70F Road Trip version 2.0 (2023)"
-"70F Road Trip version 2.0 (2023)"
+- "https://us-climate.blogspot.com/2023/05/70f-road-trip-version-20-2023.html Brian B.'s Climate Blog - 70F Road Trip version 2.0 (2023)"
+70F Road Trip version 2.0 (2023)
 - "https://jcdecker.blogspot.com/2017/04/tellers-magic-trick.html?m=1 Fortunate Son: Teller’s Magic Trick"
 Teller’s Magic Trick
 - "https://sampatt.com/blog/2025-12-13-my-grandma-was-a-fed-lessons-from-digitizing-hundreds-of-hours-of-childhood/ My Grandma Was a Fed—Lessons from Digitizing Hundreds of Hours of Childhood—Sam Patterson"
@@ -876,7 +896,7 @@ Mr Cogito And The Imagination by Zbigniew Herbert
 Microwave Smelter: 8 Steps (with Pictures)
 - "https://stephstiner.substack.com/p/inside-the-hot-girl-economy inside the hot girl economy—steph :)"
 Inside the hot girl economy
-- https://kotaku.com/pokemon-ken-sugimori-original-art-red-blue-gold-silver-1850352781 Two Decades Later, <em>Pokémon</em>’s Original Iconic Art Can Finally Be Seen In Its Full Glory—<em>Kotaku</em>"
+- "https://kotaku.com/pokemon-ken-sugimori-original-art-red-blue-gold-silver-1850352781 Two Decades Later, <em>Pokémon</em>’s Original Iconic Art Can Finally Be Seen In Its Full Glory—<em>Kotaku</em>"
 Two Decades Later, <em>Pokémon</em>’s Original Iconic Art Can Finally Be Seen In Its Full Glory
 - "I Don’™t Want to Hire Women—Clarissa’s Blog"
 I Don’t Want to Hire Women
@@ -890,7 +910,7 @@ An AI Agent Published a Hit Piece on Me—The Operator Came Forward
 howisFelix.today?
 - "https://apenwarr.ca/log/20260316 Every layer of review makes you 10x slower - apenwarr"
 Every layer of review makes you 10x slower
-- https://haskellforall.com/2026/03/a-sufficiently-detailed-spec-is-code Haskell for all: A sufficiently detailed spec is code"
+- "https://haskellforall.com/2026/03/a-sufficiently-detailed-spec-is-code Haskell for all: A sufficiently detailed spec is code"
 A sufficiently detailed spec is code
 - "ssrajadh/sentrysearch: Semantic search over videos using Gemini Embedding 2."
 ssrajadh/sentrysearch: Semantic search over videos using Gemini Embedding 2
@@ -899,30 +919,27 @@ Marriage over, €100,000 down the drain: the AI users whose lives were wrecked 
 - "https://projectzero.google/2015/06/what-is-good-memory-corruption.html What is a “good” memory corruption vulnerability? - Project Zero"
 What is a “good” memory corruption vulnerability?
 - "https://www.bartaking.com/zen-zomics/hyakujos-fox/ <em>Hyakujo’s Fox</em> : Bart King: King Cartoon Electric"
-"<em>Hyakujo’s Fox</em>"
+<em>Hyakujo’s Fox</em>
 - "https://theasc.com/articles/fantastic-voyage-creating-the-futurescape-for-the-fifth-element The American Society of Cinematographers"
 ""
 - "https://www.armand-dangour.com/pindaric-odes/ Olympic Odes - Armand D’Angour"
 Olympic Odes
 - "https://archiveofourown.org/works/82943941 archiveofourown.org"
 ""
-- "https://www.linkedin.com/in/ben-chess-69bba21 Ben Chess - Crusoe"
+- "https://www.linkedin.com/in/ben-chess-69bba21 Ben Chess - Crusoe" # Crusoe is Ben Chess's company, not the website (which is LinkedIn), so we keep it as non-boilerplate
 Ben Chess - Crusoe
-- "https://godplaysdice.blogspot.com/2009/09/hidden-mathematics-of-bathrooms.html "<em>God Plays Dice</em>: The hidden mathematics of bathrooms"
+- "https://godplaysdice.blogspot.com/2009/09/hidden-mathematics-of-bathrooms.html <em>God Plays Dice</em>: The hidden mathematics of bathrooms"
 The hidden mathematics of bathrooms
-- "https://knifepoint.substack.com/p/the-reluctant-grandmaster THE RELUCTANT GRANDMASTER"
-The Reluctant Grandmaster
 
-Task:
+"""
 
-Input title to clean:
-
-- """ + target + "\"\n"
+prompt = PROMPT_PREFIX + "\nTask:\n\nInput title to clean:\n\n- " + json.dumps(target, ensure_ascii=False) + "\n"
 
 completion = client.chat.completions.create(
-  temperature=1, # temperature=0,
-  model="gpt-5.4-mini",
-  messages=[
+    temperature=1, # OA reasoning models do not support any temperature but 1, so 'temperature=0' is impossible
+    seed=0,
+    model="gpt-5.4-mini",
+    messages=[
     {"role": "system", "content": "You are a researcher and web developer, compiling a bibliography."},
     {"role": "user", "content": prompt }
   ]
