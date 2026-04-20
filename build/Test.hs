@@ -58,6 +58,9 @@ import qualified Config.Paragraph (whitelist)
 import qualified Config.Metadata.Author (authorCollapseTestCases, canonicals, canonicalsWithInitials, authorLinkDB, authorLinkBlacklist, cleanAuthorsFixedRewrites, cleanAuthorsRegexps, extractTwitterUsernameTestSuite, authorWhitelist)
 import qualified Config.Metadata.Title (badStrings, stringReplace, stringDelete)
 
+import Utext (rawMarkdown2Utext)
+import Config.Utext (utextTestSuite)
+
 -- test function to validate lists of regex patterns
 testRegexPatterns :: [String] -> IO ()
 testRegexPatterns patterns = do
@@ -228,6 +231,9 @@ testAll = do Config.Misc.cd
                c <- Interwiki.isWPDisambig "Mercury"
                d <- Interwiki.isWPDisambig "George_Washington"
                pure (not a && b && c == Just True && d == Just False)
+
+             let utext = utextTestSuite rawMarkdown2Utext
+             unless (null utext) $ printRed ("Utext test suite has errors in: " ++ show utext)
 
              unless interwikiUnitTests $
                printRed "Interwiki disambig or non-existence checks failed?"

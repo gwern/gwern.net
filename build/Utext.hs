@@ -2,7 +2,7 @@
 -- | Utext: compile Pandoc AST to Unicode-rich plain text.
 -- Author: gwern
 -- Date: 2026-04-06
--- When: Time-stamp: "2026-04-15 14:20:21 gwern"
+-- When: Time-stamp: "2026-04-19 17:41:10 gwern"
 -- License: CC-0
 --
 -- Intended for social media cards, Open Graph descriptions, and other contexts
@@ -112,8 +112,6 @@ module Utext
   , rawText2UtextIO
   , rawHtml2UtextIO
   , rawMarkdown2UtextIO
-    -- * Tests
-  , utextTestSuite
   ) where
 
 import Data.Char (chr, isAlphaNum, isAsciiLower, isAsciiUpper, isDigit, ord, toLower)
@@ -153,12 +151,14 @@ import Text.Pandoc.Options (ReaderOptions, def, readerExtensions)
 import Text.Pandoc.Readers (readHtml, readMarkdown)
 import Text.Pandoc.Walk (walkM)
 
+import qualified Config.Utext as C (defaultStyle, Style(..), traceLimit)
+
 -----------------------------------------------------------------------
 -- Public API
 -----------------------------------------------------------------------
 
 renderPandoc :: Pandoc -> Text
-renderPandoc (Pandoc _meta blocks) = renderBlocks defaultStyle blocks
+renderPandoc (Pandoc _meta blocks) = renderBlocks C.defaultStyle blocks
 
 -- | Render a Pandoc document to Utext.
 pandocToUtext :: Pandoc -> Text
@@ -167,11 +167,11 @@ pandocToUtext = renderPandoc
 -- | Render a list of inlines (eg. from a metadata field like 'title' or
 -- 'description') to Utext. This is the main entry point for social media cards.
 inlinesToUtext :: [Inline] -> Text
-inlinesToUtext = renderInlines defaultStyle
+inlinesToUtext = renderInlines C.defaultStyle
 
 -- | Render a single inline to Utext.
 inlineToUtext :: Inline -> Text
-inlineToUtext = renderInline defaultStyle
+inlineToUtext = renderInline C.defaultStyle
 
 renderParsed :: (Pandoc -> Text) -> Text -> Either Text Pandoc -> Text
 renderParsed render fallback = either (const fallback) (T.strip . render)
@@ -287,7 +287,7 @@ latexToUtextViaScript tex = do
   case exitCode of
     ExitFailure code -> error $
       "Utext: latex2unicode.py failed (exit " ++ show code ++ ") on input "
-      ++ show (T.take traceLimit tex) ++ ": " ++ stderr
+      ++ show (T.take C.traceLimit tex) ++ ": " ++ stderr
     ExitSuccess -> do
       let html = T.strip (T.pack stdout)
       -- latex2unicode.py returns HTML with <em>, <sup>, <sub>, <span>, etc.
@@ -296,36 +296,23 @@ latexToUtextViaScript tex = do
       case parseHtmlBlocks html of
         Left err -> error $
           "Utext: failed to parse latex2unicode.py HTML output: " ++ show err
-          ++ "\n  Input:  " ++ show (T.take traceLimit tex)
-          ++ "\n  Output: " ++ show (T.take (traceLimit * 2) html)
-        Right blocks -> return $ T.strip (renderBlocks defaultStyle blocks)
-
------------------------------------------------------------------------
--- Style tracking
------------------------------------------------------------------------
-
-data Style = Style
-  { sBold   :: !Bool
-  , sItalic :: !Bool
-  , sLigature :: !Bool
-  } deriving (Eq, Show)
-
-defaultStyle :: Style
-defaultStyle = Style False False True
+          ++ "\n  Input:  " ++ show (T.take C.traceLimit tex)
+          ++ "\n  Output: " ++ show (T.take (C.traceLimit * 2) html)
+        Right blocks -> return $ T.strip (renderBlocks C.defaultStyle blocks)
 
 -----------------------------------------------------------------------
 -- Block rendering
 -----------------------------------------------------------------------
 
-renderBlocks :: Style -> [Block] -> Text
+renderBlocks :: C.Style -> [Block] -> Text
 renderBlocks s = T.intercalate "\n\n" . concatMap (renderBlock s)
 
 -- Supported block constructs. Unsupported ones degrade gracefully with trace warnings.
-renderBlock :: Style -> Block -> [Text]
+renderBlock :: C.Style -> Block -> [Text]
 renderBlock s (Para inlines)         = [renderInlines s inlines]
 renderBlock s (Plain inlines)        = [renderInlines s inlines]
 renderBlock s (LineBlock lns)        = [T.intercalate "\n" $ map (renderInlines s) lns]
-renderBlock s (Header _ _ inlines)   = [renderInlines (s { sBold = True }) inlines]
+renderBlock s (Header _ _ inlines)   = [renderInlines (s { C.sBold = True }) inlines]
 renderBlock s (BlockQuote blocks)    = [T.intercalate "\n" $ map ("  " <>) $ T.lines $ renderBlocks s blocks]
 renderBlock s (BulletList items)     = map (\item -> "• " <> renderBlocks s item) items
 -- NOTE: ignores Pandoc's start number / style / delimiter metadata.
@@ -355,7 +342,7 @@ renderBlock s (DefinitionList defs)  = traceWarn   "lossy DefinitionList fallbac
   concatMap (\(term, defBlocks) -> [renderInlines s term <> ": " <>
       T.intercalate "; " (map (renderBlocks s) defBlocks)]) defs
 
-renderFigure :: Style -> Caption -> [Block] -> Text
+renderFigure :: C.Style -> Caption -> [Block] -> Text
 renderFigure s caption blocks =
   case extractFigureImage blocks of
     Just (alt, url, title) ->
@@ -367,7 +354,7 @@ renderFigure s caption blocks =
       joinFigureParts (T.strip (renderBlocks s blocks))
                       (T.strip (renderCaption s caption))
 
-renderCaption :: Style -> Caption -> Text
+renderCaption :: C.Style -> Caption -> Text
 renderCaption s (Caption mShort blocks) =
   let longCaption = T.strip (renderBlocks s blocks)
   in if T.null longCaption
@@ -484,7 +471,7 @@ splitAtClose closeName = go 0 []
 -- Inline rendering
 -----------------------------------------------------------------------
 
-renderInlines :: Style -> [Inline] -> Text
+renderInlines :: C.Style -> [Inline] -> Text
 renderInlines s = T.concat . map (renderInline s) . reassembleHtmlInlines
 
 -- | Render inline content as plain text, deliberately stripping style wrappers
@@ -527,10 +514,10 @@ renderInlinePlain (Image _ inlines _)          = renderPlainInlines inlines
 renderInlinePlain (Cite _ inlines)             = renderPlainInlines inlines
 
 -- Supported inline constructs. Unsupported ones degrade gracefully with trace warnings.
-renderInline :: Style -> Inline -> Text
+renderInline :: C.Style -> Inline -> Text
 renderInline s (Str t) = renderStyledText s t
-renderInline s (Emph inlines)         = renderInlines (s { sItalic = True }) inlines
-renderInline s (Strong inlines)       = renderInlines (s { sBold = True }) inlines
+renderInline s (Emph inlines)         = renderInlines (s { C.sItalic = True }) inlines
+renderInline s (Strong inlines)       = renderInlines (s { C.sBold = True }) inlines
 renderInline s (Underline inlines)    = applyCombining '\x0332' (renderInlines s inlines)
 renderInline s (Strikeout inlines)    = applyCombining '\x0336' (renderInlines s inlines)
 renderInline _ (Superscript inlines)  = T.concatMap charToSuperscript
@@ -567,10 +554,10 @@ renderInline s (Image _ inlines (url, title)) =
   renderParenthesizedTarget (renderInlines s inlines) url title
 renderInline s (Cite _ inlines)      = traceWarn   "lossy Cite fallback (visible text only)" (renderInlines s inlines)
 
-renderStyledText :: Style -> Text -> Text
+renderStyledText :: C.Style -> Text -> Text
 renderStyledText s t =
   let styled = T.map (styleChar s) t
-  in if sLigature s
+  in if C.sLigature s
        then applyLigatures styled
        else styled
 
@@ -622,11 +609,11 @@ blocksToInlines = concatMap blockToInlines
 -- Character mapping: style (bold / italic / bold-italic)
 -----------------------------------------------------------------------
 
-styleChar :: Style -> Char -> Char
-styleChar (Style True  True _)  = boldItalicChar
-styleChar (Style True  False _) = boldChar
-styleChar (Style False True _)  = italicChar
-styleChar (Style False False _) = id
+styleChar :: C.Style -> Char -> Char
+styleChar (C.Style True  True _)  = boldItalicChar
+styleChar (C.Style True  False _) = boldChar
+styleChar (C.Style False True _)  = italicChar
+styleChar (C.Style False False _) = id
 
 -- | Serif bold: U+1D400 (A), U+1D41A (a), U+1D7CE (0)
 boldChar :: Char -> Char
@@ -751,10 +738,6 @@ charToSmallCap c
 -- Utilities
 -----------------------------------------------------------------------
 
--- | Truncation limit for trace/error messages showing input excerpts.
-traceLimit :: Int
-traceLimit = 80
-
 -- | Emit a trace warning prefixed with "Utext: " and return a fallback value.
 -- Used for unsupported or unparseable constructs that degrade gracefully.
 traceWarn :: String -> a -> a
@@ -762,7 +745,7 @@ traceWarn msg = trace ("Utext: " ++ msg)
 
 -- | 'traceWarn' with a truncated 'Text' excerpt appended.
 traceWarnT :: String -> Text -> a -> a
-traceWarnT msg t = traceWarn (msg ++ ": " ++ show (T.take traceLimit t))
+traceWarnT msg t = traceWarn (msg ++ ": " ++ show (T.take C.traceLimit t))
 
 -- | Apply Unicode ligature substitutions to plain-text segments only.
 -- The replacement table is ordered longest-first so "ffl"/"ffi" win before
@@ -780,315 +763,3 @@ ligatureReplacements =
   , ("fi",  "ﬁ")
   ]
 
------------------------------------------------------------------------
--- Tests
------------------------------------------------------------------------
-
--- | Run the full test suite via 'rawMarkdown2Utext'. Returns a list of
--- failures as @(input, expected, actual)@ triples. Empty list = all pass.
---
--- Usage in Test.hs:
---
--- @
--- unless (null utextTestSuite) $ printRed ("Utext test suite has errors in: " ++ show utextTestSuite)
--- @
-utextTestSuite :: [(Text, Text, Text)]
-utextTestSuite = filter (\(_, expected, actual) -> expected /= actual)
-                   [ (input, expected, rawMarkdown2Utext input)
-                   | (input, expected) <- supportedTests ++ unsupportedTests ]
-
------------------------------------------------------------------------
--- Supported: features that compile to fancy Unicode
------------------------------------------------------------------------
-
-supportedTests :: [(Text, Text)]
-supportedTests = concat
-  [ identityTests
-  , italicTests
-  , boldTests
-  , boldItalicTests
-  , monoTests
-  , superscriptTests
-  , subscriptTests
-  , strikethroughTests
-  , underlineTests
-  , smallcapsTests
-  , smartQuoteTests
-  , linkTests
-  , htmlInMarkdownTests
-  , blockTests
-  , nonAsciiTests
-  , digitTests
-  , edgeCaseTests
-  , ligatureTests
-  ]
-
--- Plain text and empty input
-identityTests :: [(Text, Text)]
-identityTests =
-  [ (""                , "")
-  , ("hello"           , "hello")
-  , ("hello world"     , "hello world")
-  -- ASCII apostrophe becomes smart right single quote:
-  , ("it's"            , "it\x2019s")
-  -- Pre-existing em dash passes through:
-  , ("foo—bar"         , "foo—bar")
-  ]
-
--- *italic* and <em> → mathematical italic letters, with a pragmatic
--- sans-serif-italic override for h (U+1D629).
--- No italic digits in Unicode; digits pass through unchanged.
-italicTests :: [(Text, Text)]
-italicTests =
-  [ ("*hello*"             , "\x1D629\x1D452\x1D459\x1D459\x1D45C")
-  , ("*A*"                 , "\x1D434")
-  , ("*z*"                 , "\x1D467")
-  , ("*h*"                 , "\x1D629")  -- pragmatic h override; Unicode-correct would be ℎ
-  , ("*foo bar*"           , "\x1D453\x1D45C\x1D45C \x1D44F\x1D44E\x1D45F")
-  , ("*test123*"           , "\x1D461\x1D452\x1D460\x1D461\&123")
-  ]
-
--- **bold** and <strong> → serif bold (A=U+1D400, a=U+1D41A, 0=U+1D7CE)
-boldTests :: [(Text, Text)]
-boldTests =
-  [ ("**hi**"                , "\x1D421\x1D422")
-  , ("**A**"                 , "\x1D400")
-  , ("**z**"                 , "\x1D433")
-  , ("**OK**"                , "\x1D40E\x1D40A")
-  , ("**9**"                 , "\x1D7D7")
-  , ("**0**"                 , "\x1D7CE")
-  ]
-
--- ***bold italic*** → serif bold italic (A=U+1D468, a=U+1D482; digits→bold)
-boldItalicTests :: [(Text, Text)]
-boldItalicTests =
-  [ ("***ab***"              , "\x1D482\x1D483")
-  , ("***Z***"               , "\x1D481")
-  , ("***5***"               , "\x1D7D3")
-  ]
-
--- `code` and <code> → mathematical monospace (A=U+1D670, a=U+1D68A, 0=U+1D7F6)
-monoTests :: [(Text, Text)]
-monoTests =
-  [ ("`hi`"                  , "\x1D691\x1D692")
-  , ("`A`"                   , "\x1D670")
-  , ("`z`"                   , "\x1D6A3")
-  , ("`0`"                   , "\x1D7F6")
-  , ("`hello world`"         , "\x1D691\x1D68E\x1D695\x1D695\x1D698 \x1D6A0\x1D698\x1D69B\x1D695\x1D68D")
-  ]
-
--- ^superscript^ and <sup>
-superscriptTests :: [(Text, Text)]
-superscriptTests =
-  [ ("x^2^"                  , "x\x00B2")
-  , ("x^10^"                 , "x\x00B9\x2070")
-  , ("x^n^"                  , "x\x207F")
-  , ("x^i^"                  , "x\x2071")
-  , ("<sup>+</sup>"          , "\x207A")
-  , ("<sup>-</sup>"          , "\x207B")
-  -- Uppercase falls back to lowercase superscript form:
-  , ("<sup>A</sup>"          , "\x1D43")
-  ]
-
--- ~subscript~ and <sub>
-subscriptTests :: [(Text, Text)]
-subscriptTests =
-  [ ("H~2~O"                 , "H\x2082O")
-  , ("<sub>0</sub>"          , "\x2080")
-  , ("<sub>n</sub>"          , "\x2099")
-  , ("x~i~"                  , "x\x1D62")
-  ]
-
--- ~~strikethrough~~ and <del>/<s>/<strike> → combining short stroke overlay (U+0336)
-strikethroughTests :: [(Text, Text)]
-strikethroughTests =
-  [ ("~~no~~"                , "n\x0336o\x0336")
-  -- NOTE: standalone "<del>x</del>" is not tested because Pandoc's Markdown
-  -- reader promotes it to a block-level RawBlock, and re-parsing via readHtml
-  -- loses the strikethrough. Works fine embedded in surrounding text (tested
-  -- in htmlInMarkdownTests). Use Markdown ~~…~~ for standalone strikethrough.
-  , ("<s>ab</s>"             , "a\x0336\&b\x0336")
-  ]
-
--- <u>underline</u> → combining low line (U+0332)
-underlineTests :: [(Text, Text)]
-underlineTests =
-  [ ("<u>hi</u>"             , "h\x0332i\x0332")
-  ]
-
--- [text]{.smallcaps} and <span class="smallcaps"> → IPA small capitals
--- Uppercase letters pass through unchanged.
-smallcapsTests :: [(Text, Text)]
-smallcapsTests =
-  [ ("[hello]{.smallcaps}"                 , "\x029C\x1D07\x029F\x029F\x1D0F")
-  , ("[AB]{.smallcaps}"                    , "AB")
-  , ("<span class=\"smallcaps\">de</span>" , "\x1D05\x1D07")
-  ]
-
--- Pandoc smart typography
-smartQuoteTests :: [(Text, Text)]
-smartQuoteTests =
-  [ ("\"hello\""             , "\x201Chello\x201D")
-  , ("it's"                  , "it\x2019s")
-  -- En dash:
-  , ("foo--bar"              , "foo–bar")
-  -- Em dash:
-  , ("foo---bar"             , "foo—bar")
-  -- Ellipsis:
-  , ("foo..."                , "foo\x2026")
-  ]
-
--- Links: render text followed by URL/title in parentheses.
--- Visible text/title still get ligatures; literal URLs stay untouched.
-linkTests :: [(Text, Text)]
-linkTests =
-  [ ("[click here](https://example.com)"
-    , "click here (<https://example.com>)")
-  , ("[*italic link*](https://example.com)"
-    , "\x1D456\x1D461\x1D44E\x1D459\x1D456\x1D450 \x1D459\x1D456\x1D45B\x1D458 (<https://example.com>)")
-  , ("[foo](https://bar.com \"Title\")"
-    , "foo (\x201CTitle\x201D: <https://bar.com>)")
-  , ("[office](https://example.com/office \"Office filing\")"
-    , "oﬃce (\x201COﬃce ﬁling\x201D: <https://example.com/office>)")
-  -- Ligatures apply in label and title but never in the literal URL:
-  , ("[find](https://fi.example.com \"Official\")"
-    , "ﬁnd (\x201COﬃcial\x201D: <https://fi.example.com>)")
-  ]
-
--- HTML tags inside Markdown: the bug that motivated this test suite.
--- Pandoc's Markdown reader keeps <em> etc. as RawInline "html" pairs;
--- reassembleHtmlInlines stitches them into native constructors.
-htmlInMarkdownTests :: [(Text, Text)]
-htmlInMarkdownTests =
-  [ ("mistakes in <em>Death Note</em> and fixes"
-    , "mistakes in \x1D437\x1D452\x1D44E\x1D461\x1D629 \x1D441\x1D45C\x1D461\x1D452 and \xFB01xes")
-  , ("<strong>bold</strong> word"
-    , "\x1D41B\x1D428\x1D425\x1D41D word")
-  , ("a <sub>2</sub> b"
-    , "a \x2082 b")
-  , ("a <sup>3</sup> b"
-    , "a \x00B3 b")
-  , ("a <del>old</del> b"
-    , "a o\x0336l\x0336\&d\x0336 b")
-  , ("a <u>ul</u> b"
-    , "a u\x0332l\x0332 b")
-  , ("<code>mono</code> text"
-    , "\x1D696\x1D698\x1D697\x1D698 text")
-  , ("<code class=\"sourceCode haskell\">mono</code> text"
-    , "\x1D696\x1D698\x1D697\x1D698 text")
-  -- Nested HTML tags in Markdown:
-  , ("<em><strong>both</strong></em>"
-    , "\x1D483\x1D490\x1D495\x1D489")
-  , ("<em>foo <em>bar</em> baz</em>"
-    , "\x1D453\x1D45C\x1D45C \x1D44F\x1D44E\x1D45F \x1D44F\x1D44E\x1D467")
-  -- Tag variants handled by matchOpenTag:
-  , ("a <i>word</i> b"
-    , "a \x1D464\x1D45C\x1D45F\x1D451 b")
-  , ("a <b>word</b> b"
-    , "a \x1D430\x1D428\x1D42B\x1D41D b")
-  , ("a <strike>xy</strike> b"
-    , "a x\x0336y\x0336 b")
-  ]
-
--- Block-level constructs
-blockTests :: [(Text, Text)]
-blockTests =
-  [ -- Headers render as bold:
-    ("# Title"               , "\x1D413\x1D422\x1D42D\x1D425\x1D41E")
-  -- Code blocks render as monospace:
-  , ("```\nfoo\n```"         , "\x1D68F\x1D698\x1D698")
-  -- Standalone images become Figures with implicit_figures; render them like
-  -- images-with-captions either way.
-  , ("![Caption](image.png)"
-    , "(Caption: <image.png>)")
-  , ("![Caption](image.png \"Title\")"
-    , "(Caption, \x201CTitle\x201D: <image.png>)")
-  -- Bullet list:
-  , ("- one\n- two"
-    , "• one\n\n• two")
-  -- Ordered list (note "first" → "ﬁrst" via ligatures):
-  , ("1. first\n2. second"
-    , "1. \xFB01rst\n\n2. second")
-  -- Block quote (needs surrounding context so T.strip doesn't eat the indent):
-  , ("before\n\n> quote\n\nafter"
-    , "before\n\n  quote\n\nafter")
-  -- Line block:
-  , ("| line one\n| line two"
-    , "line one\nline two")
-  -- Horizontal rule (needs context to avoid being swallowed by T.strip):
-  , ("before\n\n***\n\nafter"
-    , "before\n\n\x2014\x2014\x2014\n\nafter")
-  ]
-
--- Non-ASCII: pass through unchanged (no mathematical-alphabet mapping exists)
-nonAsciiTests :: [(Text, Text)]
-nonAsciiTests =
-  [ ("\x00E9"                , "\x00E9")
-  , ("\x4E16\x754C"          , "\x4E16\x754C")
-  -- Non-ASCII inside italic: only ASCII letters get mapped
-  , ("*caf\x00E9*"           , "\x1D450\x1D44E\x1D453\x00E9")
-  ]
-
--- Digit handling across styles
-digitTests :: [(Text, Text)]
-digitTests =
-  [ ("**42**"                , "\x1D7D2\x1D7D0")
-  , ("`99`"                  , "\x1D7FF\x1D7FF")
-  -- Italic digits pass through (no italic digits in Unicode):
-  , ("*7*"                   , "7")
-  -- Superscript digits:
-  , ("x^0^"                  , "x\x2070")
-  , ("x^1^"                  , "x\x00B9")
-  , ("x^2^"                  , "x\x00B2")
-  , ("x^3^"                  , "x\x00B3")
-  -- Subscript digits:
-  , ("H~0~"                  , "H\x2080")
-  ]
-
--- Miscellaneous edge cases
-edgeCaseTests :: [(Text, Text)]
-edgeCaseTests =
-  [ -- Punctuation passes through inside bold:
-    ("**hello, world!**"     , "\x1D421\x1D41E\x1D425\x1D425\x1D428, \x1D430\x1D428\x1D42B\x1D425\x1D41D!")
-  -- Nested Markdown: **a *b* c** → bold a, bold-italic b, bold c
-  , ("**a *b* c**"           , "\x1D41A \x1D483 \x1D41C")
-  -- Character transforms take precedence over nested bold/italic wrappers.
-  , ("*x^n^*"                , "\x1D465\x207F")
-  , ("**H~2~O**"             , "\x1D407\x2082\x1D40E")
-  , ("**[ab]{.smallcaps}**"  , "\x1D00\x0299")
-  ]
-
--- Ligature replacement: fi→ﬁ, fl→ﬂ, ff→ﬀ, ffi→ﬃ, ffl→ﬄ
--- Only affects plain (unstyled) ASCII text and quoted titles; styled
--- characters are in the SMP and do not match the ASCII digraphs.
-ligatureTests :: [(Text, Text)]
-ligatureTests =
-  [ ("fine"                  , "ﬁne")
-  , ("offline"               , "oﬄine")
-  , ("waffle"                , "waﬄe")
-  , ("office"                , "oﬃce")
-  , ("fly"                   , "ﬂy")
-  -- Ligatures inside styled text don't apply (SMP codepoints):
-  , ("*firefox*"             , "\x1D453\x1D456\x1D45F\x1D452\x1D453\x1D45C\x1D465")
-  ]
-
------------------------------------------------------------------------
--- Unsupported: graceful degradation (trace warning + fallback output)
---
--- These constructs are not fully supported but no longer crash. Each test
--- documents the expected fallback behavior. The trace warnings go to stderr,
--- which is visible during builds but invisible in the test output.
------------------------------------------------------------------------
-unsupportedTests :: [(Text, Text)]
-unsupportedTests =
-  [ -- Math (inline): falls back to raw LaTeX string.
-    ("$x^2$"                                    , "x^2")
-  -- Math (display): same raw-LaTeX fallback.
-  , ("$$y=mx+b$$"                               , "y=mx+b")
-  -- Footnote: Note node is dropped; surrounding text survives.
-  , ("text[^1]\n\n[^1]: footnote"               , "text")
-  -- Table: entire block is dropped (empty output).
-  , ("| a | b |\n|---|---|\n| 1 | 2 |"          , "")
-  -- Definition list: best-effort "term: definition" rendering.
-  , ("Term\n:   Definition"                     , "Term: Deﬁnition")
-  ]
