@@ -1337,3 +1337,184 @@ clusterIntoSublist es list =
              gapsDescending = sortBy (flip $ comparing fst) $ adjacentDistances ix list
              splitPoints = sort $ map snd $ take k gapsDescending
          in mergeSingletons $ splitAtIndices splitPoints list
+
+--------------------------------------------------------------------------------
+-- Tests
+
+-- testing: run in Test.hs. 'generateSimilarTestSuite' does simple toy checks of
+-- exact nearest-neighbor ordering, model separation, bounded top-𝑘 retention,
+-- global top-𝑘 cache lookup, complete local distance caches, and greedy seriation
+-- on a tiny deterministic embedding database.
+-- It deliberately avoids '/metadata/embeddings.bin', metadata IO, backlink IO,
+-- OpenAI API calls, and HTML rendering.
+--
+-- Fatally errors out if any tests fail.
+generateSimilarTestSuite :: IO ()
+generateSimilarTestSuite = do
+  let failures = generateSimilarTestFailures
+  if null failures
+    then putStrLn "GenerateSimilar: all tests passed."
+    else error  $ "GenerateSimilar tests failed:\n" ++ unlines (map ("- " ++) failures)
+
+generateSimilarTestFailures :: [String]
+generateSimilarTestFailures =
+  [ name
+  | (name, ok) <- generateSimilarTest
+  , not ok
+  ]
+
+generateSimilarTest :: [(String, Bool)]
+generateSimilarTest =
+  [ ("toy test paths are not blacklisted",
+      all (not . C.blackList) [toyA, toyB, toyC, toyD, toyOtherModel])
+
+  , ("'embeddings2Index' drops empty paths and empty vectors",
+      indexSize toyIndex == 4)
+
+  , ("'lookupPathK' excludes self and returns ascending cosine distances",
+      neighborsNear
+        (lookupPathK toyIndex 10 toyA)
+        [(toyB, 0.2), (toyC, 1.0), (toyD, 2.0)])
+
+  , ("'lookupPathK' respects 𝑘",
+      neighborsNear
+        (lookupPathK toyIndex 2 toyA)
+        [(toyB, 0.2), (toyC, 1.0)])
+
+  , ("'lookupPathK' with 𝑘 ≤ 0 returns no results",
+      lookupPathK toyIndex 0 toyA == [])
+
+  , ("'lookupPathK' missing query path returns no results",
+      lookupPathK toyIndex 10 toyMissing == [])
+
+  , ("'lookupEmbeddingK' supports anonymous query embeddings",
+      neighborsNear
+        (lookupEmbeddingK toyIndex 10 (toyEmbedding toyQuery toyModel [1, 0]))
+        [(toyA, 0.0), (toyB, 0.2), (toyC, 1.0), (toyD, 2.0)])
+
+  , ("'lookupEmbeddingK' excludes same-path candidate",
+      neighborsNear
+        (lookupEmbeddingK toyIndex 10 (toyEmbedding toyA toyModel [1, 0]))
+        [(toyB, 0.2), (toyC, 1.0), (toyD, 2.0)])
+
+  , ("'findN' applies distance threshold",
+      findN toyIndex 10 1 (Just 0.5) (toyEmbedding toyA toyModel [1, 0]) ==
+        (toyA, [toyB]))
+
+  , ("'distancesIndexK' and 'lookupK' agree with 'lookupPathK'",
+      neighborsNear
+        (lookupK (distancesIndexK 2 toyIndex) 10 toyA)
+        [(toyB, 0.2), (toyC, 1.0)])
+
+  , ("'distancesK' works from serialized embeddings",
+      neighborsNear
+        (lookupK (distancesK 2 toyEmbeddingsWithInvalid) 10 toyA)
+        [(toyB, 0.2), (toyC, 1.0)])
+
+  , ("TopK keeps only the best 𝑘 candidates",
+      topKToList
+        (insertTopK 2 (toyC, 3.0) $
+         insertTopK 2 (toyA, 1.0) $
+         insertTopK 2 (toyB, 2.0) $
+         emptyTopK)
+      == [(toyA, 1.0), (toyB, 2.0)])
+
+  , ("TopK tie-breaks deterministically by path",
+      topKToList
+        (insertTopK 2 (toyB, 1.0) $
+         insertTopK 2 (toyA, 1.0) $
+         emptyTopK)
+      == [(toyA, 1.0), (toyB, 1.0)])
+
+  , ("mixed model rows are not compared",
+      case (rowByPath toyMixedModelIndex toyA, rowByPath toyMixedModelIndex toyOtherModel) of
+        (Just a, Just b) -> rowDistance a b == Nothing
+        _                -> False)
+
+  , ("'lookupPathK' excludes candidates from other embedding models",
+      toyOtherModel `notElem` map fst (lookupPathK toyMixedModelIndex 10 toyA))
+
+  , ("'distancesLocal' drops missing paths and is complete over local embedded paths",
+      neighborsNear
+        (lookupLocalK toyLocalDistances 10 toyA)
+        [(toyB, 0.2), (toyC, 1.0), (toyD, 2.0)])
+
+  , ("'lookupLocalK' respects 𝑘",
+      neighborsNear
+        (lookupLocalK toyLocalDistances 1 toyA)
+        [(toyB, 0.2)])
+
+  , ("'lookupLocalK' missing local path returns no results",
+      lookupLocalK toyLocalDistances 10 toyMissing == [])
+
+  , ("'seriateGreedy' starts with seed, walks nearest local neighbors, deduplicates, and appends unembedded paths",
+      seriateGreedy toyIndex [toyD, toyMissing, toyC, toyB, toyA, toyB] toyA ==
+        [toyA, toyB, toyC, toyD, toyMissing])
+  ]
+
+toyModel, toyOtherModelName :: String
+toyModel          = "generate-similar-test-model"
+toyOtherModelName = "generate-similar-test-other-model"
+
+toyA, toyB, toyC :: FilePath
+toyA = "/doc/unit-test/generate-similar/a"
+toyB = "/doc/unit-test/generate-similar/b"
+toyC = "/doc/unit-test/generate-similar/c"
+toyD = "/doc/unit-test/generate-similar/d"
+
+toyOtherModel, toyMissing, toyQuery, toyEmptyVector :: FilePath
+toyOtherModel = "/doc/unit-test/generate-similar/other-model"
+toyMissing    = "/doc/unit-test/generate-similar/missing"
+toyQuery       = "/doc/unit-test/generate-similar/query"
+toyEmptyVector = "/doc/unit-test/generate-similar/empty-vector"
+
+toyEmbedding :: FilePath -> String -> [Double] -> Embedding
+toyEmbedding p model xs = (p, 0, "", model, xs)
+
+-- Geometry:
+--
+-- toyA = ( 1.0, 0.0)
+-- toyB = ( 0.8, 0.6), already unit length
+-- toyC = ( 0.0, 1.0)
+-- toyD = (−1.0, 0.0)
+--
+-- So distances from toyA are:
+--
+-- toyB: 1 − 0.8 = 0.2
+-- toyC: 1 − 0.0 = 1.0
+-- toyD: 1 − (−1) = 2.0
+toyEmbeddings, toyEmbeddingsWithInvalid :: Embeddings
+toyEmbeddings =
+  [ toyEmbedding toyA toyModel [1.0, 0.0]
+  , toyEmbedding toyB toyModel [0.8, 0.6]
+  , toyEmbedding toyC toyModel [0.0, 1.0]
+  , toyEmbedding toyD toyModel [-1.0, 0.0]
+  ]
+toyEmbeddingsWithInvalid =
+  toyEmbeddings ++
+  [ toyEmbedding "" toyModel [1.0, 0.0]
+  , toyEmbedding toyEmptyVector toyModel []
+  ]
+
+toyIndex, toyMixedModelIndex :: EmbeddingIndex
+toyIndex =
+  embeddings2Index toyEmbeddingsWithInvalid
+toyMixedModelIndex =
+  embeddings2Index $
+    toyEmbeddings ++
+    [ toyEmbedding toyOtherModel toyOtherModelName [1.0, 0.0] ]
+
+toyLocalDistances :: LocalDistances
+toyLocalDistances =
+  distancesLocal toyIndex [toyA, toyC, toyMissing, toyB, toyD]
+
+neighborsNear :: [(FilePath, Double)] -> [(FilePath, Double)] -> Bool
+neighborsNear observed expected =
+  map fst observed == map fst expected &&
+  length observed == length expected &&
+  and (zipWith near (map snd observed) (map snd expected))
+
+near :: Double -> Double -> Bool
+near a b =
+  abs (a - b) <= 1e-12
+

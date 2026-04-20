@@ -3,7 +3,7 @@
 # similar.sh: get a neural net summary (embedding) of a text string (usually an annotation)
 # Author: Gwern Branwen
 # Date: 2021-12-05
-# When:  Time-stamp: "2026-01-12 15:10:29 gwern"
+# When:  Time-stamp: "2026-04-20 12:40:06 gwern"
 # License: CC-0
 #
 # Shell script to pass a document into the OpenAI API Embedding endpoint ( https://beta.openai.com/docs/api-reference/embeddings
@@ -61,7 +61,7 @@ TRUNCATED=0
 
 while [ $TEXT_LENGTH -gt 0 ]; do
 
-    RESULT="$(curl --silent "https://api.openai.com/v1/engines/$ENGINE/embeddings" --header "Content-Type: application/json" --header "Authorization: Bearer $OPENAI_API_KEY" \
+    RESULT="$(timeout 30 curl --silent "https://api.openai.com/v1/engines/$ENGINE/embeddings" --header "Content-Type: application/json" --header "Authorization: Bearer $OPENAI_API_KEY" \
          --data "{\"input\": \"$TEXT\", \"dimensions\": $ENGINE_DIMENSION}")"
     PARSED="$(echo "$RESULT" | jq --raw-output '.model, .data[0].embedding')"
 

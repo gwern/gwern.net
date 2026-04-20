@@ -7,45 +7,23 @@ module Main where
 import Control.Monad (filterM, when)
 import Data.Containers.ListUtils (nubOrd)
 import Data.List (isSuffixOf)
-import qualified Data.Map.Strict as M
-import qualified Data.Set as S
+import qualified Data.Map.Strict as M (elems, filter, fromList, lookup, toList)
+import qualified Data.Set as S (empty, fromList, member, notMember, Set)
 import System.Environment (getArgs)
 
-import qualified Config.GenerateSimilar as C
-  ( bestNEmbeddings
-  , maxDistance
-  )
+import qualified Config.GenerateSimilar as C (bestNEmbeddings, maxDistance)
 import qualified Config.Misc as CM (cd)
 
-import qualified GenerateSimilar as GS
-  ( Embeddings
-  , EmbeddingIndex
-  , embed
-  , expireMatches
-  , embeddings2Index
-  , lookupPathK
-  , missingEmbeddings
-  , pruneEmbeddings
-  , readEmbeddings
-  , seriateGreedy
-  , similaritemExistsP
-  , stripEmbedding
-  , writeEmbeddings
-  , writeOutMatch
-  )
+import qualified GenerateSimilar as GS (Embeddings, EmbeddingIndex, embed, expireMatches, embeddings2Index, lookupPathK, missingEmbeddings, pruneEmbeddings, readEmbeddings, seriateGreedy, similaritemExistsP, stripEmbedding, writeEmbeddings, writeOutMatch)
 import LinkBacklink (Backlinks, readBacklinksDB)
 import LinkMetadata (readLinkMetadata, sortItemPathDateModified)
 import LinkMetadataTypes (Metadata, MetadataItem)
 import Utils (printGreen)
 
 maxEmbedAtOnce :: Int
-maxEmbedAtOnce = 2000
+maxEmbedAtOnce = 1000
 
-data Mode
-  = MissingOnly
-  | EmbedOnly
-  | RewriteAll
-  deriving (Eq, Show)
+data Mode = MissingOnly | EmbedOnly | RewriteAll deriving (Eq, Show)
 
 parseMode :: [String] -> Mode
 parseMode [] = MissingOnly
@@ -133,11 +111,7 @@ annotatedMetadataPaths md =
   indexPath :: FilePath -> Bool
   indexPath f = not (null f) && head f == '/' && "/index" `isSuffixOf` f
 
-missingEmbeddingsByRecency
-  :: Metadata
-  -> GS.Embeddings
-  -> [FilePath]
-  -> [(FilePath, MetadataItem)]
+missingEmbeddingsByRecency :: Metadata -> GS.Embeddings -> [FilePath] -> [(FilePath, MetadataItem)]
 missingEmbeddingsByRecency md edb annotatedPaths =
   let missingByPath = M.fromList $ GS.missingEmbeddings md edb
   in [ (p, mi)
@@ -145,12 +119,7 @@ missingEmbeddingsByRecency md edb annotatedPaths =
      , Just mi <- [M.lookup p missingByPath]
      ]
 
-updateEmbeddings
-  :: Metadata
-  -> Backlinks
-  -> GS.Embeddings
-  -> [(FilePath, MetadataItem)]
-  -> IO GS.Embeddings
+updateEmbeddings :: Metadata -> Backlinks -> GS.Embeddings -> [(FilePath, MetadataItem)] -> IO GS.Embeddings
 updateEmbeddings _ _ edb [] = do
   printGreen "All embeddings up to date."
   return edb
@@ -174,25 +143,12 @@ embeddingPathSet :: GS.Embeddings -> S.Set FilePath
 embeddingPathSet es =
   S.fromList [p | (p, _, _, _, vec) <- es, p /= "", not (null vec)]
 
-writeSimilarForPath_
-  :: Metadata
-  -> Backlinks
-  -> GS.EmbeddingIndex
-  -> S.Set FilePath
-  -> FilePath
-  -> IO ()
+writeSimilarForPath_ :: Metadata -> Backlinks -> GS.EmbeddingIndex -> S.Set FilePath -> FilePath -> IO ()
 writeSimilarForPath_ md bdb ix newlyEmbedded path = do
   _ <- writeSimilarForPath md bdb ix newlyEmbedded S.empty path
   return ()
 
-writeSimilarForPath
-  :: Metadata
-  -> Backlinks
-  -> GS.EmbeddingIndex
-  -> S.Set FilePath
-  -> S.Set FilePath
-  -> FilePath
-  -> IO [FilePath]
+writeSimilarForPath :: Metadata -> Backlinks -> GS.EmbeddingIndex -> S.Set FilePath -> S.Set FilePath -> FilePath -> IO [FilePath]
 writeSimilarForPath md bdb ix newlyEmbedded protectedTargets path =
   case similarMatches ix path of
     Nothing ->
@@ -216,10 +172,7 @@ expireExistingMatches paths = do
   existing <- filterM GS.similaritemExistsP paths
   GS.expireMatches existing
 
-similarMatches
-  :: GS.EmbeddingIndex
-  -> FilePath
-  -> Maybe (FilePath, [FilePath])
+similarMatches :: GS.EmbeddingIndex -> FilePath -> Maybe (FilePath, [FilePath])
 similarMatches ix path =
   let hits =
         map fst $

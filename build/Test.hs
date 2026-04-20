@@ -35,6 +35,7 @@ import LinkLive (linkLiveTest, linkLivePrioritize)
 import Tags (testTags)
 import Typography (titleCaseTest)
 import Metadata.Author (authorCollapseTest, cleanAuthorsTest, extractTwitterUsername, authorDB)
+import GenerateSimilar (generateSimilarTestSuite)
 
 -- test the tests as configuration files for duplicates etc.:
 import qualified Config.GenerateSimilar (blackListURLs)
@@ -247,5 +248,6 @@ testAll = do Config.Misc.cd
              unless interwikiUnitTests $
                printRed "Interwiki disambig or non-existence checks failed?"
 
+             generateSimilarTestSuite
 
              printGreen ("Testing finished." :: String)
