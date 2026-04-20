@@ -2,8 +2,360 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TupleSections #-}
 
--- dependencies: pandoc, filestore, vector
--- exact-scan k-nearest neighbors lookup for GenerateSimilar's embedding search/seriation core.
+{-|
+Module: GenerateSimilar: exact-scan k-nearest neighbors lookup & seriation of annotations (Embedding-based similar-link generation).
+Author: gwern
+Date: 2021-12-05
+When: Time-stamp: "2026-04-20 11:05:21 gwern"
+License: CC-0
+
+dependencies: pandoc, filestore, vector
+
+The goal of this module is to turn Gwern.net annotations into vector embeddings,
+and then use those embeddings for three related tasks:
+
+1. Generate “Similar Links” recommendations for an annotated URL or file.
+2. Generate one-shot “See Also” recommendations for anonymous draft text.
+3. Seriate lists of related URLs into a topic-contiguous browsing order for
+   tag directories and other machine-sorted lists.
+
+The central distance primitive is exact cosine distance over normalized vectors:
+
+@
+distance a b = 1 - dot (normalize a) (normalize b)
+@
+
+Smaller distances are better.
+
+All vectors are normalized once when converted from the serialized embedding
+database into an 'EmbeddingIndex'. This makes later lookups use a single dot
+product per candidate.
+
+The module deliberately keeps the serialized embedding type simple:
+
+@
+type Embedding =
+  ( String
+  , Integer
+  , String
+  , String
+  , [Double]
+  )
+@
+
+The fields are:
+
+* URL/path.
+* Modified Julian Day, used as embedding age.
+* The exact text sent to the embedding API.
+* The embedding model/version.
+* The vector itself.
+
+The in-memory search representation is different:
+
+@
+data EmbeddingIndex = EmbeddingIndex
+  { eiRows   :: Vector EmbeddingRow
+  , eiByPath :: Map FilePath Int
+  }
+@
+
+Each 'EmbeddingRow' stores a path, date, model ID, and a normalized unboxed
+@Vector Double@.
+
+The distinction matters.
+
+The serialized format is optimized for compatibility and debuggability.
+
+The in-memory index is optimized for repeated numeric search.
+
+== Why this is not just “flat linear scans”
+
+Nearest-neighbor lookup does use an exact linear scan over the corpus.
+
+That is the right baseline here: the corpus is modest, exact results are useful,
+and the implementation is easy to inspect.
+
+But the module is not merely a naive “scan everything and sort everything”
+implementation.
+
+There are three different lookup problems, with different data structures:
+
+* 'EmbeddingIndex' stores the full corpus vectors once.
+* 'Distances' stores a global top-k neighbor cache when pre-computation is useful.
+* 'LocalDistances' stores a complete local pairwise cache for one seriation
+  problem.
+
+Those are separate because they have different size and correctness constraints.
+
+A global all-pairs distance matrix would be too large and mostly wasted.
+
+A global top-k cache is compact and useful for ordinary recommendation lookup,
+but it is not sufficient for seriation: two URLs in a small tag/list may be far
+apart globally and therefore absent from each other’s global top-k neighbors.
+
+For seriation, the module builds a complete local graph over only the candidate
+URLs.
+
+That local graph is small, exact, and complete.
+
+== Why top-k is maintained during scan
+
+A single nearest-neighbor query conceptually scores every candidate in the index.
+
+The naive version would allocate all @(FilePath, Double)@ scores, sort the entire
+corpus, and then keep only the first @k@.
+
+That is unnecessary.
+
+The hot lookup path uses 'TopK', a small sorted accumulator.
+
+During a corpus scan, only the best @k@ candidates seen so far are retained.
+
+Once the accumulator is full, a candidate worse than the current worst retained
+candidate is rejected immediately.
+
+This changes the lookup memory profile from:
+
+@
+O(n) scored candidates + O(n log n) sort
+@
+
+to:
+
+@
+O(k) retained candidates + O(n * k) tiny-list insertion
+@
+
+[NOTE: if updated to a heap, this would be 'O(k) retained candidates + O(n log k)']
+
+For the intended small values of @k@, this is substantially cheaper and simpler
+than sorting the corpus for every query.
+
+The implementation still performs exact search.
+
+The optimization only changes how many intermediate candidates are retained.
+
+== Distance semantics
+
+Public lookup functions return distances, not similarities.
+
+The convention is:
+
+@
+0 = identical direction
+1 = orthogonal
+2 = opposite direction
+@
+
+In practice, normalized text embeddings usually occupy a much narrower range.
+
+Results are sorted ascending by distance.
+
+The comparison tiebreaker is path order, making results deterministic when
+distances are equal.
+
+Embeddings from different model IDs are not compared.
+
+The model ID is preserved by 'stripEmbedding' because comparing embeddings from
+different models is meaningless.
+
+== Core lookup API
+
+Use 'readEmbeddings' to load the serialized database.
+
+Use 'embeddings2Index' to build a compact normalized in-memory index.
+
+Use 'lookupPathK' when the query URL/path is already in the index:
+
+@
+lookupPathK :: EmbeddingIndex -> Int -> FilePath -> [(FilePath, Double)]
+@
+
+Use 'lookupEmbeddingK' when the query is an anonymous or newly generated
+embedding that may not be in the index:
+
+@
+lookupEmbeddingK :: EmbeddingIndex -> Int -> Embedding -> [(FilePath, Double)]
+@
+
+Use 'distancesK' or 'distancesIndexK' only when a reusable top-k cache is wanted:
+
+@
+distancesK      :: Int -> Embeddings -> Distances
+distancesIndexK :: Int -> EmbeddingIndex -> Distances
+lookupK         :: Distances -> Int -> String -> [(String, Double)]
+@
+
+A 'Distances' value is a top-k cache, not a full global pairwise matrix.
+
+== Seriation
+
+Seriation sorts a list of URLs into a locally coherent walk.
+
+The intended use is “sort by topic” browsing: start at a seed URL, repeatedly
+choose the nearest unvisited URL, and continue until every embedded item has
+been emitted.
+
+@
+seriateGreedy :: EmbeddingIndex -> [FilePath] -> FilePath -> [FilePath]
+@
+
+The seed is always first.
+
+Embedded items are emitted once.
+
+Unembedded items are appended afterward in input order.
+
+Internally, seriation builds a 'LocalDistances' value:
+
+@
+data LocalDistances = LocalDistances
+  { ldPaths  :: Vector FilePath
+  , ldByPath :: Map FilePath Int
+  , ldRows   :: Vector (Vector (Int, Double))
+  }
+@
+
+This local cache is complete over the candidate set.
+
+For @m@ local URLs, each row stores up to @m - 1@ local neighbors.
+
+This is intentionally different from the global top-k cache.
+
+The global cache answers “what is close to this URL in the whole corpus?”
+
+The local cache answers “among this specific candidate set, what is closest to
+the current item?”
+
+That distinction is necessary for correct greedy seriation.
+
+== Similar-link generation
+
+The batch similar-link path should normally be:
+
+@
+readEmbeddings
+embeddings2Index
+lookupPathK
+seriateGreedy
+writeOutMatch
+@
+
+'writeOutMatch' renders and writes the HTML fragment for an item’s similar links.
+
+'generateMatches' performs the final pruning/rendering step:
+
+* It removes links already present in the annotation body.
+* It removes forward links and backlinks already associated with the page.
+* It turns surviving candidates into annotated links.
+* It adds search helpers for scholarly items when metadata supports them.
+
+'generateItem' converts one metadata-backed URL/path into a Pandoc block.
+
+== Single-shot recommendations
+
+'singleShotRecommendations' handles anonymous draft text.
+
+It embeds the supplied HTML/text as a temporary query, scans the existing index,
+seriates the resulting hits, and renders a compact “See Also” list.
+
+The anonymous query has no stable path and no known backlink context, so it uses
+the query-embedding path rather than 'lookupPathK'.
+
+== Sort-by-magic tag/list support
+
+The sort-by-magic functions are higher-level directory helpers.
+
+They use embeddings to turn a flat tag/list into a topic-contiguous sequence,
+then split that sequence into adjacent-distance clusters, and finally ask
+@tagguesser.py@ to suggest short labels for the clusters.
+
+The important functions are:
+
+@
+sortSimilarsStartingWithNewestWithTag
+sortSimilarsStartingWithNewestWithTagEdb
+sortSimilarsStartingWithNewest
+sortSimilarsStartingWithNewestEdb
+sortSimilars
+clusterIntoSublist
+@
+
+The @...Edb@ variants accept a caller-supplied embedding database.
+
+Prefer those in callers that already loaded embeddings, to avoid re-reading
+@embeddings.bin@.
+
+'ListSortedMagic' caches seriated URL sets.
+
+'ListName' caches generated short names for clusters.
+
+These caches are convenience caches, not semantic ground truth.
+
+== Clustering
+
+'clusterIntoSublist' assumes its input is already seriated.
+
+It computes adjacent distances along the sequence, selects the largest gaps,
+splits the sequence at those gaps, and merges singleton fragments.
+
+This is not general clustering.
+
+It is a display heuristic for turning a long one-dimensional topic walk into a
+small number of browseable sections.
+
+== Embedding generation
+
+'formatDoc' turns a metadata item into the plaintext sent to the embedding API.
+
+It includes title, URL/path, authors, year, modified date, tags, abstract text,
+and extracted references.
+
+'embed' reuses an existing embedding when it appears to match the same basename,
+otherwise it calls 'oaAPIEmbed'.
+
+'oaAPIEmbed' shells out to @static/build/embed.sh@, which handles API access and
+JSON processing.
+
+== Persistence and pruning
+
+'readEmbeddings' and 'writeEmbeddings' read and write the serialized embedding
+database.
+
+'writeEmbeddings' writes to a temporary file, reads the temporary file back, and
+only then renames it into place.
+
+'pruneEmbeddings' removes embeddings whose paths no longer exist in metadata.
+
+'missingEmbeddings' returns metadata entries with nonempty abstracts but no
+stored embedding.
+
+== Complexity
+
+Let:
+
+* @n@ = number of corpus embeddings.
+* @d@ = embedding dimension.
+* @k@ = requested nearest neighbors.
+* @m@ = size of a local seriation set.
+
+Approximate costs:
+
+@
+Build EmbeddingIndex:       O(n * d) memory/time
+Single exact lookup:        O(n * d) time, O(k) retained hits
+Global top-k cache:         O(n^2 * d) time, O(n * k) storage
+Local seriation cache:      O(m^2 * d) time, O(m^2) storage
+Greedy seriation walk:      O(m^2) after local cache construction
+@
+
+The design avoids a global all-pairs distance matrix.
+
+It uses exact scans where exact scans are cheap and transparent, bounded top-k
+retention where sorting all candidates would be wasteful, and complete local
+distance caches where correctness requires all local pairwise distances.
+-}
 
 module GenerateSimilar where
 
@@ -89,6 +441,7 @@ readEmbeddingsPath p = do
         Right e  -> return e
         Left err -> error $ show err
 
+-- called in 'app/generateSimilar.hs'
 writeEmbeddings :: Embeddings -> IO ()
 writeEmbeddings es = do
   tempf <- emptySystemTempFile "hakyll-embeddings"
@@ -99,6 +452,8 @@ writeEmbeddings es = do
     else renameFile tempf C.embeddingsPath
 
 -- | Remove embeddings without a corresponding metadata entry.
+-- This generally means that it is a 'stale' embedding, corresponding to an outdated
+-- URL, and so is a false positive or bloating the embeddings database.
 pruneEmbeddings :: Metadata -> Embeddings -> Embeddings
 pruneEmbeddings md edb =
   let edbDB = M.fromList $ map (\(a, b, c, d, e) -> (a, (b, c, d, e))) edb
@@ -117,6 +472,46 @@ missingEmbeddings md edb =
 -- Embedding text generation and OpenAI API shell-out
 
 -- | Convert an annotated item into a single text string.
+-- convert an annotated item into a single text string: concatenate the useful metadata in an OA API-aware way.
+-- We need to avoid HTML, and try to write everything in an 'obvious' way that a NN model will understand 'out of the box' without finetuning.
+-- Example of a processed text string for embedding:
+--
+-- > ‘Littlewood’s Law and the Global Media’, by Gwern Branwen (2018; updated 2020-01-01). Keywords: insight-porn, philosophy/epistemology, politics, psychology/cognitive-bias, psychology/personality/psychopathy, sociology/technology, statistics/bias.
+-- >
+-- > Selection effects in media become increasingly strong as populations and media increase, meaning that rare datapoints driven by unusual processes such as the mentally ill or hoaxers are increasingly unreliable as evidence of anything at all and must be ignored. At scale, anything that can happen will happen a small but nonzero times.
+-- >
+-- > Online & mainstream media and social networking have become increasingly misleading as to the state of the world by focusing on ‘stories’ and ‘events’ rather than trends and averages. This is because as the global population increases and the scope of media increases, media’s urge for narrative focuses on the most extreme outlier datapoints—but such datapoints are, at a global scale, deeply misleading as they are driven by unusual processes such as the mentally ill or hoaxers.
+-- >
+-- > At a global scale, anything that can happen will happen a small but nonzero times: this has been epitomized as “Littlewood’s Law: in the course of any normal person’s life, miracles happen at a rate of roughly one per month.” This must now be extended to a global scale for a hyper-networked global media covering anomalies from 8 billion people—all coincidences, hoaxes, mental illnesses, psychological oddities, extremes of continuums, mistakes, misunderstandings, terrorism, unexplained phenomena etc. Hence, there will be enough ‘miracles’ that all media coverage of events can potentially be composed of nothing but extreme outliers, even though it would seem like an ‘extraordinary’ claim to say that all media-reported events may be flukes.
+-- >
+-- > This creates an epistemic environment deeply hostile to understanding reality, one which is dedicated to finding arbitrary amounts of and amplifying the least representative datapoints.
+-- >
+-- > Given this, it is important to maintain extreme skepticism of any individual anecdotes or stories which are selectively reported but still claimed (often implicitly) to be representative of a general trend or fact about the world. Standard techniques like critical thinking, emphasizing trends & averages, and demanding original sources can help fight the biasing effect of news.
+-- >
+-- > -   Littlewood’s Law
+-- >     -   Politics
+-- >     -   Technology
+-- >     -   Science
+-- >     -   Media
+-- >     -   Tails at Scales
+-- > -   Epistemological Implications
+-- > -   Coping
+-- > -   See Also
+-- > -   External Links
+-- > -   Appendix
+-- >     -   Origin Of “Littlewood’s Law of Miracles”
+-- >
+-- > Reverse citations:
+-- >
+-- > - "Blackmail fail", Gwern Branwen (2013)
+-- > - "Hydrocephalus and Intelligence: The Hollow Men", Gwern Branwen (2015)
+-- > - "Leprechaun Hunting & Citogenesis", Gwern Branwen (2014)
+-- > - "Origin of ‘Littlewood’s Law of Miracles’", Gwern Branwen (2019)
+-- > - "One Man’s Modus Ponens", Gwern Branwen (2012)
+-- > - "How Should We Critique Research?", Gwern Branwen (2019)
+-- > - "On Seeing Through and Unseeing: The Hacker Mindset", Gwern Branwen (2012)
+-- > - "Lizardman Constant in Surveys", Gwern Branwen (2013)
+-- > - "Book Reviews", Gwern Branwen (2013)
 formatDoc :: (String, MetadataItem) -> T.Text
 formatDoc (path, mi@(t, aut, dt, dtM, _, tags, abst)) =
   let dateModified = if dtM == "" then "" else "; updated " ++ dtM
@@ -230,8 +625,7 @@ data EmbeddingIndex = EmbeddingIndex
   , eiByPath :: !(M.Map FilePath Int)
   } deriving (Eq, Show)
 
--- Compatibility name: old callers expect a Forest, but this is now an exact
--- vector index, not an RP-tree.
+-- | Compatibility alias for callers that still use the older search-index name.
 type Forest = EmbeddingIndex
 
 embeddings2Forest :: Embeddings -> IO Forest
@@ -239,6 +633,10 @@ embeddings2Forest []  = error "GenerateSimilar.embeddings2Forest: called with no
 embeddings2Forest [_] = error "GenerateSimilar.embeddings2Forest: called with only 1 argument."
 embeddings2Forest es  = return $ embeddings2Index es
 
+-- | Build the normalized in-memory vector index used by all exact lookup code.
+--
+-- Duplicate paths are collapsed by 'Map' insertion. Empty paths and empty
+-- vectors are ignored. Each retained vector is normalized exactly once.
 embeddings2Index :: Embeddings -> EmbeddingIndex
 embeddings2Index es =
   let deduped = M.elems $ M.fromList [(p, e) | e@(p, _, _, _, vec) <- es, p /= "", not (null vec)]
@@ -273,6 +671,10 @@ rowDistance a b
       let !d = cosineDistance (erVec a) (erVec b)
       in Just d
 
+-- | Look up the nearest embedded corpus items to an existing path.
+--
+-- Returns ascending cosine distances. Missing query paths return the empty list.
+-- Candidates blacklisted by 'C.blackList' are excluded.
 lookupPathK :: EmbeddingIndex -> Int -> FilePath -> [(FilePath, Double)]
 lookupPathK ix k p
   | k <= 0 = []
@@ -323,7 +725,11 @@ distances = distancesK C.bestNEmbeddings
 distancesK :: Int -> Embeddings -> Distances
 distancesK k = distancesIndexK k . embeddings2Index
 
--- | Build a global top-k cache from an in-memory index.
+-- | Build a reusable global top-k cache from an in-memory index.
+--
+-- This stores only the nearest @k@ neighbors per path. It is not a full
+-- pairwise distance matrix and should not be used when a complete local graph
+-- is required.
 distancesIndexK :: Int -> EmbeddingIndex -> Distances
 distancesIndexK k ix
   | k <= 0 = Distances M.empty
@@ -341,6 +747,10 @@ lookupK (Distances m) k p
   | otherwise = maybe [] (take k . V.toList) $ M.lookup p m
 
 -- | Exact k-NN lookup for a query embedding, which need not already be in the index.
+-- Look up the nearest embedded corpus items to an arbitrary query embedding.
+--
+-- Use this for anonymous text, fresh embeddings, or other queries not already
+-- present in the index.
 lookupEmbeddingK :: EmbeddingIndex -> Int -> Embedding -> [(FilePath, Double)]
 lookupEmbeddingK ix k e
   | k <= 0 = []
@@ -446,8 +856,11 @@ data LocalDistances = LocalDistances
   , ldRows   :: !(V.Vector (V.Vector (Int, Double)))
   } deriving (Eq, Show)
 
--- | Build a complete pairwise distance cache for the embedded subset of the
--- supplied paths. All included embeddings must have the same model ID.
+-- | Build a complete pairwise distance cache for a specific candidate set
+-- (the embedded subset of the supplied paths). All included embeddings must have the same model ID.
+--
+-- Missing paths are dropped. Mixed embedding model IDs are rejected.
+-- This is intended for seriation, where global top-k neighbors are not enough.
 distancesLocal :: EmbeddingIndex -> [FilePath] -> LocalDistances
 distancesLocal ix paths =
   let uniquePaths = nubOrd paths
@@ -484,9 +897,11 @@ lookupLocalK ld k p
  where
   resolve (j, d) = (ldPaths ld V.! j, d)
 
--- | Greedy nearest-neighbor seriation. The result starts with the seed, then
--- visits the closest unvisited local neighbor until all embedded candidates are
--- exhausted; unembedded candidates are appended in their input order.
+-- | Greedily seriate a candidate list by nearest local neighbor.
+--
+-- The output starts with the seed, then repeatedly appends the nearest unvisited
+-- embedded item in the local candidate set. Unembedded candidates are appended
+-- afterward in input order.
 seriateGreedy :: EmbeddingIndex -> [FilePath] -> FilePath -> [FilePath]
 seriateGreedy ix paths seed
   | seed == "" = error "GenerateSimilar.seriateGreedy: empty seed."
@@ -515,6 +930,12 @@ seriateGreedy ix paths seed
 singleShotMaxDistance :: Double
 singleShotMaxDistance = 1
 
+-- | Generate a transient “See Also” list for anonymous HTML/text.
+--
+-- This embeds the supplied text, scans the stored corpus, seriates the hits, and
+-- renders a compact list without writing a persistent similar-link fragment.
+--
+-- Make it easy to generate a HTML list of recommendations for an arbitrary piece of text. This is useful for eg. getting the list of recommendations while writing an annotation, to whitelist links or incorporate into the annotation directly (freeing up slots in the 'similar' tab for additional links). Used in `preprocess-markdown.hs`.
 singleShotRecommendations :: String -> IO T.Text
 singleShotRecommendations html = do
   let emptyMetadata  = M.empty :: Metadata
@@ -549,9 +970,13 @@ singleShotRecommendations html = do
 similaritemExistsP :: String -> IO Bool
 similaritemExistsP = doesFileExist . fst . getSimilarLink
 
+-- opposite of writeOutMatch: we delete the on-disk version to force a rebuild. This may be to clean up in general, or it may be because a new item got embedded & turned out to be a similar-hit, and since distance is reciprocal, we want to rebuild *both*. Deleting on-disk is an easy way to force a rebuild using the existing logic.
 expireMatches :: [String] -> IO ()
 expireMatches = mapM_ (removeFile . fst . getSimilarLink)
 
+-- | Render and write the on-disk similar-link fragment for one annotated item.
+--
+-- The input paths should already be selected and, if desired, seriated.
 writeOutMatch :: Metadata -> Backlinks -> (String, [String]) -> IO ()
 writeOutMatch md bdb (p, matches) =
   if length matches < C.minimumSuggestions
@@ -570,6 +995,7 @@ generateMatches :: Metadata -> Backlinks -> Bool -> String -> String -> [String]
 generateMatches _  _   _          _ _    []      = ""
 generateMatches md bdb singleShot p abst matches =
   let p' = T.pack p
+      -- we don't want to provide as a 'see also' a link already in the annotation, of course, so we need to pull them out & filter by:
       alreadyLinkedAbstract  = extractLinks False $ T.pack abst
       alreadyLinkedBody      = if p == "" then [] else getForwardLinks bdb p'
       alreadyLinkedBacklinks = maybe [] (concatMap snd) (M.lookup p' bdb)
@@ -642,6 +1068,7 @@ generateItem md p2 = case M.lookup p2 md of
 --------------------------------------------------------------------------------
 -- Sort-by-magic lists and tags
 
+-- what was the short name suggested for a list of URLs? quick DB letting us look up cached short names:
 type ListName = M.Map [FilePath] String
 
 readListName :: IO ListName
@@ -663,6 +1090,7 @@ writeListName :: ListName -> IO ()
 writeListName = writeUpdatedFile "listname" "metadata/listname.hs" . T.pack . ppShow .
   map (\(fs, nick) -> (sort fs, nick)) . filter (\(_, nick) -> nick /= "") . M.toList
 
+-- what was the sort-by-magic list generated previously for a list of URLs? quick DB letting us look up cached magic-sorts:
 type ListSortedMagicList = [(S.Set FilePath, [FilePath])]
 type ListSortedMagic = M.Map (S.Set FilePath) [FilePath]
 
