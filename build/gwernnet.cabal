@@ -173,3 +173,8 @@ executable linkTitler
   import: exe-common
   main-is: linkTitler.hs
   ghc-options: -threaded -rtsopts
+
+executable redirectGuesser
+  import: exe-common
+  main-is: redirectGuesser.hs
+  ghc-options: -threaded -rtsopts
