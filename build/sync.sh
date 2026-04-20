@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-04-20 01:43:23 gwern"
+# When:  Time-stamp: "2026-04-20 12:24:43 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -193,7 +193,7 @@ else
     # compile generateSimilarLinks.hs &
     everyNDays 3 && cabal update &
     cabal install ; cabal clean
-    ## NOTE: the generateSimilarLinks & link-suggester.hs runs are done at midnight by a cron job because
+    ## NOTE: the generateSimilarLinks & linkSuggester runs are done at midnight by a cron job because
     ## they are too slow to run during a regular site build & don't need to be super-up-to-date
     ## anyway
     cd ../../
@@ -273,8 +273,6 @@ else
     (ping -q -c 5 google.com &> /dev/null && cd ./static/ && git status; git pull; git push --verbose &) || true
 
     # Cleanup pre:
-    # rm --recursive --force ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks ./static/build/link-suggester || true
-
     cd ~/wiki/ # go to site root
     bold "Building site…"
 
@@ -1444,7 +1442,6 @@ else
     ## NOTE: we skip time/size syncs because sometimes the infrastructure changes values but not file size, and it's confusing when JS/CSS doesn't get updated; since the infrastructure is so small (compared to eg. doc/*), just force a hash-based sync every time to reduce risk:
     bold "Syncing static/…"
     REMOTE="gwern@176.9.41.242:/home/gwern/gwern.net/"
-    # rsync --perms --exclude=".*" --exclude "*.hi" --exclude "*.o" --exclude "*.elc" --exclude '#*' --exclude='preprocess-markdown' --exclude 'generateLinkBibliography' --exclude='generateDirectory' --exclude='changeTag' --exclude='generateSimilar' --exclude='generateSimilarLinks' --exclude='hakyll' --exclude='guessTag' --exclude='changeTag' --exclude='link-extractor' --exclude='checkMetadata' --exclude="annotation-dump" --exclude="link-suggester" --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ "$REMOTE"/static &
     rsync --perms --exclude=".*" --exclude "*.elc" --exclude '#*' --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ "$REMOTE"/static &
     ## Likewise, force checks of the Markdown pages but skip symlinks (ie. non-generated files):
     bold "Syncing pages…"

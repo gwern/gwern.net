@@ -178,3 +178,8 @@ executable redirectGuesser
   import: exe-common
   main-is: redirectGuesser.hs
   ghc-options: -threaded -rtsopts
+
+executable linkSuggester
+  import: exe-common
+  main-is: linkSuggester.hs
+  ghc-options: -threaded -rtsopts
