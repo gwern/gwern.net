@@ -2230,7 +2230,9 @@ authorLinkDB = M.fromList $
     , ("Katherine Gordon-Smith", "https://www.worcester.ac.uk/about/profiles/dr-katherine-gordon-smith")
     , ("Karl Cobbe" ,"https://scholar.google.com/citations?user=stCljMYAAAAJ")
     , ("Jürgen Wellmann", "https://orcid.org/0000-0003-3635-8584")
-    , ("Todd RogerS", "https://en.wikipedia.org/wiki/Todd_Rogers_(behavioral_scientist)")
+    , ("Todd Rogers", "https://en.wikipedia.org/wiki/Todd_Rogers_(behavioral_scientist)")
+    , ("Alexander Thompson", "https://alec.freumh.org/Homepage.html")
+    , ("Benjamin Grayzel", "https://benjamingrayzel.substack.com")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3530,4 +3532,4 @@ authorWpLinkDB = setLike
     , "Nadine Dupérré", "Danica Kragic", "Aude Billard", "Thierry Depaulis", "Jorge Nuno Silva", "Eddie Duggan", "David Parlett"
     , "Bertram Gawronski", "Fei-Fei Li", "Euan Ashley", "John A. Long", "Elga Mark-Kurik",  "Per E. Ahlberg"
     , "Roger Jones", "Kate Trinajstic", "Hervey M. Cleckley", "May Berenbaum", "American Psychological Association"
-    , "Alfred Bester", "Martyn Thomas", "Nina Vasan", "Max H. Bazerman"]
+    , "Alfred Bester", "Martyn Thomas", "Nina Vasan", "Max H. Bazerman", "William Yang Wang"]

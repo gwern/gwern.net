@@ -49,7 +49,7 @@ main = do
 
           when (length args == 0) $ printRed "Error: 0 arguments (need 2)." >> error ""
           when (length args == 1) $ printRed $ "Error: only 1 argument (need ≥2): " >> error (show (head args))
-          when ("gwt" `elem` args || "t" `elem` args) $ error "Invalid tag/URL 'gwt'/'t' detected! Is this entire command malformed? Exiting immediately."
+          when ("gwt" `elem` args || "gwtag" `elem` args || "t" `elem` args) $ error "Invalid tag/URL 'gwt'/'gwtag'/'t' detected! Is this entire command malformed? Exiting immediately."
 
           let links = filter (\arg -> " "/= arg && ""/=arg && (head arg == '/' || "http" `isPrefixOf` arg)) args
           allTags <- listTagsAll

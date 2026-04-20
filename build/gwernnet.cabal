@@ -6,7 +6,7 @@ license-file:  LICENSE
 author:        Gwern Branwen
 maintainer:    Gwern Branwen
 build-type:    Simple
-synopsis:      Gwern.net build + maintenance tools (internal). See <./build/sync.sh>, <https://gwern.net/design>, and <https://github.com/gwern/gwern.net/>.
+synopsis:      Gwern.net build + maintenance tools (internal). See <./build/sync.sh>, <https://gwern.net/design>, <https://gwern.net/style-guide>, and <https://github.com/gwern/gwern.net/>. This does not include the website content.
 category:      Web
 
 -- Shared defaults for all components.
@@ -62,6 +62,8 @@ common gwern-common
               , utf8-string
               , utility-ht
               , vector
+              -- 2026-04-19: warp-3.4.13 compilation fatally crashes on "Network/Wai/Handler/Warp/Run.hs:39:5: error: Module ‘Network.Socket’ does not export ‘waitReadSocketSTM’", so pin below for now
+              , warp<3.4.13
 common exe-common
   import: gwern-common
   hs-source-dirs: app

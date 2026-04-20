@@ -27,8 +27,8 @@ urlTagDB = map (\(s, t) -> ((s `isPrefixOf`), t)) prefixMatches
     prefixMatches = setLike [("https://publicdomainreview.org/", "history/public-domain-review")
                     , ("https://www.filfre.net/", "technology/digital-antiquarian")
                     , ("https://abandonedfootnotes.blogspot.com", "sociology/abandoned-footnotes")
-                    , ("https://dresdencodak.com", "humor")
-                    , ("https://www.theonion.com", "humor")
+                    , ("https://dresdencodak.com", "humor/comics")
+                    , ("https://www.theonion.com", "humor/comics")
                     , ("https://tvtropes.org", "fiction")]
 
     infixMatches = setLike [("r-project.org", "cs/r"),
@@ -192,7 +192,7 @@ tagsShort2LongRewrites =
    , ("star-war", "star-wars"), ("starwars", "star-wars"), ("starwar", "star-wars")
    , ("hydranencephaly", "anencephaly"), ("aencephaly", "anencephaly"), ("amencephaly", "anencephaly"), ("anancephaly", "anencephaly"), ("ancephaly", "anencephaly"), ("anecephaly", "anencephaly"), ("anecnephaly", "anencephaly"), ("anencefaly", "anencephaly"), ("anenceohalyt", "anencephaly"), ("anencepahly", "anencephaly"), ("anencepaly", "anencephaly"), ("anencephal", "anencephaly"), ("anencephaley", "anencephaly"), ("anencephalg", "anencephaly"), ("anencephalt", "anencephaly"), ("anencephay", "anencephaly"), ("anencephlay", "anencephaly"), ("anencephly", "anencephaly"), ("anencepphaly", "anencephaly"), ("anencphaly", "anencephaly"), ("anencwphaly", "anencephaly"), ("anenecephaly", "anencephaly"), ("anenecphaly", "anencephaly"), ("anenenecephaly", "anencephaly"), ("anennccephaly", "anencephaly"), ("anensefaly", "anencephaly"), ("anensephaly", "anencephaly"), ("anincephaly", "anencephaly"), ("annencephaly", "anencephaly"), ("gydrancrephaly", "anencephaly"), ("hydracephaly", "anencephaly"), ("hydrancefaly", "anencephaly"), ("hydrancepahly", "anencephaly"), ("hydrancepaly", "anencephaly"), ("hydrancephakt", "anencephaly"), ("hydrancephal", "anencephaly"), ("hydrancephaley", "anencephaly"), ("hydrancephalg", "anencephaly"), ("hydrancephay", "anencephaly"), ("hydrancephlay", "anencephaly"), ("hydrancephly", "anencephaly"), ("hydrancepphaly", "anencephaly"), ("hydrancwphaly", "anencephaly"), ("hydranecephaly", "anencephaly"), ("hydranecphaly", "anencephaly"), ("hydranephaly", "anencephaly"), ("hydrannccephaly", "anencephaly"), ("hydransefaly", "anencephaly"), ("hydransephaly", "anencephaly"), ("hydranxephaly", "anencephaly"), ("hydrnacephaly", "anencephaly"), ("hydroancephaly", "anencephaly"), ("hydrocephaly", "anencephaly"), ("hydrrancephaly", "anencephaly"), ("hyrdrancephaly", "anencephaly"), ("jydrancephaly", "anencephaly"), ("naencephaly", "anencephaly"), ("nencephaly", "anencephaly"), ("snencephaly", "anencephaly")
    , ("physucs", "physics"), ("illusoin", "illusion"), ("opetry", "poetry"), ("poem", "poetry"), ("poet", "poetry"), ("typogrpahy", "typography"), ("bipolar-energy", "bipolar/energy"), ("clade-4", "claude/4"), ("discrete-diffusion", "diffusion/discrete"), ("discrete/diffusion", "diffusion/discrete"), ("working-memory", "dnb")
-   , ("ai/nn/transformer/gpt/non-fiction", "ai/nn/transformer/gpt/nonfiction"), ("ai/nn/transformer/gpt/5/4-5", "ai/nn/transformer/gpt/4-5"), ("non-fiction", "nonfiction"), ("nonfiction" , "ai/nn/transformer/gpt/nonfiction"), ("piblication-bias", "statistics/bias/publication"), ("embryo-selection", "selection/artificial"), ("embryo/selection", "selection/artificial"), ("selection/embryo", "selection/artificial"), ("multiagent", "multi-agent"), ("stegranoaphy", "steganography"), ("dpeeseek", "deepseek"), ("tokeniation", "tokenization"), ("mythis", "mythos"), ("myths", "mythos"), ("pindaric", "pindar"), ("time-travle", "time-travel"), ("cs/cryptography/time-lock", "cs/cryptography/timelock"), ("psychology/illusion-of-depth", "psychology/cognitive-bias/illusion-of-depth")
+   , ("ai/nn/transformer/gpt/non-fiction", "ai/nn/transformer/gpt/nonfiction"), ("ai/nn/transformer/gpt/5/4-5", "ai/nn/transformer/gpt/4-5"), ("non-fiction", "nonfiction"), ("nonfiction" , "ai/nn/transformer/gpt/nonfiction"), ("piblication-bias", "statistics/bias/publication"), ("embryo-selection", "selection/artificial"), ("embryo/selection", "selection/artificial"), ("selection/embryo", "selection/artificial"), ("multiagent", "multi-agent"), ("stegranoaphy", "steganography"), ("dpeeseek", "deepseek"), ("tokeniation", "tokenization"), ("mythis", "mythos"), ("myths", "mythos"), ("pindaric", "pindar"), ("time-travle", "time-travel"), ("cs/cryptography/time-lock", "cs/cryptography/timelock"), ("psychology/illusion-of-depth", "psychology/cognitive-bias/illusion-of-depth"), ("comic", "comics")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
@@ -303,8 +303,8 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("fiction/science-fiction/frank-herbert", "<em>Dune</em>")
   , ("fiction/science-fiction", "Sci-Fi")
   , ("fiction/fantasy", "fantasy")
-  , ("fiction/humor/hardtruthsfromsoftcats.tumblr.com", "<em>Hard Truths From Soft Cats</em>")
-  , ("fiction/humor/dinosaur-comics", "<em>Dinosaur Comics</em>")
+  , ("fiction/humor/comics/hardtruthsfromsoftcats.tumblr.com", "<em>Hard Truths From Soft Cats</em>")
+  , ("fiction/humor/comics/dinosaur-comics", "<em>Dinosaur Comics</em>")
   , ("existential-risk/nuclear/hofstadter", "nuclear war (Hofstadter)")
   , ("existential-risk/nuclear", "nuclear war")
   , ("economics/perpetuities", "perpetuities")
@@ -417,6 +417,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("fiction/gene-wolfe/suzanne-delage", "Wolfe’s “Delage” ")
   , ("fiction/gene-wolfe", "Gene Wolfe")
   , ("fiction/text-game", "text game")
+  , ("fiction/humor/comics", "comics")
   , ("fiction/humor", "humor")
   , ("fiction/criticism", "literary criticism")
   , ("economics/advertising/adblock", "adblocking")
