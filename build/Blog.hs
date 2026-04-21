@@ -135,7 +135,7 @@ writeOutBlogEntry (filepath, p,mi) = do
     writeUpdatedFile prefix filepath $ T.pack $ annotation2Markdown p mi
 
 annotation2Markdown :: Path -> MetadataItem -> String
-annotation2Markdown url (title, author, dateCreated, dateModified, kvs, _, _) =
+annotation2Markdown _url (title, author, dateCreated, dateModified, kvs, _, abst) =
   let get k defalt = fromMaybe defalt (lookup k kvs)
       description = get "description"   "N/A"
       status      = get "status"         "finished"
@@ -164,12 +164,11 @@ annotation2Markdown url (title, author, dateCreated, dateModified, kvs, _, _) =
        , "index: True"
        , "..."
        , ""
-       , "[" ++ (if description /= "N/A" then description else "**Original page.**") ++
-         "](" ++ url ++ "){.link-annotated .include-annotation .include-strict" ++
-         (if "/blog" `isPrefixOf` url then "" else " rel='canonical'") ++
-         " data-include-template='annotation-blockquote-not' .include-spinner-not .id-not}"
-       , ""
+       , "```{.HTML}"
+       ] ++ lines abst ++ [
+         ""
        , "<div class='text-center' id='return-to-blog-index-link'>[<a href='/blog/index' class='link-page link-tag directory-indexes-upwards link-annotated-not' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to blog directory'>Return to blog index</a>]</div>"
+       , "```"
        ]
 
 generateDirectoryBlog :: [(FilePath, Path, MetadataItem)] -> IO ()
