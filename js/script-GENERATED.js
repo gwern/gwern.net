@@ -14849,6 +14849,50 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 							 + GW.refMappingFileVersion);
 	};
 
+	let componentsFromId = (id) => {
+		let components = {
+			authors: [ ],
+			et_al: false,
+			year: null,
+			other: [ ]
+		};
+
+		let parts = id.split("-");
+		let part;
+		let yearRegExp = new RegExp("^[12][0-9][0-9][0-9][a-z]?$");
+		let doneWithAuthors = false;
+		while (part = parts.shift()) {
+			if (   part == "et"
+				&& parts.first == "al") {
+				parts.shift();
+				components.et_al = true;
+				if (components.authors.length > 0)
+					doneWithAuthors = true;
+			} else if (yearRegExp.test(part) == true) {
+				components.year = part;
+				if (components.authors.length > 0)
+					doneWithAuthors = true;
+			} else if (doneWithAuthors == false) {
+				components.authors.push(part.toLowerCase());
+			} else {
+				components.other.push(part.toLowerCase());
+			}
+		}
+		
+		return components;
+	};
+	let idFromComponents = (components) => {
+		let idParts = [ ];
+		idParts.push(components.authors.join("-"));
+		if (components.et_al == true)
+			idParts.push("et-al");
+		if (components.year != null)
+			idParts.push(components.year);
+		if (components.other.length > 0)
+			idParts.push(components.other.join("-"));
+		return idParts.join("-");
+	};
+
 	let updatePageTitleElements = (newTitleHTML) => {
 		let newPageTitle = newDocument(newTitleHTML);
 		eventInfo.document.querySelector("title")?.replaceChildren(newPageTitle.textContent);
@@ -15040,13 +15084,10 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 			 */
 			mappingFileBasename = normalizedRef.slice(1, 2);
 		} else {
-			//	Normalize manual IDs to lower case.
-			normalizedRef = normalizedRef.toLowerCase();
-
-			//	Fix reversed ID, i.e. “2020-foo” instead of “foo-2020”.
-			let reversedIDPatternParts = normalizedRef.match(/^([12][0-9][0-9][0-9])-(.+)$/);
-			if (reversedIDPatternParts != null)
-				normalizedRef = `${reversedIDPatternParts[2]}-${reversedIDPatternParts[1]}`;
+			/*	Normalize manual IDs to standard form
+				(“dash-separated-authors[-et-al]-year[-other-stuff]”).
+			 */
+			normalizedRef = idFromComponents(componentsFromId(normalizedRef));
 
 			//	Update URL bar, if need be.
 			if (normalizedRef != ref)
@@ -15087,34 +15128,6 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 					}
 
 					//	Get all partial-author matches.
-					let componentsFromId = (id) => {
-						let components = {
-							authors: [ ],
-							et_al: false,
-							year: null,
-							other: [ ]
-						};
-
-						let parts = id.split("-");
-						let part;
-						let yearRegExp = new RegExp("^[12][0-9][0-9][0-9][a-z]?$");
-						while (part = parts.shift()) {
-							if (   part == "et"
-								&& parts.first == "al") {
-								parts.shift();
-								components.et_al = true;
-							} else if (yearRegExp.test(part) == true) {
-								components.year = part;
-							} else if (   components.year == null
-									   && components.et_al == false) {
-								components.authors.push(part);
-							} else {
-								components.other.push(part);
-							}
-						}
-						
-						return components;
-					};
 					let refComponents = componentsFromId(normalizedRef);
 					let partialAuthorMatches = Object.entries(event.target.response).filter(entry =>
 						entry[0].startsWith("_") == false
