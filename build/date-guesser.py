@@ -806,7 +806,6 @@ def ask_model(target: str, today: datetime) -> str:
         temperature=1,  # current OpenAI reasoning models require the default temperature
         top_p=1,
         seed=0,
-        max_completion_tokens=64,
     )
 
     return normalize_model_output(completion.choices[0].message.content)

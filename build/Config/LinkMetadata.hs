@@ -1,7 +1,7 @@
 {- Config.LinkMetadata: config data, unit-tests, for LinkMetadata
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2026-04-20 23:42:14 gwern"
+When:  Time-stamp: "2026-04-21 00:23:02 gwern"
 License: CC-0
 -}
 
@@ -56,7 +56,7 @@ badDOISubstrings = ["–", "—", " ", ",", "{", "}", "!", "@", "#", "$", "\"", 
 -- NOTE: '<' as a leading, and '>' as a trailing char, can be valid in a title due to HTML (especially italics); closed-parenthesis is a valid trailing character due to years like '<em>Film</em> (2012)'; open-parenthesis is valid leading character due to overly-cute titles (eg. "(Re)Considering Personality in Criminological Research"); '+' is a valid trailing character due to names like 'Google+' or 'C++'
 badTitleLeadingChars, badTitleTrailingChars :: String
 badTitleLeadingChars = "\\;,_~=-{"
-badTitleTrailingChars = "\\;,_~=+-}:"
+badTitleTrailingChars = "\\;,_~=-}:"
 
 badAuthorSubstrings :: [String]
 badAuthorSubstrings = [";", "&", "?", "!", " >", "< ", " <"]

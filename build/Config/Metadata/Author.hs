@@ -910,6 +910,9 @@ canonicals = M.fromList $ setLike
   , ("Benjamin Mann", "Ben Mann")
   , ("APA", "American Psychological Association")
   , ("billpeeb", "Bill Peebles")
+  , ("4RH1T3CT0R7", "Artem Lytkin")
+  , ("Tim_Hua_", "Tim Hua")
+  , ("max_spero_", "Max Spero")
   ]
 
 -- tests: unique
@@ -2212,6 +2215,7 @@ authorLinkDB = M.fromList $
     , ("Michael Newman", "https://www.uu.se/en/department/organismal-biology/research/devonian-world/the-team/michael-newman-bsc")
     , ("ChatGPT-3.5", "https://openai.com/blog/chatgpt/")
     , ("GPT-3.5", "https://platform.openai.com/docs/models/gpt-3")
+    , ("ChatGPT Images-2.0", "https://openai.com/index/introducing-chatgpt-images-2-0/")
     , ("Clemens L. Winter", "https://clemenswinter.com/")
     , ("Christopher Berner", "https://www.cberner.com/about/")
     , ("Mateusz Litwin", "https://scholar.google.com/citations?user=YTPyXHAAAAAJ")
@@ -2233,6 +2237,7 @@ authorLinkDB = M.fromList $
     , ("Todd Rogers", "https://en.wikipedia.org/wiki/Todd_Rogers_(behavioral_scientist)")
     , ("Alexander Thompson", "https://alec.freumh.org/Homepage.html")
     , ("Benjamin Grayzel", "https://benjamingrayzel.substack.com/")
+    , ("Artem Lytkin", "https://github.com/4RH1T3CT0R7")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3532,4 +3537,4 @@ authorWpLinkDB = setLike
     , "Nadine Dupérré", "Danica Kragic", "Aude Billard", "Thierry Depaulis", "Jorge Nuno Silva", "Eddie Duggan", "David Parlett"
     , "Bertram Gawronski", "Fei-Fei Li", "Euan Ashley", "John A. Long", "Elga Mark-Kurik",  "Per E. Ahlberg"
     , "Roger Jones", "Kate Trinajstic", "Hervey M. Cleckley", "May Berenbaum", "American Psychological Association"
-    , "Alfred Bester", "Martyn Thomas", "Nina Vasan", "Max H. Bazerman", "William Yang Wang", "Larry Tesler"]
+    , "Alfred Bester", "Martyn Thomas", "Nina Vasan", "Max H. Bazerman", "William Yang Wang", "Larry Tesler", "Peter J. Huber"]
