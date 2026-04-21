@@ -8,7 +8,6 @@ import qualified Data.Text.IO as TIO (getContents)
 import Text.Pandoc (def, pandocExtensions, runPure, readerExtensions, readMarkdown, writeHtml5String, Pandoc)
 
 import LinkMetadata (cleanAbstractsHTML)
-import LinkAuto (linkAuto)
 import Interwiki (convertInterwikiLinks, isWPArticle, isWPDisambig)
 import qualified GenerateSimilar as GS (singleShotRecommendations)
 import Utils (replace, safeHtmlWriterOptions, sed)
@@ -21,8 +20,7 @@ main = do originalMarkdown <- TIO.getContents
           let pandocCleanEither = runPure $ do
                 pandoc      <- readMarkdown def{readerExtensions=pandocExtensions} originalMarkdown
                 let pandoc'  = convertInterwikiLinks pandoc
-                let pandoc'' = linkAuto pandoc'
-                return pandoc''
+                return pandoc'
           case pandocCleanEither of
             Left       e           -> error $ show e ++ ": " ++ show originalMarkdown
             Right      pandocClean ->

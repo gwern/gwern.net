@@ -10,7 +10,6 @@ import Data.FileStore.Utils (runShellCommand)
 import GHC.Generics (Generic)
 import qualified Data.ByteString.Lazy as BL (length, concat)
 
-import LinkAuto (linkAutoHtml5String)
 import LinkMetadataTypes (Metadata, MetadataItem, Path, Failure(Permanent))
 import Metadata.Format (cleanAbstractsHTML, trimTitle, filterMeta, processDOI, pageNumberParse)
 import Metadata.Author (cleanAuthors)
@@ -42,7 +41,7 @@ pdf md p = do C.cd
                    -- PDFs have both a 'Creator' and 'Author' metadata field sometimes. Usually Creator refers to the (single) person who created the specific PDF file in question, and Author refers to the (often many) authors of the content; however, sometimes PDFs will reverse it: 'Author' means the PDF-maker and 'Creators' the writers. If the 'Creator' field is longer than the 'Author' field, then it's a reversed PDF and we want to use that field instead of omitting possibly scores of authors from our annotation.
                    let ecreator = filterMeta $ U.toString mbCreator
                    let eauthor' = filterMeta  $ U.toString mbAuthor
-                   let author = linkAutoHtml5String $ cleanAbstractsHTML $ cleanAuthors $ trim $ if length eauthor' > length ecreator then eauthor' else ecreator
+                   let author = cleanAbstractsHTML $ cleanAuthors $ trim $ if length eauthor' > length ecreator then eauthor' else ecreator
                    let ts = [] -- TODO: replace with ML call to infer tags
                    printGreen $ "PDF: " ++ p ++" DOI: " ++ edoi'
                    at <- fmap (fromMaybe "") $ doi2Abstract md edoi'
@@ -69,5 +68,5 @@ doi2Abstract md doi = if length doi < 7 then return Nothing
                                     Right j' -> let j'' = abstract $ message j' in
                                       case j'' of
                                        Nothing -> return Nothing
-                                       Just a -> do trimmedAbstract <- fmap cleanAbstractsHTML $ processParagraphizer md doi $ linkAutoHtml5String $ cleanAbstractsHTML a
+                                       Just a -> do trimmedAbstract <- fmap cleanAbstractsHTML $ processParagraphizer md doi $ cleanAbstractsHTML a
                                                     return $ Just trimmedAbstract

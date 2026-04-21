@@ -23,7 +23,6 @@ import Control.Monad (forM_, unless)
 import qualified Control.Monad.Parallel as Par (mapM)
 
 -- import Columns as C (listLength)
-import LinkAuto (linkAutoFiltered)
 import LinkID (generateID)
 import LinkMetadata (hasAnnotation, hasAnnotationOrIDInline, isPagePath, readLinkMetadata)
 import LinkMetadataTypes (Metadata, MetadataItem)
@@ -94,9 +93,7 @@ writeOutCallers md target callerPairs
                                        let preface = [Para [Link ("",["icon-special"], []) [Strong [Str (if blN > 1 then ("Backlinks (" `T.append` T.pack (show blN) `T.append` ")") else "Backlink"), Str ":"]] ("/design#backlink", "")]] -- we need .icon-special to avoid arrow-up-rewrites from rewrite.js
                                        let content = BulletList $ concatMap (generateCaller md target) callerPairs
 
-                                       -- NOTE: auto-links are a good source of backlinks, catching cases where an abstract mentions something but I haven't actually hand-annotated the link yet (which would make it show up as a normal backlink). But auto-linking is extremely slow, and we don't care about the WP links which make up the bulk of auto-links. So we can do just the subset of non-WP auto-links.
-                                       let pandoc = linkAutoFiltered (filter (\(_,url) -> not ("wikipedia.org/"`T.isInfixOf`url))) $
-                                                    walk typographyTransformTemporary $ walk (hasAnnotation md) $ Pandoc nullMeta $ preface++[content]
+                                       let pandoc = walk typographyTransformTemporary $ walk (hasAnnotation md) $ Pandoc nullMeta $ preface++[content]
                                        let html = let htmlEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc
                                                   in case htmlEither of
                                                               Left e -> error $ show target ++ show callerPairs ++ show e ++ show callerPairs

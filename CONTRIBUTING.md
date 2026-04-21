@@ -15,6 +15,7 @@ External contributor rules for the Gwern.net source code repo.
         - `Bash`: should be [shellcheck-clean](https://github.com/koalaman/shellcheck)
         - `Elisp`: byte-compile without warnings
         - `HTML`: [HTML Tidy](https://www.html-tidy.org/) & [W3 Validator](https://validator.w3.org/) (but only a subset)
+        <!-- TODO: linters for CSS, JS, R, and Python -->
     - *no editing generated files* directly: all `*-VERSIONED.ext`, `*-GENERATED.ext` etc. files should be touched only by the PHP scripts which generate them via the pre-commit hook.
 5. **House style**: all contributions should follow language-specific guidelines (see again the MoS). Currently:
 

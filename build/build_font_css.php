@@ -24,9 +24,9 @@ global $font_dir, $css_dir;
 	- font-display
 	- unicode-range
  */
- 
+
 global $bare_fields, $formats;
- 
+
 $bare_fields = [ "name", "base_path", "format" ];
 $formats = [
 	'ttf' => 'truetype',
@@ -147,7 +147,7 @@ function generate_entries($spec_block) {
 	foreach ($spec_lines as $line) {
 		if ($line[0] == '`') {
 			list($weight, $filename) = kv_tokenize($line);
-			$entries[] = [ 'weight' => $weight, 'filename' => $filename ];	
+			$entries[] = [ 'weight' => $weight, 'filename' => $filename ];
 		} else if ($line[0] == "\t") {
 			list($key, $value) = kv_tokenize(ltrim($line));
 			$entries[array_key_last($entries)][$key] = $value;
@@ -173,7 +173,7 @@ function generate_entries($spec_block) {
 
 function construct_rule($entry, $italic = false) {
 	global $formats;
-	
+
 	$rule   = [ ];
 	$rule[] = "@font-face {";
 	$rule[] = "	font-family: '" . $entry['name'] . "';";

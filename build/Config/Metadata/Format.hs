@@ -184,7 +184,7 @@ filterMetaBadWholes = setLike ["P", "b", "cretu", "user", "yeh", "Canon", "times
                       , "bar", "tmp", "jvore", "ÿþ", "I.R.I.S.", "C&M", "C&amp;M", "()", "[]", "{}"
                       , "Gundars Strads", "Error - CORE file server", "comp2", "u2ps", "mac2"
                       , "Chrome", "Chromium", "Firefox", "Safari", "Author", "Binsbench"
-                      , "Western Publishing", "John Wiley, Sons", "40505-40237-1-PB.pdf"]
+                      , "Western Publishing", "John Wiley, Sons", "40505-40237-1-PB.pdf", "Gresham College"]
 
 -- tests: unique-all
 htmlRewriteTestCases :: [(String, String)]
@@ -251,6 +251,7 @@ htmlRewriteRegexpAfter = [
          , ("([0-9][0-9]+) ?[xX] ?([0-9][0-9]+) ?px", "\\1×\\2px") --  "Alexnet performance for 16 x16 px features)."
          , ("([0-9]+)[ -]fold", "\\1×")
          , ("([0-9]+)[ -]times", "\\1×")
+         , ("([0-9]+)×[-–]-?([0-9]+)×", "\\1–\\2×") -- '5×-10×' → '5--10×'
          , ("<br> <strong>([A-Z][a-z]+)<\\/strong><p>", "<p><strong>\\1</strong>: ") --         <br> <strong>Background</strong><p>
          , ("</p><strong>([A-Z][a-z]+)<\\/strong><p>", "</p> <p><strong>\\1</strong>: ")
          , ("<p><strong>([A-Z][a-z]+)<\\/strong>:</p> <p>", "<p><strong>\\1</strong>: ")

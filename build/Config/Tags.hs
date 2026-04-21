@@ -27,8 +27,8 @@ urlTagDB = map (\(s, t) -> ((s `isPrefixOf`), t)) prefixMatches
     prefixMatches = setLike [("https://publicdomainreview.org/", "history/public-domain-review")
                     , ("https://www.filfre.net/", "technology/digital-antiquarian")
                     , ("https://abandonedfootnotes.blogspot.com", "sociology/abandoned-footnotes")
-                    , ("https://dresdencodak.com", "humor")
-                    , ("https://www.theonion.com", "humor")
+                    , ("https://dresdencodak.com", "humor/comics")
+                    , ("https://www.theonion.com", "humor/comics")
                     , ("https://tvtropes.org", "fiction")]
 
     infixMatches = setLike [("r-project.org", "cs/r"),
@@ -60,6 +60,7 @@ wholeTagRewritesRegexes = setLike [("^cs/", "CS/")
                      ]
 
 -- intended for use with full literal fixed-string matches, not regexps/infix/suffix/prefix matches.
+-- TODO: refactor into semantic categories: `synonym`, `morphology`, and `typo`
 -- Testing: unique keys; keys are all-lowercase (on-disk directories are always lowercase)
 tagsLong2Short, tagsShort2Long, tagsShort2LongRewrites :: [(String,String)]
 tagsShort2LongRewrites =
@@ -191,7 +192,7 @@ tagsShort2LongRewrites =
    , ("star-war", "star-wars"), ("starwars", "star-wars"), ("starwar", "star-wars")
    , ("hydranencephaly", "anencephaly"), ("aencephaly", "anencephaly"), ("amencephaly", "anencephaly"), ("anancephaly", "anencephaly"), ("ancephaly", "anencephaly"), ("anecephaly", "anencephaly"), ("anecnephaly", "anencephaly"), ("anencefaly", "anencephaly"), ("anenceohalyt", "anencephaly"), ("anencepahly", "anencephaly"), ("anencepaly", "anencephaly"), ("anencephal", "anencephaly"), ("anencephaley", "anencephaly"), ("anencephalg", "anencephaly"), ("anencephalt", "anencephaly"), ("anencephay", "anencephaly"), ("anencephlay", "anencephaly"), ("anencephly", "anencephaly"), ("anencepphaly", "anencephaly"), ("anencphaly", "anencephaly"), ("anencwphaly", "anencephaly"), ("anenecephaly", "anencephaly"), ("anenecphaly", "anencephaly"), ("anenenecephaly", "anencephaly"), ("anennccephaly", "anencephaly"), ("anensefaly", "anencephaly"), ("anensephaly", "anencephaly"), ("anincephaly", "anencephaly"), ("annencephaly", "anencephaly"), ("gydrancrephaly", "anencephaly"), ("hydracephaly", "anencephaly"), ("hydrancefaly", "anencephaly"), ("hydrancepahly", "anencephaly"), ("hydrancepaly", "anencephaly"), ("hydrancephakt", "anencephaly"), ("hydrancephal", "anencephaly"), ("hydrancephaley", "anencephaly"), ("hydrancephalg", "anencephaly"), ("hydrancephay", "anencephaly"), ("hydrancephlay", "anencephaly"), ("hydrancephly", "anencephaly"), ("hydrancepphaly", "anencephaly"), ("hydrancwphaly", "anencephaly"), ("hydranecephaly", "anencephaly"), ("hydranecphaly", "anencephaly"), ("hydranephaly", "anencephaly"), ("hydrannccephaly", "anencephaly"), ("hydransefaly", "anencephaly"), ("hydransephaly", "anencephaly"), ("hydranxephaly", "anencephaly"), ("hydrnacephaly", "anencephaly"), ("hydroancephaly", "anencephaly"), ("hydrocephaly", "anencephaly"), ("hydrrancephaly", "anencephaly"), ("hyrdrancephaly", "anencephaly"), ("jydrancephaly", "anencephaly"), ("naencephaly", "anencephaly"), ("nencephaly", "anencephaly"), ("snencephaly", "anencephaly")
    , ("physucs", "physics"), ("illusoin", "illusion"), ("opetry", "poetry"), ("poem", "poetry"), ("poet", "poetry"), ("typogrpahy", "typography"), ("bipolar-energy", "bipolar/energy"), ("clade-4", "claude/4"), ("discrete-diffusion", "diffusion/discrete"), ("discrete/diffusion", "diffusion/discrete"), ("working-memory", "dnb")
-   , ("ai/nn/transformer/gpt/non-fiction", "ai/nn/transformer/gpt/nonfiction"), ("ai/nn/transformer/gpt/5/4-5", "ai/nn/transformer/gpt/4-5"), ("non-fiction", "nonfiction"), ("nonfiction" , "ai/nn/transformer/gpt/nonfiction"), ("piblication-bias", "statistics/bias/publication"), ("embryo-selection", "selection/artificial"), ("embryo/selection", "selection/artificial"), ("selection/embryo", "selection/artificial"), ("multiagent", "multi-agent"), ("stegranoaphy", "steganography"), ("dpeeseek", "deepseek"), ("tokeniation", "tokenization"), ("mythis", "mythos"), ("myths", "mythos"), ("pindaric", "pindar"), ("time-travle", "time-travel")
+   , ("ai/nn/transformer/gpt/non-fiction", "ai/nn/transformer/gpt/nonfiction"), ("ai/nn/transformer/gpt/5/4-5", "ai/nn/transformer/gpt/4-5"), ("non-fiction", "nonfiction"), ("nonfiction" , "ai/nn/transformer/gpt/nonfiction"), ("piblication-bias", "statistics/bias/publication"), ("embryo-selection", "selection/artificial"), ("embryo/selection", "selection/artificial"), ("selection/embryo", "selection/artificial"), ("multiagent", "multi-agent"), ("stegranoaphy", "steganography"), ("dpeeseek", "deepseek"), ("tokeniation", "tokenization"), ("mythis", "mythos"), ("myths", "mythos"), ("pindaric", "pindar"), ("time-travle", "time-travel"), ("cs/cryptography/time-lock", "cs/cryptography/timelock"), ("psychology/illusion-of-depth", "psychology/cognitive-bias/illusion-of-depth"), ("comic", "comics")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
@@ -207,6 +208,13 @@ shortTagBlacklist = setLike ["a", "al", "an", "analysis", "and", "are", "as", "a
                       "fine", "free", "g", "git", "if", "in", "is", "it", "of", "on", "option", "rm", "sed", "strong", "t",
                       "the", "to", "tr", "up", "we", "ls", "<ul>", "<ol>", "<p>", "<blockquote>"]
 
+-- TODO: improve testing by adding tests for:
+-- - every `tagsLong2Short` key either exists in `listTagsAll` or is in `tagDisplayFossilWhitelist`;
+-- - no display-table key has leading/trailing whitespace;
+-- - every alias target resolves to a canonical tag;
+-- - every explicit alias key is unique;
+-- - every regex compiles;
+-- - every canonical on-disk tag has non-empty path components.
 -- Testing: unique all
 tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories should come before their directories if they are going to override the prefix.
   ("traffic/ab-testing", "Web A/B testing") -- NOTE: TLAs cannot be put into smallcaps because we italicize tags but Source Serif Pro does not have italic smallcaps <https://github.com/adobe-fonts/source-serif/issues/46>.
@@ -295,8 +303,8 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("fiction/science-fiction/frank-herbert", "<em>Dune</em>")
   , ("fiction/science-fiction", "Sci-Fi")
   , ("fiction/fantasy", "fantasy")
-  , ("fiction/humor/hardtruthsfromsoftcats.tumblr.com", "<em>Hard Truths From Soft Cats</em>")
-  , ("fiction/humor/dinosaur-comics", "<em>Dinosaur Comics</em>")
+  , ("fiction/humor/comics/hardtruthsfromsoftcats.tumblr.com", "<em>Hard Truths From Soft Cats</em>")
+  , ("fiction/humor/comics/dinosaur-comics", "<em>Dinosaur Comics</em>")
   , ("existential-risk/nuclear/hofstadter", "nuclear war (Hofstadter)")
   , ("existential-risk/nuclear", "nuclear war")
   , ("economics/perpetuities", "perpetuities")
@@ -313,7 +321,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("design/typography/sidenote", "sidenotes (typography)")
   , ("design/typography/sentence-spacing", "sentence-spacing (typography)")
   , ("darknet-market/silk-road/1/lsd", "SR1 LSD")
-  , ("cs/security", "computer security")
+  , ("cs/security", "infosec")
   , ("cs/lisp/emacs", "Emacs")
   , ("cs/lisp/scheme", "Scheme")
   , ("cs/lisp", "Lisp")
@@ -409,6 +417,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("fiction/gene-wolfe/suzanne-delage", "Wolfe’s “Delage” ")
   , ("fiction/gene-wolfe", "Gene Wolfe")
   , ("fiction/text-game", "text game")
+  , ("fiction/humor/comics", "comics")
   , ("fiction/humor", "humor")
   , ("fiction/criticism", "literary criticism")
   , ("economics/advertising/adblock", "adblocking")
@@ -490,7 +499,6 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("psychology/animal", "animal psych")
   , ("psychology/neuroscience/neurosurgery", "neurosurgery")
   , ("psychology/neuroscience", "neuroscience")
-  , ("psychology/illusion-of-depth", "illusion of depth")
   , ("psychology/energy", "mental energy")
   , ("psychology/novelty", "novelty U-curve")
   , ("psychology/chess", "chess psychology")
@@ -529,7 +537,6 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("reinforcement-learning/openai", "OA")
   , ("cs/linkrot/archiving", "Internet archiving")
   , ("cs/linkrot", "linkrot")
-  , ("technology/security", "infosec")
   , ("technology/google", "Google")
   , ("technology/digital-antiquarian", "<em>Digital Antiquarian</em>")
   , ("technology/carbon-capture", "carbon capture")
@@ -570,7 +577,6 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("cs/haskell/darcs", "darcs (VCS)")
   , ("cs/haskell", "Haskell")
   , ("cs/js", "JS")
-  , ("cs/cryptography/time-lock", "time-lock crypto")
   , ("cs/cryptography", "cryptography") -- NOTE: we can no longer shorten it to "crypto" because that now connotes "cryptocurrency"
   , ("cs/css", "CSS")
   , ("cs/shell", "CLI")
@@ -645,7 +651,6 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("ai/nn/gan/stylegan", "StyleGAN")
   , ("ai/nn/gan/biggan", "BigGAN")
   , ("ai/nn/gan", "GAN")
-  , ("ai/nn/diffusion/discrete ", "discrete diffusion")
   , ("ai/nn/diffusion", "diffusion NN")
   , ("dual-n-back", "DNB")
   , ("vitamin-d", "Vitamin D")

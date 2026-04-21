@@ -6,7 +6,7 @@ license-file:  LICENSE
 author:        Gwern Branwen
 maintainer:    Gwern Branwen
 build-type:    Simple
-synopsis:      Gwern.net build + maintenance tools (internal). See <./build/sync.sh>, <https://gwern.net/design>, and <https://github.com/gwern/gwern.net/>.
+synopsis:      Gwern.net build + maintenance tools (internal). See <./build/sync.sh>, <https://gwern.net/design>, <https://gwern.net/style-guide>, and <https://github.com/gwern/gwern.net/>. This does not include the website content.
 category:      Web
 
 -- Shared defaults for all components.
@@ -47,7 +47,6 @@ common gwern-common
               , random
               , regex-base
               , regex-tdfa
-              , rp-tree
               , split
               , stm
               , tagsoup
@@ -62,6 +61,8 @@ common gwern-common
               , utf8-string
               , utility-ht
               , vector
+              -- 2026-04-19: warp-3.4.13 compilation fatally crashes on "Network/Wai/Handler/Warp/Run.hs:39:5: error: Module ‘Network.Socket’ does not export ‘waitReadSocketSTM’", so pin below for now
+              , warp<3.4.13
 common exe-common
   import: gwern-common
   hs-source-dirs: app
@@ -84,10 +85,10 @@ library
       Config.Inflation
       Config.Interwiki
       Config.LinkArchive
-      Config.LinkAuto
       Config.LinkID
       Config.LinkIcon
       Config.LinkLive
+      Config.LinkMetadata
       Config.LinkSuggester
       Config.Metadata.Author
       Config.Metadata.Format
@@ -96,6 +97,7 @@ library
       Config.Paragraph
       Config.Tags
       Config.Typography
+      Config.Utext
       Config.XOfTheDay
       Cycle
       GTX
@@ -104,7 +106,6 @@ library
       Inflation
       Interwiki
       LinkArchive
-      LinkAuto
       LinkBacklink
       LinkID
       LinkIcon
@@ -166,3 +167,19 @@ executable changeTag
 executable generateSimilarLinks
   import: exe-common
   main-is: generateSimilarLinks.hs
+  ghc-options: -threaded -rtsopts
+
+executable linkTitler
+  import: exe-common
+  main-is: linkTitler.hs
+  ghc-options: -threaded -rtsopts
+
+executable redirectGuesser
+  import: exe-common
+  main-is: redirectGuesser.hs
+  ghc-options: -threaded -rtsopts
+
+executable linkSuggester
+  import: exe-common
+  main-is: linkSuggester.hs
+  ghc-options: -threaded -rtsopts

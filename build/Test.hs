@@ -5,7 +5,7 @@ module Test where
 
 import Control.Monad (unless)
 import Data.Either (lefts)
-import Data.List (intersect)
+import Data.List (intersect, isInfixOf, isPrefixOf)
 import qualified Data.Map.Strict as M (keys, toList)
 import Data.Char (isAlpha, isLower)
 import qualified Data.Text as T (unpack, elem, head, pack)
@@ -30,13 +30,12 @@ import qualified Cycle (testCycleDetection)
 import Inflation (inflationDollarTestSuite)
 import Interwiki (interwikiTestSuite, interwikiCycleTestSuite, isWPArticle, isWPDisambig)
 import LinkArchive (readArchiveMetadataAndCheck, testLinkRewrites)
-import LinkAuto (linkAutoTest)
 import LinkIcon (linkIconTest)
 import LinkLive (linkLiveTest, linkLivePrioritize)
 import Tags (testTags)
 import Typography (titleCaseTest)
-import LinkMetadata (readLinkMetadata, fileTranscludesTest)
 import Metadata.Author (authorCollapseTest, cleanAuthorsTest, extractTwitterUsername, authorDB)
+import GenerateSimilar (generateSimilarTestSuite)
 
 -- test the tests as configuration files for duplicates etc.:
 import qualified Config.GenerateSimilar (blackListURLs)
@@ -50,13 +49,17 @@ import qualified Config.Typography (surnameFalsePositivesWhiteList, titleCaseTes
 import qualified Config.XOfTheDay (siteBlackList, quoteDBPath, siteDBPath)
 import qualified XOfTheDay as XOTD (readTTDB)
 import qualified Config.Inflation (bitcoinUSDExchangeRateHistory, inflationDollarLinkTestCases)
-import qualified Config.LinkAuto (custom)
 import qualified Config.LinkID (linkIDOverrides, affiliationAnchors)
 import qualified Config.Metadata.Format (htmlRewriteRegexpBefore, htmlRewriteRegexpAfter, htmlRewriteFixed, filterMetaBadSubstrings, filterMetaBadWholes, balancedBracketTestCases, htmlRewriteTestCases)
 import qualified Config.Misc (cd, tooltipToMetadataTestcases, cycleTestCases, cleanArxivAbstracts, arxivAbstractFixedRewrites, arxivAbstractRegexps)
 import qualified Config.Paragraph (whitelist)
 import qualified Config.Metadata.Author (authorCollapseTestCases, canonicals, canonicalsWithInitials, authorLinkDB, authorLinkBlacklist, cleanAuthorsFixedRewrites, cleanAuthorsRegexps, extractTwitterUsernameTestSuite, authorWhitelist)
 import qualified Config.Metadata.Title (badStrings, stringReplace, stringDelete)
+import LinkMetadata (readLinkMetadata, generateFileTransclusionBlock)
+import Config.LinkMetadata (fileTranscludesTest, badDOISubstrings, allowedNonHttpURLPrefixes, uriValidationExemptInfixes, ignoredMalformedURLPrefixes, badAuthorSubstrings, duplicateAffiliationWhitelist, allowedNonHttpURLPrefixes, documentPreviewableExtensions, codePreviewableExtensions, fileViewableExtensions, documentPreviewableExtensions, codePreviewableExtensions, annotationClasses, positiveAnnotationClasses)
+
+import Utext (rawMarkdown2Utext)
+import Config.Utext (utextTestSuite)
 
 -- test function to validate lists of regex patterns
 testRegexPatterns :: [String] -> IO ()
@@ -116,8 +119,6 @@ testConfigs = sum $ map length [isUniqueList Config.Metadata.Format.filterMetaBa
               , length $ isUniqueKeys Config.Misc.arxivAbstractFixedRewrites
               , length $ isUniqueKeys Config.Inflation.bitcoinUSDExchangeRateHistory, length $ isUniqueAll Config.Inflation.inflationDollarLinkTestCases
               , length $ ensure "Test.Inflation.dates" "isDate" (isDate . fst) $ Config.Inflation.bitcoinUSDExchangeRateHistory
-              , length $ isUniqueAll Config.LinkAuto.custom
-              , length $ ensure "Test.LinkAuto.custom" "isURLAnyT" (isURLAnyT . snd) Config.LinkAuto.custom
               , length $ isUniqueAll Config.LinkID.linkIDOverrides
               , length $ ensure "Test.linkIDOverrides" "HTML identifier lambda" (\(_,ident) -> -- NOTE: HTML identifiers *must* start with `[a-zA-Z]`, and not numbers or periods etc.; they must not contain periods for CSS/JS compatibility
                                                                                         let ident' = T.unpack ident in '.' `notElem` ident' && isAlpha (head ident'))
@@ -135,7 +136,22 @@ testConfigs = sum $ map length [isUniqueList Config.Metadata.Format.filterMetaBa
               , length $ isCycleLess (M.toList Config.Metadata.Author.canonicals), length $ isCycleLess (M.toList Config.Metadata.Author.authorLinkDB)
               , length $ (map T.unpack $ M.keys Config.Metadata.Author.authorLinkDB) `intersect` (M.keys Config.Metadata.Author.canonicals)
               , length $ isUniqueList Config.Metadata.Title.badStrings, length $ isUniqueList Config.Metadata.Title.stringDelete, length $ isUniqueKeys Config.Metadata.Title.stringReplace
-              , length $ isUniqueList Config.Paragraph.whitelist, length $ ensure "Test.Paragraph.whitelist" "isURLAny" isURLAny Config.Paragraph.whitelist] ++
+              , length $ isUniqueList Config.Paragraph.whitelist, length $ ensure "Test.Paragraph.whitelist" "isURLAny" isURLAny Config.Paragraph.whitelist
+              , length $ isUniqueList Config.LinkMetadata.badDOISubstrings
+              , length $ isUniqueList Config.LinkMetadata.allowedNonHttpURLPrefixes
+              , length $ isUniqueList Config.LinkMetadata.uriValidationExemptInfixes
+              , length $ isUniqueList Config.LinkMetadata.ignoredMalformedURLPrefixes
+              , length $ isUniqueList Config.LinkMetadata.badAuthorSubstrings
+              , length $ isUniqueList Config.LinkMetadata.duplicateAffiliationWhitelist
+              , length $ ensure "Config.LinkMetadata.allowedNonHttpURLPrefixes" "looks like a URI scheme/prefix" (\p -> ":" `isInfixOf` p) Config.LinkMetadata.allowedNonHttpURLPrefixes
+              , length $ isUniqueList Config.LinkMetadata.documentPreviewableExtensions
+              , length $ isUniqueList Config.LinkMetadata.codePreviewableExtensions
+              , length $ isUniqueList Config.LinkMetadata.fileViewableExtensions
+              , length $ isUniqueList Config.LinkMetadata.positiveAnnotationClasses
+              , length $ isUniqueList Config.LinkMetadata.annotationClasses
+              , length $ ensure "documentPreviewableExtensions" "leading dot" (isPrefixOf ".") Config.LinkMetadata.documentPreviewableExtensions
+              , length $ ensure "codePreviewableExtensions" "leading dot" (isPrefixOf ".") Config.LinkMetadata.codePreviewableExtensions
+              ] ++
               [sum $ map length [ ensure "goodDomainsSimple" "isDomainT" isDomainT Config.LinkLive.goodDomainsSimple
                                 , ensure "goodDomainsSub"    "isDomainT" isDomainT Config.LinkLive.goodDomainsSub
                                 , ensure "badDomainsSimple"  "isDomainT" isDomainT Config.LinkLive.badDomainsSimple
@@ -166,7 +182,7 @@ testAll = do Config.Misc.cd
              printGreen ("Testing regexps for regex validity…" :: String)
              testRegexPatterns $
                [footnoteRegex, sectionAnonymousRegex, badUrlRegex] ++
-               (map fst $ Config.Tags.wholeTagRewritesRegexes ++ Config.Metadata.Author.cleanAuthorsRegexps ++ Config.Metadata.Format.htmlRewriteRegexpBefore ++ Config.Metadata.Format.htmlRewriteRegexpAfter ++ Config.Misc.arxivAbstractRegexps ++ map (\(a,b) -> (T.unpack a, T.unpack b)) Config.LinkAuto.custom)
+               (map fst $ Config.Tags.wholeTagRewritesRegexes ++ Config.Metadata.Author.cleanAuthorsRegexps ++ Config.Metadata.Format.htmlRewriteRegexpBefore ++ Config.Metadata.Format.htmlRewriteRegexpAfter ++ Config.Misc.arxivAbstractRegexps)
              let regexUnitTests = filter (\(before,after) -> Metadata.Format.cleanAbstractsHTML before /= after) Config.Metadata.Format.htmlRewriteTestCases
              unless (null regexUnitTests) $ printRed ("Regex rewrite unit test suite has errors in: " ++ show regexUnitTests)
              let twitterUsernameTests = filter (\(u,username) -> extractTwitterUsername u /= username) Config.Metadata.Author.extractTwitterUsernameTestSuite
@@ -184,7 +200,7 @@ testAll = do Config.Misc.cd
              unless (null invalidIDs) $ printRed ("IDs: Some IDs are valid dates, which should never happen and indicates metadata corruption: " ++ show invalidIDs)
 
              printGreen ("Testing file-transclusions…" :: String)
-             let fileTranscludes = fileTranscludesTest md am
+             let fileTranscludes = fileTranscludesTest generateFileTransclusionBlock md am
              let fileTranscludesResults = filter (uncurry (/=)) fileTranscludes
              unless (null fileTranscludesResults) $ printRed ("File-transclude unit test suite has errors in: " ++ show fileTranscludesResults)
 
@@ -219,9 +235,6 @@ testAll = do Config.Misc.cd
              let fileGuessResults = testGuessAuthorDate
              unless (null fileGuessResults) $ printRed ("File metadata-guessing unit-tests have errors in: " ++ show fileGuessResults)
 
-             printGreen ("Testing LinkAuto rewrites…" :: String)
-             unless (null linkAutoTest) $ printRed ("LinkAuto test-cases have errors in: " ++ show linkAutoTest)
-
              interwikiUnitTests <- do
                a <- Interwiki.isWPArticle False "https://en.wikipedia.org/wiki/George_Washington_XYZ"
                b <- Interwiki.isWPArticle False "https://en.wikipedia.org/wiki/George_Washington"
@@ -229,8 +242,12 @@ testAll = do Config.Misc.cd
                d <- Interwiki.isWPDisambig "George_Washington"
                pure (not a && b && c == Just True && d == Just False)
 
+             let utext = utextTestSuite rawMarkdown2Utext
+             unless (null utext) $ printRed ("Utext test suite has errors in: " ++ show utext)
+
              unless interwikiUnitTests $
                printRed "Interwiki disambig or non-existence checks failed?"
 
+             generateSimilarTestSuite
 
              printGreen ("Testing finished." :: String)

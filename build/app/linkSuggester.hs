@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 -- dependencies: libghc-pandoc-dev, Unique, monad-parallel, Interwiki.hs
 
--- usage: 'find . -name "*.md" -or -name "*.html" | link-suggester.hs'; like 'link-extractor.hs'
+-- usage: 'find . -name "*.md" -or -name "*.html" | linkSuggester'; like 'link-extractor.hs'
 --
 -- This extracts URLs from Markdown/HTML files, but with a focus on compiling `(anchor/target, URL)`
 -- pairs to be used for semi-automated link rewrites in Emacs.
@@ -25,7 +25,7 @@ import Control.Monad.Parallel as Par (mapM) -- 'monad-parallel' package
 
 import Query (extractURLsAndAnchorTooltips, parseMarkdownOrHTML)
 import Utils (writeUpdatedFile, printGreen, repeated)
-import qualified Config.LinkSuggester as C
+import qualified Config.LinkSuggester as C (filterURLs, whiteListDB, hitsMinimum, filterAnchors)
 
 -- | Map over the filenames
 main :: IO ()

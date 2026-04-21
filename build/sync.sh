@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-04-18 15:02:36 gwern"
+# When:  Time-stamp: "2026-04-20 12:24:43 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -152,7 +152,7 @@ else
           s '</p></p>' '</p>'; s '’ ”' '’ ”'; s ' ”' ' “';
           s '[("doi","")]' ''; s '>/a>' '</a>'; s 'href="W!"' 'href="!W"'; s 'class="Logotype-Tex"' 'class="logotype-tex"'; s 'Class="Logotype-Tex"' 'class="logotype-tex"'; s '<span Class="' '<span class="';
           s '_n_th' '<em>n</em>th'; s 'thumbnailText: ' 'thumbnail-text: '; s ' — ' '—'; s '_n_=' '_n_ = ';
-          s '< a href' '<a href'; s 'modifed: 20' 'modified: 20'; s 'linklive-not' 'link-live-not'; s ' n-dimensional' ' <em>n</em>-dimensional'; s 'pdf#pg=' 'pdf#page='; s 'PDF#pg=' 'PDF#page='; s '<hr />' '<hr>'; s '</hr>' '<hr>'; s '<hr></hr>' '<hr>'; s 'confidence: highly-likely' 'confidence: highly likely'; s 'drop-caps-de-zs' 'dropcaps-de-zs'; s 'drop-caps-kanzlei' 'dropcaps-kanzlei'; s '฿' '₿'; s 'mL/kg/day' 'mL⧸kg⧸day'; s 'μg/day' 'μg⧸day'; s 'kg/day' 'kg⧸day'; s 'mg/day' 'mg⧸day'; s 'g/day' 'g⧸day'; s 'kcal/day' 'kcal⧸day'; s 'tokens/sec' 'tokens⧸sec'; s 'kg/m<sup>2</sup>' 'kg⧸m<sup>2</sup>'; s 'kg/m(2)' 'kg⧸m<sup>2</sup>'; s 'ng/mL' 'ng⧸mL'; s ' g/L' ' g⧸L'; s ' mg/L' ' mg⧸L';s ' mg/L' ' mg⧸L'; s 'μg/L' 'μg⧸L'; s 'g/cm2' 'g⧸cm<sup>2</sup>'; s ' g/d' ' g⧸d'; s 'kV/m' 'kV⧸m'; s 'μg/mL' 'μg⧸mL'; s 'muons/second' 'muons⧸second'; s 'mmol/L' 'mmol⧸L'; s 'mmol/l' 'mmol⧸L'; s 'kJ/min' 'kJ⧸min';  s 'kcal/kg' 'kcal⧸kg';  s ' g/kg' ' g⧸kg';  s 'L/kg' 'L⧸kg';  s 'kcal/hour' 'kcal⧸hour';  s 'kJ/kg' 'kJ⧸kg';  s 'L/day' 'L⧸day'; s 'nmol/kg' 'nmol⧸kg'; s 'ml/kgBW/min' 'ml⧸kgBW⧸min'; s 'ml/kg/min' 'ml⧸kg⧸min'; s 'g/kg' 'g⧸kg'; s 'water/kg' 'water⧸kg'; s 'kg/h' 'kg⧸h'; s 'mg/USD' 'mg⧸USD';
+          s '< a href' '<a href'; s 'modifed: 20' 'modified: 20'; s 'linklive-not' 'link-live-not'; s ' n-dimensional' ' <em>n</em>-dimensional'; s 'pdf#pg=' 'pdf#page='; s 'PDF#pg=' 'PDF#page='; s '<hr />' '<hr>'; s '</hr>' '<hr>'; s '<hr></hr>' '<hr>'; s 'confidence: highly-likely' 'confidence: highly likely'; s 'drop-caps-de-zs' 'dropcaps-de-zs'; s 'drop-caps-kanzlei' 'dropcaps-kanzlei'; s '฿' '₿'; s 'mL/kg/day' 'mL⧸kg⧸day'; s 'μg/day' 'μg⧸day'; s 'kg/day' 'kg⧸day'; s 'mg/day' 'mg⧸day'; s 'g/day' 'g⧸day'; s 'kcal/day' 'kcal⧸day'; s 'tokens/sec' 'tokens⧸sec'; s 'kg/m<sup>2</sup>' 'kg⧸m<sup>2</sup>'; s 'kg/m(2)' 'kg⧸m<sup>2</sup>'; s 'ng/mL' 'ng⧸mL'; s ' g/L' ' g⧸L'; s ' mg/L' ' mg⧸L';s ' mg/L' ' mg⧸L'; s 'μg/L' 'μg⧸L'; s 'g/cm2' 'g⧸cm<sup>2</sup>'; s ' g/d' ' g⧸d'; s 'kV/m' 'kV⧸m'; s 'μg/mL' 'μg⧸mL'; s 'muons/second' 'muons⧸second'; s 'mmol/L' 'mmol⧸L'; s 'mmol/l' 'mmol⧸L'; s 'kJ/min' 'kJ⧸min';  s 'kcal/kg' 'kcal⧸kg';  s ' g/kg' ' g⧸kg';  s 'L/kg' 'L⧸kg';  s 'kcal/hour' 'kcal⧸hour';  s 'kJ/kg' 'kJ⧸kg';  s 'L/day' 'L⧸day'; s 'nmol/kg' 'nmol⧸kg'; s 'ml/kgBW/min' 'ml⧸kgBW⧸min'; s 'ml/kg/min' 'ml⧸kg⧸min'; s 'g/kg' 'g⧸kg'; s 'water/kg' 'water⧸kg'; s 'kg/h' 'kg⧸h'; s 'mg/USD' 'mg⧸USD'; s 'performance/Watt' 'performance⧸Watt';
           s 'src="doc/' 'src="/doc/'; s 'href="doc/' 'href="/doc/';
           s 'link-icon-not' 'icon-not'; s '<!--<p>' '<!-- <p>'; s '</p>-->' '</p> -->';
           s '](W!' '](!W'; s '<em>𝛽</em>' '<em>β</em>'; s '𝛽' '<em>β</em>'; s 'class="table-simple' 'class="table-small';
@@ -193,7 +193,7 @@ else
     # compile generateSimilarLinks.hs &
     everyNDays 3 && cabal update &
     cabal install ; cabal clean
-    ## NOTE: the generateSimilarLinks & link-suggester.hs runs are done at midnight by a cron job because
+    ## NOTE: the generateSimilarLinks & linkSuggester runs are done at midnight by a cron job because
     ## they are too slow to run during a regular site build & don't need to be super-up-to-date
     ## anyway
     cd ../../
@@ -203,9 +203,6 @@ else
     pkill checkMetadata || true
     rm ~/METADATA.txt &> /dev/null || true
     TMP_CHECK=$(mktemp /tmp/"XXXXX.txt"); ./static/build/checkMetadata >> "$TMP_CHECK" 2>&1 && mv "$TMP_CHECK" ~/METADATA.txt || true &
-
-    bold "Checking embeddings database…"
-    ghci -istatic/build/ ./static/build/GenerateSimilar.hs  -e 'e <- readEmbeddings' &>/dev/null
 
     # duplicates a later check but if we have a fatal link error, we'd rather find out now rather than 30 minutes later while generating annotations:
     λ(){ gf -e 'href=""' -e 'href="!W"></a>' -e "href='!W'></a>" -- ./metadata/*.gtx || true; }
@@ -246,9 +243,13 @@ else
                                          sort_by_lastmodified)"
 
     if [ -z "$SKIP_DIRECTORIES" ]; then
+        bold "Updating similar-links…"
+        generateSimilarLinks +RTS -N"$N" -RTS
+
         bold "Writing missing annotations to support link-bibliography/tag-directory updates…"
         # We add new annotations daily, but all the code in link-bib/tag-directory deal with only the current annotations which have been written out to disk as HTML snippets; thus, since that is done in the main compilation phase, the default would be that annotations would be omitted the first day and only appear the next time. This is annoying and manually working around it is even more tedious, so we provide a 'one-shot' missing-annotation mode and call that phase immediately before the lb/tag phase:
-        hakyll build +RTS -N"$N" -RTS --annotation-missing-one-shot  ; hakyll build clean
+        hakyll build +RTS -N"$N" -RTS --annotation-missing-one-shot
+        # rm --recursive --force -- ./_cache/ ./_site/ & # faster than 'hakyll build clean'
         bold "Updating link bibliographies…"
         generateLinkBibliography +RTS -N"$N" -RTS || true
 
@@ -272,8 +273,6 @@ else
     (ping -q -c 5 google.com &> /dev/null && cd ./static/ && git status; git pull; git push --verbose &) || true
 
     # Cleanup pre:
-    # rm --recursive --force ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks ./static/build/link-suggester || true
-
     cd ~/wiki/ # go to site root
     bold "Building site…"
 
@@ -547,7 +546,7 @@ else
       | LC_ALL=C awk '!seen[$0]++' \
       | LC_ALL=C sort > ./metadata/unicode-all.txt
     λ(){ UNICODE_N=$(cat ./metadata/unicode-all.txt | wc --lines);
-         [ "$UNICODE_N" -le 2180 ] && echo "$UNICODE_N"; }
+         [ "$UNICODE_N" -le 2100 ] && echo "$UNICODE_N"; }
     wrap λ "Many Unicode characters stopped being used?"
 
     bold "Generating HTML previews of document types (like MS Word)…"
@@ -666,9 +665,9 @@ else
     # essays only:
     ## eg. './2012-election.md \n...\n ./doc/cs/cryptography/1955-nash.md \n...\n ./newsletter/2022/09.md \n...\n ./review/mcnamara.md \n...\n ./wikipedia-and-knol.md \n...\n ./zeo/zma.md'
     PAGES="$(find . -type f -name "*.md" | gfv -e '_site/' -e 'index' -e '#' | sort --unique)"
-    # essays+tags+annotations+similars+backlinks:
+    # essays+tags+annotations+similars+backlinks, excluding Github-only files like '/static/{README,CONTRIBUTING}.md'
     # eg. "_site/2012-election _site/2014-spirulina _site/3-grenades ... _site/doc/ai/text-style-transfer/index ... _site/doc/anime/2010-sarrazin ... _site/fiction/erl-king ... _site/lorem-admonition ... _site/newsletter/2013/12 ... _site/note/attention ... _site/review/umineko ... _site/zeo/zma"
-    PAGES_ALL="$(find ./ -type f -name "*.md" | gfv -e '_site' -e '#' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'; find _site/metadata/annotation/ -type f -name '*.html' | gfv '/metadata/annotation/id/')"
+    PAGES_ALL="$(find ./ -type f -name "*.md" | gfv -e '_site' -e '#' -e 'static/' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'; find _site/metadata/annotation/ -type f -name '*.html' | gfv '/metadata/annotation/id/')"
 
     ## Pandoc/Skylighting by default adds empty self-links to line-numbered code blocks to make them clickable (as opposed to just setting a span ID, which it also does). These links *would* be hidden except that self links get marked up with up/down arrows, so arrows decorate the code-blocks. We have no use for them and Pandoc/skylighting has no option or way to disable them, so we strip them.
     bold "Stripping self-links from syntax-highlighted HTML…"
@@ -1443,7 +1442,6 @@ else
     ## NOTE: we skip time/size syncs because sometimes the infrastructure changes values but not file size, and it's confusing when JS/CSS doesn't get updated; since the infrastructure is so small (compared to eg. doc/*), just force a hash-based sync every time to reduce risk:
     bold "Syncing static/…"
     REMOTE="gwern@176.9.41.242:/home/gwern/gwern.net/"
-    # rsync --perms --exclude=".*" --exclude "*.hi" --exclude "*.o" --exclude "*.elc" --exclude '#*' --exclude='preprocess-markdown' --exclude 'generateLinkBibliography' --exclude='generateDirectory' --exclude='changeTag' --exclude='generateSimilar' --exclude='generateSimilarLinks' --exclude='hakyll' --exclude='guessTag' --exclude='changeTag' --exclude='link-extractor' --exclude='checkMetadata' --exclude="annotation-dump" --exclude="link-suggester" --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ "$REMOTE"/static &
     rsync --perms --exclude=".*" --exclude "*.elc" --exclude '#*' --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ "$REMOTE"/static &
     ## Likewise, force checks of the Markdown pages but skip symlinks (ie. non-generated files):
     bold "Syncing pages…"

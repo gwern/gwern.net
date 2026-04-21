@@ -1,11 +1,11 @@
--- nginxredirectguesser.hs: Semi-automate writing nginx redirect rules to fix incoming broken URL requests on Gwern.net.
+-- redirectGuesser.hs: Semi-automate writing nginx redirect rules to fix incoming broken URL requests on Gwern.net.
 -- For existing rules, see <https://gwern.net/static/nginx/redirect/move.conf> <https://gwern.net/static/nginx/redirect/broken.conf>
 --
 -- Because the set of redirects is so large already (>30k), there will often be a close but not exact match, of the sort hard to have written a regexp in advance for (and my past attempts to write very clever regexps have often backfired on me).
 -- We take the corpus quite literally. Instead of attempting fancy Transformer stuff (possible but I'm still chary), we simply ad hoc parse the set of rules as pairs, look for any exact filename matches else run a fuzzy <https://en.wikipedia.org/wiki/Levenshtein_distance> match between match & current error, and guess that the destination is what we need to fix the error.
 -- The emitted rules will, of course, need to be reviewed & fixed by hand, but about half of them (the more tedious half) will already be written correctly.
 --
--- example use: $ cd ~/wiki/ && xclip -o | sort -u | runghc -istatic/build/ static/build/nginxredirectguesser.hs
+-- example use: $ cd ~/wiki/ && xclip -o | sort --unique | redirectGuesser
 -- ...
 -- "~^/doc/history/medici/1963-deroover-theriseanddeclineofthemedici-bank\.pdf.*$" "";
 -- "~^/doc/iq/1994-herrnstein-murray-bellcurve\.pdf.*$" "";
@@ -24,10 +24,12 @@
 -- "~^/static/font/dropcap/ninit/light/C-3-abstract.png$" "/static/font/dropcap/ninit/light/C-abstract-light-6.png";
 
 import Control.Monad (forM)
+import Data.Bifunctor (first)
 import Data.Char (isSpace)
 import Data.List (dropWhileEnd, isSuffixOf, sort, sortOn)
 import Data.List.Split (splitOn)
-import qualified Data.Set as S
+import Data.Containers.ListUtils (nubOrd)
+import qualified Data.Set as S (fromList, notMember, toAscList)
 import System.Directory (doesDirectoryExist, getDirectoryContents)
 import System.FilePath ((</>), takeFileName)
 
@@ -39,15 +41,6 @@ import Utils (replaceChecked, replaceMany)
 -- Trim leading/trailing whitespace (kills CRLF issues too).
 strip :: String -> String
 strip = dropWhileEnd isSpace . dropWhile isSpace
-
--- Stable de-dupe preserving first occurrence order.
-nubOrd :: Ord a => [a] -> [a]
-nubOrd = go S.empty
-  where
-    go _    [] = []
-    go seen (x:xs)
-      | x `S.member` seen = go seen xs
-      | otherwise         = x : go (S.insert x seen) xs
 
 listFilesRecursivelyWithBasename :: FilePath -> IO [(FilePath, FilePath)]
 listFilesRecursivelyWithBasename dir = do
@@ -76,7 +69,7 @@ main =
 
      let redirects = filter (\(_,b) -> b `notElem` ["/404\";","404\";"]) . map safeTuplize . filter ((== 2) . length) . map (splitOn "$\" \"") . lines $ one ++ two
 
-     let redirectsCleaned = map (\(a,b) -> (filter (`notElem` ("~^.*?+[]\"" :: String)) a, b)) redirects
+     let redirectsCleaned = map (first (filter (`notElem` ("~^.*?+[]\"" :: String)))) redirects
 
      let bestMatch err =
            case filter (\(d,_,_) -> d <= minDistance) (diffAndRank files redirectsCleaned err) of
@@ -109,7 +102,7 @@ main =
      mapM_ putStrLn generated'
 
      where
-       safeTuplize []      = error "nginxredirectguesser: main: safeTuplize: empty list!"
+       safeTuplize []      = error   "nginxredirectguesser: main: safeTuplize: empty list!"
        safeTuplize [a]     = error $ "nginxredirectguesser: main: safeTuplize: only 1 item in list! original: " ++ show a
        safeTuplize (a:b:_) = (a,b)
 

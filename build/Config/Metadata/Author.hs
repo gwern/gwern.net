@@ -909,6 +909,7 @@ canonicals = M.fromList $ setLike
   , ("Benjamin Chess", "Ben Chess")
   , ("Benjamin Mann", "Ben Mann")
   , ("APA", "American Psychological Association")
+  , ("billpeeb", "Bill Peebles")
   ]
 
 -- tests: unique
@@ -2225,10 +2226,13 @@ authorLinkDB = M.fromList $
     , ("Murray B. Stein", "https://profiles.ucsd.edu/murray.stein")
     , ("James Campbell", "https://jamescampbell.me/")
     , ("lsusr", "https://www.lesswrong.com/users/lsusr")
-    , ("Kuang Lin", "https://scholar.google.com/citations?user=2JLxvMoAAAAJ&hl=en&oi=ao")
+    , ("Kuang Lin", "https://scholar.google.com/citations?user=2JLxvMoAAAAJ")
     , ("Katherine Gordon-Smith", "https://www.worcester.ac.uk/about/profiles/dr-katherine-gordon-smith")
-    , ("Karl Cobbe" ,"https://scholar.google.com/citations?user=stCljMYAAAAJ&hl=en&oi=ao")
+    , ("Karl Cobbe" ,"https://scholar.google.com/citations?user=stCljMYAAAAJ")
     , ("Jürgen Wellmann", "https://orcid.org/0000-0003-3635-8584")
+    , ("Todd Rogers", "https://en.wikipedia.org/wiki/Todd_Rogers_(behavioral_scientist)")
+    , ("Alexander Thompson", "https://alec.freumh.org/Homepage.html")
+    , ("Benjamin Grayzel", "https://benjamingrayzel.substack.com/")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3527,4 +3531,5 @@ authorWpLinkDB = setLike
     , "Ulric Neisser", "Leila Chatti", "Bo Burnham", "Daniele Macuglia", "Morteza Dehghani", "Richard Creath"
     , "Nadine Dupérré", "Danica Kragic", "Aude Billard", "Thierry Depaulis", "Jorge Nuno Silva", "Eddie Duggan", "David Parlett"
     , "Bertram Gawronski", "Fei-Fei Li", "Euan Ashley", "John A. Long", "Elga Mark-Kurik",  "Per E. Ahlberg"
-    , "Roger Jones", "Kate Trinajstic", "Hervey M. Cleckley", "May Berenbaum", "American Psychological Association"]
+    , "Roger Jones", "Kate Trinajstic", "Hervey M. Cleckley", "May Berenbaum", "American Psychological Association"
+    , "Alfred Bester", "Martyn Thomas", "Nina Vasan", "Max H. Bazerman", "William Yang Wang", "Larry Tesler"]

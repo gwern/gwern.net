@@ -38,7 +38,15 @@ import Typography (identUniquefy, titleWrap)
 import Metadata.Author (authorCollapse, extractTwitterUsername)
 import Utils (inlinesToText, replace, sed, writeUpdatedFile, printRed, toPandoc, anySuffix, delete, anyInfix)
 import qualified Config.Misc as C (cd)
-import GenerateSimilar (sortSimilarsStartingWithNewestWithTag, readListName, readListSortedMagic, ListName, ListSortedMagic)
+import qualified GenerateSimilar as GS
+  ( sortSimilarsStartingWithNewestWithTagEdb
+  , readEmbeddings
+  , readListName
+  , readListSortedMagic
+  , Embeddings
+  , ListName
+  , ListSortedMagic
+  )
 import qualified Config.GenerateSimilar as CGS (minTagAuto)
 import Image (isImageFilename)
 -- import Text.Show.Pretty (ppShow)
@@ -55,24 +63,35 @@ main = do C.cd
 
           meta <- readLinkMetadataSlow
           am <- readArchiveMetadata
-          ldb <- readListName
-          sortDB <- readListSortedMagic
+          ldb <- GS.readListName
+          sortDB <- GS.readListSortedMagic
 
           -- Special-case directories:
           -- 'newest': the _n_ newest link annotations created
           -- Optimization: if there are only a few arguments, that means we are doing tag-directory development/debugging, and we should skip doing `/doc/newest` since we aren't going to look at it & it would increase runtime.
           when (length dirs > 5 || newestp) $
-            generateDirectory True am meta ldb sortDB ["doc/", "doc/newest/", "/"] "doc/newest/"
+            generateDirectory True am meta ldb sortDB [] ["doc/", "doc/newest/", "/"] "doc/newest/"
           -- /blog/, for off-site writings which get generated Markdown file stubs to transclude their annotation, is unique enough that we won't try to make the regular generateDirectory cover that case too; see Blog.hs
 
           let chunkSize = 1 -- can't be >20 or else it'll OOM due to trying to force all the 100s of tag-directories in parallel
           let dirChunks = chunksOf chunkSize dirs'
 
           -- because of the expense of searching the annotation database for each tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
-          unless fast $ Prelude.mapM_ (mapM_ (generateDirectory False am meta ldb sortDB dirs')) dirChunks
+          unless fast $ do
+            edb <- GS.readEmbeddings
+            Prelude.mapM_ (mapM_ (generateDirectory False am meta ldb sortDB edb dirs')) dirChunks
 
-generateDirectory :: Bool -> ArchiveMetadata -> Metadata -> ListName -> ListSortedMagic -> [FilePath] -> FilePath -> IO ()
-generateDirectory newestp am md ldb sortDB dirs dir'' = do
+generateDirectory
+  :: Bool
+  -> ArchiveMetadata
+  -> Metadata
+  -> GS.ListName
+  -> GS.ListSortedMagic
+  -> GS.Embeddings
+  -> [FilePath]
+  -> FilePath
+  -> IO ()
+generateDirectory newestp am md ldb sortDB edb dirs dir'' = do
 
   -- remove the tag for *this* directory; it is redundant to display 'cat/psychology/drug/catnip' on every doc/link inside '/doc/cat/psychology/drug/catnip/index.md', after all.
   let tagSelf = if dir'' == "doc/" then "" else init $ delete "doc/" dir'' -- "doc/cat/psychology/drug/catnip/" → 'cat/psychology/drug/catnip'
@@ -132,9 +151,11 @@ generateDirectory newestp am md ldb sortDB dirs dir'' = do
   let selfTitledLinks = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_,_),_) -> t /= "") linksSelf
   let titledLinks     = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_,_),_) -> t /= "") links
   let untitledLinks   = map (\(f,a,_) -> (f,a)) $ filter (\(_,(t,_,_,_,_,_,_),_) -> t == "") links
-  titledLinksSorted <- if newestp then return []
-                        -- sort-by-magic: NOTE: we skip clustering on the /doc/newest virtual-tag because by being so heterogeneous, the clusters are garbage compared to clustering within a regular tag, and can't be handled heuristically reasonably.
-                       else sortSimilarsStartingWithNewestWithTag ldb sortDB md' tagSelf titledLinks
+  titledLinksSorted <-
+    if newestp || length titledLinks < CGS.minTagAuto
+    then return []
+    -- sort-by-magic: NOTE: we skip clustering on the /doc/newest virtual-tag because by being so heterogeneous, the clusters are garbage compared to clustering within a regular tag, and can't be handled heuristically reasonably.
+    else GS.sortSimilarsStartingWithNewestWithTagEdb edb ldb sortDB md' tagSelf titledLinks
 
   let selfLinksSection = generateSections' md am 2 selfTitledLinks
   let titledLinksSections   = generateSections md am titledLinks titledLinksSorted (map (\(f,a,_) -> (f,a)) linksWP)

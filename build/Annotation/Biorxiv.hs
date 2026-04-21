@@ -7,7 +7,6 @@ import Text.HTML.TagSoup (isTagOpenName, parseTags, Tag(TagOpen))
 import Text.Show.Pretty (ppShow)
 import System.Exit (ExitCode(ExitFailure))
 
-import LinkAuto (linkAutoHtml5String)
 import LinkMetadataTypes (Failure(..), MetadataItem, Path, Metadata)
 import Metadata.Format (checkURL, cleanAbstractsHTML, processDOI)
 import Metadata.Author (cleanAuthors)
@@ -37,7 +36,7 @@ biorxiv md p =
                                      let abstractRaw' = if not (null abstractRaw) then abstractRaw else concat $ parseMetadataTagsoup "DC.Description" metas
                                      abstrct <- processParagraphizer md p $
                                                 replace "9s" "s" $ -- BUG: BioRxiv abstracts have broken quote encoding. I reported this to them 2 years ago and they still have not fixed it.
-                                                linkAutoHtml5String $ cleanAbstractsHTML abstractRaw'
+                                                cleanAbstractsHTML abstractRaw'
                                      let ts = [] -- TODO: replace with ML call to infer tags
                                      if abstrct == "" then do printRed "BioRxiv parsing failed"
                                                               print ("Metas: " ++ show metas)

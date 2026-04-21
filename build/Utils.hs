@@ -20,7 +20,6 @@ import System.Exit (ExitCode(ExitFailure))
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import Data.FileStore.Utils (runShellCommand)
 import Control.DeepSeq (deepseq, NFData)
--- import System.Posix.Files (touchFile)
 
 import Data.Time.Format (parseTimeM, defaultTimeLocale)
 import Data.Time.Calendar (Day, diffDays)
@@ -171,7 +170,7 @@ writeUpdatedFile template target contentsNew
                if contentsNew /= contentsOld then do tempPath <- emptySystemTempFile ("hakyll-"++template)
                                                      TIO.writeFile tempPath contentsNew
                                                      renameFile tempPath target
-               else return () -- touchFile target -- mark as up to date
+               else return ()
 
 trim :: String -> String
 trim = reverse . dropWhile badChars . reverse . dropWhile badChars -- . filter (/='\n')
@@ -189,7 +188,7 @@ simplified :: Block -> T.Text
 simplified i = simplifiedDoc (Pandoc nullMeta [i])
 
 simplifiedDoc :: Pandoc -> T.Text
-simplifiedDoc p = let md = runPure $ writePlain def{writerColumns=100000} p in -- NOTE: it is important to make columns ultra-wide to avoid formatting-newlines being inserted to break up lines mid-phrase, which would defeat matches in LinkAuto.hs.
+simplifiedDoc p = let md = runPure $ writePlain def{writerColumns=100000} p in
                          case md of
                            Left _ -> error $ "Failed to render: " ++ show md
                            Right md' -> md'

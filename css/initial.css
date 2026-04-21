@@ -2255,8 +2255,7 @@ span.smallcaps {
 /* UTILITY CLASSES */
 /*******************/
 
-/*  Allow easy hiding of any element (eg. for the LinkAuto self-link
-    suppression trick):
+/*  Allow easy hiding of any element:
 
     Just set a ‘.display-not’ class on it, which is nicer than writing
     something like ‘[Foo](bar){style="display: none;"}’.
