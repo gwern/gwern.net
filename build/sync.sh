@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-04-20 12:24:43 gwern"
+# When:  Time-stamp: "2026-04-21 23:50:43 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -191,7 +191,7 @@ else
     # compile changeTag.hs &
     # compile checkMetadata.hs &
     # compile generateSimilarLinks.hs &
-    everyNDays 3 && cabal update &
+    everyNDays 7 && cabal update &
     cabal install ; cabal clean
     ## NOTE: the generateSimilarLinks & linkSuggester runs are done at midnight by a cron job because
     ## they are too slow to run during a regular site build & don't need to be super-up-to-date
@@ -255,7 +255,7 @@ else
 
         # we want to generate all directories first before running Hakyll in case a new tag was created
         bold "Building directory indexes…"
-        generateDirectory +RTS -N3 -RTS $DIRECTORY_TAGS
+        generateDirectory +RTS -N4 -RTS $DIRECTORY_TAGS
 
         # ensure that the list of test-cases has been updated so we can look at <https://gwern.net/lorem-link#live-link-testcases> immediately after the current sync (rather than afterwards, delaying it to after the next sync)
         λ() { ghci -istatic/build/ ./static/build/LinkLive.hs \

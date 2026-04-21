@@ -12,7 +12,7 @@ module Main where
 -- directory (mostly showing random snippets).
 
 import Control.Monad (filterM, void, unless, when)
--- import Control.Monad.Parallel as Par (mapM_)
+import qualified Control.Monad.Parallel as Par (mapM_)
 import Data.List (elemIndex, isPrefixOf, isInfixOf, isSuffixOf, sort, (\\))
 import Data.Containers.ListUtils (nubOrd)
 import Data.List.Split (chunksOf)
@@ -38,15 +38,7 @@ import Typography (identUniquefy, titleWrap)
 import Metadata.Author (authorCollapse, extractTwitterUsername)
 import Utils (inlinesToText, replace, sed, writeUpdatedFile, printRed, toPandoc, anySuffix, delete, anyInfix)
 import qualified Config.Misc as C (cd)
-import qualified GenerateSimilar as GS
-  ( sortSimilarsStartingWithNewestWithTagEdb
-  , readEmbeddings
-  , readListName
-  , readListSortedMagic
-  , Embeddings
-  , ListName
-  , ListSortedMagic
-  )
+import qualified GenerateSimilar as GS (sortSimilarsStartingWithNewestWithTagEdb, readEmbeddings, readListName, readListSortedMagic, Embeddings, ListName, ListSortedMagic)
 import qualified Config.GenerateSimilar as CGS (minTagAuto)
 import Image (isImageFilename)
 -- import Text.Show.Pretty (ppShow)
@@ -58,7 +50,7 @@ main = do C.cd
           -- result: '["doc/","doc/ai/","doc/ai/anime/","doc/ai/anime/danbooru/","doc/ai/dataset/", ..., "newsletter/2022/","nootropic/","note/","review/","zeo/"]'
           let fast = dirs == ["--fast"] -- skip all regular directories (ie. do only 'newest' & 'blog')
 
-          let newestp = any (`isInfixOf` "newest") dirs
+          let newestp = any ("newest" `isInfixOf`) dirs
           let dirs' = filter (\d -> d/="doc/newest/" && d/="blog/") $ sort $ map (\dir -> sed "/index$" "" $ delete "/index.md" $ replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) dirs
 
           meta <- readLinkMetadataSlow
@@ -73,24 +65,18 @@ main = do C.cd
             generateDirectory True am meta ldb sortDB [] ["doc/", "doc/newest/", "/"] "doc/newest/"
           -- /blog/, for off-site writings which get generated Markdown file stubs to transclude their annotation, is unique enough that we won't try to make the regular generateDirectory cover that case too; see Blog.hs
 
-          let chunkSize = 1 -- can't be >20 or else it'll OOM due to trying to force all the 100s of tag-directories in parallel
-          let dirChunks = chunksOf chunkSize dirs'
+          let directoryParallelism = 10
+          let dirChunks = chunksOf directoryParallelism dirs'
 
-          -- because of the expense of searching the annotation database for each tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
+          -- Run bounded parallel batches: at most 'directoryParallelism' directories at once.
           unless fast $ do
             edb <- GS.readEmbeddings
-            Prelude.mapM_ (mapM_ (generateDirectory False am meta ldb sortDB edb dirs')) dirChunks
+            length edb `seq`
+              Prelude.mapM_
+                (Par.mapM_ (generateDirectory False am meta ldb sortDB edb dirs'))
+                dirChunks
 
-generateDirectory
-  :: Bool
-  -> ArchiveMetadata
-  -> Metadata
-  -> GS.ListName
-  -> GS.ListSortedMagic
-  -> GS.Embeddings
-  -> [FilePath]
-  -> FilePath
-  -> IO ()
+generateDirectory :: Bool -> ArchiveMetadata -> Metadata -> GS.ListName -> GS.ListSortedMagic -> GS.Embeddings -> [FilePath] -> FilePath -> IO ()
 generateDirectory newestp am md ldb sortDB edb dirs dir'' = do
 
   -- remove the tag for *this* directory; it is redundant to display 'cat/psychology/drug/catnip' on every doc/link inside '/doc/cat/psychology/drug/catnip/index.md', after all.

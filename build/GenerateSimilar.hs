@@ -22,7 +22,7 @@ and then use those embeddings for three related tasks:
 The central distance primitive is exact cosine distance over normalized vectors:
 
 @
-distance a b = 1 - dot (normalize a) (normalize b)
+distance a b = 1 − dot (normalize a) (normalize b)
 @
 
 Smaller distances are better.
@@ -82,7 +82,7 @@ implementation.
 There are three different lookup problems, with different data structures:
 
 * 'EmbeddingIndex' stores the full corpus vectors once.
-* 'Distances' stores a global top-k neighbor cache when pre-computation is useful.
+* 'Distances' stores a global top-𝑘 neighbor cache when pre-computation is useful.
 * 'LocalDistances' stores a complete local pairwise cache for one seriation
   problem.
 
@@ -90,16 +90,16 @@ Those are separate because they have different size and correctness constraints.
 
 A global all-pairs distance matrix would be too large and mostly wasted.
 
-A global top-k cache is compact and useful for ordinary recommendation lookup,
+A global top-𝑘 cache is compact and useful for ordinary recommendation lookup,
 but it is not sufficient for seriation: two URLs in a small tag/list may be far
-apart globally and therefore absent from each other’s global top-k neighbors.
+apart globally and therefore absent from each other’s global top-𝑘 neighbors.
 
 For seriation, the module builds a complete local graph over only the candidate
 URLs.
 
 That local graph is small, exact, and complete.
 
-== Why top-k is maintained during scan
+== Why top-𝑘 is maintained during scan
 
 A single nearest-neighbor query conceptually scores every candidate in the index.
 
@@ -124,7 +124,7 @@ O(n) scored candidates + O(n log n) sort
 to:
 
 @
-O(k) retained candidates + O(n * k) tiny-list insertion
+O(k) retained candidates + O(n · k) tiny-list insertion
 @
 
 [NOTE: if updated to a heap, this would be 'O(k) retained candidates + O(n log k)']
@@ -179,7 +179,7 @@ embedding that may not be in the index:
 lookupEmbeddingK :: EmbeddingIndex -> Int -> Embedding -> [(FilePath, Double)]
 @
 
-Use 'distancesK' or 'distancesIndexK' only when a reusable top-k cache is wanted:
+Use 'distancesK' or 'distancesIndexK' only when a reusable top-𝑘 cache is wanted:
 
 @
 distancesK      :: Int -> Embeddings -> Distances
@@ -187,7 +187,7 @@ distancesIndexK :: Int -> EmbeddingIndex -> Distances
 lookupK         :: Distances -> Int -> String -> [(String, Double)]
 @
 
-A 'Distances' value is a top-k cache, not a full global pairwise matrix.
+A 'Distances' value is a top-𝑘 cache, not a full global pairwise matrix.
 
 == Seriation
 
@@ -207,21 +207,21 @@ Embedded items are emitted once.
 
 Unembedded items are appended afterward in input order.
 
-Internally, seriation builds a 'LocalDistances' value:
+The default 'seriateGreedy' implementation does not build a complete local
+distance matrix.
 
-@
-data LocalDistances = LocalDistances
-  { ldPaths  :: Vector FilePath
-  , ldByPath :: Map FilePath Int
-  , ldRows   :: Vector (Vector (Int, Double))
-  }
-@
+It performs the greedy walk directly: at each step it scans only the remaining
+embedded candidates, chooses the nearest one, removes it, and repeats.
 
-This local cache is complete over the candidate set.
+This keeps memory roughly linear in the candidate list size while preserving the
+same exact greedy heuristic.
 
-For @m@ local URLs, each row stores up to @m - 1@ local neighbors.
+'LocalDistances' remains available for small complete local caches, tests, and
+debugging, but it is not used by the default seriation path.
 
-This is intentionally different from the global top-k cache.
+For @m@ local URLs, each row stores up to @m − 1@ local neighbors.
+
+This is intentionally different from the global top-𝑘 cache.
 
 The global cache answers “what is close to this URL in the whole corpus?”
 
@@ -343,16 +343,17 @@ Let:
 Approximate costs:
 
 @
-Build EmbeddingIndex:       O(n * d) memory/time
-Single exact lookup:        O(n * d) time, O(k) retained hits
-Global top-k cache:         O(n^2 * d) time, O(n * k) storage
-Local seriation cache:      O(m^2 * d) time, O(m^2) storage
-Greedy seriation walk:      O(m^2) after local cache construction
+Build EmbeddingIndex:       O(n · d) memory and time
+Single exact lookup:        O(n · d) time, O(k) retained hits
+Global top-𝑘 cache:         O(n² · d) time, O(n · k) storage
+Greedy seriation walk:      O(m² · d) time, O(m) working storage
+Local seriation cache:      O(m² · d) time, O(m²) storage
+
 @
 
 The design avoids a global all-pairs distance matrix.
 
-It uses exact scans where exact scans are cheap and transparent, bounded top-k
+It uses exact scans where exact scans are cheap and transparent, bounded top-𝑘
 retention where sorting all candidates would be wasteful, and complete local
 distance caches where correctness requires all local pairwise distances.
 -}
@@ -369,11 +370,11 @@ import Control.Monad (foldM)
 import Data.Containers.ListUtils (nubOrd)
 import qualified Data.Binary as DB (decodeFileOrFail, encodeFile)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
-import Data.List ((\\), intercalate, sort, sortBy)
-import qualified Data.Map.Strict as M (difference, elems, empty, filter, insert, keys, lookup, fromList, member, notMember, restrictKeys, toList, withoutKeys, Map)
+import Data.List (foldl', intercalate, sort, sortBy, (\\))
+import qualified Data.Map.Strict as M (difference, elems, empty, filter, insert, keys, lookup, fromList, member, restrictKeys, toList, withoutKeys, Map)
 import Data.Maybe (catMaybes, fromJust, mapMaybe)
 import Data.Ord (comparing)
-import qualified Data.Set as S (empty, insert, fromList, member, notMember, size, Set)
+import qualified Data.Set as S (fromList, member, notMember, Set)
 import qualified Data.Vector as V (empty, foldl', fromList, imap, length, null, toList, (!), Vector)
 import qualified Data.Vector.Unboxed as VU (ifoldl', fromList, length, map, null, unsafeIndex, Vector)
 import Network.HTTP (urlEncode)
@@ -385,6 +386,7 @@ import Text.Read (readMaybe)
 import Text.Show.Pretty (ppShow)
 
 import Data.FileStore.Utils (runShellCommand)
+import System.GlobalLock as GL (lock)
 
 import LinkBacklink (Backlinks, getForwardLinks, getSimilarLink)
 import qualified Columns as CL (listLength)
@@ -709,7 +711,7 @@ cosineDistance a b = 1 - clamp (-1) 1 (dotRaw a b)
   clamp lo hi x = max lo (min hi x)
 
 --------------------------------------------------------------------------------
--- Global top-k cache and exact lookup
+-- Global top-𝑘 cache and exact lookup
 
 -- | Map from query path to sorted nearest neighbors with distances.
 -- Values are ascending by distance: smaller is better.
@@ -717,15 +719,15 @@ newtype Distances = Distances
   { unDistances :: M.Map FilePath (V.Vector (FilePath, Double))
   } deriving (Eq, Show)
 
--- | Build the default global top-k cache from serialized embeddings.
+-- | Build the default global top-𝑘 cache from serialized embeddings.
 distances :: Embeddings -> Distances
 distances = distancesK C.bestNEmbeddings
 
--- | Build a global top-k cache from serialized embeddings.
+-- | Build a global top-𝑘 cache from serialized embeddings.
 distancesK :: Int -> Embeddings -> Distances
 distancesK k = distancesIndexK k . embeddings2Index
 
--- | Build a reusable global top-k cache from an in-memory index.
+-- | Build a reusable global top-𝑘 cache from an in-memory index.
 --
 -- This stores only the nearest @k@ neighbors per path. It is not a full
 -- pairwise distance matrix and should not be used when a complete local graph
@@ -860,7 +862,7 @@ data LocalDistances = LocalDistances
 -- (the embedded subset of the supplied paths). All included embeddings must have the same model ID.
 --
 -- Missing paths are dropped. Mixed embedding model IDs are rejected.
--- This is intended for seriation, where global top-k neighbors are not enough.
+-- This is intended for seriation, where global top-𝑘 neighbors are not enough.
 distancesLocal :: EmbeddingIndex -> [FilePath] -> LocalDistances
 distancesLocal ix paths =
   let uniquePaths = nubOrd paths
@@ -899,30 +901,78 @@ lookupLocalK ld k p
 
 -- | Greedily seriate a candidate list by nearest local neighbor.
 --
--- The output starts with the seed, then repeatedly appends the nearest unvisited
--- embedded item in the local candidate set. Unembedded candidates are appended
--- afterward in input order.
+-- The output starts with the seed, then repeatedly scans only the remaining
+-- embedded candidates and appends the nearest one. Unembedded candidates are
+-- appended afterward in input order.
+--
+-- This deliberately does not build a complete local distance matrix. Exact
+-- greedy seriation still performs O(n^2) dot products, but it only retains the
+-- current remaining list, not all pairwise distances.
 seriateGreedy :: EmbeddingIndex -> [FilePath] -> FilePath -> [FilePath]
 seriateGreedy ix paths seed
   | seed == "" = error "GenerateSimilar.seriateGreedy: empty seed."
-  | M.notMember seed (eiByPath ix) =
-      error $ "GenerateSimilar.seriateGreedy: seed has no embedding: " ++ seed
-  | otherwise = embeddedOrder ++ unembedded
- where
-  requested = nubOrd (seed : filter (/= seed) paths)
-  embeddedSet = S.fromList $ M.keys $ eiByPath ix
-  unembedded = filter (`S.notMember` embeddedSet) requested
-  ld = distancesLocal ix requested
-  embeddedOrder = go S.empty seed
+  | otherwise =
+      case rowByPath ix seed of
+        Nothing ->
+          error $ "GenerateSimilar.seriateGreedy: seed has no embedding: " ++ seed
 
-  go !seen current
-    | S.size seen >= V.length (ldPaths ld) = []
-    | otherwise =
-        let seen' = S.insert current seen
-            next = case filter (\(p, _) -> p `S.notMember` seen') $ lookupLocalK ld maxBound current of
-                     []       -> Nothing
-                     ((p,_):_) -> Just p
-        in current : maybe [] (go seen') next
+        Just seedRow ->
+          let requested = nubOrd (seed : filter (/= seed) paths)
+              (embedded, unembedded) = splitEmbedded ix requested
+              models = nubOrd $ map (erModel . snd) embedded
+              modelCheck =
+                if length models > 1
+                  then error $
+                    "GenerateSimilar.seriateGreedy: mixed embedding models in local seriation set: " ++
+                    show models
+                  else ()
+              remaining0 = filter ((/= seed) . fst) embedded
+              embeddedOrder = seed : go seedRow remaining0
+          in modelCheck `seq` embeddedOrder ++ unembedded
+ where
+  go :: EmbeddingRow -> [(FilePath, EmbeddingRow)] -> [FilePath]
+  go !_ [] = []
+  go !current remaining =
+    let (!nextPath, !nextRow, !remaining') = nearestAndRest current remaining
+    in nextPath : go nextRow remaining'
+splitEmbedded :: EmbeddingIndex -> [FilePath] -> ([(FilePath, EmbeddingRow)], [FilePath])
+splitEmbedded ix = foldr step ([], [])
+ where
+  step p (embedded, unembedded) =
+    case rowByPath ix p of
+      Just r  -> ((p, r) : embedded, unembedded)
+      Nothing -> (embedded, p : unembedded)
+
+nearestAndRest
+  :: EmbeddingRow
+  -> [(FilePath, EmbeddingRow)]
+  -> (FilePath, EmbeddingRow, [(FilePath, EmbeddingRow)])
+nearestAndRest _ [] =
+  error "GenerateSimilar.nearestAndRest: empty candidate list."
+nearestAndRest current ((p0, r0) : rs) =
+  let !d0 = distanceOrError current r0
+      (!bestP, !bestR, !_bestD, !restRev) =
+        foldl' step (p0, r0, d0, []) rs
+  in (bestP, bestR, reverse restRev)
+ where
+  step
+    :: (FilePath, EmbeddingRow, Double, [(FilePath, EmbeddingRow)])
+    -> (FilePath, EmbeddingRow)
+    -> (FilePath, EmbeddingRow, Double, [(FilePath, EmbeddingRow)])
+  step (!bestP, !bestR, !bestD, !restRev) candidate@(p, r) =
+    let !d = distanceOrError current r
+    in case compareNeighbor (p, d) (bestP, bestD) of
+         LT -> (p, r, d, (bestP, bestR) : restRev)
+         _  -> (bestP, bestR, bestD, candidate : restRev)
+
+distanceOrError :: EmbeddingRow -> EmbeddingRow -> Double
+distanceOrError a b =
+  case rowDistance a b of
+    Just d  -> d
+    Nothing ->
+      error $
+        "GenerateSimilar.distanceOrError: mixed embedding models: " ++
+        show (erPath a, erModel a) ++ " vs " ++ show (erPath b, erModel b)
 
 --------------------------------------------------------------------------------
 -- Similar-link generation
@@ -1157,14 +1207,23 @@ sortSimilarsStartingWithNewestWithTagEdb edb ldb sortDB md parentTag items = do
   processWithBlacklistAccumulator ldb' (acc, blacklist) fs = do
     let urlList = map fst fs
     suggestion <- case M.lookup (sort urlList) ldb' of
-      Just nickname -> return nickname
+      Just nickname ->
+        return nickname
+
       Nothing -> do
         nicknameNew <- processTitles parentTag blacklist $
           map (\(_, (t, _, _, _, _, _, _)) -> t) fs
-        ldb'' <- readListName
-        let ldb''' = M.insert (sort urlList) nicknameNew ldb''
-        writeListName ldb'''
-        return nicknameNew
+
+        withCacheLock $ do
+          ldb'' <- readListName
+          case M.lookup (sort urlList) ldb'' of
+            Just nickname ->
+              return nickname
+
+            Nothing -> do
+              let ldb''' = M.insert (sort urlList) nicknameNew ldb''
+              writeListName ldb'''
+              return nicknameNew
 
     let newAcc = mergeIntoAccumulator acc (suggestion, fs)
     return (newAcc, blacklist ++ [suggestion])
@@ -1237,6 +1296,9 @@ sortSimilarsT edb sortDB seed paths = do
   results <- sortSimilars edb sortDB (T.unpack seed) (map T.unpack paths)
   return $ map T.pack results
 
+withCacheLock :: IO a -> IO a
+withCacheLock = GL.lock
+
 sortSimilars :: Embeddings -> ListSortedMagic -> FilePath -> [FilePath] -> IO [FilePath]
 sortSimilars _ _ _ []    = return []
 sortSimilars _ _ _ [a]   = return [a]
@@ -1245,17 +1307,27 @@ sortSimilars [] _ _ _    = error "sortSimilars given empty embeddings database!"
 sortSimilars edb sortDB seed paths = do
   let paths' = filter (/= seed) paths
       newKey = S.fromList (seed : paths')
+
   case M.lookup newKey sortDB of
-    Just cached -> return cached
+    Just cached ->
+      return cached
+
     Nothing -> do
       let edbDB = M.fromList $ map (\e@(a, _, _, _, _) -> (a, e)) edb
           edbLocal = map snd $ M.toList $ M.restrictKeys edbDB newKey
           ix = embeddings2Index edbLocal
           paths'' = seriateGreedy ix paths' seed
-      sortDB' <- readListSortedMagic
-      let sortDB'' = M.insert newKey paths'' sortDB'
-      writeListSortedMagic sortDB''
-      return paths''
+
+      withCacheLock $ do
+        sortDB' <- readListSortedMagic
+        case M.lookup newKey sortDB' of
+          Just cached ->
+            return cached
+
+          Nothing -> do
+            let sortDB'' = M.insert newKey paths'' sortDB'
+            writeListSortedMagic sortDB''
+            return paths''
 
 -- | Some lists, like backlinks, may contain URLs without embeddings. Sort only
 -- embedded hits; append unembedded hits in their input order. The seed/target is
@@ -1456,7 +1528,7 @@ toyModel, toyOtherModelName :: String
 toyModel          = "generate-similar-test-model"
 toyOtherModelName = "generate-similar-test-other-model"
 
-toyA, toyB, toyC :: FilePath
+toyA, toyB, toyC, toyD :: FilePath
 toyA = "/doc/unit-test/generate-similar/a"
 toyB = "/doc/unit-test/generate-similar/b"
 toyC = "/doc/unit-test/generate-similar/c"
