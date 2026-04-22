@@ -50,7 +50,7 @@ addContentInjectHandler("setUpSearchIframe", (eventInfo) => {
 		});
 
 		//	Enable submit override (to make site search work).
-		iframe.contentDocument.querySelector(".searchform").addEventListener("submit", (event) => {
+		iframe.contentDocument.querySelector("#searchform-main").addEventListener("submit", (event) => {
 			event.preventDefault();
 
 			let form = event.target;
@@ -250,11 +250,17 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 		});
 	};
 
+	//	Support query parameter (‘ref’).
+	let query = eventInfo.loadLocation.getQueryVariable("ref");
+	if (   query > ""
+		&& eventInfo.container == document.main)
+		relocate("/ref/" + query);
+
 	/***********************************************************************/
 	/*	Main /ref/ logic begins. (We support lookup either by URL or by ID.)
 	 */
 
-	let ref = decodeURIComponent(eventInfo.loadLocation.pathname.slice("/ref/".length));
+	let ref = decodeURIComponent(query ?? eventInfo.loadLocation.pathname.slice("/ref/".length));
 	if (ref.length == 0) {
 		injectHelpfulErrorMessage("No URL or ID specified.");
 		injectHelpfulSuggestion();
@@ -277,7 +283,8 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 		}
 
 		//	Update URL bar, if need be.
-		if (normalizedRef != ref)
+		if (   normalizedRef != ref
+			&& eventInfo.container == document.main)
 			relocate("/ref/" + normalizedRef);
 
 		//	Retrieve the big URL-to-id mapping file.
@@ -326,7 +333,8 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 			normalizedRef = idFromComponents(componentsFromId(normalizedRef));
 
 			//	Update URL bar, if need be.
-			if (normalizedRef != ref)
+			if (   normalizedRef != ref
+				&& eventInfo.container == document.main)
 				relocate("/ref/" + normalizedRef);
 
 			//	ID-to-URL mapping file (sliced by initial character).

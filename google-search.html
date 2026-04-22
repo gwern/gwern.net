@@ -11,6 +11,7 @@ body {
 	pointer-events: none;
 	display: flex;
 	align-items: center;
+	overflow: hidden;
 }
 main {
 	flex: 1 0 auto;
@@ -18,9 +19,6 @@ main {
 #search-where-selector label,
 .searchform {
 	pointer-events: auto;
-}
-.search-where-form {
-	margin: 0;
 }
 #search-where-selector {
 	margin: 0.625em -1px 0 -1px;
@@ -36,6 +34,7 @@ main {
 }
 .searchform {
 	display: flex;
+	flex-flow: row wrap;
 	margin: 0;
 }
 .searchform input.search {
@@ -81,7 +80,22 @@ main {
 .searchform button:focus {
 	outline: 2px solid #777;
 }
-</style>
+form#searchform-ref {
+	flex-flow: row wrap;
+	position: relative;
+	margin-top: 1.5em;
+}
+form#searchform-ref::before {
+	content: "";
+	position: absolute;
+	background-color: #eee;
+	width: calc(100% + 1em);
+	height: calc(100% + 1em);
+	z-index: -1;
+	left: -0.5em;
+	top: -0.5em;
+	border-top: 1px solid #ccc;
+}</style>
 <style id="search-styles-dark" media="all and (prefers-color-scheme: dark)">
 body {
 	background-color: #161616;
@@ -123,12 +137,16 @@ body {
 .searchform button:focus {
 	outline: 2px solid #a6a6a6;
 }
+#searchform-ref::before {
+	background-color: #333;
+	border-top-color: #5c5c5c;
+}
 </style>
 <main>
-	<form action="https://www.google.com/search" class="searchform" method="get" name="searchform" target="_blank">
+	<form id="searchform-main" action="https://www.google.com/search" class="searchform" method="get" name="searchform" target="_blank">
 		<input autocomplete="on" class="form-control search" placeholder="Gwern.net search" required="required" type="text">
 		<input class="query" name="q" type="hidden">
-		<button class="button" type="submit">Search</button>
+		<button class="button" type="submit" tabindex="-1">Search</button>
 	</form>
 	<fieldset id="search-where-selector">
 		<legend>Search in:</legend>
@@ -136,4 +154,8 @@ body {
 		<label for="search-essays"><input type="radio" id="search-essays" name="search-where" value="site:gwern.net -site:gwern.net/doc/" /> Essays only</label>
 		<label for="search-docs"><input type="radio" id="search-docs" name="search-where" value="site:gwern.net/doc/" /> Docs only</label>
 	</fieldset>
+	<form id="searchform-ref" action="/ref/" class="searchform" method="get" name="searchform-ref" target="_blank">
+		<input autocomplete="off" class="form-control search" placeholder="Search by URL or ID" required="required" type="text" name="ref">
+		<button class="button" type="submit" tabindex="-1">Search</button>
+	</form>
 </main>

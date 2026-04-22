@@ -2579,17 +2579,18 @@ doWhenPageLoaded(() => {
 				let popFrame = (eventInfo.popup ?? eventInfo.popin);
 				let iframe = popFrame.document.querySelector("iframe");
 				iframe.addEventListener("load", (event) => {
-					let inputBox = iframe.contentDocument.querySelector("input.search");
+					let mainInputBox = iframe.contentDocument.querySelector("#searchform-main input.search");
+					let refInputBox = iframe.contentDocument.querySelector("#searchform-ref input.search");
 
-					//  Focus search box on load.
-					inputBox.focus();
-					inputBox.addEventListener("blur", (event) => {
-						inputBox.focus();
-					});
+					//  Focus main search box on load.
+					mainInputBox.focus();
 
 					if (Extracts.popFrameProvider == Popups) {
 						//	Pin popup if text is entered.
-						inputBox.addEventListener("input", (event) => {
+						mainInputBox.addEventListener("input", (event) => {
+							Popups.pinPopup(popFrame);
+						});
+						refInputBox.addEventListener("input", (event) => {
 							Popups.pinPopup(popFrame);
 						});
 
