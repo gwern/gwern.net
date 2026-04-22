@@ -11,7 +11,7 @@ External contributor rules for the Gwern.net source code repo.
     - *no runtime warnings*: default compilation/execution should never print warnings/errors (eg. new CSS & JS should not trigger browser console warnings in the latest Chromium/Firefox, PHP/R code should not print warnings when run on Gwern's Ubuntu Linux LTS OS)
     - no *compile-time warnings*: further, all source code must be `-Wall`-clean or explicitly whitelisted as relevant for each language:
 
-        - `Haskell`: should be `ghc -Wall`-clean and [hlint-clean](https://github.com/ndmitchell/hlint)
+        - `Haskell`: should be `ghc -Wall`-clean and [hlint-clean](https://github.com/ndmitchell/hlint) (some hlint rules are disabled in `.hlint.yaml`; all remaining rules should be valid)
         - `Bash`: should be [shellcheck-clean](https://github.com/koalaman/shellcheck)
         - `Elisp`: byte-compile without warnings
         - `HTML`: [HTML Tidy](https://www.html-tidy.org/) & [W3 Validator](https://validator.w3.org/) (but only a subset)
