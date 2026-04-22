@@ -1205,7 +1205,7 @@ function getSelectionAsDocument(doc = document) {
 	    docFrag.append(selection.getRangeAt(i).cloneContents());
 
 	//	Trim whitespace (remove empty nodes at start and end).
-	docFrag.trimWhitespace();
+	docFrag.trimWhitespace({ trimWithinNodes: true });
 
     return docFrag;
 }
@@ -1264,8 +1264,11 @@ Element.prototype.trimWhitespaceFromStart = function (options) {
 
 	if (options.trimWithinNodes == true) {
 		let firstTextNode = this.firstTextNode;
-		if (firstTextNode)
+		if (firstTextNode) {
 			firstTextNode.textContent = firstTextNode.textContent.trimStart();
+			if (isNodeEmpty(firstTextNode, options.nodeOmissionOptions))
+				firstTextNode.parentNode.removeChild(firstTextNode);
+		}
 	}
 };
 
@@ -1301,8 +1304,11 @@ Element.prototype.trimWhitespaceFromEnd = function (options) {
 
 	if (options.trimWithinNodes == true) {
 		let lastTextNode = this.lastTextNode;
-		if (lastTextNode)
+		if (lastTextNode) {
 			lastTextNode.textContent = lastTextNode.textContent.trimEnd();
+			if (isNodeEmpty(lastTextNode, options.nodeOmissionOptions))
+				lastTextNode.parentNode.removeChild(lastTextNode);
+		}
 	}
 };
 
@@ -1313,10 +1319,18 @@ DocumentFragment.prototype.trimWhitespace = function (options) {
 	this.firstElementChild?.trimWhitespaceFromStart(options);
 	this.lastElementChild?.trimWhitespaceFromEnd(options);
 
-	if (this.firstChild?.nodeType == Node.TEXT_NODE)
-		this.firstChild.textContent = this.firstChild.textContent.trimStart();
-	if (this.lastChild?.nodeType == Node.TEXT_NODE)
-		this.lastChild.textContent = this.lastChild.textContent.trimEnd();
+	if (options.trimWithinNodes == true) {
+		if (this.firstChild?.nodeType == Node.TEXT_NODE) {
+			this.firstChild.textContent = this.firstChild.textContent.trimStart();
+			if (isNodeEmpty(this.firstChild, options.nodeOmissionOptions))
+				this.removeChild(this.firstChild);
+		}
+		if (this.lastChild?.nodeType == Node.TEXT_NODE) {
+			this.lastChild.textContent = this.lastChild.textContent.trimEnd();
+			if (isNodeEmpty(this.lastChild, options.nodeOmissionOptions))
+				this.removeChild(this.lastChild);
+		}
+	}
 };
 
 /*****************************************************************************/
