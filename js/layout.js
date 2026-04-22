@@ -1012,7 +1012,7 @@ function wrapParenthesizedNodes(className = null, ...args) {
 		args.last.nextSibling.nodeValue = args.last.nextSibling.nodeValue.slice(1);
 		let nextNode = args.last.nextSibling;
 		let wrapper = newElement("SPAN", { class: `parenthesized-set${(className ? (" " + className) : "")}` });
-		wrapper.append(document.createTextNode("("), ...args, document.createTextNode(")"));
+		wrapper.append(newTextNode("("), ...args, newTextNode(")"));
 		parentNode.insertBefore(wrapper, nextNode);
 	}
 }

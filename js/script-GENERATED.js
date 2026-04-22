@@ -11538,7 +11538,7 @@ Extracts = {
 			link.insertBefore(newElement("SPAN", { class: "indicator-hook" }),
 							  recentlyModifiedIconHook?.nextSibling ?? link.firstChild);
 			if (recentlyModifiedIconHook)
-				link.insertBefore(document.createTextNode("\u{2060}"), recentlyModifiedIconHook.nextSibling);
+				link.insertBefore(newTextNode("\u{2060}"), recentlyModifiedIconHook.nextSibling);
 
 			/*	Inject U+2060 WORD JOINER at start of first text node of the
 				link. (It _must_ be injected as a Unicode character into the
@@ -14387,11 +14387,11 @@ Typography = {
 					let replacementNodes = [ ];
 					parts.forEach(part => {
 						if (part[1] > part[0])
-							replacementNodes.push(document.createTextNode(node.textContent.slice(...part)));
+							replacementNodes.push(newTextNode(node.textContent.slice(...part)));
 						replacementNodes.push(newElement("WBR"));
 					});
 					if (node.textContent.length > start)
-						replacementNodes.push(document.createTextNode(node.textContent.slice(start)));
+						replacementNodes.push(newTextNode(node.textContent.slice(start)));
 					replacements.push([ node, replacementNodes ]);
 				}
 			}
@@ -16586,13 +16586,13 @@ addContentLoadHandler("processPoems", (eventInfo) => {
 				let match;
 				let step = 1;
 				while (match = textNode.textContent.match(enjambmentSeparatorRegExp)) {
-					[ document.createTextNode(match[1]),
+					[ newTextNode(match[1]),
 					  newElement("BR"),
 					  newElement("SPAN", {
 					  	class: "enjambment-spacer",
 					  	style: `--enjambment-step: ${step++}`
 					  }),
-					  document.createTextNode(match[2])
+					  newTextNode(match[2])
 					  ].forEach(newNode => {
 						textNode.parentElement.insertBefore(newNode, textNode);
 					});
@@ -16657,7 +16657,7 @@ addContentLoadHandler("processPoems", (eventInfo) => {
 
 				let match = lastTextNode.textContent.match(lastWordRegExp);
 				if (match) {
-					lastTextNode.parentElement.insertBefore(document.createTextNode(
+					lastTextNode.parentElement.insertBefore(newTextNode(
 							match[1] + "\u{00A0}" + match[2] // non-breaking space
 						), lastTextNode);
 					lastTextNode.remove();
@@ -16705,7 +16705,7 @@ addContentLoadHandler("processPoems", (eventInfo) => {
 					   && inlineElementTags.includes(insertEndPaddingWhere.parentElement.tagName.toLowerCase()))
 					   insertEndPaddingWhere = insertEndPaddingWhere.parentElement;
 
-				insertEndPaddingWhere.parentElement.insertBefore(document.createTextNode("".padStart(endTagLength, " ")), insertEndPaddingWhere.nextSibling);
+				insertEndPaddingWhere.parentElement.insertBefore(newTextNode("".padStart(endTagLength, " ")), insertEndPaddingWhere.nextSibling);
 
 				//	Pad for start tag.
 				let startTagLength = (node.outerHTML.length - node.innerHTML.length) - endTagLength;
@@ -16714,7 +16714,7 @@ addContentLoadHandler("processPoems", (eventInfo) => {
 					   && inlineElementTags.includes(insertStartPaddingWhere.parentElement.tagName.toLowerCase()))
 					   insertStartPaddingWhere = insertStartPaddingWhere.parentElement;
 
-				insertStartPaddingWhere.parentElement.insertBefore(document.createTextNode("".padStart(startTagLength, " ")), insertStartPaddingWhere);
+				insertStartPaddingWhere.parentElement.insertBefore(newTextNode("".padStart(startTagLength, " ")), insertStartPaddingWhere);
 			}
 
 			//	Trim trailing whitespace.
@@ -16755,9 +16755,9 @@ addContentLoadHandler("wrapCaesuraMarksInPoems", (eventInfo) => {
 			for (let textNode of poem.textNodes) {
 				let match;
 				while (match = textNode.textContent.match(caesuraMarkRegExp)) {
-					[ document.createTextNode(match[1]),
+					[ newTextNode(match[1]),
 					  newElement("SPAN", { class: "caesura-mark" }, { innerHTML: "||" }),
-					  document.createTextNode(match[2])
+					  newTextNode(match[2])
 					  ].forEach(newNode => {
 						textNode.parentElement.insertBefore(newNode, textNode);
 					});
@@ -17222,11 +17222,11 @@ addContentLoadHandler("iconifyUnicodeIconGlyphs", (eventInfo) => {
 					let replacementNodes = [ ];
 					parts.forEach(part => {
 						if (part[1] > part[0])
-							replacementNodes.push(document.createTextNode(node.textContent.slice(...(part.slice(1,2)))));
+							replacementNodes.push(newTextNode(node.textContent.slice(...(part.slice(1,2)))));
 						replacementNodes.push(newElement("SPAN", { "class": glyphIconMapping[part[0]] }));
 					});
 					if (node.textContent.length > start)
-						replacementNodes.push(document.createTextNode(node.textContent.slice(start)));
+						replacementNodes.push(newTextNode(node.textContent.slice(start)));
 					replacements.push([ node, replacementNodes ]);
 				}
 			}
@@ -17701,7 +17701,7 @@ addContentInjectHandler("rectifyLinkBibliographyContextLinks", (eventInfo) => {
 		if (Transclude.isAnnotationTransclude(linkBibEntryIncludeLink)) {
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidInject", (info) => {
 				let annotationTitleLine = info.container.querySelector(".data-field.title");
-				annotationTitleLine.insertBefore(document.createTextNode(" "), annotationTitleLine.firstChild);
+				annotationTitleLine.insertBefore(newTextNode(" "), annotationTitleLine.firstChild);
 				annotationTitleLine.insertBefore(link, annotationTitleLine.firstChild);
 			}, {
 				condition: (info) => (info.includeLink == linkBibEntryIncludeLink),
@@ -18681,7 +18681,7 @@ addContentLoadHandler("cleanUpImageAltText", (eventInfo) => {
  */
 addContentLoadHandler("noBreakForCitations", (eventInfo) => {
     eventInfo.container.querySelectorAll(".footnote-ref").forEach(citation => {
-        citation.parentElement.insertBefore(document.createTextNode("\u{2060}"), citation);
+        citation.parentElement.insertBefore(newTextNode("\u{2060}"), citation);
         let textNode = citation.querySelector("sup").firstTextNode;
         textNode.textContent = "\u{2060}" + textNode.textContent + "\u{2060}";
     });
@@ -18840,7 +18840,7 @@ addCopyProcessor((event, selection) => {
 		let label = button.dataset.name ?? button.getAttribute("aria-label") ?? (button.getAttribute("title") || button.getAttribute("href"))
 		if (button.classList.contains("selected"))
 			label = label.toUpperCase();
-		button.replaceWith(document.createTextNode("[" + label + "]"));
+		button.replaceWith(newTextNode("[" + label + "]"));
 	});
 
 	return true;
@@ -19145,7 +19145,7 @@ addCopyProcessor((event, selection) => {
             && mathWrapper.previousSibling.textContent.endsWith(" "))
             mathText = mathText.trim();
 
-        mathWrapper.replaceChildren(document.createTextNode(mathText));
+        mathWrapper.replaceChildren(newTextNode(mathText));
     });
 
     return true;

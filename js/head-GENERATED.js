@@ -4159,7 +4159,7 @@ function wrapParenthesizedNodes(className = null, ...args) {
 		args.last.nextSibling.nodeValue = args.last.nextSibling.nodeValue.slice(1);
 		let nextNode = args.last.nextSibling;
 		let wrapper = newElement("SPAN", { class: `parenthesized-set${(className ? (" " + className) : "")}` });
-		wrapper.append(document.createTextNode("("), ...args, document.createTextNode(")"));
+		wrapper.append(newTextNode("("), ...args, newTextNode(")"));
 		parentNode.insertBefore(wrapper, nextNode);
 	}
 }
@@ -5497,7 +5497,7 @@ function addRecentlyModifiedIconToLink(link) {
 			that the two link styling elements are arranged properly, and do not
 			span a line break.
 		 */
-		 link.insertBefore(document.createTextNode("\u{2060}"), link.querySelector(".indicator-hook"));
+		 link.insertBefore(newTextNode("\u{2060}"), link.querySelector(".indicator-hook"));
 	} else {
 		/*  Inject U+2060 WORD JOINER at start of first text node of the
 			link. (It _must_ be injected as a Unicode character into the
