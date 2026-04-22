@@ -501,6 +501,13 @@ if (crypto.randomUUID === undefined) {
 	}
 }
 
+/***************************************************************/
+/*	Create and return a new text node with the specified string.
+ */
+function newTextNode(text) {
+	return document.createTextNode(text);
+}
+
 /*******************************************************************************/
 /*  Create and return a new element with the specified tag name, attributes, and
     object properties.
@@ -1198,7 +1205,7 @@ function getSelectionAsDocument(doc = document) {
 	    docFrag.append(selection.getRangeAt(i).cloneContents());
 
 	//	Trim whitespace (remove empty nodes at start and end).
-	docFrag.trimWhitespace();
+	docFrag.trimWhitespace({ trimWithinNodes: true });
 
     return docFrag;
 }
@@ -1257,8 +1264,11 @@ Element.prototype.trimWhitespaceFromStart = function (options) {
 
 	if (options.trimWithinNodes == true) {
 		let firstTextNode = this.firstTextNode;
-		if (firstTextNode)
+		if (firstTextNode) {
 			firstTextNode.textContent = firstTextNode.textContent.trimStart();
+			if (isNodeEmpty(firstTextNode, options.nodeOmissionOptions))
+				firstTextNode.parentNode.removeChild(firstTextNode);
+		}
 	}
 };
 
@@ -1294,8 +1304,11 @@ Element.prototype.trimWhitespaceFromEnd = function (options) {
 
 	if (options.trimWithinNodes == true) {
 		let lastTextNode = this.lastTextNode;
-		if (lastTextNode)
+		if (lastTextNode) {
 			lastTextNode.textContent = lastTextNode.textContent.trimEnd();
+			if (isNodeEmpty(lastTextNode, options.nodeOmissionOptions))
+				lastTextNode.parentNode.removeChild(lastTextNode);
+		}
 	}
 };
 
@@ -1306,11 +1319,131 @@ DocumentFragment.prototype.trimWhitespace = function (options) {
 	this.firstElementChild?.trimWhitespaceFromStart(options);
 	this.lastElementChild?.trimWhitespaceFromEnd(options);
 
-	if (this.firstChild?.nodeType == Node.TEXT_NODE)
-		this.firstChild.textContent = this.firstChild.textContent.trimStart();
-	if (this.lastChild?.nodeType == Node.TEXT_NODE)
-		this.lastChild.textContent = this.lastChild.textContent.trimEnd();
+	if (options.trimWithinNodes == true) {
+		if (this.firstChild?.nodeType == Node.TEXT_NODE) {
+			this.firstChild.textContent = this.firstChild.textContent.trimStart();
+			if (isNodeEmpty(this.firstChild, options.nodeOmissionOptions))
+				this.removeChild(this.firstChild);
+		}
+		if (this.lastChild?.nodeType == Node.TEXT_NODE) {
+			this.lastChild.textContent = this.lastChild.textContent.trimEnd();
+			if (isNodeEmpty(this.lastChild, options.nodeOmissionOptions))
+				this.removeChild(this.lastChild);
+		}
+	}
 };
+
+/*****************************************************************************/
+/*	Given a node and a length limit in characters, returns a copy of the node,
+	with its text content truncated to that length.
+
+	Available option fields:
+
+	byWords (boolean)
+		If true, truncates by words (whitespace-separated runs of characters).
+		Default is false (i.e., strict truncation).
+
+	appendEllipsis (boolean)
+		If true, appends ellipsis (‘…’) at end of truncated text.
+		(If byWords is true, ellipsis is preceded by a space.)
+		Default is false.
+
+	trimTrailingWhitespace (boolean)
+		If true (the default), trailing whitespace that remains after truncating
+		is trimmed. (This option has no effect if appendEllipsis is true, for
+		obvious reasons.)
+ */
+function truncatedNode(node, lengthLimit, options) {
+	options = Object.assign({
+		byWords: false,
+		appendEllipsis: false,
+		trimTrailingWhitespace: true
+	}, options)
+
+	let newNode = node.cloneNode(true);
+	if (node.textContent.length <= lengthLimit)
+		return newNode;
+
+	//	Adjust length limit to account for ellipsis, if need be.
+	lengthLimit = (lengthLimit - (options.appendEllipsis ? (options.byWords ? 2 : 1) : 0));
+
+	if (newNode.nodeType == Node.TEXT_NODE) {
+		if (options.byWords == true) {
+			let words = newNode.textContent.split(" ");
+			let word;
+			let newTextContent = [ ];
+			while (   (word = words.shift())
+				   && (  (  word.length 
+				   		  + newTextContent.reduce((totalLength, word) => (totalLength + word.length + 1), 0)) 
+					   < lengthLimit)) {
+				newTextContent.push(word);
+			}
+
+			//	Append ellipsis, if need be.
+			if (options.appendEllipsis == true)
+				newTextContent.push("…");
+
+			newNode.textContent = newTextContent.join(" ");
+		} else {
+			newNode.textContent = newNode.textContent.slice(0, lengthLimit);
+
+			//	Append ellipsis, if need be.
+			if (options.appendEllipsis == true)
+				newNode.textContent += "…";
+		}
+
+		//	Trim whitespace, if need be.
+		if (   options.appendEllipsis == false
+			&& options.trimTrailingWhitespace == true)
+			newNode.textContent = newNode.textContent.trimEnd();
+	} else if (newNode.nodeType == Node.ELEMENT_NODE) {
+		let totalNodeLength = (nodes) => { return nodes.reduce((totalLength, node) => (totalLength + node.textContent.length), 0); };
+		let childNodes = Array.from(newNode.childNodes);
+		let newChildNodes = [ ];
+		let childNode;
+		while (   (childNode = childNodes.shift())
+			   && (  (  childNode.textContent.length
+			   		  + totalNodeLength(newChildNodes))
+			   	   < lengthLimit)) {
+			newChildNodes.push(childNode);
+		}
+		let lengthSoFar = totalNodeLength(newChildNodes);
+		if (   lengthSoFar < lengthLimit
+			&& childNode != null) {
+			newChildNodes.push(truncatedNode(childNode, lengthLimit - lengthSoFar, { byWords: options.byWords }));
+		}
+
+		//	Append ellipsis, if need be.
+		if (options.appendEllipsis == true)
+			newChildNodes.push(newTextNode(" …"));
+
+		newNode.replaceChildren(...newChildNodes);
+
+		//	Trim whitespace, if need be.
+		if (   options.appendEllipsis == false
+			&& options.trimTrailingWhitespace == true)
+			newNode.trimWhitespaceFromEnd({ trimWithinNodes: true });
+	}
+
+	return newNode;
+}
+
+/******************************************************************************/
+/*	Takes a DocumentFragment or an HTML string, and a character length limit to
+	which to truncate. Returns a new DocumentFragment, the contents of which
+	are the provided html, truncated up to the provided length limit.
+
+	For available option fields, see truncatedNode().
+ */
+function truncatedHTMLToLengthInCharacters(html, lengthLimit, options) {
+	if (typeof html == "string")
+		html = newDocument(html);
+
+	let container = newElement("DIV");
+	container.append(html);
+
+	return newDocument(truncatedNode(container, lengthLimit, options));
+}
 
 /*********************************************************************/
 /*	Workaround for Firefox weirdness, based on more Firefox weirdness.

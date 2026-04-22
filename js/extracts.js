@@ -150,7 +150,7 @@ Extracts = {
 			link.insertBefore(newElement("SPAN", { class: "indicator-hook" }),
 							  recentlyModifiedIconHook?.nextSibling ?? link.firstChild);
 			if (recentlyModifiedIconHook)
-				link.insertBefore(document.createTextNode("\u{2060}"), recentlyModifiedIconHook.nextSibling);
+				link.insertBefore(newTextNode("\u{2060}"), recentlyModifiedIconHook.nextSibling);
 
 			/*	Inject U+2060 WORD JOINER at start of first text node of the
 				link. (It _must_ be injected as a Unicode character into the

@@ -209,7 +209,7 @@ function addRecentlyModifiedIconToLink(link) {
 			that the two link styling elements are arranged properly, and do not
 			span a line break.
 		 */
-		 link.insertBefore(document.createTextNode("\u{2060}"), link.querySelector(".indicator-hook"));
+		 link.insertBefore(newTextNode("\u{2060}"), link.querySelector(".indicator-hook"));
 	} else {
 		/*  Inject U+2060 WORD JOINER at start of first text node of the
 			link. (It _must_ be injected as a Unicode character into the

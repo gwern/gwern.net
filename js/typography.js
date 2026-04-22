@@ -252,11 +252,11 @@ Typography = {
 					let replacementNodes = [ ];
 					parts.forEach(part => {
 						if (part[1] > part[0])
-							replacementNodes.push(document.createTextNode(node.textContent.slice(...part)));
+							replacementNodes.push(newTextNode(node.textContent.slice(...part)));
 						replacementNodes.push(newElement("WBR"));
 					});
 					if (node.textContent.length > start)
-						replacementNodes.push(document.createTextNode(node.textContent.slice(start)));
+						replacementNodes.push(newTextNode(node.textContent.slice(start)));
 					replacements.push([ node, replacementNodes ]);
 				}
 			}
