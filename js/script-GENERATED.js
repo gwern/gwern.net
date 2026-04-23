@@ -11121,14 +11121,14 @@ Transclude.addIncludeLinkAliasClass("include-annotation-partial-inline", (includ
 Transclude.addIncludeLinkAliasClass("include-annotation-partial", (includeLink) => {
 	includeLink.classList.add("include-annotation");
 	includeLink.dataset.includeSelectorNot = [
-		...((includeLink.dataset.includeSelectorNot ?? "").split(",").filter(x => x)),
+		...((includeLink.dataset.includeSelectorNot ?? "").split(",").nonnull()),
 		".annotation-abstract",
 		".file-includes",
 		"figure",
 		".data-field-separator"
 	].unique().join(",");
 	includeLink.dataset.templateFields = [
-		...((includeLink.dataset.templateFields ?? "").split(",").filter(x => x)),
+		...((includeLink.dataset.templateFields ?? "").split(",").nonnull()),
 		"annotationClassSuffix:$"
 	].unique().join(",");
 	includeLink.dataset.annotationClassSuffix = "-partial";
@@ -11142,7 +11142,7 @@ Transclude.addIncludeLinkAliasClass("include-annotation-partial", (includeLink) 
 Transclude.addIncludeLinkAliasClass("include-annotation-core", (includeLink) => {
 	includeLink.classList.add("include-annotation");
 	includeLink.dataset.includeSelector = [
-		...((includeLink.dataset.includeSelector ?? "").split(",").filter(x => x)),
+		...((includeLink.dataset.includeSelector ?? "").split(",").nonnull()),
 		".annotation-abstract",
 		".file-includes"
 	].unique().join(", ");
@@ -11158,7 +11158,7 @@ Transclude.addIncludeLinkAliasClass("include-annotation-core", (includeLink) => 
 Transclude.addIncludeLinkAliasClass("include-content-core", (includeLink) => {
 	includeLink.classList.add("include-content");
 	includeLink.dataset.includeSelectorNot = [
-		...((includeLink.dataset.includeSelectorNot ?? "").split(",").filter(x => x)),
+		...((includeLink.dataset.includeSelectorNot ?? "").split(",").nonnull()),
 		"#footnotes",
 		"#backlinks-section",
 		"#similars-section",
@@ -11177,7 +11177,7 @@ Transclude.addIncludeLinkAliasClass("include-content-core", (includeLink) => {
 Transclude.addIncludeLinkAliasClass("include-content-no-header", (includeLink) => {
 	includeLink.classList.add("include-unwrap");
 	includeLink.dataset.includeSelectorNot = [
-		...((includeLink.dataset.includeSelectorNot ?? "").split(",").filter(x => x)),
+		...((includeLink.dataset.includeSelectorNot ?? "").split(",").nonnull()),
 		"h1",
 		"h2",
 		"h3",
@@ -11194,7 +11194,7 @@ Transclude.addIncludeLinkAliasClass("include-content-no-header", (includeLink) =
  */
 Transclude.addIncludeLinkAliasClass("include-caption-not", (includeLink) => {
 	includeLink.dataset.includeSelectorNot = [
-		...((includeLink.dataset.includeSelectorNot ?? "").split(",").filter(x => x)),
+		...((includeLink.dataset.includeSelectorNot ?? "").split(",").nonnull()),
 		".caption-wrapper"
 	].unique().join(", ");
 });
