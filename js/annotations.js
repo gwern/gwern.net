@@ -285,12 +285,12 @@ Annotations = { ...Annotations,
 
 		//	All the aux-links (tags, backlinks, similars, link link-bib).
 		let auxLinksFieldSeparatorHTML = `<span class="separator">; </span>`;
-		let auxLinksHTML = ([ backlinksHTML, similarsHTML, linkbibHTML ].filter(x => x).join(auxLinksFieldSeparatorHTML) || null);
+		let auxLinksHTML = ([ backlinksHTML, similarsHTML, linkbibHTML ].nonnull().join(auxLinksFieldSeparatorHTML) || null);
 		if (auxLinksHTML || tagsHTML)
-			auxLinksHTML = `<span class="aux-links-field-container"> (${([ tagsHTML, auxLinksHTML ].filter(x => x).join(auxLinksFieldSeparatorHTML) || null)})</span>`;
+			auxLinksHTML = `<span class="aux-links-field-container"> (${([ tagsHTML, auxLinksHTML ].nonnull().join(auxLinksFieldSeparatorHTML) || null)})</span>`;
 
 		//  Combined author, date, & aux-links.
-		let authorDateAuxHTML = ([ authorHTML, dateHTML, auxLinksHTML ].filter(x => x).join("") || null);
+		let authorDateAuxHTML = ([ authorHTML, dateHTML, auxLinksHTML ].nonnull().join("") || null);
 
 		//	Abstract (if exists).
 		let abstractElement = responseDocument.querySelector("blockquote");

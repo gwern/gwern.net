@@ -359,7 +359,7 @@ function requestImageOutliningJudgmentsForImagesInContainer(container) {
         		&& GW.invertOrNot[imageURL.href] == null)
         	   ? imageURL.href
         	   : null;
-    }).filter(x => x);
+    }).nonnull();
     if (imageURLs.length == 0)
         return;
 
@@ -443,7 +443,7 @@ function requestImageInversionJudgmentsForImagesInContainer(container) {
         		&& inversionJudgmentHasBeenAppliedToImage(image) == false)
         	   ? imageURL.href
         	   : null;
-    }).filter(x => x);
+    }).nonnull();
     if (imageURLs.length == 0)
         return;
 
@@ -2542,7 +2542,7 @@ doWhenPageLoaded(() => {
 	}, {
 		condition: (info) => (Object.values(GW.popFrameSpawnWidgets.widgetTypes).map(
 			widgetType => widgetType.keyCommand
-		).filter(x => x).includes(info.key))
+		).nonnull().includes(info.key))
 	});
 
 	//	Set up help widget(s).

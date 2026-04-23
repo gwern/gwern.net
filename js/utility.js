@@ -124,6 +124,13 @@ Array.prototype.unique = function () {
 	return this.filter((value, index, array) => array.indexOf(value) == index);
 };
 
+/*******************************************************/
+/*	Returns copy of the array, with null values removed.
+ */
+Array.prototype.nonnull = function () {
+	return this.filter(value => value);
+};
+
 /*********************************************/
 /*	Returns the string with words capitalized.
  */
@@ -1797,7 +1804,7 @@ function tokenize(str) {
 		.toLowerCase()
 		.replace(/[^\w\s’]/g, "")  // punctuation removal
 		.split(/\s+/)
-		.filter(x => x);         // remove empty tokens
+		.nonnull();
 }
 
 /***************************************************************************/

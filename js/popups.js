@@ -1662,7 +1662,7 @@ Popups = {
             return (rect.width * rect.height == 0
                     ? null
                     : rect);
-        }).filter(x => x)));
+        }).nonnull()));
     },
 
     //  See also: extracts.js

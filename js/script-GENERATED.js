@@ -359,7 +359,7 @@ function requestImageOutliningJudgmentsForImagesInContainer(container) {
         		&& GW.invertOrNot[imageURL.href] == null)
         	   ? imageURL.href
         	   : null;
-    }).filter(x => x);
+    }).nonnull();
     if (imageURLs.length == 0)
         return;
 
@@ -443,7 +443,7 @@ function requestImageInversionJudgmentsForImagesInContainer(container) {
         		&& inversionJudgmentHasBeenAppliedToImage(image) == false)
         	   ? imageURL.href
         	   : null;
-    }).filter(x => x);
+    }).nonnull();
     if (imageURLs.length == 0)
         return;
 
@@ -2542,7 +2542,7 @@ doWhenPageLoaded(() => {
 	}, {
 		condition: (info) => (Object.values(GW.popFrameSpawnWidgets.widgetTypes).map(
 			widgetType => widgetType.keyCommand
-		).filter(x => x).includes(info.key))
+		).nonnull().includes(info.key))
 	});
 
 	//	Set up help widget(s).
@@ -4467,7 +4467,7 @@ Popups = {
             return (rect.width * rect.height == 0
                     ? null
                     : rect);
-        }).filter(x => x)));
+        }).nonnull()));
     },
 
     //  See also: extracts.js
@@ -6471,12 +6471,12 @@ Annotations = { ...Annotations,
 
 		//	All the aux-links (tags, backlinks, similars, link link-bib).
 		let auxLinksFieldSeparatorHTML = `<span class="separator">; </span>`;
-		let auxLinksHTML = ([ backlinksHTML, similarsHTML, linkbibHTML ].filter(x => x).join(auxLinksFieldSeparatorHTML) || null);
+		let auxLinksHTML = ([ backlinksHTML, similarsHTML, linkbibHTML ].nonnull().join(auxLinksFieldSeparatorHTML) || null);
 		if (auxLinksHTML || tagsHTML)
-			auxLinksHTML = `<span class="aux-links-field-container"> (${([ tagsHTML, auxLinksHTML ].filter(x => x).join(auxLinksFieldSeparatorHTML) || null)})</span>`;
+			auxLinksHTML = `<span class="aux-links-field-container"> (${([ tagsHTML, auxLinksHTML ].nonnull().join(auxLinksFieldSeparatorHTML) || null)})</span>`;
 
 		//  Combined author, date, & aux-links.
-		let authorDateAuxHTML = ([ authorHTML, dateHTML, auxLinksHTML ].filter(x => x).join("") || null);
+		let authorDateAuxHTML = ([ authorHTML, dateHTML, auxLinksHTML ].nonnull().join("") || null);
 
 		//	Abstract (if exists).
 		let abstractElement = responseDocument.querySelector("blockquote");
