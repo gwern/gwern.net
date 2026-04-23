@@ -1376,7 +1376,7 @@ function truncatedNode(node, lengthLimit, options) {
 
 	if (newNode.nodeType == Node.TEXT_NODE) {
 		if (options.byWords == true) {
-			let words = newNode.textContent.split(" ");
+			let words = newNode.textContent.split(/\s+/);
 			let word;
 			let newTextContent = [ ];
 			while (   (word = words.shift())
