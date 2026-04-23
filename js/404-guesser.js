@@ -101,44 +101,6 @@ function urlPathnamesFromSitemapString(sitemapText) {
     return Array.from(locNodes).map(locNode => new URL(locNode.textContent).pathname);
 }
 
-/*******************************************************/
-/*	Calculate a bounded Levenshtein distance.
-	<https://en.wikipedia.org/wiki/Levenshtein_distance>
- */
-function boundedLevenshteinDistance(a, b, maxDistance) {
-    if (Math.abs(a.length - b.length) > maxDistance)
-    	return maxDistance + 1;
-
-    const matrix = [];
-    for (let i = 0; i <= b.length; i++) {
-        matrix[i] = [i];
-    }
-    for (let j = 1; j <= a.length; j++) {
-        matrix[0][j] = j;
-    }
-
-    for (let i = 1; i <= b.length; i++) {
-        let minDistance = maxDistance + 1;
-        for (let j = 1; j <= a.length; j++) {
-            if (b.charAt(i - 1) === a.charAt(j - 1)) {
-                matrix[i][j] = matrix[i - 1][j - 1];
-            } else {
-                matrix[i][j] = Math.min(
-                    matrix[i - 1][j - 1] + 1,
-                    matrix[i][j - 1] + 1,
-                    matrix[i - 1][j] + 1
-                );
-            }
-            minDistance = Math.min(minDistance, matrix[i][j]);
-        }
-        if (minDistance > maxDistance) {
-            return maxDistance + 1;
-        }
-    }
-
-    return matrix[b.length][a.length];
-}
-
 /******************************************/
 /*	Find similar URLs (full-path distance).
  */
