@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-04-21 23:50:43 gwern"
+# When:  Time-stamp: "2026-04-23 23:38:34 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -115,6 +115,7 @@ else
           s ' Feb ' ' February '; s ' Aug ' ' August '; s ', Jr.' ' Junior'; s ' Jr.' ' Junior'; s ', Junior' ' Junior';
           s '<sup>Th</sup>' '<sup>th</sup>'; s ' 20th' ' 20<sup>th</sup>'; s ' 21st' ' 21<sup>st</sup>';
           s ',”' '”,'; s ",’" "’,"; s '(vs. ' '(versus '; s ' vs. ' ' versus '; s ' Vs. ' ' Versus '; s 'best-of-<em>N</em>' 'best-of-<em>n</em>'; s ' Best-Of-N ' ' Best-of-<em>n</em> '; s 'Best-of-n ' 'Best-of-<em>n</em> '; s ' best-of-n' ' best-of-<em>n</em>'; s ' best-of-N' ' best-of-<em>n</em>';
+          s ' yrs' ' years';
 
           ### NOTE: Not safe to do site-wide with `gwsed` because it stomps all over R transcripts where quartiles
           ### are often reported in summaries like '1st'; we can do it safely for GTX because no R sessions there (for now):
@@ -157,7 +158,7 @@ else
           s 'link-icon-not' 'icon-not'; s '<!--<p>' '<!-- <p>'; s '</p>-->' '</p> -->';
           s '](W!' '](!W'; s '<em>𝛽</em>' '<em>β</em>'; s '𝛽' '<em>β</em>'; s 'class="table-simple' 'class="table-small';
           s ' > > ' ' >> '; s '</pan>' '</span>'; s 'display:none;' 'display: none;'; s '</spam>' '</span>'; s '\U0001D4AA' '𝒪̃';
-          s 'class="Editorial"' 'class="editorial"'; s '<a herf=' '<a href='; s '<a ref=' '<a href='; s '<a hrfe=' '<a href='; s '<a rhef=' '<a href='; s '<a href"$' '<a href="$'; s '<a hrref=' '<a href='; s '1-5 stars' '1–5 stars';
+          s 'class="Editorial"' 'class="editorial"'; s '<a herf=' '<a href='; s '<a ref=' '<a href='; s '<a hrfe=' '<a href='; s '<a rhef=' '<a href='; s '<a href"$' '<a href="$'; s '<a hrref=' '<a href='; s '1-5 stars' '1–5 stars'; s '_p_<.' '_p_ < 0.';
 
           ## TODO: duplicate HTML classes from Pandoc reported as issue #8705 & fixed; fix should be in >pandoc 3.1.1 (2023-03-05), so can remove these two rewrites once I upgrade past that:
           s 'class="odd odd' 'class="odd'; s 'class="even even' 'class="even';
@@ -255,7 +256,7 @@ else
 
         # we want to generate all directories first before running Hakyll in case a new tag was created
         bold "Building directory indexes…"
-        generateDirectory +RTS -N4 -RTS $DIRECTORY_TAGS
+        generateDirectory +RTS -N2 -RTS $DIRECTORY_TAGS
 
         # ensure that the list of test-cases has been updated so we can look at <https://gwern.net/lorem-link#live-link-testcases> immediately after the current sync (rather than afterwards, delaying it to after the next sync)
         λ() { ghci -istatic/build/ ./static/build/LinkLive.hs \
@@ -637,8 +638,8 @@ else
             LANGUAGE=${extensionToLanguage[$EXTENSION]}
             FILELENGTH=$(cat "$FILE" | wc --lines)
             (echo -e "~~~~~~~~~~~~~~~~~~~~~{.$LANGUAGE}"; # NOTE: excessively long tilde-line is necessary to override/escape any tilde-blocks inside Markdown files: <https://pandoc.org/MANUAL.html#fenced-code-blocks>
-            if [ $EXTENSION == "md" ] || [ $EXTENSION == "txt" ] ; then # the very long lines look bad in narrow popups, so we fold:
-                cat "$FILE" | fold --spaces --width=70 | sed -e 's/~~~/∼∼∼/g' | head "-$LENGTH";
+            if [ $EXTENSION == "md" ] || [ $EXTENSION == "txt" ] ; then # TODO: the very long lines would look bad in narrow popups, which should be handled by CSS.
+                cat "$FILE" | sed -e 's/~~~/∼∼∼/g' | head "-$LENGTH";
             else
                 cat "$FILE" | head "-$LENGTH";
             fi
@@ -664,7 +665,7 @@ else
 
     # essays only:
     ## eg. './2012-election.md \n...\n ./doc/cs/cryptography/1955-nash.md \n...\n ./newsletter/2022/09.md \n...\n ./review/mcnamara.md \n...\n ./wikipedia-and-knol.md \n...\n ./zeo/zma.md'
-    PAGES="$(find . -type f -name "*.md" | gfv -e '_site/' -e 'index' -e '#' | sort --unique)"
+    PAGES="$(find . -type f -name "*.md" | gfv -e '_site/' -e '#' -e 'static/' -e '/index' | sort --unique)"
     # essays+tags+annotations+similars+backlinks, excluding Github-only files like '/static/{README,CONTRIBUTING}.md'
     # eg. "_site/2012-election _site/2014-spirulina _site/3-grenades ... _site/doc/ai/text-style-transfer/index ... _site/doc/anime/2010-sarrazin ... _site/fiction/erl-king ... _site/lorem-admonition ... _site/newsletter/2013/12 ... _site/note/attention ... _site/review/umineko ... _site/zeo/zma"
     PAGES_ALL="$(find ./ -type f -name "*.md" | gfv -e '_site' -e '#' -e 'static/' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'; find _site/metadata/annotation/ -type f -name '*.html' | gfv '/metadata/annotation/id/')"
@@ -702,7 +703,7 @@ else
       fi
     }
     export -f staticCompileMathJax
-    (find ./ -path ./_site -prune -type f -o -name "*.md" | gfv -e 'doc/www/' -e '#' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/';
+    (find ./ -path ./_site -prune -type f -o -name "*.md" | gfv -e 'doc/www/' -e '#' -e 'static/' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/';
      find _site/metadata/annotation/ -name '*.html') | xargs --max-procs=0 --max-args=1000 grep --fixed-strings --files-with-matches -e '<span class="math inline"' -e '<span class="math display"' | \
         parallel --jobs "$N" --max-args=1 staticCompileMathJax
 
@@ -904,8 +905,8 @@ else
             "link-bibliography-context" "extract-not" "fraction" "separator-inline" "dark-mode-invert" "dark-mode-enable-when-here" "dark-mode" "light-mode-re-enable-when-here"
             "prefetch" "prefetch-not" "filesize-not" "poem" "poem-html" "redirect-from-id" "toc-not" "index" "editorial" "wrap-not"
         )
-        html_dataattributes_whitelist=("data-filesize-bytes" "data-link-icon" "data-amount-current" "data-amount-original" "data-aspect-ratio" "data-filesize-bytes" "data-filesize-percentage" "data-href-mobile" "data-image-height" "data-image-width" "data-include-selector-not" "data-include-template" "data-inflation" "data-link-content-type" "data-link-icon" "data-link-icon-color" "data-link-icon-type" "data-progress-percentage" "data-redirect-from-id" "data-target-id" "data-url-archive" "data-url-iframe" "data-url-original" "data-year-current" "data-year-original" "data-icon-x-position" "data-aspect-ratio" "data-demo-type" "data-doi" "data-id-ref")
-        html_classes_regexpattern=$(IFS='|'; echo "${html_classes_whitelist[*]}" "${html_dataatributes_whitelist[*]}")
+        html_dataattributes_whitelist=("data-filesize-bytes" "data-amount-current" "data-amount-original" "data-filesize-percentage" "data-href-mobile" "data-image-height" "data-image-width" "data-include-selector-not" "data-include-template" "data-inflation" "data-link-content-type" "data-link-icon" "data-link-icon-color" "data-link-icon-type" "data-progress-percentage" "data-redirect-from-id" "data-target-id" "data-url-archive" "data-url-iframe" "data-url-original" "data-year-current" "data-year-original" "data-icon-x-position" "data-aspect-ratio" "data-demo-type" "data-doi" "data-id-ref")
+        html_classes_regexpattern=$(IFS='|'; echo "${html_classes_whitelist[*]}" "${html_dataattributes_whitelist[*]}")
         html_classes=$(echo "$PAGES_ALL" | xargs --max-procs=0 --max-args=500 ./static/build/htmlAttributesExtract.py | tr ' ' '\n' | sort --unique)
 
         echo "$html_classes" | gev --line-regexp "$html_classes_regexpattern" --

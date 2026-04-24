@@ -913,6 +913,7 @@ canonicals = M.fromList $ setLike
   , ("4RH1T3CT0R7", "Artem Lytkin")
   , ("Tim_Hua_", "Tim Hua")
   , ("max_spero_", "Max Spero")
+  , ("qwantz", "Ryan North")
   ]
 
 -- tests: unique
@@ -2112,8 +2113,8 @@ authorLinkDB = M.fromList $
     , ("foodforthought", "https://www.lesswrong.com/users/foodforthought")
     , ("CMG Lee", "https://en.wikipedia.org/wiki/User:Cmglee")
     , ("Richard Polt", "https://site.xavier.edu/polt/typewriters/about.html")
-    , ("Google Nano Banana Pro", "https://blog.google/technology/ai/nano-banana-pro/")
-    , ("Google Nano Banana Pro 2", "https://blog.google/innovation-and-ai/technology/ai/nano-banana-2/")
+    , ("Google Nano Banana Pro", "https://blog.google/innovation-and-ai/products/nano-banana-pro/")
+    , ("Google Nano Banana 2", "https://blog.google/innovation-and-ai/technology/ai/nano-banana-2/")
     , ("Richard E. Turner", "https://rich-turner-group.github.io/")
     , ("Cartoons Hate Her", "https://www.cartoonshateher.com/about")
     , ("Cendyne", "https://cendyne.dev/")
@@ -2186,6 +2187,7 @@ authorLinkDB = M.fromList $
     , ("Claude-4.7-opus", "https://www.anthropic.com/news/claude-opus-4-7")
     , ("Vishal Prasad", "https://substack.com/@vishalprasad1")
     , ("GPT-5.3-Codex", "https://openai.com/index/introducing-gpt-5-3-codex/")
+    , ("GPT-5.5", "https://openai.com/index/introducing-gpt-5-5/")
     , ("Leslie Stephen Coles", "https://en.wikipedia.org/wiki/L._Stephen_Coles")
     , ("Coral Osborne", "https://substack.com/@coralosborne")
     , ("Jacob Bacharach", "https://jacobbacharach.com/")
@@ -3537,4 +3539,5 @@ authorWpLinkDB = setLike
     , "Nadine Dupérré", "Danica Kragic", "Aude Billard", "Thierry Depaulis", "Jorge Nuno Silva", "Eddie Duggan", "David Parlett"
     , "Bertram Gawronski", "Fei-Fei Li", "Euan Ashley", "John A. Long", "Elga Mark-Kurik",  "Per E. Ahlberg"
     , "Roger Jones", "Kate Trinajstic", "Hervey M. Cleckley", "May Berenbaum", "American Psychological Association"
-    , "Alfred Bester", "Martyn Thomas", "Nina Vasan", "Max H. Bazerman", "William Yang Wang", "Larry Tesler", "Peter J. Huber"]
+    , "Alfred Bester", "Martyn Thomas", "Nina Vasan", "Max H. Bazerman", "William Yang Wang", "Larry Tesler", "Peter J. Huber"
+    , "Greg Corrado"]

@@ -1,7 +1,7 @@
 {- Config.LinkMetadata: config data, unit-tests, for LinkMetadata
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2026-04-21 00:23:02 gwern"
+When:  Time-stamp: "2026-04-23 11:27:52 gwern"
 License: CC-0
 -}
 
@@ -27,7 +27,7 @@ partialAnnotationIgnoredTagCount, partialAnnotationBacklinkThreshold, partialAnn
 partialAnnotationIgnoredTagCount = 2
 partialAnnotationBacklinkThreshold = 1
 partialAnnotationSimilarThreshold = 6
-annotationURLWarningLength = 273
+annotationURLWarningLength = 270 -- past a certain length, we can no longer write out full URL → filenames, which causes weird glitches like repeatedly trying to write out '/metadata/annotation/similars/foo...html'; these rare absurdly long URLs must be localized or a URL-shortener used or something.
 annotationURLPreviewLength = 247
 missingTitleAbstractMinLength = 100
 
