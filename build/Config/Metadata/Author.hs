@@ -2187,7 +2187,8 @@ authorLinkDB = M.fromList $
     , ("Claude-4.7-opus", "https://www.anthropic.com/news/claude-opus-4-7")
     , ("Vishal Prasad", "https://substack.com/@vishalprasad1")
     , ("GPT-5.3-Codex", "https://openai.com/index/introducing-gpt-5-3-codex/")
-    , ("GPT-5.5", "https://openai.com/index/introducing-gpt-5-5/")
+    , ("GPT-5.5 Pro", "https://openai.com/index/introducing-gpt-5-5/#pro")
+    , ("GPT-5.5 Thinking", "https://openai.com/index/introducing-gpt-5-5/#thinking")
     , ("Leslie Stephen Coles", "https://en.wikipedia.org/wiki/L._Stephen_Coles")
     , ("Coral Osborne", "https://substack.com/@coralosborne")
     , ("Jacob Bacharach", "https://jacobbacharach.com/")
@@ -3540,4 +3541,4 @@ authorWpLinkDB = setLike
     , "Bertram Gawronski", "Fei-Fei Li", "Euan Ashley", "John A. Long", "Elga Mark-Kurik",  "Per E. Ahlberg"
     , "Roger Jones", "Kate Trinajstic", "Hervey M. Cleckley", "May Berenbaum", "American Psychological Association"
     , "Alfred Bester", "Martyn Thomas", "Nina Vasan", "Max H. Bazerman", "William Yang Wang", "Larry Tesler", "Peter J. Huber"
-    , "Greg Corrado"]
+    , "Greg Corrado", "Philip Wheelwright"]

@@ -4,7 +4,7 @@
 # italicizer.py: reformat a string to add italics as semantically appropriate (eg. book titles) using LLMs
 # Author: Gwern Branwen
 # Date: 2025-01-17
-# When:  Time-stamp: "2026-04-17 23:43:42 gwern"
+# When:  Time-stamp: "2026-04-24 15:54:24 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python italicizer.py
@@ -1486,6 +1486,8 @@ An Orgy, but with Reward Points: The arc of history is long but it bends towards
 ""
 - <text>The AI Revolution in Math Has Arrived</text>
 ""
+- <text>have you heard of Blood On The Clocktower?</text>
+"have you heard of <em>Blood On The Clocktower</em>?"
 
 [End of examples. Reminder: your only task is to add missing italics you are SURE of.]
 

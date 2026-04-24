@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-04-18 23:53:30 gwern"
+# When:  Time-stamp: "2026-04-24 22:04:36 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -1711,6 +1711,21 @@ _upload () {
     fi
 }
 complete -F _upload upload
+
+## tab-complete compress* commands to only the file extensions each accepts (plus directories);
+## assumes `bash-completion` package is installed & sourced previously (see top of file)
+_compress_complete () {
+    local cur prev words cword
+    _init_completion || return
+    case "${COMP_WORDS[0]}" in
+        compressGIF) _filedir '@(gif|GIF)' ;;
+        compressJPG) _filedir '@(jpg|JPG|jpeg|JPEG)' ;;
+        compressPDF) _filedir '@(pdf|PDF)' ;;
+        compressPNG) _filedir '@(png|PNG)' ;;
+        *)           _filedir ;;
+    esac
+}
+complete -F _compress_complete compressGIF compressJPG compressPDF compressPNG
 
 # wait for a file (first argument) to become quiescent because eg. the web browser is still downloading it; optional second argument is the minimum size in kilobytes (eg. archived webpages are almost always >10kb these days, even if it's an old-school all-text HTML page):
 is_downloading () {

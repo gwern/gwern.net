@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-04-23 23:38:34 gwern"
+# When:  Time-stamp: "2026-04-24 11:59:58 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -837,7 +837,7 @@ else
     λ(){ gf -e '\\' ./static/css/*.css; }
     wrap λ "Warning: stray backslashes in CSS‽ (Dangerous interaction with minification!)"
 
-    λ(){ echo "$PAGES_ALL" | find ./ -type f -name "*.md" | grep --fixed-strings -v -e '_site' -e 'Modafinil' -e 'Blackmail' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs grep --fixed-strings --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '](#fn' -e '!Margin' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https://www.gwern.net' -e 'https//www' -e 'http//www'  -e 'hhttp://' -e 'hhttps://' -e ' _n_s' -e '/journal/vaop/ncurrent/' -e '://bit.ly/' -e 'remote/check_cookie.html' -e 'https://www.biorxiv.org/node/' -e '/article/info:doi/10.1371/' -e 'https://PaperCode.cc' -e '?mod=' -e 'www.researchgate.net' -e '.pdf&amp;rep=rep1&amp;type=pdf' -e '.pdf&rep=rep1&type=pdf' -e ".pdf#subsection" -e ".pdf#Appendix" -e 'linkinghub.elsevier.com' -e 'https://www.youtube.com/watch?t=' | \
+    λ(){ echo "$PAGES_ALL" | find ./ -type f -name "*.md" | grep --fixed-strings -v -e '_site/' -e 'static/' -e 'Modafinil' -e 'Blackmail' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs grep --fixed-strings --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '](#fn' -e '!Margin' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https://www.gwern.net' -e 'https//www' -e 'http//www'  -e 'hhttp://' -e 'hhttps://' -e ' _n_s' -e '/journal/vaop/ncurrent/' -e '://bit.ly/' -e 'remote/check_cookie.html' -e 'https://www.biorxiv.org/node/' -e '/article/info:doi/10.1371/' -e 'https://PaperCode.cc' -e '?mod=' -e 'www.researchgate.net' -e '.pdf&amp;rep=rep1&amp;type=pdf' -e '.pdf&rep=rep1&type=pdf' -e ".pdf#subsection" -e ".pdf#Appendix" -e 'linkinghub.elsevier.com' -e 'https://www.youtube.com/watch?t=' | \
          ge -e 'https://web.archive.org/web/.*gwern\.net.*' -e 'Blackmail';
        }
     wrap λ "Stray or bad URL links in Markdown-sourced HTML."
@@ -1015,16 +1015,16 @@ else
        }
     wrap λ "Dishonest or serial fabricators detected as authors? (If a fraudulent publication should be annotated anyway, add a warning to the annotation & whitelist it.)" &
 
-     λ(){ find ./ -type f -name "*.md" | gfv '/variable' | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 gf --with-filename --color=always -e '{#'; }
+     λ(){ find ./ -type f -name "*.md" | gfv '/variable' | gfv -e '_site/' -e 'static/' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 gf --with-filename --color=always -e '{#'; }
      wrap λ "Bad link ID overrides in Markdown."
 
-    λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 ge --with-filename --color=always -e 'pdf#page[0-9]' -e 'pdf#pg[0-9]'; }
+    λ(){ find ./ -type f -name "*.md" | gfv -e '_site/' -e 'static/' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 ge --with-filename --color=always -e 'pdf#page[0-9]' -e 'pdf#pg[0-9]'; }
     wrap λ "Incorrect PDF page links in Markdown."
 
     λ(){ echo "$PAGES_ALL" | xargs grep --extended-regexp -e '\#[a-z]+\#[a-z]+' | gfv -e '/index#newest#statistics'; }
     wrap λ "Broken HTML: double-anchor hash links? While valid HTML5, this is likely an error; if it's intentional range-transclusion, whitelist it."
 
-    λ(){ find ./ -type f -name "*.md" -type f -exec grep --extended-regexp -e 'css-extension:' {} \; | \
+    λ(){ find ./ -type f -name "*.md" -type f -exec grep --extended-regexp -e '^css-extension: ' {} \; | \
        gfv -e 'css-extension: dropcaps-cheshire' -e 'css-extension: dropcaps-cheshire reader-mode' -e 'css-extension: dropcaps-de-zs' -e 'css-extension: dropcaps-goudy' -e 'css-extension: dropcaps-goudy reader-mode' -e 'css-extension: dropcaps-kanzlei' -e 'css-extension: "dropcaps-kanzlei reader-mode"' -e 'css-extension: dropcaps-yinit' -e 'css-extension: dropcaps-dropcat' -e 'css-extension: dropcaps-gene-wolfe' -e 'css-extension: dropcaps-not' -e 'css-extension: "dropcaps-not'; }
     wrap λ "Incorrect dropcaps in Markdown."
 
