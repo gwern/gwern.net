@@ -1,6 +1,6 @@
 -- A Gwern.net module for writing out annotations of my writings off-site as standalone pages on Gwern.net, in the 'blog/' subdirectory.
 --
--- The pages are generated as Markdown at compile-time like the tag-directory pages, and simply transclude a specified annotation.
+-- The pages are generated as Markdown at compile-time like the tag-directory pages, and simply statically transclude a specified annotation.
 -- They are similar to the `/ref/` annotation lookups in spirit, but intended to act more like normal browsable essays, including having a `/blog/index` that readers can go to or monitor, and remove some of the need for /note/ or appendixes.
 -- This should be called in </static/build/app/hakyll.hs> to update the blog entries before running the main compilation.
 --
@@ -9,7 +9,7 @@
 -- I have found that turning them into (relatively) lightweight annotations has been a good way to store copies of them for local search, and makes linking to them a lot more useful, as they accumulate backlinks, can now be embedded for similar-links, get mirrored by the local-archive system, and so on. So storing all such off-site writings as annotations is attractive.
 -- But annotations have their own drawbacks: they are not easily findable or linkable. A regular reader has no idea where to find a list of these annotations, and if they have one in mind, the only URLs they would find are tag-directory section indexes, which are both unstable (the tag might change at any moment) and come with a huge overhead in terms of loading an entire tag-directory page. (Given our problems with making sure transclusion doesn't cause the page to jump around, a link to a section might not even work as far as a reader can tell!)
 --
--- The `/ref/$ID` feature inspires an alternative: since these off-site writings have to get a unique manual ID to avoid them all being named 'gwern-YYYY', we can simply exploit those useful IDs to create a standalone page for each one, nested in a `/blog/YYYY/` directory to indicate their lower status; and then each standalone page simply displays the annotation as a standard annotation-transclude.
+-- The `/ref/$ID` feature inspires an alternative: since these off-site writings have to get a unique manual ID to avoid them all being named 'gwern-YYYY', we can simply exploit those useful IDs to create a standalone page for each one, nested in a `/blog/YYYY/` directory to indicate their lower status; and then each standalone page simply injects the annotation body as a standard Pandoc raw-HTML snippet .
 -- So any time an off-site comment gets saved as an annotation in the natural course of site maintenance, it automatically shows up as a lightweight 'blog' essay. If a LW.com comment at $URL gets saved as an annotation with an ID like `gwern-2025-drl-scaling` (defined in the miscellaneous key-value field like `[("id","gwern-2025-drl-scaling")]`), then a page will be created at <https://gwern.net/blog/2025/drl-scaling> which simply does a `[]($URL){.include-annotation)`, in effect. And this page will be nice to read, linkable, findable via <https://gwern.net/blog/index>, can be edited into a proper full essay, etc.
 --
 -- And since the annotation is written separately from the /blog/ shell, strictly speaking, there is nothing barring a 'recursive' blog post: one just writes a '/blog/20xx/foo' annotation... which then creates itself. This allows for true standalone blog pages.
@@ -160,11 +160,9 @@ annotation2Markdown _url (title, author, dateCreated, dateModified, kvs, _, abst
        , "confidence: "          ++ confidence
        , "css-extension: "       ++ cssExt
        , "backlink: False"
-       , "placeholder: True"
-       , "index: True"
        , "..."
        , ""
-       , "```{.HTML}"
+       , "```{=HTML}"
        ] ++ lines abst ++ [
          ""
        , "<div class='text-center' id='return-to-blog-index-link'>[<a href='/blog/index' class='link-page link-tag directory-indexes-upwards link-annotated-not' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to blog directory'>Return to blog index</a>]</div>"
