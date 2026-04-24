@@ -9,6 +9,7 @@
 
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="robots" content="noindex, nofollow" />
 
 $for(author-meta)$
   <meta name="author" content="$author-meta$" />
@@ -16,11 +17,21 @@ $endfor$
 $if(date-meta)$
   <meta name="dcterms.date" content="$date-meta$" />
 $endif$
-  <title>/$pagetitle$ (syntax-highlighted preview)</title>
+  <title>$pagetitle$ (syntax-highlighted preview)</title>
 $for(css)$
   <link rel="stylesheet" href="$css$">
 $endfor$
+<!-- handle very wide lines in source code, which are bad when rendered in popups -->
+<style>
+  body.file-preview-source-code { max-width: none; }
+  body.file-preview-source-code .sourceCode pre,
+  body.file-preview-source-code .sourceCode pre code {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    tab-size: 4; }
+</style>
 </head>
+
 <body class="file-preview-source-code"> <!-- TODO: we should probably have a special prefix to properly namespace these sort of 'meta' body classes, to distinguish them from the page-title-derived body classes we use to CSS-style specific pages. -->
 $body$
 </body>
