@@ -320,7 +320,10 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 			responseType: "json",
 			onSuccess: (event) => {
 				//	Get all prefix matches.
-				let urlPrefixMatches = Object.entries(event.target.response).filter(entry => entry[0].startsWith(normalizedRef));
+				let urlPrefixMatches = Object.entries(event.target.response).filter(entry => {
+					let [ entryURLString, entryID ] = entry;
+					return (entryURLString.startsWith(normalizedRef) == true);
+				});
 				if (urlPrefixMatches.length > 1) {
 					/*	If multiple matches, list them all, transcluding
 						annotations where available (attempt in all cases, and
@@ -331,8 +334,10 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 					injectHelpfulSuggestion(normalizedRef);
 				} else if (urlPrefixMatches.length == 1) {
 					//	If only one match, redirect to the matching /ref/ page.
-					document.head.appendChild(elementFromHTML(`<link rel="canonical" href="${URLFromString(urlPrefixMatches.first[1]).href}">`));
-					location = URLFromString("/ref/" + urlPrefixMatches.first[1]);
+					let [ matchURLString, matchID ] = urlPrefixMatches.first;
+					let matchURL = URLFromString("/ref/" + matchID);
+					document.head.appendChild(elementFromHTML(`<link rel="canonical" href="${matchURL.href}">`));
+					location = matchURL;
 				} else {
 					//	If no matches at all...
 					updatePageTitleElements("Invalid Query");
@@ -380,20 +385,24 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 					let maxMatchNum = 10;
 
 					//	Automatic IDs are ignored.
-					let manualIDEntries = Object.entries(event.target.response).filter(entry =>
-						entry[0].startsWith("_") == false
-					);
+					let manualIDEntries = Object.entries(event.target.response).filter(entry => {
+						let [ entryID, entryURLString ] = entry;
+						return (entryID.startsWith("_") == false);
+					});
 
 					//	Get all prefix matches (in both directions).
-					let idPrefixMatches = manualIDEntries.filter(entry =>
-						   (   entry[0].startsWith(normalizedRef)
-							|| normalizedRef.startsWith(entry[0]))
-						&& entry[0] != normalizedRef
-					);
+					let idPrefixMatches = manualIDEntries.filter(entry => {
+						let [ entryID, entryURLString ] = entry;
+						return (   (   entryID.startsWith(normalizedRef) == true
+									|| normalizedRef.startsWith(entryID) == true)
+								&& entryID != normalizedRef);
+					});
 					if (idPrefixMatches.length == 1) {
 						//	If only one match, redirect to the matching /ref/ page.
-						document.head.appendChild(elementFromHTML(`<link rel="canonical" href="${URLFromString('/ref/' + idPrefixMatches.first[0]).href}">`));
-						location = URLFromString("/ref/" + idPrefixMatches.first[0]);
+						let [ matchID, matchURLString ] = idPrefixMatches.first;
+						let matchURL = URLFromString("/ref/" + matchID);
+						document.head.appendChild(elementFromHTML(`<link rel="canonical" href="${matchURL.href}">`));
+						location = matchURL;
 					} else {
 						allMatches.push(...idPrefixMatches);
 					}
@@ -402,7 +411,8 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 						//	Get all partial-author matches.
 						let refComponents = componentsFromId(normalizedRef);
 						let partialAuthorMatches = manualIDEntries.filter(entry => {
-							let entryComponents = componentsFromId(entry[0]);
+							let [ matchID, matchURLString ] = entry;
+							let entryComponents = componentsFromId(matchID);
 							return (   (   refComponents.year == null
 										|| entryComponents.year?.startsWith(refComponents.year.slice(0, 4)) == true)
 									&& refComponents.authors.findIndex(author => entryComponents.authors.includes(author) == false) === -1);
@@ -415,24 +425,26 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 							(Max distance chosen heuristically.)
 						 */
 				    	const maxDistance = 8;
-						let levenshteinMatches = manualIDEntries.filter(
+						let levenshteinMatches = manualIDEntries.filter(entry => {
 							//	Quick filter based on length difference.
-							entry => (Math.abs(entry[0].length - normalizedRef.length) <= maxDistance)
-						).map(
+							let [ entryID, entryURLString ] = entry;
+							return (Math.abs(entryID.length - normalizedRef.length) <= maxDistance);
+						}).map(entry => {
 							//	Calculate bounded Levenshtein distance.
-							entry => ({
+							let [ entryID, entryURLString ] = entry;
+							return {
 								entry: entry,
-								distance: boundedLevenshteinDistance(entry[0], normalizedRef, maxDistance)
-							})
-						).filter(
+								distance: boundedLevenshteinDistance(entryID, normalizedRef, maxDistance)
+							};
+						}).filter(item => 
 							//	Filter by max distance.
-							item => (item.distance <= maxDistance)
-						).sort(
+							(item.distance <= maxDistance)
+						).sort((a, b) => 
 							//	Sort by distance.
-							(a, b) => (a.distance - b.distance)
+							(a.distance - b.distance)
 						).slice(
 							0, maxMatchNum
-						).map(	
+						).map(
 							item => item.entry
 						);
 						allMatches.push(...levenshteinMatches);
