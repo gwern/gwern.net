@@ -14949,19 +14949,20 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 		});
 	};
 
-	/*	The `message` argument may optionally be a 2-element array of strings
-		(the first element being the singular-case message, to be used if there
-		is only one result; the second being the plural-case message, to be
-		used if there are multiple results). Otherwise, it should be a string.
-	 */
-	let injectIdPartialMatches = (matches, message, normalizedRef) => {
-		if (typeof message == "object")
-			message = matches.length == 1 ? message[0] : message[1];
-		injectHelpfulErrorMessage(message);
+	//	The ‘matchType’ option field value may be “ID” or “URL”.
+	let injectPossibleMatches = (matches, normalizedRef, options) => {
+		options = Object.assign({
+			matchType: null
+		}, options);
+
+		injectHelpfulErrorMessage(matches.length == 1 
+								  ? "Perhaps you want this:" 
+								  : "Perhaps you want one of these:");
+
 		pageContentContainer.appendChild(elementFromHTML(
 			  `<ul>`
 			+ matches.map(entry => {
-				let [ entryID, entryURLString ] = entry;
+				let [ entryID, entryURLString ] = (options.matchType == "ID" ? entry : entry.reverse());
 				return (
 				  `<li><p>`
 				+ (entryID == normalizedRef
@@ -14976,25 +14977,7 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 				+ `</p></li>`);
 			  }).join("")
 			+ `</ul>`));
-		activateIncludeLinks();
-	};
 
-	let injectUrlPrefixMatches = (matches) => {
-		injectHelpfulErrorMessage(`${matches.length} matches found:`);
-		pageContentContainer.appendChild(elementFromHTML(
-			  `<ul>`
-			+ matches.map(entry => {
-				let [ entryURLString, entryID ] = entry;
-				return (
-				  `<li><p>`
-				+ synthesizeIncludeLink(entryURLString, {
-					"class": "link-annotated include-annotation-partial"
-				  }, {
-					innerHTML: `<code>${entryURLString}</code>`
-				  }).outerHTML
-				+ `</p></li>`);
-			  }).join("")
-			+ `</ul>`));
 		activateIncludeLinks();
 	};
 
@@ -15084,31 +15067,68 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 			location: urlForMappingFile("all"),
 			responseType: "json",
 			onSuccess: (event) => {
+				updatePageTitleElements("Invalid Query");
+				injectHelpfulErrorMessage(`No annotation exists for URL <code>${normalizedRef}</code>.`);
+
+				let allMatches = [ ];
+				let maxMatchNum = 10;
+
+				//	Get all entries.
+				let allEntries = Object.entries(event.target.response);
+
 				//	Get all prefix matches.
-				let urlPrefixMatches = Object.entries(event.target.response).filter(entry => {
+				let urlPrefixMatches = allEntries.filter(entry => {
 					let [ entryURLString, entryID ] = entry;
 					return (entryURLString.startsWith(normalizedRef) == true);
 				});
-				if (urlPrefixMatches.length > 1) {
-					/*	If multiple matches, list them all, transcluding
-						annotations where available (attempt in all cases, and
-						those that fail will just become regular links).
-					 */
-					updatePageTitleElements("Unknown Reference");
-					injectUrlPrefixMatches(urlPrefixMatches);
-					injectHelpfulSuggestion(normalizedRef);
-				} else if (urlPrefixMatches.length == 1) {
+				if (urlPrefixMatches.length == 1) {
 					//	If only one match, redirect to the matching /ref/ page.
 					let [ matchURLString, matchID ] = urlPrefixMatches.first;
 					let matchURL = URLFromString("/ref/" + matchID);
 					document.head.appendChild(elementFromHTML(`<link rel="canonical" href="${matchURL.href}">`));
 					location = matchURL;
 				} else {
-					//	If no matches at all...
-					updatePageTitleElements("Invalid Query");
-					injectHelpfulErrorMessage(`No annotation exists for URL <code>${normalizedRef}</code>.`);
-					injectHelpfulSuggestion(normalizedRef);
+					allMatches.push(...urlPrefixMatches);
 				}
+
+				if (allMatches.length < maxMatchNum) {
+					/*	Get all Levenshtein-close matches.
+						(Max distance chosen heuristically.)
+					 */
+					const maxDistance = 8;
+					let levenshteinMatches = allEntries.filter(entry => {
+						//	Quick filter based on length difference.
+						let [ entryURLString, entryID ] = entry;
+						return (Math.abs(entryURLString.length - normalizedRef.length) <= maxDistance);
+					}).map(entry => {
+						//	Calculate bounded Levenshtein distance.
+						let [ entryURLString, entryID ] = entry;
+						return {
+							entry: entry,
+							distance: boundedLevenshteinDistance(entryURLString, normalizedRef, maxDistance)
+						};
+					}).filter(item => 
+						//	Filter by max distance.
+						(item.distance <= maxDistance)
+					).sort((a, b) => 
+						//	Sort by distance.
+						(a.distance - b.distance)
+					).slice(
+						0, maxMatchNum
+					).map(
+						item => item.entry
+					);
+					allMatches.push(...levenshteinMatches);
+				}
+
+				/*	List all matches (up to the limit), transcluding
+					annotations where available (attempt in all cases, and
+					those that fail will just become regular links).
+				 */
+				if (allMatches.length > 0)
+					injectPossibleMatches(allMatches, normalizedRef, { matchType: "URL" });
+
+				injectHelpfulSuggestion(normalizedRef);
 			}
 		});
 	} else {
@@ -15215,14 +15235,15 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 						allMatches.push(...levenshteinMatches);
 					}
 
-					//	Truncate list, if need be.
+					//	Truncate match list, if need be.
 					allMatches = allMatches.slice(0, maxMatchNum);
 
 					/*	List all matches (up to the limit), transcluding
 						annotations where available (attempt in all cases, and
 						those that fail will just become regular links).
 					 */
-					injectIdPartialMatches(allMatches, [ "Perhaps you want this:", "Perhaps you want one of these:" ], normalizedRef);
+					if (allMatches.length > 0)
+						injectPossibleMatches(allMatches, normalizedRef, { matchType: "ID" });
 
 					injectHelpfulSuggestion(normalizedRef.replace(/-/g, " "
 														).replace(" et al", ""
