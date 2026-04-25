@@ -195,19 +195,21 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 		injectHelpfulErrorMessage(message);
 		pageContentContainer.appendChild(elementFromHTML(
 			  `<ul>`
-			+ matches.map(entry => (
+			+ matches.map(entry => {
+				let [ entryID, entryURLString ] = entry;
+				return (
 				  `<li><p>`
-				+ (entry[0] == normalizedRef
-				   ? `${entry[0]}: `
-				   : `<a href="/ref/${entry[0]}">${entry[0]}</a>: `)
-				+ synthesizeIncludeLink(entry[1], {
+				+ (entryID == normalizedRef
+				   ? `${entryID}: `
+				   : `<a href="/ref/${entryID}">${entryID}</a>: `)
+				+ synthesizeIncludeLink(entryURLString, {
 					"class": "link-annotated include-annotation-partial-inline",
 					"data-include-selector-not": ".data-field.date, .aux-links-field-container"
 				  }, {
-					innerHTML: `<code>${entry[1]}</code>`
+					innerHTML: `<code>${entryURLString}</code>`
 				  }).outerHTML
-				+ `</p></li>`
-			  )).join("")
+				+ `</p></li>`);
+			  }).join("")
 			+ `</ul>`));
 		activateIncludeLinks();
 	};
@@ -216,15 +218,17 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 		injectHelpfulErrorMessage(`${matches.length} matches found:`);
 		pageContentContainer.appendChild(elementFromHTML(
 			  `<ul>`
-			+ matches.map(entry => (
+			+ matches.map(entry => {
+				let [ entryURLString, entryID ] = entry;
+				return (
 				  `<li><p>`
-				+ synthesizeIncludeLink(entry[0], {
+				+ synthesizeIncludeLink(entryURLString, {
 					"class": "link-annotated include-annotation-partial"
 				  }, {
-					innerHTML: `<code>${entry[0]}</code>`
+					innerHTML: `<code>${entryURLString}</code>`
 				  }).outerHTML
-				+ `</p></li>`
-			  )).join("")
+				+ `</p></li>`);
+			  }).join("")
 			+ `</ul>`));
 		activateIncludeLinks();
 	};
@@ -316,7 +320,10 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 			responseType: "json",
 			onSuccess: (event) => {
 				//	Get all prefix matches.
-				let urlPrefixMatches = Object.entries(event.target.response).filter(entry => entry[0].startsWith(normalizedRef));
+				let urlPrefixMatches = Object.entries(event.target.response).filter(entry => {
+					let [ entryURLString, entryID ] = entry;
+					return (entryURLString.startsWith(normalizedRef) == true);
+				});
 				if (urlPrefixMatches.length > 1) {
 					/*	If multiple matches, list them all, transcluding
 						annotations where available (attempt in all cases, and
@@ -327,8 +334,10 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 					injectHelpfulSuggestion(normalizedRef);
 				} else if (urlPrefixMatches.length == 1) {
 					//	If only one match, redirect to the matching /ref/ page.
-					document.head.appendChild(elementFromHTML(`<link rel="canonical" href="${URLFromString(urlPrefixMatches.first[1]).href}">`));
-					location = URLFromString("/ref/" + urlPrefixMatches.first[1]);
+					let [ matchURLString, matchID ] = urlPrefixMatches.first;
+					let matchURL = URLFromString("/ref/" + matchID);
+					document.head.appendChild(elementFromHTML(`<link rel="canonical" href="${matchURL.href}">`));
+					location = matchURL;
 				} else {
 					//	If no matches at all...
 					updatePageTitleElements("Invalid Query");
@@ -372,39 +381,83 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 					the match exists but fails to load.
 				 */
 				let displayRelevantContentAfterMatchNotFound = () => {
+					let allMatches = [ ];
+					let maxMatchNum = 10;
+
+					//	Automatic IDs are ignored.
+					let manualIDEntries = Object.entries(event.target.response).filter(entry => {
+						let [ entryID, entryURLString ] = entry;
+						return (entryID.startsWith("_") == false);
+					});
+
 					//	Get all prefix matches (in both directions).
-					let idPrefixMatches = Object.entries(event.target.response).filter(entry =>
-						entry[0].startsWith("_") == false
-					).filter(entry =>
-						   (   entry[0].startsWith(normalizedRef)
-							|| normalizedRef.startsWith(entry[0]))
-						&& entry[0] != normalizedRef
-					);
-					if (idPrefixMatches.length > 1) {
-						/*	If multiple matches, list them all, transcluding
-							annotations where available (attempt in all cases, and
-							those that fail will just become regular links).
-						 */
-						injectIdPartialMatches(idPrefixMatches, "Perhaps you want one of these:");
-					} else if (idPrefixMatches.length == 1) {
+					let idPrefixMatches = manualIDEntries.filter(entry => {
+						let [ entryID, entryURLString ] = entry;
+						return (   (   entryID.startsWith(normalizedRef) == true
+									|| normalizedRef.startsWith(entryID) == true)
+								&& entryID != normalizedRef);
+					});
+					if (idPrefixMatches.length == 1) {
 						//	If only one match, redirect to the matching /ref/ page.
-						document.head.appendChild(elementFromHTML(`<link rel="canonical" href="${URLFromString('/ref/' + idPrefixMatches.first[0]).href}">`));
-						location = URLFromString("/ref/" + idPrefixMatches.first[0]);
+						let [ matchID, matchURLString ] = idPrefixMatches.first;
+						let matchURL = URLFromString("/ref/" + matchID);
+						document.head.appendChild(elementFromHTML(`<link rel="canonical" href="${matchURL.href}">`));
+						location = matchURL;
+					} else {
+						allMatches.push(...idPrefixMatches);
 					}
 
-					//	Get all partial-author matches.
-					let refComponents = componentsFromId(normalizedRef);
-					let partialAuthorMatches = Object.entries(event.target.response).filter(entry =>
-						entry[0].startsWith("_") == false
-					).filter(entry => {
-						let entryComponents = componentsFromId(entry[0]);
-						return (   (   refComponents.year == null
-									|| entryComponents.year?.startsWith(refComponents.year) == true)
-								&& refComponents.authors.findIndex(author => entryComponents.authors.includes(author) == false) === -1);
-					});
-					if (partialAuthorMatches.length > 0) {
-						injectIdPartialMatches(partialAuthorMatches, "Perhaps you want one of these:", normalizedRef);
+					if (allMatches.length < maxMatchNum) {
+						//	Get all partial-author matches.
+						let refComponents = componentsFromId(normalizedRef);
+						let partialAuthorMatches = manualIDEntries.filter(entry => {
+							let [ matchID, matchURLString ] = entry;
+							let entryComponents = componentsFromId(matchID);
+							return (   (   refComponents.year == null
+										|| entryComponents.year?.startsWith(refComponents.year.slice(0, 4)) == true)
+									&& refComponents.authors.findIndex(author => entryComponents.authors.includes(author) == false) === -1);
+						});
+						allMatches.push(...partialAuthorMatches);
 					}
+
+					if (allMatches.length < maxMatchNum) {
+						/*	Get all Levenshtein-close matches.
+							(Max distance chosen heuristically.)
+						 */
+				    	const maxDistance = 8;
+						let levenshteinMatches = manualIDEntries.filter(entry => {
+							//	Quick filter based on length difference.
+							let [ entryID, entryURLString ] = entry;
+							return (Math.abs(entryID.length - normalizedRef.length) <= maxDistance);
+						}).map(entry => {
+							//	Calculate bounded Levenshtein distance.
+							let [ entryID, entryURLString ] = entry;
+							return {
+								entry: entry,
+								distance: boundedLevenshteinDistance(entryID, normalizedRef, maxDistance)
+							};
+						}).filter(item => 
+							//	Filter by max distance.
+							(item.distance <= maxDistance)
+						).sort((a, b) => 
+							//	Sort by distance.
+							(a.distance - b.distance)
+						).slice(
+							0, maxMatchNum
+						).map(
+							item => item.entry
+						);
+						allMatches.push(...levenshteinMatches);
+					}
+
+					//	Truncate list, if need be.
+					allMatches = allMatches.slice(0, maxMatchNum);
+
+					/*	List all matches (up to the limit), transcluding
+						annotations where available (attempt in all cases, and
+						those that fail will just become regular links).
+					 */
+					injectIdPartialMatches(allMatches, [ "Perhaps you want this:", "Perhaps you want one of these:" ], normalizedRef);
 
 					injectHelpfulSuggestion(normalizedRef.replace(/-/g, " "
 														).replace(" et al", ""
