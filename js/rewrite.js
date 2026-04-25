@@ -198,11 +198,16 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 			  `<ul>`
 			+ matches.map(entry => {
 				let [ entryID, entryURLString ] = (options.matchType == "ID" ? entry : entry.reverse());
+				let firstLink = (options.matchType == "ID"
+								 ? (entryID == normalizedRef
+				   					? `${entryID}: `
+				   					: `<a href="/ref/${entryID}">${entryID}</a>: `)
+				   				 : (entryID == normalizedRef
+				   				 	? `/ref/${entryURLString}`
+				   				 	: `<a href="/ref/${entryID}">/ref/${entryURLString}</a>: `));
 				return (
 				  `<li><p>`
-				+ (entryID == normalizedRef
-				   ? `${entryID}: `
-				   : `<a href="/ref/${entryID}">${entryID}</a>: `)
+				+ firstLink
 				+ synthesizeIncludeLink(entryURLString, {
 					"class": "link-annotated include-annotation-partial-inline",
 					"data-include-selector-not": ".data-field.date, .aux-links-field-container"
