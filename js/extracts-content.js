@@ -1,7 +1,7 @@
 /***************************************************************************/
 /*  The target-testing and pop-frame-filling functions in this section
 	come in sets, which define and implement classes of pop-frames
-	(whether those be popups, or popins, etc.). (These classes are things
+	(whether those be popups, or popovers, etc.). (These classes are things
 	like “a link that has a statically generated extract provided for it”,
 	“a link to a locally archived web page”, “an anchorlink to a section of
 	the current page”, and so on.)
@@ -84,7 +84,7 @@ Extracts = { ...Extracts,
      */
     //  Called by: Extracts.targets.testTarget (as `testTarget_${targetTypeInfo.typeName}`)
     testTarget_LOCAL_PAGE: (target) => {
-        return (!(   Extracts.popFrameProvider == Popins
+        return (!(   Extracts.popFrameProvider == Popovers
         		  && (   Extracts.isTOCLink(target)
         			  || Extracts.isNavbarLink(target)
         			  || Extracts.isMobileAnnotationTitleLink(target))));
@@ -274,7 +274,7 @@ Extracts = { ...Extracts,
 		Extracts.updatePopFrameTitle(popFrame);
 	},
 
-    //  Called by: Extracts.rewritePopinContent_LOCAL_PAGE
+    //  Called by: Extracts.rewritePopoverContent_LOCAL_PAGE
     //  Called by: Extracts.rewritePopupContent_LOCAL_PAGE
     rewritePopFrameContent_LOCAL_PAGE: (popFrame, contentContainer) => {
         GWLog("Extracts.rewritePopFrameContent_LOCAL_PAGE", "extracts-content.js", 2);
@@ -330,16 +330,16 @@ Extracts = { ...Extracts,
     },
 
     //  Called by: Extracts.rewritePopFrameContent (as `rewritePop${suffix}Content_${targetTypeName}`)
-    rewritePopinContent_LOCAL_PAGE: (popin, contentContainer) => {
-        GWLog("Extracts.rewritePopinContent_LOCAL_PAGE", "extracts-content.js", 2);
+    rewritePopoverContent_LOCAL_PAGE: (popover, contentContainer) => {
+        GWLog("Extracts.rewritePopoverContent_LOCAL_PAGE", "extracts-content.js", 2);
 
-        /*  Make anchorlinks scroll popin instead of opening normally
-        	(but only for non-popin-spawning anchorlinks).
+        /*  Make anchorlinks scroll popover instead of opening normally
+        	(but only for non-popover-spawning anchorlinks).
          */
-		Extracts.constrainLinkClickBehaviorInPopFrame(popin, (link => link.classList.contains("spawns-popin") == false));
+		Extracts.constrainLinkClickBehaviorInPopFrame(popover, (link => link.classList.contains("spawns-popover") == false));
 
 		//	Non-provider-specific rewrites.
-		Extracts.rewritePopFrameContent_LOCAL_PAGE(popin, contentContainer);
+		Extracts.rewritePopFrameContent_LOCAL_PAGE(popover, contentContainer);
     }
 };
 
@@ -379,7 +379,7 @@ Extracts = { ...Extracts,
                 exclude = true;
         }
 
-        return (!(   Extracts.popFrameProvider == Popins
+        return (!(   Extracts.popFrameProvider == Popovers
                   && exclude == true));
     },
 
@@ -605,7 +605,7 @@ Extracts = { ...Extracts,
      */
     //  Called by: extracts.js (as `testTarget_${targetTypeInfo.typeName}`)
     testTarget_CITATION_CONTEXT: (target) => {
-        return (Extracts.popFrameProvider != Popins);
+        return (Extracts.popFrameProvider != Popovers);
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
@@ -967,10 +967,10 @@ Extracts = { ...Extracts,
      */
     //  Called by: extracts.js (as `testTarget_${targetTypeInfo.typeName}`)
     testTarget_LOCAL_DOCUMENT: (target) => {
-    	/*	Mobile browsers have no in-browser PDF viewer, so a popin would be
+    	/*	Mobile browsers have no in-browser PDF viewer, so a popover would be
     		pointless, since the file will download anyway.
     	 */
-    	if (   Extracts.popFrameProvider == Popins
+    	if (   Extracts.popFrameProvider == Popovers
             && target.pathname.endsWith(".pdf"))
             return false;
 
@@ -1155,7 +1155,7 @@ Extracts = { ...Extracts,
 					});
 				}, { once: true });
             }
-        } else { // if (Extracts.popFrameProvider == Popins)
+        } else { // if (Extracts.popFrameProvider == Popovers)
             //  Add click event listeners to all the chosen targets.
             allTargetsInContainer.forEach(target => {
                 target.addEventListener("click", target.contentLoad_click = (event) => {

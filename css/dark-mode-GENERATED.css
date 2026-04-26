@@ -219,7 +219,7 @@
 	 */
     --GW-bottom-ornament-line-color: #fff;
 
-	/*	Pop-frames (popups or popins).
+	/*	Pop-frames (popups or popovers).
 	 */
     --GW-popframes-object-popframe-background-color: #000;
 
@@ -263,22 +263,22 @@
     --GW-popups-popup-scrollbar-thumb-focused-color: #5c5c5c;
     --GW-popups-popup-scrollbar-thumb-hover-focused-color: #8b8b8b;
 
-    /*  Popins.
+    /*  Popovers.
      */
-    --GW-popins-popin-background-color: var(--GW-body-background-color);
+    --GW-popovers-popover-background-color: var(--GW-body-background-color);
 
-    --GW-popins-popin-border-color: #7c7c7c;
-    --GW-popins-popin-backdrop-color: rgba(255, 255, 255, 0.4);
-    --GW-popins-popin-box-shadow-color: #7c7c7c;
+    --GW-popovers-popover-border-color: #7c7c7c;
+    --GW-popovers-popover-backdrop-color: rgba(255, 255, 255, 0.4);
+    --GW-popovers-popover-box-shadow-color: #7c7c7c;
 
-    --GW-popins-popin-title-bar-background-color: #000;
-    --GW-popins-popin-title-bar-button-color: #a6a6a6;
+    --GW-popovers-popover-title-bar-background-color: #000;
+    --GW-popovers-popover-title-bar-button-color: #a6a6a6;
 
-    --GW-popins-popin-scrollbar-thumb-color: #5c5c5c;
-    --GW-popins-popin-scrollbar-thumb-hover-color: #8b8b8b;
+    --GW-popovers-popover-scrollbar-thumb-color: #5c5c5c;
+    --GW-popovers-popover-scrollbar-thumb-hover-color: #8b8b8b;
 
-    --GW-popins-popin-stack-counter-text-color: #000;
-    --GW-popins-popin-stack-counter-background-color: #6c6c6c;
+    --GW-popovers-popover-stack-counter-text-color: #000;
+    --GW-popovers-popover-stack-counter-background-color: #6c6c6c;
 
     /*  Image focus.
      */
@@ -349,9 +349,9 @@
     --GW-popups-popup-title-bar-pattern: var(--GW-image-pattern-dotted-161616-on-252525-2x-gif);
     --GW-popups-popup-title-bar-pattern-focused: var(--GW-image-pattern-dotted-161616-on-3e3e3e-2x-gif);
 
-    --GW-popins-popin-backdrop-color: rgba(0, 0, 0, 0.6);
+    --GW-popovers-popover-backdrop-color: rgba(0, 0, 0, 0.6);
 
-    --GW-popins-popin-title-bar-button-color: #bbb;
+    --GW-popovers-popover-title-bar-button-color: #bbb;
 
     --GW-checkerboard-scrollbar-background-image: var(--GW-image-checkerboard-888-000-2x-gif);
     --GW-checkerboard-scrollbar-hover-background-image: var(--GW-image-checkerboard-bfbfbf-000-2x-gif);

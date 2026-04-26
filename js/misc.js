@@ -2270,8 +2270,8 @@ GW.floatingHeader = {
     },
 
     linkInChainClicked: (event) => {
-        if (Extracts.popFrameProvider == Popins)
-            Popins.removeAllPopins();
+        if (Extracts.popFrameProvider == Popovers)
+            Popovers.removeAllPopovers();
     },
 
     setup: () => {
@@ -2319,14 +2319,14 @@ GW.floatingHeader = {
             ifDeferCallWhenAdd: true
         });
 
-		//	Ensure that popin positioning takes header height into account.
+		//	Ensure that popover positioning takes header height into account.
 		if (GW.isMobile()) {
-			if (window["Popins"] == null) {
-				GW.notificationCenter.addHandlerForEvent("Popins.didLoad", (info) => {
-					Popins.windowBottomPopinPositionMargin = GW.floatingHeader.maxHeaderHeight;
+			if (window["Popovers"] == null) {
+				GW.notificationCenter.addHandlerForEvent("Popovers.didLoad", (info) => {
+					Popovers.windowBottomPopoverPositionMargin = GW.floatingHeader.maxHeaderHeight;
 				}, { once: true });
 			} else {
-				Popins.windowBottomPopinPositionMargin = GW.floatingHeader.maxHeaderHeight;
+				Popovers.windowBottomPopoverPositionMargin = GW.floatingHeader.maxHeaderHeight;
 			}
 		}
     }
@@ -2574,9 +2574,9 @@ doWhenPageLoaded(() => {
 			document.head.appendChild(elementFromHTML(`<link rel="dns-prefetch" href="https://www.google.com/search" />`));
 		},
 		additionalWidgetActivation: (widget) => {
-			//  Event handler for popup spawn / popin inject.
+			//  Event handler for popup spawn / popover inject.
 			let popFrameSpawnEventHandler = (eventInfo) => {
-				let popFrame = (eventInfo.popup ?? eventInfo.popin);
+				let popFrame = (eventInfo.popup ?? eventInfo.popover);
 				let iframe = popFrame.document.querySelector("iframe");
 				iframe.addEventListener("load", (event) => {
 					let mainInputBox = iframe.contentDocument.querySelector("#searchform-main input.search");
@@ -2614,7 +2614,7 @@ doWhenPageLoaded(() => {
 
 			//	Event handler for popup despawn.
 			let popFrameDespawnEventHandler = (eventInfo) => {
-				let popFrame = (eventInfo.popup ?? eventInfo.popin);
+				let popFrame = (eventInfo.popup ?? eventInfo.popover);
 				GW.notificationCenter.removeHandlerForEvent("DarkMode.didSetMode", popFrame.document.querySelector("iframe").darkModeDidSetModeHandler);
 			};
 
@@ -2627,11 +2627,11 @@ doWhenPageLoaded(() => {
 					condition: (info) => (info.popup.spawningTarget == widget.widgetLink)
 				});
 			} else {
-				GW.notificationCenter.addHandlerForEvent("Popins.popinDidInject", popFrameSpawnEventHandler, {
-					condition: (info) => (info.popin.spawningTarget == widget.widgetLink)
+				GW.notificationCenter.addHandlerForEvent("Popovers.popoverDidInject", popFrameSpawnEventHandler, {
+					condition: (info) => (info.popover.spawningTarget == widget.widgetLink)
 				});
-				GW.notificationCenter.addHandlerForEvent("Popins.popinWillDespawn", popFrameDespawnEventHandler, {
-					condition: (info) => (info.popin.spawningTarget == widget.widgetLink)
+				GW.notificationCenter.addHandlerForEvent("Popovers.popoverWillDespawn", popFrameDespawnEventHandler, {
+					condition: (info) => (info.popover.spawningTarget == widget.widgetLink)
 				});
 			}
 		}

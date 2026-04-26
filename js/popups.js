@@ -553,7 +553,7 @@ Popups = {
 
     //  Called by: extracts.js
     popFrameStateLoading: (popup) => {
-        return popin.classList.contains("loading");
+        return popup.classList.contains("loading");
     },
 
     //  Called by: extracts.js

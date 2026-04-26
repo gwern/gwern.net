@@ -25,7 +25,7 @@ Extracts = { ...Extracts,
      */
     //  Called by: Extracts.targets.testTarget (as `testTarget_${targetTypeInfo.typeName}`)
     testTarget_ANNOTATION: (target) => {
-        return (!(   Extracts.popFrameProvider == Popins
+        return (!(   Extracts.popFrameProvider == Popovers
                   && (   Extracts.isTOCLink(target)
                       || Extracts.isNavbarLink(target))));
     },
@@ -207,7 +207,7 @@ Extracts.additionalRewrites.push(Extracts.injectPartialAnnotationMetadata = (pop
 				   "markdownBody",
 				   "popframe-body",
 				   "popframe-footer",
-				   (Extracts.popFrameProvider == Popups ? "popup-body" : "popin-body")
+				   (Extracts.popFrameProvider == Popups ? "popup-body" : "popover-body")
 				   ].join(" ")
 	});
 	partialAnnotationAppendContainer.appendChild(synthesizeIncludeLink(target.href, {
@@ -266,7 +266,7 @@ Extracts = { ...Extracts,
 					});
 				}, { once: true });
             }
-        } else { // if (Extracts.popFrameProvider == Popins)
+        } else { // if (Extracts.popFrameProvider == Popovers)
             //  Add click event listeners to all the annotated targets.
             allAnnotatedTargetsInContainer.forEach(annotatedTarget => {
                 annotatedTarget.addEventListener("click", annotatedTarget.annotationLoad_click = (event) => {

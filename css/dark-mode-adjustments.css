@@ -15,9 +15,9 @@
     --GW-popups-popup-title-bar-pattern: var(--GW-image-pattern-dotted-161616-on-252525-2x-gif);
     --GW-popups-popup-title-bar-pattern-focused: var(--GW-image-pattern-dotted-161616-on-3e3e3e-2x-gif);
 
-    --GW-popins-popin-backdrop-color: rgba(0, 0, 0, 0.6);
+    --GW-popovers-popover-backdrop-color: rgba(0, 0, 0, 0.6);
 
-    --GW-popins-popin-title-bar-button-color: #bbb;
+    --GW-popovers-popover-title-bar-button-color: #bbb;
 
     --GW-checkerboard-scrollbar-background-image: var(--GW-image-checkerboard-888-000-2x-gif);
     --GW-checkerboard-scrollbar-hover-background-image: var(--GW-image-checkerboard-bfbfbf-000-2x-gif);

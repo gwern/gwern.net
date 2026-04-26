@@ -1182,11 +1182,11 @@
     --GW-popups-audio-popup-min-height: 87px;
     --GW-popups-image-popup-min-size: 70px;
 
-    --GW-popins-popin-max-height: 75vh;
-    --GW-popins-popin-min-height: 120px;
-    --GW-popins-popin-border-width: 3px;
-    --GW-popins-popin-title-bar-height: calc(1rem * 16/9);
-    --GW-popins-popin-footer-bar-height: calc(1rem * 16/9);
+    --GW-popovers-popover-max-height: 75vh;
+    --GW-popovers-popover-min-height: 120px;
+    --GW-popovers-popover-border-width: 3px;
+    --GW-popovers-popover-title-bar-height: calc(1rem * 16/9);
+    --GW-popovers-popover-footer-bar-height: calc(1rem * 16/9);
 
     --GW-page-toolbar-minimum-width: 46px;
     --GW-page-toolbar-collapse-duration: 0.25s;
@@ -6314,103 +6314,103 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
  */
 
 
-/**********/
-/* POPINS */
-/**********/
+/************/
+/* POPOVERS */
+/************/
 
-/*  The three nested boxes that make up a popin:
+/*  The three nested boxes that make up a popover:
     1. Outer frame (positioned within the block flow, after the spawning target)
     2. Scroll view
     3. Content view
 
-    The content view contains the actual contents of a popin.
+    The content view contains the actual contents of a popover.
     */
-.popin,
-.popin .popframe-scroll-view,
-.popin .popframe-content-view,
-.popin .popframe-title-bar {
+.popover,
+.popover .popframe-scroll-view,
+.popover .popframe-content-view,
+.popover .popframe-title-bar {
     box-sizing: border-box;
 }
 
-/*┌────────────────────┐*/
-/*│ Popin outer frame. │*/
-/*└────────────────────┘*/
+/*┌──────────────────────┐*/
+/*│ Popover outer frame. │*/
+/*└──────────────────────┘*/
 
-.popin {
-    --background-color: var(--GW-popins-popin-background-color);
+.popover {
+    --background-color: var(--GW-popovers-popover-background-color);
 
     /*  Layout. */
-    --popins-popin-content-padding: 0.7em 0.9em 0.8em 0.9em;
+    --popovers-popover-content-padding: 0.7em 0.9em 0.8em 0.9em;
 
     display: block;
     position: absolute;
     left: 0;
     width: 100%;
     margin-top: 2.2em;
-    max-height: var(--GW-popins-popin-max-height);
-    min-height: var(--GW-popins-popin-min-height);
+    max-height: var(--GW-popovers-popover-max-height);
+    min-height: var(--GW-popovers-popover-min-height);
     overflow: visible;
     z-index: 100;
 
     /*  Styling. */
     background-color: var(--background-color);
-    border: var(--GW-popins-popin-border-width) double var(--GW-popins-popin-border-color);
+    border: var(--GW-popovers-popover-border-width) double var(--GW-popovers-popover-border-color);
 
-    /*  Having a filter on the popin causes `position:fixed` to not work on
-        the popin backdrop (see below). This is not, technically, a ‘bug’:
+    /*  Having a filter on the popover causes `position:fixed` to not work on
+        the popover backdrop (see below). This is not, technically, a ‘bug’:
         https://stackoverflow.com/questions/52937708/why-does-applying-a-css-filter-on-the-parent-break-the-child-positioning
         https://github.com/w3c/fxtf-drafts/issues/402
         Still, maybe CSSWG will come to their senses someday?
             —SA 2023-09-29
      */
-/*  filter: drop-shadow(0px 0px 12px var(--GW-popins-popin-box-shadow-color)); */
+/*  filter: drop-shadow(0px 0px 12px var(--GW-popovers-popover-box-shadow-color)); */
 }
 
-.markdownBody .popin-ancestor {
+.markdownBody .popover-ancestor {
     position: relative !important;
     z-index: 100 !important;
     margin-bottom: 75vh;
 }
 
-.popin + .popin {
+.popover + .popover {
     display: none;
 }
 
 /*  Backdrop.
  */
-.popin-open + .popin::before {
+.popover-open + .popover::before {
     content: "";
     background-color: var(--background-color);
     position: absolute;
-    top: calc(-1 * var(--GW-popins-popin-border-width));
-    left: calc(-1 * var(--GW-popins-popin-border-width));
+    top: calc(-1 * var(--GW-popovers-popover-border-width));
+    left: calc(-1 * var(--GW-popovers-popover-border-width));
     width: 100%;
     height: 100%;
     z-index: -1;
-    border: var(--GW-popins-popin-border-width) double var(--GW-popins-popin-border-color);
+    border: var(--GW-popovers-popover-border-width) double var(--GW-popovers-popover-border-color);
 }
-.popin-open + .popin::after {
+.popover-open + .popover::after {
     content: "";
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: var(--GW-popins-popin-backdrop-color);
+    background-color: var(--GW-popovers-popover-backdrop-color);
     z-index: -2;
 }
 
-/*┌──────────────────┐*/
-/*│ Popin title bar. │*/
-/*└──────────────────┘*/
+/*┌────────────────────┐*/
+/*│ Popover title bar. │*/
+/*└────────────────────┘*/
 
-.popin .popframe-title-bar {
-    --background-color: var(--GW-popins-popin-title-bar-background-color);
+.popover .popframe-title-bar {
+    --background-color: var(--GW-popovers-popover-title-bar-background-color);
 
     position: absolute;
     right: 0;
     bottom: calc(100% + 1px);
-    height: var(--GW-popins-popin-title-bar-height);
+    height: var(--GW-popovers-popover-title-bar-height);
     max-width: calc(100% - 2em);
     border-width: 0;
     background-color: var(--background-color);
@@ -6419,28 +6419,28 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     align-items: center;
     width: fit-content;
     z-index: -1;
-    outline: 1px solid var(--GW-popins-popin-border-color);
+    outline: 1px solid var(--GW-popovers-popover-border-color);
     box-shadow:
           -2px  0   0 0 var(--background-color),
            2px  0   0 0 var(--background-color),
            2px -2px 0 0 var(--background-color),
           -2px -2px 0 0 var(--background-color),
-          -3px -1px 0 0 var(--GW-popins-popin-border-color),
-          -3px -3px 0 0 var(--GW-popins-popin-border-color),
-           3px  0   0 0 var(--GW-popins-popin-border-color),
-           3px -3px 0 0 var(--GW-popins-popin-border-color);
+          -3px -1px 0 0 var(--GW-popovers-popover-border-color),
+          -3px -3px 0 0 var(--GW-popovers-popover-border-color),
+           3px  0   0 0 var(--GW-popovers-popover-border-color),
+           3px -3px 0 0 var(--GW-popovers-popover-border-color);
 }
 
-.popin {
-    --popin-title-bar-height: 0px;
+.popover {
+    --popover-title-bar-height: 0px;
 }
-.popin.has-title-bar {
-    --popin-title-bar-height: var(--GW-popins-popin-title-bar-height);
+.popover.has-title-bar {
+    --popover-title-bar-height: var(--GW-popovers-popover-title-bar-height);
 }
 
-/*  Popin title.
+/*  Popover title.
     */
-.popin .popframe-title {
+.popover .popframe-title {
     display: flex;
     align-items: baseline;
     justify-content: flex-end;
@@ -6453,11 +6453,11 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     text-decoration: none;
     text-align: center;
 }
-.popin .popframe-title::after {
+.popover .popframe-title::after {
     display: none;
 }
 
-.popin .popframe-title-link {
+.popover .popframe-title-link {
     --link-underline-gradient-line-color: var(--popframe-title-link-color, currentColor);
 
     max-width: 100%;
@@ -6465,9 +6465,9 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     text-overflow: ellipsis;
 }
 
-/*  Buttons in the popin title bar.
+/*  Buttons in the popover title bar.
     */
-.popin .popframe-title-bar-button {
+.popover .popframe-title-bar-button {
     appearance: none;
     border: none;
     background-color: transparent;
@@ -6479,37 +6479,37 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     padding: 6px;
     height: 100%;
     flex: 1 0 auto;
-    width: calc(var(--GW-popins-popin-title-bar-height) - 1px);
+    width: calc(var(--GW-popovers-popover-title-bar-height) - 1px);
     cursor: pointer;
-    color: var(--GW-popins-popin-title-bar-button-color);
+    color: var(--GW-popovers-popover-title-bar-button-color);
 }
-.popin .popframe-title-bar-button:active {
+.popover .popframe-title-bar-button:active {
     transform: scale(0.9);
 }
-.popin .popframe-title-bar-button svg {
+.popover .popframe-title-bar-button svg {
     max-width: 100%;
     max-height: 100%;
     width: 100%;
     height: 100%;
 }
 
-.popin .popframe-title-bar-button.extracts-disable-button {
+.popover .popframe-title-bar-button.extracts-disable-button {
     padding: 3px;
     margin: 0 0 0 2px;
 }
-.popin .popframe-title-bar-button.close-button {
+.popover .popframe-title-bar-button.close-button {
     padding: 2px;
 }
 
-/*  Popin stack counter.
+/*  Popover stack counter.
     */
-.popin-stack-counter {
+.popover-stack-counter {
     position: absolute;
-    right: calc(100% + var(--GW-popins-popin-border-width));
-    bottom: calc(var(--GW-popins-popin-border-width) - 1px);
-    height: calc(var(--GW-popins-popin-title-bar-height) - var(--GW-popins-popin-border-width) - 1px);
+    right: calc(100% + var(--GW-popovers-popover-border-width));
+    bottom: calc(var(--GW-popovers-popover-border-width) - 1px);
+    height: calc(var(--GW-popovers-popover-title-bar-height) - var(--GW-popovers-popover-border-width) - 1px);
     padding: 1px calc(0.5rem + 1px) 1px calc(0.5rem + 2px);
-    background-color: var(--GW-popins-popin-stack-counter-background-color);
+    background-color: var(--GW-popovers-popover-stack-counter-background-color);
     font-family: var(--GW-sans-serif-font-stack);
     font-size: calc(1rem * 8/9);
     font-weight: normal;
@@ -6517,25 +6517,25 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     justify-content: center;
     align-items: center;
     cursor: default;
-    color: var(--GW-popins-popin-stack-counter-text-color);
+    color: var(--GW-popovers-popover-stack-counter-text-color);
 }
 
-/*┌───────────────────┐*/
-/*│ Popin footer bar. │*/
-/*└───────────────────┘*/
+/*┌─────────────────────┐*/
+/*│ Popover footer bar. │*/
+/*└─────────────────────┘*/
 
-.popin .popin-footer-bar {
-    --background-color: var(--GW-popins-popin-title-bar-background-color);
+.popover .popover-footer-bar {
+    --background-color: var(--GW-popovers-popover-title-bar-background-color);
 
     position: absolute;
-    left: calc(-1 * var(--GW-popins-popin-border-width));
-    right: calc(-1 * var(--GW-popins-popin-border-width));
+    left: calc(-1 * var(--GW-popovers-popover-border-width));
+    right: calc(-1 * var(--GW-popovers-popover-border-width));
     top: calc(100%);
-    height: calc(var(--GW-popins-popin-border-width) + var(--GW-popins-popin-footer-bar-height));
-    max-width: calc(100% + (2 * var(--GW-popins-popin-border-width)));
+    height: calc(var(--GW-popovers-popover-border-width) + var(--GW-popovers-popover-footer-bar-height));
+    max-width: calc(100% + (2 * var(--GW-popovers-popover-border-width)));
     border-style: double;
-    border-color: var(--GW-popins-popin-border-color);
-    border-width: 1px var(--GW-popins-popin-border-width) var(--GW-popins-popin-border-width) var(--GW-popins-popin-border-width);
+    border-color: var(--GW-popovers-popover-border-color);
+    border-width: 1px var(--GW-popovers-popover-border-width) var(--GW-popovers-popover-border-width) var(--GW-popovers-popover-border-width);
     background-color: var(--background-color);
     display: flex;
     flex-flow: row;
@@ -6544,24 +6544,24 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     z-index: 1;
 }
 
-.popin .popin-footer-bar .popframe-title-link {
+.popover .popover-footer-bar .popframe-title-link {
     font-family: var(--GW-sans-serif-font-stack);
     font-size: 0.875rem;
 }
 
-.popin .popin-footer-bar .popframe-title-link .bracket {
+.popover .popover-footer-bar .popframe-title-link .bracket {
     font-size: 1.125em;
 }
 
-/*┌─────────────────────────────┐*/
-/*│ Popin with appended footer. │*/
-/*└─────────────────────────────┘*/
+/*┌───────────────────────────────┐*/
+/*│ Popover with appended footer. │*/
+/*└───────────────────────────────┘*/
 
-.popin.has-footer {
+.popover.has-footer {
     border-bottom-width: 0;
 }
 
-.popin.has-footer .popin-footer-bar {
+.popover.has-footer .popover-footer-bar {
     display: none;
 }
 
@@ -6569,92 +6569,92 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*│ Appended partial annotation. │*/
 /*└──────────────────────────────┘*/
 
-.popin .partial-annotation-append-container {
+.popover .partial-annotation-append-container {
     background-color: var(--background-color);
-    padding: var(--popins-popin-content-padding);
+    padding: var(--popovers-popover-content-padding);
     position: absolute;
     top: 100%;
-    left: calc(-1 * var(--GW-popins-popin-border-width));
-    right: calc(-1 * var(--GW-popins-popin-border-width));
+    left: calc(-1 * var(--GW-popovers-popover-border-width));
+    right: calc(-1 * var(--GW-popovers-popover-border-width));
     border-color: inherit;
     border-style: inherit;
     border-width:
         0
-        var(--GW-popins-popin-border-width)
-        var(--GW-popins-popin-border-width)
-        var(--GW-popins-popin-border-width);
+        var(--GW-popovers-popover-border-width)
+        var(--GW-popovers-popover-border-width)
+        var(--GW-popovers-popover-border-width);
     box-shadow:
-        0 -3px 0 -2px var(--GW-popins-popin-border-color),
+        0 -3px 0 -2px var(--GW-popovers-popover-border-color),
         0 -4px 0 -2px var(--background-color),
-        0 -5px 0 -2px var(--GW-popins-popin-border-color);
+        0 -5px 0 -2px var(--GW-popovers-popover-border-color);
 }
 
-.popin .partial-annotation-append-container .data-field {
+.popover .partial-annotation-append-container .data-field {
     display: inline;
 }
 
-.popin .partial-annotation-append-container .data-field.title {
+.popover .partial-annotation-append-container .data-field.title {
     margin-right: 0.25em;
 }
 
-/*┌────────────────────┐*/
-/*│ Popin scroll view. │*/
-/*└────────────────────┘*/
+/*┌──────────────────────┐*/
+/*│ Popover scroll view. │*/
+/*└──────────────────────┘*/
 
-.popin .popframe-scroll-view {
+.popover .popframe-scroll-view {
     overflow-y: auto;
     overscroll-behavior: none;
-    max-height: calc(var(--GW-popins-popin-max-height) - 2 * var(--GW-popins-popin-border-width) - var(--popin-title-bar-height));
+    max-height: calc(var(--GW-popovers-popover-max-height) - 2 * var(--GW-popovers-popover-border-width) - var(--popover-title-bar-height));
     height: 100%;
     background-color: var(--background-color);
 }
 
 /*  Scroll bar styles (for WebKit/Blink).
     */
-.popin .popframe-scroll-view::-webkit-scrollbar {
+.popover .popframe-scroll-view::-webkit-scrollbar {
     width: 12px;
 }
-.popin .popframe-scroll-view::-webkit-scrollbar-thumb {
-    background-color: var(--GW-popins-popin-scrollbar-thumb-color);
+.popover .popframe-scroll-view::-webkit-scrollbar-thumb {
+    background-color: var(--GW-popovers-popover-scrollbar-thumb-color);
     background-image: var(--GW-checkerboard-scrollbar-background-image);
     background-size: 2px;
     box-shadow:
         0 0 0 3px var(--background-color) inset;
 }
-.popin .popframe-scroll-view::-webkit-scrollbar-thumb:hover {
-    background-color: var(--GW-popins-popin-scrollbar-thumb-hover-color);
+.popover .popframe-scroll-view::-webkit-scrollbar-thumb:hover {
+    background-color: var(--GW-popovers-popover-scrollbar-thumb-hover-color);
     background-image: var(--GW-checkerboard-scrollbar-hover-background-image);
 }
 
 /*  Scroll bar styles (for Firefox).
     */
 @supports (-moz-appearance: none) {
-    .popin .popframe-scroll-view {
-        scrollbar-color: var(--GW-popins-popin-scrollbar-thumb-color) var(--background-color);
+    .popover .popframe-scroll-view {
+        scrollbar-color: var(--GW-popovers-popover-scrollbar-thumb-color) var(--background-color);
     }
-    .popin .popframe-scroll-view:hover {
-        scrollbar-color: var(--GW-popins-popin-scrollbar-thumb-hover-color) var(--background-color);
+    .popover .popframe-scroll-view:hover {
+        scrollbar-color: var(--GW-popovers-popover-scrollbar-thumb-hover-color) var(--background-color);
     }
 }
 
-/*┌─────────────────────┐*/
-/*│ Popin content view. │*/
-/*└─────────────────────┘*/
+/*┌───────────────────────┐*/
+/*│ Popover content view. │*/
+/*└───────────────────────┘*/
 
-.popin .popframe-content-view {
-    --background-color: var(--GW-popins-popin-title-bar-background-color);
+.popover .popframe-content-view {
+    --background-color: var(--GW-popovers-popover-title-bar-background-color);
 
     background-color: var(--background-color);
-    padding: var(--popins-popin-content-padding);
+    padding: var(--popovers-popover-content-padding);
     display: flow-root;
     contain: content;
 }
 
-/*┌─────────────┐*/
-/*│ Popin body. │*/
-/*└─────────────┘*/
+/*┌───────────────┐*/
+/*│ Popover body. │*/
+/*└───────────────┘*/
 
-.popin-body {
+.popover-body {
     --base-font-size: 0.9rem;
 }
 
@@ -6664,14 +6664,14 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 /*  Loading spinner.
  */
-.popin .popframe-loading-spinner-view {
+.popover .popframe-loading-spinner-view {
     display: none;
 }
-.popin.loading .popframe-loading-spinner-view {
+.popover.loading .popframe-loading-spinner-view {
     display: initial;
 }
 
-.popin .popframe-loading-spinner-view::before {
+.popover .popframe-loading-spinner-view::before {
     content: "";
     background-image: url('/static/img/icon/icons.svg#circle-notch-light');
     animation: fa-spin 2s infinite linear;
@@ -6695,14 +6695,14 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 /*  “Loading failed” messages.
  */
-.popin .popframe-loading-failed-message-view {
+.popover .popframe-loading-failed-message-view {
     display: none;
 }
-.popin.loading-failed .popframe-loading-failed-message-view {
+.popover.loading-failed .popframe-loading-failed-message-view {
     display: initial;
 }
 
-.popin .popframe-loading-failed-message-view::before {
+.popover .popframe-loading-failed-message-view::before {
     content: var(--popframe-loading-failed-message);
     position: absolute;
     left: 0;
@@ -6720,15 +6720,15 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     opacity: 0.35;
 }
 
-/*┌───────────────────────────┐*/
-/*│ Links with an open popin. │*/
-/*└───────────────────────────┘*/
+/*┌─────────────────────────────┐*/
+/*│ Links with an open popover. │*/
+/*└─────────────────────────────┘*/
 
-.markdownBody a.spawns-popin:not(.footnote-ref) {
+.markdownBody a.spawns-popover:not(.footnote-ref) {
     transition:
         box-shadow 0.15s ease 0.05s;
 }
-.markdownBody a.spawns-popin.popin-open:not(.footnote-ref) {
+.markdownBody a.spawns-popover.popover-open:not(.footnote-ref) {
     position: relative;
     z-index: 2;
     box-shadow:
@@ -6742,18 +6742,18 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
         -3px 1px 0 5px var(--GW-highlighted-link-outline-color);
 }
 
-/*=-------------=*/
-/*= POPIN TYPES =*/
-/*=-------------=*/
+/*=---------------=*/
+/*= POPOVER TYPES =*/
+/*=---------------=*/
 
-/*┌────────────────────┐*/
-/*│ Annotation popins. │*/
-/*└────────────────────┘*/
+/*┌──────────────────────┐*/
+/*│ Annotation popovers. │*/
+/*└──────────────────────┘*/
 
-.popin-body.annotation > .annotation > .data-field.title .title-link {
+.popover-body.annotation > .annotation > .data-field.title .title-link {
     --link-underline-gradient-line-color: var(--popframe-title-link-color, currentColor);
 }
-.popin-body.annotation > .annotation > .data-field.title .title-link .link-icon-hook::after {
+.popover-body.annotation > .annotation > .data-field.title .title-link .link-icon-hook::after {
     --dark-mode-invert-filter: none;
 
     background-image: var(--link-icon-url-hover, var(--link-icon-url));
@@ -6761,107 +6761,107 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     opacity: 1.0;
 }
 
-/*┌──────────────────┐*/
-/*│ Footnote popins. │*/
-/*└──────────────────┘*/
+/*┌────────────────────┐*/
+/*│ Footnote popovers. │*/
+/*└────────────────────┘*/
 
-.popin.footnote {
+.popover.footnote {
     min-height: unset;
 }
 
-/*┌──────────────────────────┐*/
-/*│ Citation context popins. │*/
-/*└──────────────────────────┘*/
+/*┌────────────────────────────┐*/
+/*│ Citation context popovers. │*/
+/*└────────────────────────────┘*/
 
-/*┌──────────────┐*/
-/*│ Code popins. │*/
-/*└──────────────┘*/
+/*┌────────────────┐*/
+/*│ Code popovers. │*/
+/*└────────────────┘*/
 
-.popin.local-code-file .popframe-title-bar {
+.popover.local-code-file .popframe-title-bar {
     --background-color: var(--GW-pre-element-background-color);
 }
 
-/*┌────────────────┐*/
-/*│ Object popins. │*/
-/*└────────────────┘*/
+/*┌──────────────────┐*/
+/*│ Object popovers. │*/
+/*└──────────────────┘*/
 
-.popin-body.object iframe {
+.popover-body.object iframe {
     width: 100%;
-    height: calc(var(--GW-popins-popin-max-height) - 2 * var(--GW-popins-popin-border-width) - var(--popin-title-bar-height));
+    height: calc(var(--GW-popovers-popover-max-height) - 2 * var(--GW-popovers-popover-border-width) - var(--popover-title-bar-height));
 }
 
-/*┌───────────────┐*/
-/*│ Image popins. │*/
-/*└───────────────┘*/
+/*┌─────────────────┐*/
+/*│ Image popovers. │*/
+/*└─────────────────┘*/
 
-.popin-body.image img {
+.popover-body.image img {
     margin: auto;
-    max-height: calc(var(--GW-popins-popin-max-height) - 2 * var(--GW-popins-popin-border-width) - var(--popin-title-bar-height));
+    max-height: calc(var(--GW-popovers-popover-max-height) - 2 * var(--GW-popovers-popover-border-width) - var(--popover-title-bar-height));
     outline: none;
 }
 
-/*┌───────────────┐*/
-/*│ Video popins. │*/
-/*└───────────────┘*/
+/*┌─────────────────┐*/
+/*│ Video popovers. │*/
+/*└─────────────────┘*/
 
-.popin.video {
+.popover.video {
     padding: 0;
 }
 
-.popin-body.video iframe {
+.popover-body.video iframe {
     display: block;
     width: 100%;
 }
 
-/*┌───────────────┐*/
-/*│ Audio popins. │*/
-/*└───────────────┘*/
+/*┌─────────────────┐*/
+/*│ Audio popovers. │*/
+/*└─────────────────┘*/
 
-.popin.audio {
+.popover.audio {
     padding: 2px;
 }
 
-/*┌────────────────────────┐*/
-/*│ Local document popins. │*/
-/*└────────────────────────┘*/
-
-/*┌──────────────────────┐*/
-/*│ Foreign site popins. │*/
-/*└──────────────────────┘*/
-
 /*┌──────────────────────────┐*/
-/*│ Local transclude popins. │*/
+/*│ Local document popovers. │*/
 /*└──────────────────────────┘*/
 
-.popin-body #page-metadata::after {
+/*┌────────────────────────┐*/
+/*│ Foreign site popovers. │*/
+/*└────────────────────────┘*/
+
+/*┌────────────────────────────┐*/
+/*│ Local transclude popovers. │*/
+/*└────────────────────────────┘*/
+
+.popover-body #page-metadata::after {
     width: calc(100% + 1em);
     margin: 1em -1em 1.125em 0;
 }
 
-/*┌───────────────┐*/
-/*│ Search popup. │*/
-/*└───────────────┘*/
+/*┌─────────────────┐*/
+/*│ Search popover. │*/
+/*└─────────────────┘*/
 
-.popin.search {
+.popover.search {
     min-height: unset;
     height: unset;
 }
 
-.popin-body.search iframe {
+.popover-body.search iframe {
     height: 10.5rem;
 }
 
-/*=---------------=*/
-/*= POPIN CONTENT =*/
-/*=---------------=*/
-/*  Adjustments for styles in popins.
+/*=-----------------=*/
+/*= POPOVER CONTENT =*/
+/*=-----------------=*/
+/*  Adjustments for styles in popovers.
     */
 
 /*┌──────────────┐*/
 /*│ Style reset. │*/
 /*└──────────────┘*/
 
-.popin {
+.popover {
     white-space: normal;
     font-weight: normal;
     font-style: normal;

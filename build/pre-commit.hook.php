@@ -138,7 +138,7 @@ $disparate_assets = [
 
 	"{$js_dir}/misc.js",
 	"{$js_dir}/popups.js",
-	"{$js_dir}/popins.js",
+	"{$js_dir}/popovers.js",
 	"{$js_dir}/annotations.js",
 	"{$js_dir}/content.js",
 	"{$js_dir}/transclude.js",

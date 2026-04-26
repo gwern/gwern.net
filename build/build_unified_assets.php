@@ -40,7 +40,7 @@ $css = [
 $js = [
 	'misc.js',
 	'popups.js',
-	'popins.js',
+	'popovers.js',
 	'annotations.js',
 	'content.js',
 	'transclude.js',

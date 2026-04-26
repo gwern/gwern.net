@@ -17,9 +17,9 @@ Extracts = {
 
     rootDocument: document,
 
-    //  Can be ‘Popups’ or ‘Popins’, currently.
+    //  Can be ‘Popups’ or ‘Popovers’, currently.
     popFrameProviderName: null,
-    //  Can be the Popups or Popins object, currently.
+    //  Can be the Popups or Popovers object, currently.
     popFrameProvider: null,
 
     /***********/
@@ -90,9 +90,9 @@ Extracts = {
         //  Remove content inject event handler.
     	GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", Extracts.processTargetsOnContentInject);
 
-		//	Remove phantom popin cleaning handler.
-		if (Extracts.popFrameProvider == Popins)
-			GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", Extracts.cleanPopinsFromInjectedContent);
+		//	Remove phantom popover cleaning handler.
+		if (Extracts.popFrameProvider == Popovers)
+			GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", Extracts.cleanPopoversFromInjectedContent);
 
 		//	Remove pop-frames & containers.
 		Extracts.popFrameProvider.cleanup();
@@ -116,12 +116,12 @@ Extracts = {
 
 			if (Extracts.popFrameProvider == Popups)
 				Extracts.preparePopupTarget(target);
-			else // if (Extracts.popFrameProvider == Popins)
-				Extracts.preparePopinTarget(target);
+			else // if (Extracts.popFrameProvider == Popovers)
+				Extracts.preparePopoverTarget(target);
 
 			let popFramePrepareFunction = (Extracts.popFrameProvider == Popups
 										   ? Extracts.preparePopup
-										   : Extracts.preparePopin);
+										   : Extracts.preparePopover);
 			Extracts.popFrameProvider.addTarget(target, popFramePrepareFunction);
 		});
 
@@ -176,16 +176,16 @@ Extracts = {
     setup: () => {
         GWLog("Extracts.setup", "extracts.js", 1);
 
-		//  Set pop-frame type (mode) - popups or popins.
-		let mobileMode = (   localStorage.getItem("extracts-force-popins") == "true"
+		//  Set pop-frame type (mode) - popups or popovers.
+		let mobileMode = (   localStorage.getItem("extracts-force-popovers") == "true"
 						  || GW.isMobile()
 						  || matchMedia("(max-width: 1279px) and (max-height: 959px)").matches);
-		Extracts.popFrameProviderName = mobileMode ? "Popins" : "Popups";
-		GWLog(`${(mobileMode ? "Mobile" : "Non-mobile")} client detected. Activating ${(mobileMode ? "popins" : "popups")}.`, "extracts.js", 1);
+		Extracts.popFrameProviderName = mobileMode ? "Popovers" : "Popups";
+		GWLog(`${(mobileMode ? "Mobile" : "Non-mobile")} client detected. Activating ${(mobileMode ? "popovers" : "popups")}.`, "extracts.js", 1);
 
 		//  Prevent null references.
 		Popups = window["Popups"] || { };
-		Popins = window["Popins"] || { };
+		Popovers = window["Popovers"] || { };
 
 		//	If provider not loaded yet, defer setup until it is.
 		if (window[Extracts.popFrameProviderName] == null) {
@@ -223,12 +223,12 @@ Extracts = {
 
             GWLog("Activating popups.", "extracts.js", 1);
         } else {
-            GWLog("Setting up for popins.", "extracts.js", 1);
+            GWLog("Setting up for popovers.", "extracts.js", 1);
 
-			if (Extracts.popinsEnabled() == false)
+			if (Extracts.popoversEnabled() == false)
 				return;
 
-            GWLog("Activating popins.", "extracts.js", 1);
+            GWLog("Activating popovers.", "extracts.js", 1);
         }
 
 		//	Run provider setup.
@@ -243,11 +243,11 @@ Extracts = {
             Extracts.processTargetsInContainer(eventInfo.container);
         }, "eventListeners");
 
-		//	Add handler to prevent “phantom” popins.
-		if (Extracts.popFrameProvider == Popins) {
-			addContentInjectHandler("Extracts.cleanPopinsFromContainerOnContentInject", (eventInfo) => {
-				//	Clean any existing popins.
-				Popins.cleanPopinsFromContainer(eventInfo.container);
+		//	Add handler to prevent “phantom” popovers.
+		if (Extracts.popFrameProvider == Popovers) {
+			addContentInjectHandler("Extracts.cleanPopoversFromContainerOnContentInject", (eventInfo) => {
+				//	Clean any existing popovers.
+				Popovers.cleanPopoversFromContainer(eventInfo.container);
 			}, "rewrite");
 		}
 
@@ -290,10 +290,10 @@ Extracts = {
 				&& Extracts.targetsMatch(containingPopFrame.spawningTarget, target))
 				return false;
 
-			//	Don’t spawn duplicate popins.
-			if (Extracts.popFrameProvider == Popins) {
-				let popinStack = Popins.allSpawnedPopins();
-				if (popinStack.findIndex(popin => Extracts.targetsMatch(popin.spawningTarget, target)) !== -1)
+			//	Don’t spawn duplicate popovers.
+			if (Extracts.popFrameProvider == Popovers) {
+				let popoverStack = Popovers.allSpawnedPopovers();
+				if (popoverStack.findIndex(popover => Extracts.targetsMatch(popover.spawningTarget, target)) !== -1)
 					return false;
 			}
 
@@ -371,11 +371,11 @@ Extracts = {
 
     /*  This function’s purpose is to allow for the transclusion of entire pages
         on the same website (displayed to the user in popups, or injected in
-        block flow as popins), and the (almost-)seamless handling of local links
-        in such transcluded content in the same way that they’re handled in the
-        root document (ie. the actual page loaded in the browser window). This
-        permits us to have truly recursive popups with unlimited recursion depth
-        and no loss of functionality.
+        block flow as popovers), and the (almost-)seamless handling of local 
+        links in such transcluded content in the same way that they’re handled 
+        in the root document (ie. the actual page loaded in the browser window).
+        This permits us to have truly recursive popups with unlimited recursion 
+        depth and no loss of functionality.
 
         For any given target element, targetDocument() asks: to what local
         document does the link refer?
@@ -398,11 +398,11 @@ Extracts = {
             let popupForTargetDocument = Popups.allSpawnedPopups().find(popup => (   popup.classList.contains("full-page")
                                                                                   && popup.spawningTarget.pathname == target.pathname));
             return popupForTargetDocument ? popupForTargetDocument.document : null;
-        } else if (Extracts.popFrameProvider == Popins) {
-            let popinForTargetDocument = Popins.allSpawnedPopins().find(popin => (   popin.classList.contains("full-page")
-                                                                                  && popin.spawningTarget.pathname == target.pathname)
-                                                                                  && Extracts.popFrameHasLoaded(popin));
-            return popinForTargetDocument ? popinForTargetDocument.document : null;
+        } else if (Extracts.popFrameProvider == Popovers) {
+            let popoverForTargetDocument = Popovers.allSpawnedPopovers().find(popover => (   popover.classList.contains("full-page")
+            																			  && popover.spawningTarget.pathname == target.pathname)
+            																			  && Extracts.popFrameHasLoaded(popover));
+            return popoverForTargetDocument ? popoverForTargetDocument.document : null;
         }
     },
 
@@ -418,7 +418,7 @@ Extracts = {
 	popFrameTypeSuffix: () => {
 		return (Extracts.popFrameProvider == Popups
 				? "up"
-				: "in");
+				: "over");
 	},
 
     /*  This function fills a pop-frame for a given target with content. It
@@ -454,7 +454,7 @@ Extracts = {
 
     //  Called by: Extracts.targetDocument
     //  Called by: Extracts.preparePopup
-    //  Called by: Extracts.preparePopin
+    //  Called by: Extracts.preparePopover
     //  Called by: extracts-annotations.js
     popFrameHasLoaded: (popFrame) => {
         return ((   Extracts.popFrameProvider.popFrameStateLoading(popFrame)
@@ -482,8 +482,8 @@ Extracts = {
     /*  Returns the contents of the title element for a pop-frame.
      */
     //  Called by: Extracts.preparePopup
-    //  Called by: Extracts.preparePopin
-    //  Called by: Extracts.rewritePopinContent
+    //  Called by: Extracts.preparePopover
+    //  Called by: Extracts.rewritePopoverContent
     titleForPopFrame: (popFrame, titleHTML) => {
         let target = popFrame.spawningTarget;
 
@@ -498,7 +498,7 @@ Extracts = {
             return Extracts.standardPopFrameTitleElementForTarget(target, titleHTML);
     },
 
-	//	Called by: Extracts.rewritePopinContent
+	//	Called by: Extracts.rewritePopoverContent
 	//	Called by: Extracts.rewritePopFrameContent_LOCAL_PAGE
 	updatePopFrameTitle: (popFrame, titleHTML) => {
         GWLog("Extracts.updatePopFrameTitle", "extracts.js", 2);
@@ -523,8 +523,8 @@ Extracts = {
 			//  Update pop-frame position.
 			if (Extracts.popFrameProvider == Popups)
 				Popups.positionPopup(popFrame, { reset: true });
-			else if (Extracts.popFrameProvider == Popins)
-				Popins.scrollPopinIntoView(popFrame);
+			else if (Extracts.popFrameProvider == Popovers)
+				Popovers.scrollPopoverIntoView(popFrame);
 		}
 	},
 
@@ -618,7 +618,7 @@ Extracts = {
 	},
 
     //  Called by: Extracts.preparePopup
-    //  Called by: Extracts.preparePopin
+    //  Called by: Extracts.preparePopover
     preparePopFrame: (popFrame) => {
         GWLog("Extracts.preparePopFrame", "extracts.js", 2);
 
@@ -636,7 +636,7 @@ Extracts = {
         	"uri", "has-annotation", "has-annotation-partial", "has-content",
         	"link-self", "link-annotated", "link-page",
         	"has-icon", "icon-not", "has-indicator-hook", "indicator-hook-not",
-        	"decorate-not", "spawns-popup", "spawns-popin", "widget-button");
+        	"decorate-not", "spawns-popup", "spawns-popover", "widget-button");
 
 		//	Import classes from include-link.
 		if (popFrame.body.firstElementChild.dataset.popFrameClasses > "")
@@ -773,81 +773,81 @@ Extracts = {
 	//	Functions added to this array should take one argument (the pop-frame).
 	additionalRewrites: [ ],
 
-    /**********/
-    /*  Popins.
+    /************/
+    /*  Popovers.
      */
 
-	popinsDisabledLocalStorageItemKey: "extract-popins-disabled",
+	popoversDisabledLocalStorageItemKey: "extract-popovers-disabled",
 
     //  Called by: Extracts.setup
-    popinsEnabled: () => {
-        return (localStorage.getItem(Extracts.popinsDisabledLocalStorageItemKey) != "true");
+    popoversEnabled: () => {
+        return (localStorage.getItem(Extracts.popoversDisabledLocalStorageItemKey) != "true");
     },
 
     //  Called by: Extracts.addTargetsWithin
-	preparePopinTarget: (target) => {
-		target.adjustPopinWidth = (popin) => {
+	preparePopoverTarget: (target) => {
+		target.adjustPopoverWidth = (popover) => {
 			let leftMargin, rightMargin;
-			let popinRect = popin.getBoundingClientRect();
+			let popoverRect = popover.getBoundingClientRect();
 			if (GW.mediaQueries.mobileWidth.matches) {
-				//	Make popin take up entire content column width.
+				//	Make popover take up entire content column width.
 				let bodyRect = document.main.getBoundingClientRect();
-				leftMargin = (bodyRect.left - popinRect.left);
-				rightMargin = (popinRect.right - bodyRect.right);
+				leftMargin = (bodyRect.left - popoverRect.left);
+				rightMargin = (popoverRect.right - bodyRect.right);
 			} else {
 				let containerSelector = [
 					".abstract blockquote",
 					".markdownBody"
 				].join(", ");
-				let containerRect = (popin.closest(containerSelector) ?? document.main).getBoundingClientRect();
-				leftMargin = (containerRect.left - popinRect.left);
-				rightMargin = (popinRect.right - containerRect.right);
+				let containerRect = (popover.closest(containerSelector) ?? document.main).getBoundingClientRect();
+				leftMargin = (containerRect.left - popoverRect.left);
+				rightMargin = (popoverRect.right - containerRect.right);
 			}
-			popin.style.marginLeft = `${leftMargin}px`;
-			popin.style.marginRight = `${rightMargin}px`;
-			popin.style.width = `calc(${popinRect.width}px + ${(-1 * (leftMargin + rightMargin))}px)`;
+			popover.style.marginLeft = `${leftMargin}px`;
+			popover.style.marginRight = `${rightMargin}px`;
+			popover.style.width = `calc(${popoverRect.width}px + ${(-1 * (leftMargin + rightMargin))}px)`;
 		};
 	},
 
 	//	Called by: Extracts.preparePopFrame (as Extracts[`pop${suffix}TitleBarContents`])
-	popinTitleBarContents: (popin) => {
+	popoverTitleBarContents: (popover) => {
         let titleBarContents = [ ];
 
 		/*	Show “disable popovers” button only for a top-level popover, not for
 			nested popovers.
 		 */
-        if (Popins.containingPopFrame(popin.spawningTarget) == null)
+        if (Popovers.containingPopFrame(popover.spawningTarget) == null)
         	titleBarContents.push(Extracts.disableExtractPopFramesPopFrameTitleBarButton());
 
-        let popinTitle = Extracts.titleForPopFrame(popin) ?? { };
-        titleBarContents.push(newElement("SPAN", { "class": "popframe-title" }, { "innerHTML": popinTitle.innerHTML }),
-							  Popins.titleBarComponents.closeButton());
+        let popoverTitle = Extracts.titleForPopFrame(popover) ?? { };
+        titleBarContents.push(newElement("SPAN", { "class": "popframe-title" }, { "innerHTML": popoverTitle.innerHTML }),
+							  Popovers.titleBarComponents.closeButton());
 
 		return titleBarContents;
 	},
 
-    /*  Called by popins.js just before injecting the popin. This is our chance
-        to fill the popin with content, and rewrite that content in whatever
-        ways necessary. After this function exits, the popin will appear on the
+    /*  Called by popovers.js just before injecting the popover. This is our chance
+        to fill the popover with content, and rewrite that content in whatever
+        ways necessary. After this function exits, the popover will appear on the
         screen.
      */
-    //  Called by: popins.js
-    preparePopin: (popin) => {
-        GWLog("Extracts.preparePopin", "extracts.js", 2);
+    //  Called by: popovers.js
+    preparePopover: (popover) => {
+        GWLog("Extracts.preparePopover", "extracts.js", 2);
 
-		/*	Set popin title-bar link (and title link in popin content, if any)
-			to spawning link icon hover color, if any.
+		/*	Set popover title-bar link (and title link in popover content, if 
+			any) to spawning link icon hover color, if any.
 		 */
-		let target = popin.spawningTarget;
+		let target = popover.spawningTarget;
 		if (target.dataset.linkIconColor > "") {
-			popin.style.setProperty("--popframe-title-link-color", target.dataset.linkIconColor);
-			popin.body.style.setProperty("--popframe-title-link-color", target.dataset.linkIconColor);
+			popover.style.setProperty("--popframe-title-link-color", target.dataset.linkIconColor);
+			popover.body.style.setProperty("--popframe-title-link-color", target.dataset.linkIconColor);
 		}
 
         /*  Call generic pop-frame prepare function (which will attempt to fill
-            the popin).
+            the popover).
          */
-        return Extracts.preparePopFrame(popin);
+        return Extracts.preparePopFrame(popover);
     },
 
     /**********/

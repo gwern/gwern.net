@@ -338,7 +338,8 @@ ReaderMode = { ...ReaderMode,
 			}
 
 			/*	Add custom link click behavior
-				(Save the existing handler, if any. Required for popin support.)
+				(Save the existing handler, if any. Required for popover 
+				 support.)
 			 */
 			link.savedOnClick = link.onclick;
 			link.onclick = (event) => { return (ReaderMode.maskedLinksVisible() == true); };

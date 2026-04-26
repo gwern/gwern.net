@@ -78,9 +78,9 @@ body.reader-mode-active.masked-links-hidden .markdownBody a .indicator-hook {
     visibility: hidden;
 }
 
-body.reader-mode-active.masked-links-hidden .markdownBody a:not(.popup-open):not(.popin-open),
-body.reader-mode-active.masked-links-hidden .markdownBody a:not(.popup-open):not(.popin-open):visited,
-body.reader-mode-active.masked-links-hidden .markdownBody a:not(.popup-open):not(.popin-open):hover {
+body.reader-mode-active.masked-links-hidden .markdownBody a:not(.popup-open):not(.popover-open),
+body.reader-mode-active.masked-links-hidden .markdownBody a:not(.popup-open):not(.popover-open):visited,
+body.reader-mode-active.masked-links-hidden .markdownBody a:not(.popup-open):not(.popover-open):hover {
     color: inherit;
     background: none;
     cursor: text;

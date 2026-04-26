@@ -234,7 +234,7 @@ Extracts = { ...Extracts,
 	extractPopFramesDisabledLocalStorageItemKey: () => {
 		return (Extracts.popFrameProvider == Popups
 				? Extracts.popupsDisabledLocalStorageItemKey
-				: Extracts.popinsDisabledLocalStorageItemKey);
+				: Extracts.popoversDisabledLocalStorageItemKey);
 	},
 
 	extractPopFramesEnabled: () => {
