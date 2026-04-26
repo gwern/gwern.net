@@ -17952,32 +17952,6 @@ addContentLoadHandler("updateTOCVisibility", (eventInfo) => {
 /* FOOTNOTES */
 /*************/
 
-/**************************************************************************/
-/*	Fix the footnotes section if it happens to be something other than a 
-	<section> (due to Pandoc weirdness, say). We want it to be a <section>.
- */
-addContentLoadHandler("rectifyFootnoteSectionTagName", (eventInfo) => {
-	let footnotesSection = eventInfo.container.querySelector("#footnotes");
-	if (   footnotesSection == null
-		|| footnotesSection.tagName.toLowerCase() == "section")
-		return;
-
-	footnotesSection = atomicDOMUpdate(footnotesSection, (footnotesSection) => {
-		let fixedFootnotesSection = newElement("SECTION");
-		for (let attrName of footnotesSection.getAttributeNames())
-			fixedFootnotesSection.setAttribute(attrName, footnotesSection.getAttribute(attrName));
-		fixedFootnotesSection.append(...(footnotesSection.childNodes));
-		footnotesSection.replaceWith(fixedFootnotesSection);
-		return fixedFootnotesSection;
-	});
-
-	Transclude.allIncludeLinksInContainer(footnotesSection).forEach(Transclude.clearLinkState);
-	Transclude.triggerTranscludesInContainer(footnotesSection, eventInfo, { immediately: false });
-
-	if (eventInfo.container == document.main)
-		updatePageTOC();
-}, "rewrite");
-
 /*****************************************************/
 /*  Inject self-link for the footnotes section itself.
  */
