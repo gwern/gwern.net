@@ -518,14 +518,6 @@ doWhenMainExists(() => {
 	}
 });
 
-/**********************************/
-/*	Designate /blog/ pages as such.
- */
-doWhenBodyExists(() => {
-	if (location.pathname.startsWith("/blog/"))
-		document.body.classList.add("blog-page");
-});
-
 /**************************************************************************/
 /*  Update visibility of a TOC. (Hide if no entries; if main page TOC, also 
 	hide if one entry.)

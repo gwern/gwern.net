@@ -12418,12 +12418,6 @@ Extracts = { ...Extracts,
                 return null;
             }
         }
-        /*	Likewise do not spawn annotation popup if the current page is the 
-        	/blog/ page for that same annotation.
-         */
-        if (   location.pathname.startsWith("/blog/")
-        	&& location.pathname.slice("/blog/".length) == popup.spawningTarget.id.slice("gwern-".length))
-        	return null;
 
 		return Extracts.preparePopFrame_ANNOTATION(popup);
     },
@@ -17544,32 +17538,6 @@ addContentLoadHandler("rewriteTruncatedAnnotations", (eventInfo) => {
     });
 }, "<rewrite", (info) => (   info.source == "transclude"
 						  && info.contentType == "annotation"));
-
-/**********************************************/
-/*	Designate injected “blog post” annotations.
- */
-addContentInjectHandler("designateBlogPosts", (eventInfo) => {
-	let baseLocation = baseLocationForDocument(eventInfo.document);
-	if (baseLocation?.pathname.startsWith("/blog/") != true)
-		return;
-
-	if (eventInfo.container.closest(".blog-post") != null)
-		return;
-
-	eventInfo.container.querySelector(".annotation").classList.add("blog-post");
-}, "rewrite", (info) => (info.contentType == "annotation"));
-
-/************************************/
-/*	Rectify blog post layout/content.
- */
-addContentInjectHandler("rectifyBlogPosts", (eventInfo) => {
-	eventInfo.container.querySelector(".annotation.blog-post > .data-field.title")?.remove();
-}, "rewrite", (info) => (   info.document == document
-						 && info.contentType == "annotation"
-						   && info.includeLink.hostname == location.hostname
-						   && info.includeLink.pathname == location.pathname
-						   && document.body.classList.contains("blog-page")       == true
-						   && document.body.classList.contains("page-blog-index") == false));
 
 /**********************************************************/
 /*	Strip quotes from title-links in annotation pop-frames.

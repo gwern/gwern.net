@@ -3381,15 +3381,6 @@ GW.layout = {
 
 		[ "#link-bibliography-section", 15, false ],
 
-		[ "body.page-blog-index p.data-field.title:not(.first-block)",	
-										10, false ],
-		[ "body.blog-page p.data-field + .data-field.annotation-abstract p", 
-										 7, false ],
-		[ "body.blog-page .annotation.blog-post > .annotation-abstract > .aux-links-append + .aux-links-append",
-										 4, false ],
-		[ "body.blog-page .annotation.blog-post > .annotation-abstract > .aux-links-append + .file-include-collapse",
-										 4, false ],
-
 		[ ".float.first-block",			 2, false ],
 		[ ".first-block",				 0, false ],
 
@@ -5864,14 +5855,6 @@ doWhenMainExists(() => {
 			element.replaceChildren();
 		});
 	}
-});
-
-/**********************************/
-/*	Designate /blog/ pages as such.
- */
-doWhenBodyExists(() => {
-	if (location.pathname.startsWith("/blog/"))
-		document.body.classList.add("blog-page");
 });
 
 /**************************************************************************/
