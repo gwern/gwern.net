@@ -45,7 +45,7 @@ import Utils (printGreen, printRed, replace, sed)
 main :: IO ()
 main = do
           -- read the regular CLI arguments
-          args <- fmap (map $ (\a -> if "doc/"`isPrefixOf`a then "/"++a else a) . sed "\\.md$" "" . replace C.root "/" . linkCanonicalize) getArgs
+          args <- fmap (map $ (\a -> let a' = if "//"`isPrefixOf`a then tail a else a in if "doc/"`isPrefixOf`a' then "/"++a' else a') . sed "\\.md$" "" . replace C.root "/" . linkCanonicalize) getArgs
 
           when (length args == 0) $ printRed "Error: 0 arguments (need 2)." >> error ""
           when (length args == 1) $ printRed $ "Error: only 1 argument (need ≥2): " >> error (show (head args))
