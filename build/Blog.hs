@@ -36,7 +36,7 @@ import LinkMetadata (sortByDatePublished)
 import LinkMetadataTypes (Metadata, MetadataList, MetadataItem, Path)
 import Typography (titlecase')
 import Unique (isUniqueList)
-import Utils (writeUpdatedFile, printRed, replace, delete, printGreen, truncateString)
+import Utils (writeUpdatedFile, printRed, replace, delete, printGreen, truncateString, toMarkdown)
 import qualified Config.Misc as C (cd, currentYear, author, authorL, currentYearS, lastYearS)
 
 prefix, authorU, authorID :: String
@@ -162,11 +162,11 @@ annotation2Markdown _url (title, author, dateCreated, dateModified, kvs, _, abst
        , "backlink: False"
        , "..."
        , ""
-       , "```{=HTML}"
-       ] ++ lines abst ++ [
+--       , "```{=HTML}"
+       ] ++ lines (toMarkdown abst) ++ [
          ""
        , "<div class='text-center' id='return-to-blog-index-link'>[<a href='/blog/index' class='link-page link-tag directory-indexes-upwards link-annotated-not' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to blog directory'>Return to blog index</a>]</div>"
-       , "```"
+--       , "```"
        ]
 
 generateDirectoryBlog :: [(FilePath, Path, MetadataItem)] -> IO ()

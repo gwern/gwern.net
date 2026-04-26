@@ -914,6 +914,7 @@ canonicals = M.fromList $ setLike
   , ("Tim_Hua_", "Tim Hua")
   , ("max_spero_", "Max Spero")
   , ("qwantz", "Ryan North")
+  , ("Pmarca", "Marc Andreessen")
   ]
 
 -- tests: unique
@@ -3541,4 +3542,4 @@ authorWpLinkDB = setLike
     , "Bertram Gawronski", "Fei-Fei Li", "Euan Ashley", "John A. Long", "Elga Mark-Kurik",  "Per E. Ahlberg"
     , "Roger Jones", "Kate Trinajstic", "Hervey M. Cleckley", "May Berenbaum", "American Psychological Association"
     , "Alfred Bester", "Martyn Thomas", "Nina Vasan", "Max H. Bazerman", "William Yang Wang", "Larry Tesler", "Peter J. Huber"
-    , "Greg Corrado", "Philip Wheelwright"]
+    , "Greg Corrado", "Philip Wheelwright", "Cristian Canton Ferrer"]

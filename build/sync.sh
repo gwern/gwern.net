@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-04-24 11:59:58 gwern"
+# When:  Time-stamp: "2026-04-25 14:07:52 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -193,6 +193,11 @@ else
     # compile checkMetadata.hs &
     # compile generateSimilarLinks.hs &
     everyNDays 7 && cabal update &
+
+    # WARNING: every cabal install generates potentially gigabytes of new installed binaries, and cabal has no good garbage-collection, so we reap it manually once it gets big:
+    MAX_CABAL_SIZE_GB=50
+    CABAL_DIRS=( "$HOME"/.cabal/store/ghc-*/gwernnet-* )
+    [[ $(du --summarize --block-size=1G --total "${CABAL_DIRS[@]}" 2>/dev/null | tail --lines=1 | cut --fields=1) -gt $MAX_CABAL_SIZE_GB ]] && rm --recursive --force "${CABAL_DIRS[@]}"
     cabal install ; cabal clean
     ## NOTE: the generateSimilarLinks & linkSuggester runs are done at midnight by a cron job because
     ## they are too slow to run during a regular site build & don't need to be super-up-to-date
@@ -632,6 +637,9 @@ else
         LENGTH="2000"
         for FILE in "$@"; do
 
+            if ! iconv -f utf-8 -t utf-8 "$FILE" >/dev/null 2>&1; then
+                red "Non-UTF-8 input: $FILE ($(file -bi "$FILE"))" >&2
+            fi
             FILEORIGINAL=$(echo "$FILE" | sed -e 's/_site//')
             FILENAME=$(basename -- "$FILE")
             EXTENSION="${FILENAME##*.}"
@@ -645,9 +653,10 @@ else
             fi
              echo -e "\n~~~~~~~~~~~~~~~~~~~~~"
              if (( $FILELENGTH >= "$LENGTH" )); then echo -e "\n\n…[File truncated due to length; see <a class=\"link-page\" href=\"$FILEORIGINAL\">original file</a>]…"; fi;
-            ) | iconv -t utf8 -c | pandoc --from=markdown+smart --write=html5 --standalone \
+            ) | iconv -f utf-8 -t utf8 -c | pandoc --from=markdown+smart --write=html5 --standalone \
                        --template=./static/template/pandoc/sourcecode.html5 \
-                       --metadata title="$(echo $FILE | sed -e 's/_site\///g')"  | \
+                       --metadata title="$(echo $FILE | sed -e 's/_site\///g')" \
+                       2> >(sed "s|^|[$FILE] |" >&2) | \
                 ## delete annoying self-link links: Pandoc/skylighting doesn't make this configurable
                 sed -e 's/<span id="cb[0-9]\+-[0-9]\+"><a href="#cb[0-9]\+-[0-9]\+" aria-hidden="true" tabindex="-1"><\/a>/<span>/' -e 's/id="mathjax-styles" type="text\/css"/id="mathjax-styles"/' >> $FILE.html || red "Pandoc syntax-highlighting failed on: $FILE $FILEORIGINAL $FILENAME $EXTENSION $LANGUAGE $FILELENGTH"
         done
