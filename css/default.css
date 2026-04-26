@@ -509,13 +509,15 @@ section.collapse > .heading {
     background-color: var(--collapse-button-background-color);
     transition:
         background-color 0.1s ease,
+        border 0.1s ease,
         opacity 0.1s ease;
 }
 
 .collapse-block > .disclosure-button .part .icon {
-    width: var(--icon-size);
+    width: calc(1.5 * var(--icon-size));
     height: var(--icon-size);
     padding: calc(var(--icon-size) / 4);
+	border-left: calc(0.5 * var(--icon-size)) solid var(--collapse-button-background-color);
     box-sizing: border-box;
 }
 .collapse-block > .disclosure-button .part .icon svg {
@@ -557,8 +559,7 @@ section.collapse > .heading {
 }
 
 .collapse-block > .disclosure-button .part.top .label {
-    padding: 0 0 0 1.25em;
-    margin-right: 1.5em;
+    padding: 0 0.25em 0 1.25em;
 }
 
 /*  Bottom part of disclosure button.
