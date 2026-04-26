@@ -115,7 +115,8 @@ Extracts = { ...Extracts,
 
 		//	Synthesize include-link (with or without hash, as appropriate).
 		let includeLink = synthesizeIncludeLink(target, {
-			class: "include-strict include-block-context-expanded include-spinner-not"
+			class: "include-strict include-block-context-expanded include-spinner-not",
+			"data-include-selector-not": "header"
 		});
 
 		//  Mark full-page embed pop-frames.

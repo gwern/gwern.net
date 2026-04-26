@@ -360,20 +360,20 @@
 
 		class="include-content"
 		data-include-selector-not="#footnotes, #backlinks-section,
-			#similars-section, #link-bibliography-section,
+			#similars-section, #link-bibliography-section, header
 			#page-metadata .link-tags, #page-metadata .page-metadata-fields"
 
 		Include a page’s content, omitting “auxiliary” content sections
 		(Footnotes, Backlinks, Similar Links, Link Bibliography), as well as
 		the page tags and the date/status/confidence/importance/etc. metadata
-		fields block.
+		fields block, and the page header.
 
 		Note that this option is redundant when transcluding into a full page
 		(i.e., a page with a #page-metadata section), because in such a case,
 		all auxiliary content sections, as well as the entire #page-metadata
-		section, are stripped from a transcluded page. (The content of some of
-		the stripped sections, such as the backlinks and the footnotes, are
-		then integrated into the host page.)
+		section and the header, are stripped from a transcluded page. (The 
+		content of some of the stripped sections, such as the backlinks and the 
+		footnotes, are then integrated into the host page.)
 
 	class="include-content-no-header"
 
@@ -1066,6 +1066,7 @@ function includeContent(includeLink, content) {
      */
     if (transcludingIntoFullPage) {
     	let metadataSectionsSelector = [
+    		"header",
     		"#page-metadata",
     		"#footnotes",
     		"#backlinks-section",
@@ -2518,19 +2519,20 @@ Transclude.addIncludeLinkAliasClass("include-annotation-core", (includeLink) => 
 /*	.include-content-core
 		`class="include-content"
 		`data-include-selector-not="#footnotes, #backlinks-section,
-			#similars-section, #link-bibliography-section,
+			#similars-section, #link-bibliography-section, header,
 			#page-metadata .link-tags, #page-metadata .page-metadata-fields"`
  */
 Transclude.addIncludeLinkAliasClass("include-content-core", (includeLink) => {
 	includeLink.classList.add("include-content");
 	includeLink.dataset.includeSelectorNot = [
 		...((includeLink.dataset.includeSelectorNot ?? "").split(",").nonnull()),
+		"header",
+		"#page-metadata .link-tags",
+		"#page-metadata .page-metadata-fields",
 		"#footnotes",
 		"#backlinks-section",
 		"#similars-section",
 		"#link-bibliography-section",
-		"#page-metadata .link-tags",
-		"#page-metadata .page-metadata-fields"
 	].unique().join(", ");
 });
 

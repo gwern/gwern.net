@@ -1989,9 +1989,15 @@ Content = {
 
                 /*  Otherwise (or if the specified section does not exist), the
                 	default page content is the page body plus the metadata
-                	block.
+                	block plus the header.
                  */
 				if (pageContentDocument.childNodes.length == 0) {
+					//	Add the page header.
+					let pageHeader = pageContent.document.querySelector("article > header");
+					if (pageHeader) {
+						pageHeader = pageContentDocument.appendChild(pageHeader.cloneNode(true));
+					}
+
 					//  Add the page metadata block.
 					let pageMetadataBlock = pageContent.document.querySelector("article > #page-metadata");
 					if (pageMetadataBlock) {

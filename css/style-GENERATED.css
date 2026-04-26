@@ -1243,6 +1243,12 @@ button {
     pointer-events: auto;
 }
 
+/*	Exception for page header in transcluded content.
+ */
+header .heading {
+	pointer-events: auto;
+}
+
 /*=----------------------------=*/
 /*= Section heading self-links =*/
 /*=----------------------------=*/

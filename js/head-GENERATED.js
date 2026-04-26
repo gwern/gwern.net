@@ -3234,6 +3234,7 @@ GW.layout = {
 
 	//	Block elements get layout classes applied to them.
 	blockElements: [
+		"header",
 		"section",
 		".collapse-block",
 		"blockquote",
@@ -3435,6 +3436,8 @@ GW.layout = {
 		[ ".TOC",						10 ],
 
 		[ ".collapse-block",			10 ],
+
+		[ "header",						15 ],
 
 		[ "section.level1",				15 ],
 		[ "section.level2",				13 ],
