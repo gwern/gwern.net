@@ -190,8 +190,8 @@
         or not shown (respectively), unconditionally.
 
         This is useful for minimizing GUI animation distraction/clutter on some
-        transclusions, especially in conjunction with '.include-strict' or with
-        'infrastructure' transclusions.
+        transclusions, especially in conjunction with ‘.include-strict’ or with
+        “infrastructure” transclusions.
 
 		(Note that these two classes, unlike the others listed in this section,
 		 DO NOT mark a link as an include-link. They must be used in conjunction

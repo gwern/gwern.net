@@ -8830,8 +8830,8 @@ Content = {
         or not shown (respectively), unconditionally.
 
         This is useful for minimizing GUI animation distraction/clutter on some
-        transclusions, especially in conjunction with '.include-strict' or with
-        'infrastructure' transclusions.
+        transclusions, especially in conjunction with ‘.include-strict’ or with
+        “infrastructure” transclusions.
 
 		(Note that these two classes, unlike the others listed in this section,
 		 DO NOT mark a link as an include-link. They must be used in conjunction
@@ -17962,13 +17962,17 @@ addContentLoadHandler("rectifyFootnoteSectionTagName", (eventInfo) => {
 		|| footnotesSection.tagName.toLowerCase() == "section")
 		return;
 
-	atomicDOMUpdate(footnotesSection, (footnotesSection) => {
+	footnotesSection = atomicDOMUpdate(footnotesSection, (footnotesSection) => {
 		let fixedFootnotesSection = newElement("SECTION");
 		for (let attrName of footnotesSection.getAttributeNames())
 			fixedFootnotesSection.setAttribute(attrName, footnotesSection.getAttribute(attrName));
 		fixedFootnotesSection.append(...(footnotesSection.childNodes));
 		footnotesSection.replaceWith(fixedFootnotesSection);
+		return fixedFootnotesSection;
 	});
+
+	Transclude.allIncludeLinksInContainer(footnotesSection).forEach(Transclude.clearLinkState);
+	Transclude.triggerTranscludesInContainer(footnotesSection, eventInfo, { immediately: false });
 
 	if (eventInfo.container == document.main)
 		updatePageTOC();

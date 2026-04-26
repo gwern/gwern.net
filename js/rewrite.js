@@ -3194,13 +3194,17 @@ addContentLoadHandler("rectifyFootnoteSectionTagName", (eventInfo) => {
 		|| footnotesSection.tagName.toLowerCase() == "section")
 		return;
 
-	atomicDOMUpdate(footnotesSection, (footnotesSection) => {
+	footnotesSection = atomicDOMUpdate(footnotesSection, (footnotesSection) => {
 		let fixedFootnotesSection = newElement("SECTION");
 		for (let attrName of footnotesSection.getAttributeNames())
 			fixedFootnotesSection.setAttribute(attrName, footnotesSection.getAttribute(attrName));
 		fixedFootnotesSection.append(...(footnotesSection.childNodes));
 		footnotesSection.replaceWith(fixedFootnotesSection);
+		return fixedFootnotesSection;
 	});
+
+	Transclude.allIncludeLinksInContainer(footnotesSection).forEach(Transclude.clearLinkState);
+	Transclude.triggerTranscludesInContainer(footnotesSection, eventInfo, { immediately: false });
 
 	if (eventInfo.container == document.main)
 		updatePageTOC();
