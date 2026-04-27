@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-04-25 14:07:52 gwern"
+# When:  Time-stamp: "2026-04-26 13:16:17 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -687,7 +687,7 @@ else
         fi
     }
     export -f cleanCodeblockSelflinks
-    echo "$PAGES_ALL" | parallel --max-args=500 cleanCodeblockSelflinks || true
+    echo "$PAGES_ALL" | parallel --jobs "$N" --max-args=50 cleanCodeblockSelflinks || true
 
     # reformat the JSON ID database to be more readable
     for JSON in ./metadata/annotation/id/*.json; do
@@ -724,7 +724,7 @@ else
     # sed regexp details: conservatively skip lines with any .fraction already; limit it to 4-digit short integers to avoid accidental breakage; and anchor on word boundaries to avoid under-markup & splitting longer numbers.
     fraction () { sed -i --regexp-extended '/class=["'\'']fraction["'\'']/! s/\b([0-9]{1,4})⁄([0-9]{1,4})\b/<span class=fraction>\1⁄\2<\/span>/g' -- "$@"; }
     export -f fraction
-    echo "$PAGES_ALL" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 fraction
+    echo "$PAGES_ALL" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --jobs "$N" --max-args=500 fraction
 
     # For inline lists which cannot be handled usefully by horizontal rulers nor by '.columns' lists nor collapsed away (such as bullet-pointed summaries at the beginning of paper abstracts), we use dot separators.
     # Specifically, we use BULLET instead of MIDDLE DOT because MIDDLE DOT is overloaded by its use in dot-product multiplication, multiplied-units, proper nouns like 'WALL·E'/'DALL·E'...
@@ -732,14 +732,14 @@ else
     bold "Adding '.separator-inline' span to BULLET (•) uses for better inline-list styling…"
     separator () { sed -i 's/ • / <span class=separator-inline>•<\/span> /g' -- "$@"; }
     export -f separator
-    echo "$PAGES_ALL" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 separator
+    echo "$PAGES_ALL" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --jobs "$N" --max-args=500 separator
 
     bold "Cleaning up Pandoc’s self-closing-tag-isms…" # TODO: why *does* Pandoc do this even with HTML5 output if it's invalid?
     # Pandoc AST/HTML block problems seem to lead to odd problems with duplicate rulers, so we try to fix that up as well:
     # (They are primarily generated in the footnote section, but who knows where else? Generated tables, poem blockquotes, and horizontal rulers seem especial offenders.)
     hr () { sed -i -e 's/<hr \/>/<hr>/g' -e 's/<hr\/>/<hr>/g' -e 's/<hr><\/hr>/<hr>/g' -e 's/><\/img>/>/g' -e 's/<br \/>/<br>/g' -e 's/<col \(style="width: [0-9]\{1,3\}%"\) \/>/<col \1>/g' -e 's/<col \(style="width: [0-9]\{1,3\}%"\)\/>/<col \1>/g' -- "$@"; }
     export -f hr
-    echo "$PAGES_ALL" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 hr
+    echo "$PAGES_ALL" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --jobs "$N" --max-args=500 hr
     gwsed "<hr />" "<hr>" &>/dev/null &
     gwsed "<hr><hr>" "<hr>" &>/dev/null &
 
@@ -769,8 +769,8 @@ else
     #                           `# Big O notation: '𝒪(n)' in some browsers like my Chromium will touch the O/parenthesis (particularly noticeable in /Problem-14's abstract), so add a THIN SPACE (HAIR SPACE is not enough for the highly-tilted italic):` \
     #                           -e 's/𝒪(/𝒪 (/g' \
     #                         "$@"; }; export -f nonbreakSpace;
-    # find ./ -path ./_site -prune -type f -o -name "*.md" | gfv -e '#' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 nonbreakSpace || true
-    # find ./_site/metadata/annotation/ -type f -name "*.html" | parallel --max-args=500 nonbreakSpace || true
+    # find ./ -path ./_site -prune -type f -o -name "*.md" | gfv -e '#' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --jobs "$N" --max-args=500 nonbreakSpace || true
+    # find ./_site/metadata/annotation/ -type f -name "*.html" | parallel --jobs "$N" --max-args=500 nonbreakSpace || true
 
     bold "Stripping compile-time-only classes unnecessary at runtime…"
     cleanClasses () {
@@ -782,9 +782,15 @@ else
                -e 's/class=\"\(.*\)link-live-not \?/class="\1/g' \
                -e 's/class=\"\(.*\)link-modified-recently-not \?/class="\1/g' \
     "$@"; }; export -f cleanClasses
-    echo "$PAGES" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 cleanClasses || true
+    echo "$PAGES" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --jobs "$N" --max-args=500 cleanClasses || true
     # TODO: rewriting in place doesn't work because of the symbolic links. need to copy ./metadata/ instead of symlinking?
-    find ./_site/metadata/ -type f -name "*.html" | parallel --max-args=500 cleanClasses || true
+    find ./_site/metadata/ -type f -name "*.html" | parallel --jobs "$N" --max-args=500 cleanClasses || true
+
+    # Pandoc somewhere in 2025–2026 decided to screw around with the footnotes section in a strange way, breaking our JS/CSS, and the workarounds themselves cause problems, so a post-compilation rewrite pass seems to be the easiest fix here.
+    bold "Rewriting upstream footnotes '<aside>' → '<section>' Pandocism to be semantically correct…"
+    s '<aside id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">' '<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">';
+    # WARNING: we do not use the '<aside>' element anywhere on Gwern.net so this is safe... for now.
+    s '</aside>' '</section>';
 
     # HACK: still haven't figured out how these keep getting reintroduced when the titlecase code responsible should be fixing them automatically now. So hack around by replacing them manually...
     (s 'cite-author-Plural' 'cite-author-plural' ; s 'Date-Range' 'date-range' ; s 'Inflation-Adjusted' 'inflation-adjusted' ; s 'Logotype-Latex-A' 'logotype-latex-a' ; s 'Logotype-Latex-E' 'logotype-latex-e' ; s 'SUbsup' 'subsup'; s 'Cite-Joiner' 'cite-joiner'; s '<span class="Poem"' '<span class="poem"'; s '<div class="Poem"' '<div class="poem"'; ) &> /dev/null;
@@ -877,7 +883,7 @@ else
             "kw" "op" "s1" "st" "reader-mode" "reader-mode-style-not" "reader-mode-not" "reader-mode-disable-when-here" "reader-mode-disable-when-clicked"
             "print-mode-not"
             "scrape-abstract-not" "abstract" "abstract-collapse" "abstract-collapse-only" "admonition" "admonition-title"
-            "book-review-meta" "book-review-review" "tip" "xml" "yaml" "warning" "al" "an"
+            "book-review-meta" "book-review-review" "tip" "xml" "yaml" "YAML" "warning" "al" "an"
             "bn" "cn" "cv" "do" "dt" "er"
             "error" "ex" "fl" "im" "in" "ot"
             "pp" "re" "sc" "ss" "va" "citation"
@@ -912,7 +918,7 @@ else
             "completion-status" "collapsible" "me" "new-essays" "new-links" "site" "accesskey"
             "dark-mode-selector-inline" "extracts-mode-selector-inline" "help-mode-selector-inline" "search-mode-selector-inline" "toolbar-mode-selector-inline"
             "link-bibliography-context" "extract-not" "fraction" "separator-inline" "dark-mode-invert" "dark-mode-enable-when-here" "dark-mode" "light-mode-re-enable-when-here"
-            "prefetch" "prefetch-not" "filesize-not" "poem" "poem-html" "redirect-from-id" "toc-not" "index" "editorial" "wrap-not"
+            "prefetch" "prefetch-not" "filesize-not" "poem" "poem-html" "redirect-from-id" "toc-not" "index" "editorial" "wrap-not" "display-not"
         )
         html_dataattributes_whitelist=("data-filesize-bytes" "data-amount-current" "data-amount-original" "data-filesize-percentage" "data-href-mobile" "data-image-height" "data-image-width" "data-include-selector-not" "data-include-template" "data-inflation" "data-link-content-type" "data-link-icon" "data-link-icon-color" "data-link-icon-type" "data-progress-percentage" "data-redirect-from-id" "data-target-id" "data-url-archive" "data-url-iframe" "data-url-original" "data-year-current" "data-year-original" "data-icon-x-position" "data-aspect-ratio" "data-demo-type" "data-doi" "data-id-ref")
         html_classes_regexpattern=$(IFS='|'; echo "${html_classes_whitelist[*]}" "${html_dataattributes_whitelist[*]}")
@@ -1024,10 +1030,10 @@ else
        }
     wrap λ "Dishonest or serial fabricators detected as authors? (If a fraudulent publication should be annotated anyway, add a warning to the annotation & whitelist it.)" &
 
-     λ(){ find ./ -type f -name "*.md" | gfv '/variable' | gfv -e '_site/' -e 'static/' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=500 gf --with-filename --color=always -e '{#'; }
+     λ(){ find ./ -type f -name "*.md" | gfv '/variable' | gfv -e '_site/' -e 'static/' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --jobs "$N" --max-args=500 gf --with-filename --color=always -e '{#'; }
      wrap λ "Bad link ID overrides in Markdown."
 
-    λ(){ find ./ -type f -name "*.md" | gfv -e '_site/' -e 'static/' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 ge --with-filename --color=always -e 'pdf#page[0-9]' -e 'pdf#pg[0-9]'; }
+    λ(){ find ./ -type f -name "*.md" | gfv -e '_site/' -e 'static/' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --jobs "$N" --max-args=500 ge --with-filename --color=always -e 'pdf#page[0-9]' -e 'pdf#pg[0-9]'; }
     wrap λ "Incorrect PDF page links in Markdown."
 
     λ(){ echo "$PAGES_ALL" | xargs grep --extended-regexp -e '\#[a-z]+\#[a-z]+' | gfv -e '/index#newest#statistics'; }
@@ -1037,13 +1043,13 @@ else
        gfv -e 'css-extension: dropcaps-cheshire' -e 'css-extension: dropcaps-cheshire reader-mode' -e 'css-extension: dropcaps-de-zs' -e 'css-extension: dropcaps-goudy' -e 'css-extension: dropcaps-goudy reader-mode' -e 'css-extension: dropcaps-kanzlei' -e 'css-extension: "dropcaps-kanzlei reader-mode"' -e 'css-extension: dropcaps-yinit' -e 'css-extension: dropcaps-dropcat' -e 'css-extension: dropcaps-gene-wolfe' -e 'css-extension: dropcaps-not' -e 'css-extension: "dropcaps-not'; }
     wrap λ "Incorrect dropcaps in Markdown."
 
-    λ(){ find ./ -type f -name "*.md" | gfv '_site' | gfv -e 'lorem-code.md' -e 'ab-test.md' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 "grep --color=always -F --with-filename -- '<span class=\"er\">'"; } # NOTE: filtered out lorem-code.md's deliberate CSS test-case use of it in the syntax-highlighting section
+    λ(){ find ./ -type f -name "*.md" | gfv '_site' | gfv -e 'lorem-code.md' -e 'ab-test.md' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --jobs "$N" --max-args=500 "grep --color=always -F --with-filename -- '<span class=\"er\">'"; } # NOTE: filtered out lorem-code.md's deliberate CSS test-case use of it in the syntax-highlighting section
     wrap λ "Broken code in Markdown."
 
-    λ(){ find ./ -type f -name "*.md" | gfv -e '/lorem-inline' -e '/subscript' | parallel --max-args=500 "gf --with-filename -e '<span class=\"supsub\">' -e 'class=\"subsup\"><sup>' --"; }
+    λ(){ find ./ -type f -name "*.md" | gfv -e '/lorem-inline' -e '/subscript' | parallel --jobs "$N" --max-args=500 "gf --with-filename -e '<span class=\"supsub\">' -e 'class=\"subsup\"><sup>' --"; }
     wrap λ "Incorrect use of 'supsub' name (should be 'subsup')."
 
-    λ(){ find ./ -type f -name "*.md" | gfv -e '/lorem-inline' -e '/subscript' | parallel --max-args=500 "gf --with-filename -e 'class=\"subsup\"><sup>'"; }
+    λ(){ find ./ -type f -name "*.md" | gfv -e '/lorem-inline' -e '/subscript' | parallel --jobs "$N" --max-args=500 "gf --with-filename -e 'class=\"subsup\"><sup>'"; }
     wrap λ "Incorrect ordering of '<sup>' (the superscript '<sup>' must come second, or else risk Pandoc misinterpreting as footnote while translating HTML↔Markdown)."
 
     # NOTE: we avoid `gec` use to force no highlighting, because terminal escape codes trigger bracket-matching:"
@@ -1129,7 +1135,7 @@ else
                    gfv -e '/design-graveyard' --; }
     wrap λ "Miscellaneous fixed-string errors in compiled HTML."
 
-    λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=500 ge --with-filename --color=always -e 'href="/[a-z0-9-]#fn[0-9]+"' -e 'href="#fn[0-9]+"' -e '"></a>' -e '</p>[^ <"]' -e '[0-9][0-9]−[0-9][0-9]' -e '[^0-9]⁄.' -e '.⁄[^0-9]' | gfv -e 'tabindex="-1"></a>'; }
+    λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --jobs "$N" --max-args=500 ge --with-filename --color=always -e 'href="/[a-z0-9-]#fn[0-9]+"' -e 'href="#fn[0-9]+"' -e '"></a>' -e '</p>[^ <"]' -e '[0-9][0-9]−[0-9][0-9]' -e '[^0-9]⁄.' -e '.⁄[^0-9]' | gfv -e 'tabindex="-1"></a>'; }
     wrap λ "Miscellaneous regexp errors in compiled HTML."
 
     λ(){ ge -e '^"~/' -e '\$";$' -e '$" "doc' -e '\|' -e '\.\*\.\*' -e '\.\*";' -e '"";$' -e '.\*\$ doc' -e '\$" "";' -e '""' -e '^;$' ./static/nginx/redirect/*.conf | gfv -e 'default "";'; }
@@ -1778,7 +1784,7 @@ else
 
     bold "Checking for HTML anomalies…"
     λ(){ BROKEN_HTMLS="$(find ./ -type f -mtime -31 -name "*.html" | gfv 'static/' | \
-                         parallel --max-args=500 "gf --ignore-case --files-with-matches \
+                         parallel --jobs "$N" --max-args=500 "gf --ignore-case --files-with-matches \
                          -e '404 Not Found' -e '<title>Sign in - Google Accounts</title' -e 'Download Limit Exceeded' -e 'Access Denied' -e '403 Forbidden'")"
          for BROKEN_HTML in $BROKEN_HTMLS; do
              grep --before-context=3 "$BROKEN_HTML" ./metadata/archive.hs | gfv -e 'Right' -e 'Just';
@@ -1794,7 +1800,7 @@ else
                    -e '16aacaabe05dfc07c0e966b994d7dd0a727cd90e' -e 'metadata/today-quote.html' -e 'metadata/today-annotation.html' \
                    -e '023a48cb80d48b1438d2accbceb5dc8ad01e8e02' -e '/Starr_Report/' -e '88b3f6424a0b31dcd388ef8364b11097e228b809.html' \
                    -e '7f81f4ef122b83724448beb1f585025dbc8505d0' -e '/static/include/sidebar.html' -e 'unfortunatelytheclockisticking.html' -e 'idealconditionsdonotexistandwillneverhappen.html' -e '32938f5a1be0697eaca1f747631fc17550c1e862' -e './static/include/navbar.html' \
-             | parallel --max-args=500 file | gfv -e 'HTML document, ' -e 'ASCII text' -e 'LaTeX document, UTF-8 Unicode text' -e 'CSV Unicode text, UTF-8 text'; }
+             | parallel --jobs "$N" --max-args=500 file | gfv -e 'HTML document, ' -e 'ASCII text' -e 'LaTeX document, UTF-8 Unicode text' -e 'CSV Unicode text, UTF-8 text'; }
     wrap λ "Corrupted filetype: HTML" &
 
     ## having noindex tags causes conflicts with the robots.txt and throws SEO errors; except in the ./doc/www/ mirrors, where we don't want them to be crawled:
@@ -1820,7 +1826,7 @@ else
     wrap λ "Corrupted text file (either CRLF or not a text file at all eg. a misnamed PDF)? use 'file' or 'dos2unix' on it."
 
     bold "Checking for PDF anomalies…"
-    λ(){ BROKEN_PDFS="$(find ./ -type f -mtime -31 -name "*.pdf" -not -size 0 | parallel --max-args=500 file | \
+    λ(){ BROKEN_PDFS="$(find ./ -type f -mtime -31 -name "*.pdf" -not -size 0 | parallel --jobs "$N" --max-args=500 file | \
                                 grep --invert-match 'PDF document' | cut -d ':' -f 1)"
          for BROKEN_PDF in $BROKEN_PDFS; do
              echo "$BROKEN_PDF"; grep --before-context=3 "$BROKEN_PDF" ./metadata/archive.hs;
@@ -1865,7 +1871,7 @@ else
     wrap λ "Legacy DjVu detected (convert to JBIG2 PDF; see <https://gwern.net/design-graveyard#djvu-files>)."
 
     bold "Checking for image anomalies…"
-    λ(){ CORRUPT=$(find ./doc/ -type f -mtime -31 -name "*.jpg" | parallel --max-args=500 file | gf -e 'PNG image data' -e 'GIF image data' | cut --delimiter=':' --fields=1)
+    λ(){ CORRUPT=$(find ./doc/ -type f -mtime -31 -name "*.jpg" | parallel --jobs "$N" --max-args=500 file | gf -e 'PNG image data' -e 'GIF image data' | cut --delimiter=':' --fields=1)
      if [ -n "$CORRUPT" ]; then
          echo "Found JPGs with PNG/GIF data: $CORRUPT"
          echo "attempting to convert the PNG/GIF ones into JPG…"
@@ -1878,10 +1884,10 @@ else
          done
      fi; }
     wrap λ "JPGs with PNG data"
-    λ(){ find ./doc/ -type f -mtime -31 -name "*.jpg" | parallel --max-args=500 file | gfv 'JPEG image data'; }
+    λ(){ find ./doc/ -type f -mtime -31 -name "*.jpg" | parallel --jobs "$N" --max-args=500 file | gfv 'JPEG image data'; }
     wrap λ "Remaining corrupted JPGs post-repair-attempts (were not PNGs and so not attempting to repair)" &
 
-    λ(){ CORRUPT=$(find ./doc/ -type f -mtime -31 -name "*.png" | parallel --max-args=500 file | gfv 'PNG image data' | cut --delimiter ':' -f 1)
+    λ(){ CORRUPT=$(find ./doc/ -type f -mtime -31 -name "*.png" | parallel --jobs "$N" --max-args=500 file | gfv 'PNG image data' | cut --delimiter ':' -f 1)
          if [ -n "$CORRUPT" ]; then
              echo "Found broken PNGs: $CORRUPT"
              echo "attempting to convert the JPG/GIF ones into PNG…"
@@ -1908,13 +1914,13 @@ else
 
     λ(){ find ./ -type f -name "*.gif" | gfv -e 'static/img/' -e 'doc/gwern.net-gitstats/' \
              -e 'doc/rotten.com/' -e 'doc/genetics/selection/www.mountimprobable.com/' -e 'doc/www/' | \
-             parallel --max-args=500 identify | ge '\.gif\[[0-9]\] '; }
+             parallel --jobs "$N" --max-args=500 identify | ge '\.gif\[[0-9]\] '; }
     wrap λ "Animated GIF is deprecated; GIFs should be converted to WebMs/MP4s."
 
     # ensure all MP4 files have the 'moov atom' (the MP4 "table of contents") at the front of the file, to allow browser streaming:
     find ./ -type f -name '*.mp4' \
-        | parallel --max-args="50" mp4-check-faststart 2>/dev/null \
-        | parallel --max-args="50" mp4-fix-faststart &
+        | parallel --jobs "$N" --max-args="50" mp4-check-faststart 2>/dev/null \
+        | parallel --jobs "$N" --max-args="50" mp4-fix-faststart &
 
     # check MP4 validity by forcing ffmpeg to decode every frame to /dev/null; this forces ffmpeg to actually parse and decode the full stream, and it'll report any corruption or truncation. If it prints nothing, the file is clean. Any output means something is wrong.
     # This is intrinsically slow for huge collections like Gwern.net (>955 MP4 files) since it fully decodes every file, so we only do it occasionally.
@@ -1926,11 +1932,11 @@ else
         fi'; }
     wrap λ "Some MP4 files are invalid?" &
 
-    λ(){ find . -type f -name "*.gwtar.html" | parallel --max-args=500 grep --files-without-match --fixed-strings -e "PAR2"; }
+    λ(){ find . -type f -name "*.gwtar.html" | parallel --jobs "$N" --max-args=500 grep --files-without-match --fixed-strings -e "PAR2"; }
     wrap λ "Gwtar archive file found which likely does not contain any PAR2 FEC (no hit for the string 'PAR2')? Add PAR2 to it."
 
     λ(){ JPGS_BIG="$(find ./doc/ -type f -mtime -31 -name "*.jpg" | gfv -e 'doc/www/misc/' | \
-                          parallel --max-args=500 "identify -ping -format '%Q %F\n'" {} | sort --numeric-sort | \
+                          parallel --jobs "$N" --max-args=500 "identify -ping -format '%Q %F\n'" {} | sort --numeric-sort | \
                           ge -e '^[7-9][0-9] ' -e '^6[6-9]' -e '^100')"
          echo "$JPGS_BIG"
          compressJPG $(echo "$JPGS_BIG" | cut --delimiter=' ' --field=2); }
@@ -2064,7 +2070,7 @@ else
 
         # check for any pages that could use multi-columns now:
         λ(){ (find . -name "*.md"; find ./metadata/annotation/ -maxdepth 1 -name "*.html") | \
-                 parallel --max-args=500 runghc --ghc-arg="-package random" -istatic/build/ ./static/build/Columns.hs --print-filenames; }
+                 parallel --jobs "$N" --max-args=500 runghc --ghc-arg="-package random" -istatic/build/ ./static/build/Columns.hs --print-filenames; }
         wrap λ "Multi-columns use?"
     fi
     # if the end of the month, expire all of the annotations to get rid of stale ones:
@@ -2075,14 +2081,14 @@ else
     # once a year, check all on-site local links to make sure they point to the true current URL; this avoids excess redirects and various possible bugs (such as an annotation not being applied because it's defined for the true current URL but not the various old ones, or going through HTTP nginx redirects first)
     if [ "$(date +"%j")" == "002" ]; then
         bold "Checking all URLs for redirects…"
-        for URL in $(find . -type f -name "*.md" | parallel --max-args=500 runghc --ghc-arg="-package random" -istatic/build/ ./static/build/link-extractor.hs | \
+        for URL in $(find . -type f -name "*.md" | parallel --jobs "$N" --max-args=500 runghc --ghc-arg="-package random" -istatic/build/ ./static/build/link-extractor.hs | \
                          ge -e '^/' | cut --delimiter=' ' --field=1 | sort --unique); do
             echo "$URL"
             MIME=$(curl --max-filesize 200000000 --silent --max-redirs 0 --output /dev/null --write '%{content_type}' "https://gwern.net$URL");
             if [[ "$MIME" == "" ]]; then red "redirect! $URL (MIME: $MIME)"; fi;
         done
 
-        for URL in $(find . -type f -name "*.md" | parallel --max-args=500 runghc --ghc-arg="-package random" -istatic/build/ ./static/build/link-extractor.hs | \
+        for URL in $(find . -type f -name "*.md" | parallel --jobs "$N" --max-args=500 runghc --ghc-arg="-package random" -istatic/build/ ./static/build/link-extractor.hs | \
                          ge -e '^https://gwern.net' | sort --unique); do
             MIME=$(curl --max-filesize 200000000 --silent --max-redirs 0 --output /dev/null --write '%{content_type}' "$URL");
             if [[ "$MIME" == "" ]]; then red "redirect! $URL"; fi;
