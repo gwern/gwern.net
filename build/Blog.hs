@@ -162,11 +162,11 @@ annotation2Markdown _url (title, author, dateCreated, dateModified, kvs, _, abst
        , "backlink: False"
        , "..."
        , ""
---       , "```{=HTML}"
+       -- double-parsing like `xclip -o | pandoc -f markdown -w html | pandoc -f html -w markdown` *seems* to fully convert our HTML GTX annotations into reasonably clean Markdown that gets our full AST compilation workflow...
        ] ++ lines (toMarkdownFromMarkdown abst) ++ [
-         ""
+       "```{=HTML}"
        , "<div class='text-center' id='return-to-blog-index-link'>[<a href='/blog/index' class='link-page link-tag directory-indexes-upwards link-annotated-not' data-link-icon='arrow-up-left' data-link-icon-type='svg' rel='tag' title='Link to blog directory'>Return to blog index</a>]</div>"
---       , "```"
+       , "```"
        ]
 
 generateDirectoryBlog :: [(FilePath, Path, MetadataItem)] -> IO ()

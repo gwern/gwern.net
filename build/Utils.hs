@@ -205,9 +205,11 @@ toMarkdownFromHTML abst = let clean = runPure $ do
 toMarkdownFromMarkdown :: String -> String
 toMarkdownFromMarkdown abst = let clean = runPure $ do
                                    pandoc <- readMarkdown def{readerExtensions=pandocExtensions} (T.pack abst)
-                                   let pandoc' = parseRawAllCleanAndInline pandoc
-                                   md <- writeMarkdown def{writerExtensions = pandocExtensions, writerColumns=100000} pandoc'
-                                   return $ T.unpack md
+                                   md <- writeHtml5String def pandoc
+                                   pandoc' <- readHtml def{readerExtensions=pandocExtensions} md
+                                   let pandoc'' = parseRawAllCleanAndInline pandoc'
+                                   md' <- writeMarkdown def{writerExtensions = pandocExtensions, writerColumns=100000} pandoc''
+                                   return $ T.unpack md'
                              in case clean of
                                   Left e -> error $ ppShow e ++ ": " ++ abst
                                   Right output -> output
