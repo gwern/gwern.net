@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoHtml5String, linkAutoFiltered, linkAutoTest) 
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2026-04-24 11:02:22 gwern"
+When:  Time-stamp: "2026-04-26 11:31:48 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -50,12 +50,11 @@ import qualified Data.Set as S (empty, fromList, insert, member, Set)
 import qualified Data.Text as T (append, head, intercalate, length, last, replace, singleton, tail, init, pack, unpack, Text)
 import Control.Monad.State (evalState, get, put, State)
 
-import Text.Pandoc (topDown, nullAttr, readerExtensions, def, writeHtml5String, pandocExtensions, runPure, readHtml, Pandoc(..), Inline(Link,Image,Code,Span,Str), nullMeta, Block(Para), QuoteType(DoubleQuote))
+import Text.Pandoc (topDown, nullAttr, readerExtensions, def, writeHtml5String, pandocExtensions, runPure, readHtml, Pandoc(..), Inline(Link,Image,Code,Span,Str,Quoted,Space), nullMeta, Block(Para), QuoteType(DoubleQuote), Pandoc(..))
 import Text.Pandoc.Walk (walk, walkM)
 import Text.Regex.TDFA as R (makeRegex, match, matchTest, Regex) -- regex-tdfa supports `(T.Text,T.Text,T.Text)` instance, to avoid packing/unpacking String matches; it is maybe 4x slower than pcre-heavy, but should have fewer Unicode & correctness/segfault/strange-closure issues (native Text, and useful splitting), so to save my sanity... BUG: TDFA seems to have slow Text instances: https://github.com/haskell-hvr/regex-tdfa/issues/9
 
 import Data.List (sortBy)
-import Text.Pandoc (Pandoc(..), Inline(Link,Quoted,Space,Str), Block(Para))
 
 import Utils (setLike)
 

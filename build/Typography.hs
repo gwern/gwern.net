@@ -268,7 +268,7 @@ titlecase' t = let t' = titlecase $ titlecase'' t
                                        , ("class=\"Cite\"", "class=\"cite\""), ("Cite-author", "cite-author"), ("Cite-Author", "cite-author"), ("Cite-date", "cite-date"), ("Cite-Date", "cite-date"), ("Cite-joiner", "cite-joiner")
                                        , ("Class=","class="), ("<span class=\"Date-Range\">", "<span class=\"date-range\">")
                                        , ("<span class=\"Poem\"", "<span class=\"poem\""), ("<div class=\"Poem\"", "<div class=\"poem\"")
-                                       , ("<span class=\"Editorial\"","<span class=\"editorial\""), ("<span class='Editorial'","<span class='editorial'"), ("<span class=Editorial","<span class=editorial")]
+                                       , ("<span class=\"Editorial\"","<span class=\"editorial\""), ("<span class='Editorial'","<span class='editorial'"), ("<span class=Editorial","<span class=editorial"), ("<span class=EDITORIAL","<span class=editorial"), ("<span class=\"EDITORIAL\"","<span class=\"editorial\"")]
 
 capitalizeAfterHyphen :: String -> String -> String
 capitalizeAfterHyphen _ "" = ""
