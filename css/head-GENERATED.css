@@ -2262,6 +2262,24 @@ span.smallcaps {
 .editorial {
     font-family: var(--GW-monospaced-serif-font-stack);
 }
+.editorial .editorial {
+	font-style: italic;
+}
+.editorial .editorial em {
+	font-style: normal;
+}
+.editorial .editorial .editorial {
+	font-style: normal;
+}
+.editorial .editorial .editorial em {
+	font-style: italic;
+}
+.editorial .editorial .editorial .editorial {
+	font-style: italic;
+}
+.editorial .editorial .editorial .editorial em {
+	font-style: normal;
+}
 
 /*  Prevent line breaking (wrapping) within specified elements.
     (This utility class is often named '.nowrap'.)
