@@ -9,7 +9,7 @@
 --    for immediate sub-children, it can't count elements *globally*, and since Pandoc nests horizontal
 --    rulers and other block elements within each section, it is not possible to do the usual trick
 --    like with blockquotes/lists).
-module Typography (linebreakingTransform, typographyTransformTemporary, typesetHtmlFieldPermanent, titlecase', titlecaseInline, identUniquefy, mergeSpaces, C.titleCaseTestCases, titleCaseTest, typesetHtmlField, titleWrap, completionProgressHTML, completionProgressInline) where
+module Typography (linebreakingTransform, typographyTransformTemporary, typesetHtmlFieldPermanent, titlecase', titlecaseInline, identUniquefy, mergeSpaces, titleCaseTest, typesetHtmlField, titleWrap, completionProgressHTML, completionProgressInline) where
 
 import Control.Monad.State.Lazy (evalState, get, modify, put, State)
 import Data.Char (isPunctuation, isSpace, toUpper)
@@ -31,7 +31,7 @@ import LinkLive (linkLive)
 import Utils (sed, replaceMany, parseRawAllClean, safeHtmlWriterOptions, toHTML)
 
 import qualified Config.Misc as CM (currentYear)
-import qualified Config.Typography as C (titleCaseTestCases, cycleCount, surnameFalsePositivesWhiteList)
+import qualified Config.Typography as C (titleCaseTestCases, cycleCount, surnameFalsePositivesWhiteList, dateSuffix, lowercaseUnicode, titlecaseCommonErrors, completionMap)
 
 -- if typesetting an 'ephemeral' string which will be used now but not forever, use this. Otherwise, if reformatting a permanent string for long-term use & storage, use 'typesetHtmlFieldPermanent'. The latter will avoid doing things like hardwiring the current year.
 typesetHtmlField :: String -> String
@@ -128,17 +128,9 @@ citefyInline year x@(Str s) = let rewrite = go s in if [Str s] == rewrite then x
 citefyInline _ x = x
 
 citefyRegexSingle, citefyRegexDouble, citefyRegexMultiple :: Regex
-citefyRegexSingle = makeRegex ("([A-Z][" `T.append`  lowercaseUnicode `T.append`  "-]?[A-Z]?[" `T.append`  lowercaseUnicode `T.append`  "-]+)([    \8203]+)" `T.append` dateSuffix :: T.Text) -- match one-author citations like "Foo 2020" or "Foo 2020a"; we avoid using [:punct:] to avoid matching on en-dashes in date ranges; need to also handle mixed-case like 'McDermot'
-citefyRegexDouble = makeRegex ("([A-Z][" `T.append`  lowercaseUnicode `T.append`  "-]?[A-Z]?[" `T.append`  lowercaseUnicode `T.append`  "-]+[    \8203]+&[    \8203]+[A-Z][a-z-]+)([    \8203]+)" `T.append` dateSuffix :: T.Text) -- match two-author citations like "Foo & Bar 2020"
-citefyRegexMultiple = makeRegex ("([A-Z][" `T.append`  lowercaseUnicode `T.append`  "-]?[A-Z]?[" `T.append`  lowercaseUnicode `T.append`  "-]+)([    \8203]+[Ee]t[    \8203][Aa]l[    \8203]+)" `T.append` dateSuffix :: T.Text)
-
--- handle cases like 'Foo 1956/1999', 'Foo in press', 'Foo 1999a':
-dateSuffix :: T.Text
-dateSuffix = "([12][0-9][0-9][0-9][a-z]?|[12][0-9][0-9][0-9]/[12][0-9][0-9][0-9]|in press)"
-
--- sourced from /lorem#unicode-characters - this *should* be pretty much all the lowercase Unicode characters which might turn up in a surname:
-lowercaseUnicode :: T.Text
-lowercaseUnicode = "a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüýāăąćčēęěğīİıłńņŋōŏőœřśŠšūŮůźžƆǎǐǔǿșɔəʒḥṇṣίαγδεηθλμνοπρστυφχψωϩавгдежзийклмнопрстухцщыьэюя’Ø"
+citefyRegexSingle = makeRegex ("([A-Z][" `T.append`  C.lowercaseUnicode `T.append`  "-]?[A-Z]?[" `T.append`  C.lowercaseUnicode `T.append`  "-]+)([    \8203]+)" `T.append` C.dateSuffix :: T.Text) -- match one-author citations like "Foo 2020" or "Foo 2020a"; we avoid using [:punct:] to avoid matching on en-dashes in date ranges; need to also handle mixed-case like 'McDermot'
+citefyRegexDouble = makeRegex ("([A-Z][" `T.append`  C.lowercaseUnicode `T.append`  "-]?[A-Z]?[" `T.append`  C.lowercaseUnicode `T.append`  "-]+[    \8203]+&[    \8203]+[A-Z][a-z-]+)([    \8203]+)" `T.append` C.dateSuffix :: T.Text) -- match two-author citations like "Foo & Bar 2020"
+citefyRegexMultiple = makeRegex ("([A-Z][" `T.append`  C.lowercaseUnicode `T.append`  "-]?[A-Z]?[" `T.append`  C.lowercaseUnicode `T.append`  "-]+)([    \8203]+[Ee]t[    \8203][Aa]l[    \8203]+)" `T.append` C.dateSuffix :: T.Text)
 
 -------------------------------------------
 
@@ -263,12 +255,7 @@ titlecase' t = let t' = titlecase $ titlecase'' t
          titlecase'' "" = ""
          titlecase'' t' = capitalizeAfterApostrophe $ capitalizeAfterHyphen t t'
           -- HACK
-         cleanTitlecase = replaceMany [("<span Class=\"SMallcaps\">", "<span class=\"smallcaps\">"), ("<span class=\"SMallcaps\">", "<span class=\"smallcaps\">"), ("<span class=\"Smallcaps\">", "<span class=\"smallcaps\">")
-                                       , ("=\"Logotype-tex\">", "=\"logotype-tex\">"), ("=\"Logotype-Latex\">", "=\"logotype-latex\">"), ("<span Class=\"Logotype-Tex\">", "<span class=\"logotype-tex\">"), ("<span class=\"Logotype-Tex\">", "<span class=\"logotype-tex\">")
-                                       , ("class=\"Cite\"", "class=\"cite\""), ("Cite-author", "cite-author"), ("Cite-Author", "cite-author"), ("Cite-date", "cite-date"), ("Cite-Date", "cite-date"), ("Cite-joiner", "cite-joiner")
-                                       , ("Class=","class="), ("<span class=\"Date-Range\">", "<span class=\"date-range\">")
-                                       , ("<span class=\"Poem\"", "<span class=\"poem\""), ("<div class=\"Poem\"", "<div class=\"poem\"")
-                                       , ("<span class=\"Editorial\"","<span class=\"editorial\""), ("<span class='Editorial'","<span class='editorial'"), ("<span class=Editorial","<span class=editorial"), ("<span class=EDITORIAL","<span class=editorial"), ("<span class=\"EDITORIAL\"","<span class=\"editorial\"")]
+         cleanTitlecase = replaceMany C.titlecaseCommonErrors
 
 capitalizeAfterHyphen :: String -> String -> String
 capitalizeAfterHyphen _ "" = ""
@@ -416,19 +403,13 @@ figureCaptionLinebreakTestcases = [ (Figure nullAttr (Caption (Just [Strong [Str
 -- They can be stylized in various ways in Unicode or with icons, like using line-drawing or circles filled in clockwise. The data-attribute encodes the full range, so one is not limited to a few arbitrarily-chosen levels like '0, 0.25, 0.5, 0.75, 1'.
 -- Supported completion ranges: essay completion status; subjective confidence calibration
 -- If the string input is not found in the `completionMap` and it parses as an integer, it will be used as-is.
--- TODO: config test: unique pairs, unique keys, all keys = positive integers 0–100
-completionMap, essayCompletionMap, confidenceMap :: [(String,String)]
-completionMap = essayCompletionMap ++ confidenceMap
-essayCompletionMap = [("finished", "100"), ("in progress", "75"), ("draft", "50"), ("notes", "25"), ("abandoned", "0"), ("obsolete", "0")]
-confidenceMap = [("certain", "100"), ("highly likely", "84"), ("likely", "67"), ("possible", "50"), ("unlikely", "34"), ("highly unlikely", "17"), ("remote", "0"), ("log", "100"), ("emotional", "0"), ("fiction", "0")]
-
 completionProgressHTML :: String -> String
 completionProgressHTML "" = error "Typography.completionProgressHTML: passed an empty string, that should never happen!"
 completionProgressHTML status = toHTML $ completionProgressInline status
 completionProgressInline :: String -> Inline
 completionProgressInline "" = error "Typography.completionProgressInline: passed an empty string, that should never happen!"
 completionProgressInline status =
-  case lookup status completionMap of
+  case lookup status C.completionMap of
    Nothing -> case readMaybe status :: Maybe Int of
                 Nothing -> error $ "Typography.completionProgressInline: asked to provide percentage progress for unknown or malformed input status; requested: " ++ show status
                 Just n -> if n <= 100 && n >= 0 then completionProgressSpan (show n) status else

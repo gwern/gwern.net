@@ -3,8 +3,37 @@
 module Config.Typography where
 
 import Text.Pandoc (Inline(Str, Subscript, Superscript, Span))
+import qualified Data.Text as T (Text)
 
 import Utils (setLike)
+
+-- handle cases like 'Foo 1956/1999', 'Foo in press', 'Foo 1999a':
+-- Testing: none (can't think of any nontrivial properties which can be tested outside of the unit-tests)
+dateSuffix :: T.Text
+dateSuffix = "([12][0-9][0-9][0-9][a-z]?|[12][0-9][0-9][0-9]/[12][0-9][0-9][0-9]|in press)"
+
+-- sourced from /lorem#unicode-characters - this *should* be pretty much all the lowercase Unicode characters which might turn up in a surname:
+-- TODO: "Testing: unique"
+lowercaseUnicode :: T.Text
+lowercaseUnicode = "-azØàáâãäåæçèéêëìíîïðñòóôõöøùúûüýāăąćčēęěğīİıłńņŋōŏőœřśŠšūŮůźžƆǎǐǔǿșɔəʒίαγδεηθλμνοπρστυφχψωϩавгдежзийклмнопрстухцщыьэюяḥṇṣ’"
+
+-- TODO: "Testing: unique all, all keys = positive integers 0–100" for all 3 config tests
+completionMap, essayCompletionMap, confidenceMap :: [(String,String)]
+completionMap = essayCompletionMap ++ confidenceMap
+essayCompletionMap = [("finished", "100"), ("in progress", "75"), ("draft", "50"), ("notes", "25"), ("abandoned", "0"), ("obsolete", "0")]
+confidenceMap = [("certain", "100"), ("highly likely", "84"), ("likely", "67"), ("possible", "50"), ("unlikely", "34"), ("highly unlikely", "17"), ("remote", "0"), ("log", "100"), ("emotional", "0"), ("fiction", "0")]
+
+-- rewrites for mangled spans by the title-case transform:
+-- TODO: "Testing: unique all pairs, unique keys, no cycles"
+titlecaseCommonErrors :: [(String, String)]
+titlecaseCommonErrors = [("<span Class=\"SMallcaps\">", "<span class=\"smallcaps\">"), ("<span class=\"SMallcaps\">", "<span class=\"smallcaps\">"), ("<span class=\"Smallcaps\">", "<span class=\"smallcaps\">")
+                                       , ("=\"Logotype-tex\">", "=\"logotype-tex\">"), ("=\"Logotype-Latex\">", "=\"logotype-latex\">"), ("<span Class=\"Logotype-Tex\">", "<span class=\"logotype-tex\">"), ("<span class=\"Logotype-Tex\">", "<span class=\"logotype-tex\">")
+                                       , ("class=\"Cite\"", "class=\"cite\""), ("Cite-author", "cite-author"), ("Cite-Author", "cite-author"), ("Cite-date", "cite-date"), ("Cite-Date", "cite-date"), ("Cite-joiner", "cite-joiner")
+                                       , ("Class=","class="), ("<span class=\"Date-Range\">", "<span class=\"date-range\">")
+                                       , ("<span class=\"Poem\"", "<span class=\"poem\""), ("<div class=\"Poem\"", "<div class=\"poem\"")
+                                       , ("<span class=\"Editorial\"","<span class=\"editorial\""), ("<span class='Editorial'","<span class='editorial'"), ("<span class=Editorial","<span class=editorial"), ("<span class=EDITORIAL","<span class=editorial"), ("<span class=\"EDITORIAL\"","<span class=\"editorial\"")
+                                       , ("<span class=\"SUbsup\"><sup>", "<span class=\"subsup\"><sup>") ]
+
 
 -- how many 1–n we want to generate `<hr>` versions of, to let us cycle ruler stylings instead of using a single ruler appearance everywhere.
 cycleCount :: Int
