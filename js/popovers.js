@@ -9,6 +9,17 @@
 	domain. No attribution is necessary.")
  */
 
+/*	Because the ‘popover’ property is already taken by the ‘popover’ built-in
+	Element attribute:
+	https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/popover
+ */
+Node.prototype.getPopover = function () {
+	return this["_gw_popover"];
+};
+Node.prototype.setPopover = function (popover) {
+	this["_gw_popover"] = popover;
+};
+
 Popovers = {
 	/*****************/
 	/*	Configuration.
@@ -69,8 +80,8 @@ Popovers = {
 	//	Called by: extracts.js
 	removeTarget: (target) => {
 		//  Remove the popover (if any).
-		if (target.popover)
-			Popovers.removePopover(target.popover);
+		if (target.getPopover())
+			Popovers.removePopover(target.getPopover());
 
 		//  Unbind existing activate events, if any.
 		target.onclick = null;
@@ -142,7 +153,7 @@ Popovers = {
 	containingPopFrame: (element) => {
 		let shadowBody = element.closest(".shadow-body");
 		if (shadowBody)
-			return shadowBody.popover;
+			return shadowBody.getPopover();
 
 		return element.closest(".popover");
 	},
@@ -304,7 +315,13 @@ Popovers = {
 		}));
 
 		//	Set reverse references.
-		popover.document.popover = popover.body.popover = popover.contentView.popover = popover.scrollView.popover = popover;
+		[ popover.body,
+		  popover.document,
+		  popover.contentView,
+		  popover.scrollView
+		  ].forEach(node => {
+			node.setPopover(popover);
+		});
 
 		//	Inject style reset.
 		popover.document.insertBefore(newElement("STYLE", null, { innerHTML: `.shadow-body { all: initial; }` }), popover.body);
@@ -366,11 +383,11 @@ Popovers = {
 
 		//  Get containing document (for popovers spawned from targets in popovers).
 		let containingDocument = Popovers.containingDocumentForTarget(target);
-		if (containingDocument.popover) {
+		if (containingDocument.getPopover()) {
 			/*  Save the parent popover’s scroll state when pushing it down the
 				‘stack’.
 				*/
-			containingDocument.popover.lastScrollTop = containingDocument.popover.scrollView.scrollTop;
+			containingDocument.getPopover().lastScrollTop = containingDocument.getPopover().scrollView.scrollTop;
 
 			/*	If popover is still loading (or has failed to load), and the
 				`inheritInitialHeight` option is enabled, then set the new 
@@ -380,9 +397,9 @@ Popovers = {
 			if (   options.inheritInitialHeight
 				&& (   Popovers.popFrameStateLoading(popover)
 					|| Popovers.popFrameStateLoadingFailed(popover)))
-				popover.style.height = Math.round(containingDocument.popover.clientHeight) + "px";
+				popover.style.height = Math.round(containingDocument.getPopover().clientHeight) + "px";
 
-			containingDocument.popover.parentElement.insertBefore(popover, containingDocument.popover);
+			containingDocument.getPopover().parentElement.insertBefore(popover, containingDocument.getPopover());
 		} else {
 			/*	Locate insertion point. (There are certain elements within which 
 				we ought not insert a popover, such as tables, or anything else
@@ -421,7 +438,7 @@ Popovers = {
 
 		//	Post-inject adjustments.
 		requestAnimationFrame(() => {
-			if (target.popover == null)
+			if (target.getPopover() == null)
 				return;
 
 			//	Adjust popover position.
@@ -571,7 +588,7 @@ Popovers = {
 		target = target ?? popover.spawningTarget;
 
         target.classList.add("popover-open");
-        target.popover = popover;
+        target.setPopover(popover);
         target.popFrame = popover;
 
 		popover.spawningTarget = target;
@@ -583,7 +600,7 @@ Popovers = {
 
 		target = target ?? popover.spawningTarget;
 
-		target.popover = null;
+		target.setPopover(null);
 		target.popFrame = null;
 		target.classList.remove("popover-open", "highlighted");
 	},
