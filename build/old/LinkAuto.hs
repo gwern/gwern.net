@@ -1124,7 +1124,7 @@ custom = setLike [
         , ("[Oo]ptogenetics?", "https://en.wikipedia.org/wiki/Optogenetics")
         , ("[Oo]rphan [Ww]ork", "https://en.wikipedia.org/wiki/Orphan_work")
         , ("[Oo]taku", "https://en.wikipedia.org/wiki/Otaku")
-        , ("[Oo]utside [Vv]iew", "https://www.lesswrong.com/tag/inside-outside-view")
+        , ("[Oo]utside [Vv]iew", "https://www.lesswrong.com/w/inside-outside-view")
         , ("[Op]perations research", "https://en.wikipedia.org/wiki/Operations_research")
         , ("[Op]pportunity cost", "https://en.wikipedia.org/wiki/Opportunity_cost")
         , ("[Pp]aracosm", "https://en.wikipedia.org/wiki/Paracosm")

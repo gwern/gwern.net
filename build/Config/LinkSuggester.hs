@@ -1226,7 +1226,7 @@ whiteList = setLike [ ( "/crop#hands"
   , ( "https://www.lesswrong.com/tag/computing-overhang"
     , [ "hardware overhang" ]
     )
-  , ( "https://www.lesswrong.com/tag/inside-outside-view"
+  , ( "https://www.lesswrong.com/w/inside-outside-view"
     , [ "Outside View" , "outside view" ]
     )
   , ( "https://www.lightspeedmagazine.com/fiction/exhalation/"

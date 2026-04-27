@@ -39,7 +39,7 @@ $ find ~/wiki/ -name "*.md" -type f -print0 | parallel --null ~/wiki/static/buil
 12 http://forum.evageeks.org/viewtopic.php?p=366709#366709
 9 http://forum.evageeks.org/viewtopic.php?p=366717#366717
 8 http://forum.evageeks.org/viewtopic.php?p=366731#366731
-7 https://www.lesswrong.com/tag/inside-outside-view
+7 https://www.lesswrong.com/w/inside-outside-view
 7 http://predictionbook.com/users/gwern
 6 https://www.reddit.com/r/TOUHOUMUSIC/search/?q=author%3Agwern&sort=new&restrict_sr=on&t=all
 ...

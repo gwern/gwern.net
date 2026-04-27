@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-04-24 20:56:57 gwern"
+# When:  Time-stamp: "2026-04-27 19:03:06 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -938,6 +938,8 @@ The hidden mathematics of bathrooms
 "Have you heard of <em>Blood On The Clocktower</em>?"
 - "Perch 2.0 transfers ’whale’ to underwater tasks"
 "Perch 2.0 transfers ‘whale’ to underwater tasks"
+- "https://voxcom.cmail19.com/t/ViewEmail/d/5E61BDB945C3771F2540EF23F30FEDED/7655520C49A52981BA4AF9908B8D85ED Newsletter"
+""
 
 """
 

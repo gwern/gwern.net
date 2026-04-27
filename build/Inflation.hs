@@ -4,17 +4,18 @@ module Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjuster
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2025-03-20 09:32:17 gwern"
+-- When:  Time-stamp: "2026-04-27 12:35:02 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
 -- implementing automatic inflation adjustment of nominal date-stamped dollar or Bitcoin amounts to
 -- provide real prices; Bitcoin's exchange rate has moved by multiple orders of magnitude over its
 -- early years (rendering nominal amounts deeply unintuitive), and this is particularly critical in
--- any economics or technology discussion where a nominal price from 1950 is 11x the 2019 real
+-- any economics or technology discussion where a nominal price from 1950 is 11× the 2019 real
 -- price! (Misunderstanding of inflation may be getting worse over time:
 -- <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3469008> )
--- Prior art: minimal. Most nominal amounts are never inflation-adjusted, and where they are, the author
+--
+-- Prior typographic art: minimal. Most nominal amounts are never inflation-adjusted, and where they are, the author
 -- usually settles for either replacing the number, using an ad hoc currency unit like '$2012', or
 -- verbosely putting it in parentheses, like '$10 ($100 in 2019)'.
 -- (My approach may have been inspired by the 2008 Wikipedia template: <https://en.wikipedia.org/wiki/Template:Inflation>.)
@@ -27,6 +28,7 @@ module Inflation (nominalToRealInflationAdjuster, nominalToRealInflationAdjuster
 -- temporal resolution is necessary. Inflation rates/exchange rates are specified in Inflation.hs
 -- and need to be manually updated every once in a while; if out of date, the last available rate is
 -- carried forward for future adjustments.
+-- Note that in the interests of simplicity and predictability, we do *not* attempt to parse and adjust more complicated number statements like ranges; a link like '[$1-$10]($2000)' or '[$1–10]($2000)' will throw a fatal error. This must be written with separate amounts, like '[$1]($2000)–[$10]($2000)'. (We require a currency symbol, even if arguably redundant with the link, for explicitness and to ensure an inflation-adjustment really is desired, since it is unavoidably visually obtrusive.)
 --
 -- Dollar-years may range 1913–∞, although future years may be meaningless.
 -- Dollars are inflation-adjusted using the CPI from 1913 to 1958, then the Personal Consumption

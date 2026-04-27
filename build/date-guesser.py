@@ -738,6 +738,7 @@ EXAMPLES: list[ExampleRow] = [
     ("/doc/ai/scaling/hardware/2020-jiang.pdf", "2020-11-04", False),
     ("/doc/darknet-market/2020-zhou-2.pdf", "2020-02-01", False),
     ("https://theonion.com/area-man-consults-internet-whenever-possible-1819565463/", "2000-01-26", False),
+    ("https://publicdomainreview.org/collection/kreuzigung/ The Language of Form: Lothar Schreyer’s Kreuzigung (1920)", "2025-06-18", False)
 ]
 
 

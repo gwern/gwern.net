@@ -915,6 +915,7 @@ canonicals = M.fromList $ setLike
   , ("max_spero_", "Max Spero")
   , ("qwantz", "Ryan North")
   , ("Pmarca", "Marc Andreessen")
+  , ("Jonathan T. Barron", "Jon Barron")
   ]
 
 -- tests: unique
@@ -2242,6 +2243,10 @@ authorLinkDB = M.fromList $
     , ("Alexander Thompson", "https://alec.freumh.org/Homepage.html")
     , ("Benjamin Grayzel", "https://benjamingrayzel.substack.com/")
     , ("Artem Lytkin", "https://github.com/4RH1T3CT0R7")
+    , ("Jon Barron", "https://jonbarron.info/")
+    , ("Jorma Vikaari", "https://www.utu.fi/en/people/jorma-viikari")
+    , ("Joseph Redmon", "https://pjreddie.com/")
+    , ("Jouko Saramies", "https://scholar.google.com/scholar?q=Jouko%20Saramies")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3542,4 +3547,4 @@ authorWpLinkDB = setLike
     , "Bertram Gawronski", "Fei-Fei Li", "Euan Ashley", "John A. Long", "Elga Mark-Kurik",  "Per E. Ahlberg"
     , "Roger Jones", "Kate Trinajstic", "Hervey M. Cleckley", "May Berenbaum", "American Psychological Association"
     , "Alfred Bester", "Martyn Thomas", "Nina Vasan", "Max H. Bazerman", "William Yang Wang", "Larry Tesler", "Peter J. Huber"
-    , "Greg Corrado", "Philip Wheelwright", "Cristian Canton Ferrer", "Ian Kershaw", "David Samuel Margoliouth"]
+    , "Greg Corrado", "Philip Wheelwright", "Cristian Canton Ferrer", "Ian Kershaw", "David Samuel Margoliouth", "Peter Filkins"]
