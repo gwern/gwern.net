@@ -30,7 +30,7 @@ import Control.Exception (catch, evaluate, try, SomeException)
 import System.IO.Unsafe (unsafePerformIO)
 
 import Text.Pandoc (def, nullAttr, nullMeta, runPure,
-                    writerColumns, writePlain, Block(Div, RawBlock), Pandoc(Pandoc), Inline(..), MathType(InlineMath), Block(Para), readerExtensions, writerExtensions, readHtml, readMarkdown, writeMarkdown, pandocExtensions, WriterOptions, Extension(Ext_shortcut_reference_links), enableExtension, Attr, Format(..), topDown, writeHtml5String)
+                    writerColumns, writePlain, Block(Div, Plain, RawBlock), Pandoc(Pandoc), Inline(..), MathType(InlineMath), Block(Para), readerExtensions, writerExtensions, readHtml, readMarkdown, writeMarkdown, pandocExtensions, WriterOptions, Extension(Ext_shortcut_reference_links), enableExtension, Attr, Format(..), topDown, writeHtml5String)
 import Text.Pandoc.Walk (walk)
 import Unique (isUniqueList)
 
@@ -196,7 +196,8 @@ simplifiedDoc p = let md = runPure $ writePlain def{writerColumns=100000} p in
 toMarkdownFromHTML :: String -> String
 toMarkdownFromHTML abst = let clean = runPure $ do
                                    pandoc <- readHtml def{readerExtensions=pandocExtensions} (T.pack abst)
-                                   md <- writeMarkdown def{writerExtensions = pandocExtensions, writerColumns=100000} pandoc
+                                   let pandoc' = parseRawAllClean pandoc
+                                   md <- writeMarkdown def{writerExtensions = pandocExtensions, writerColumns=100000} pandoc'
                                    return $ T.unpack md
                              in case clean of
                                   Left e -> error $ ppShow e ++ ": " ++ abst
@@ -204,7 +205,8 @@ toMarkdownFromHTML abst = let clean = runPure $ do
 toMarkdownFromMarkdown :: String -> String
 toMarkdownFromMarkdown abst = let clean = runPure $ do
                                    pandoc <- readMarkdown def{readerExtensions=pandocExtensions} (T.pack abst)
-                                   md <- writeMarkdown def{writerExtensions = pandocExtensions, writerColumns=100000} pandoc
+                                   let pandoc' = parseRawAllCleanAndInline pandoc
+                                   md <- writeMarkdown def{writerExtensions = pandocExtensions, writerColumns=100000} pandoc'
                                    return $ T.unpack md
                              in case clean of
                                   Left e -> error $ ppShow e ++ ": " ++ abst
@@ -237,11 +239,18 @@ toPandoc abst = let clean = runPure $ readHtml def{readerExtensions=pandocExtens
                      Left e -> error $ ppShow e ++ ": " ++ abst
                      Right output -> output
 
+-- parse raw blocks, but not inlines
 parseRawAllClean :: Pandoc -> Pandoc
 parseRawAllClean = topDown cleanUpDivsEmpty .
                    walk cleanUpSpans .
-                   -- walk (parseRawInline nullAttr) .
                    walk (parseRawBlock nullAttr)
+
+-- parse raw blocks and inlines too
+parseRawAllCleanAndInline :: Pandoc -> Pandoc
+parseRawAllCleanAndInline = topDown cleanUpDivsEmpty .
+                   walk cleanUpSpans .
+                   walk (parseRawBlock nullAttr) .
+                   walk (parseRawInline nullAttr)
 
 -- WARNING: this is deliberately `readHtml`, even though that will erase some forms of HTML constructs when Pandoc reads it,
 -- because `readMarkdown`, while more permissive in that respect, results in *other* forms of breakage, apparently linked to lingering Raw* blocks
@@ -252,18 +261,19 @@ parseRawBlock attr x@(RawBlock (Format "html") h) = let pandoc = runPure $ readH
                                             Left e -> error (show x ++ " : " ++ show e)
                                             Right (Pandoc _ blocks) -> Div attr blocks
 parseRawBlock _ x = x
--- WARNING: appears to break some instances of inline HTML, especially subsup instances. I was unable to debug why.
--- parseRawInline :: Attr -> Inline -> Inline
--- parseRawInline attr x@(RawInline (Format "html") h) = let pandoc = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
---                                           case pandoc of
---                                             Left e -> error (show x ++ " : " ++ show e)
---                                             Right (Pandoc _ [Para inlines]) -> Span attr inlines
---                                             Right (Pandoc _ [Plain inlines]) -> Span attr inlines
---                                             Right (Pandoc _ inlines) -> Span attr (extractAndFlattenInlines inlines)
--- parseRawInline _ x = x
--- extractAndFlattenInlines :: [Block] -> [Inline]
--- extractAndFlattenInlines [RawBlock (Format "html") x]  = [RawInline (Format "html") x]
--- extractAndFlattenInlines x = error ("extractAndFlattenInlines: hit a RawBlock which couldn't be parsed? : " ++ show x)
+
+-- WARNING: appears to break some instances of inline HTML, especially subsup instances. I was unable to debug why. Be careful!
+parseRawInline :: Attr -> Inline -> Inline
+parseRawInline attr x@(RawInline (Format "html") h) = let pandoc = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
+                                          case pandoc of
+                                            Left e -> error (show x ++ " : " ++ show e)
+                                            Right (Pandoc _ [Para inlines]) -> Span attr inlines
+                                            Right (Pandoc _ [Plain inlines]) -> Span attr inlines
+                                            Right (Pandoc _ inlines) -> Span attr (extractAndFlattenInlines inlines)
+parseRawInline _ x = x
+extractAndFlattenInlines :: [Block] -> [Inline]
+extractAndFlattenInlines [RawBlock (Format "html") x]  = [RawInline (Format "html") x]
+extractAndFlattenInlines x = error ("extractAndFlattenInlines: hit a RawBlock which couldn't be parsed? : " ++ show x)
 
 -- we probably want to remove the link-auto-skipped Spans if we are not actively debugging, because they inflate the markup & browser DOM.
 -- We can't just remove the Span using a 'Inline -> Inline' walk, because a Span is an Inline with an [Inline] payload, so if we just remove the Span wrapper, it is a type error: we've actually done 'Inline -> [Inline]'.
