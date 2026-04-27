@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-04-26 13:16:17 gwern"
+# When:  Time-stamp: "2026-04-27 15:15:09 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -1124,7 +1124,7 @@ else
     λ(){ find ./_site/ -type f -not -name "*.*" -exec grep --quiet --binary-files=without-match . {} \; -print0 | parallel --null --max-args=500 "gf --color=always --with-filename -- '————–'"; }
     wrap λ "Broken tables in HTML."
 
-    λ(){ find ./ -type f -name "*.md" | gfv -e '_site' -e '/index' -e '/lorem-block' -e '/non-biblical-sentences' -e '/fiction/perished-paradise-graveyard' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-procs=0 --max-args=10 ./static/build/collapse-checker.py;
+    λ(){ find ./ -type f -name "*.md" | gfv -e '_site' -e 'static/' -e '/index' -e '/lorem-block' -e '/non-biblical-sentences' -e '/fiction/perished-paradise-graveyard' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-procs=0 --max-args=10 ./static/build/collapse-checker.py;
          find ./metadata/annotation/ -maxdepth 1 -name "*.html"  -type f | xargs --max-procs=0 --max-args=500 ./static/build/collapse-checker.py | \
              gfv -e '1681442477994311681' -e 'inside-the-mind-of-a-sava'; }
     wrap λ "Overuse of '.collapse' class in compiled HTML?"
@@ -1135,7 +1135,7 @@ else
                    gfv -e '/design-graveyard' --; }
     wrap λ "Miscellaneous fixed-string errors in compiled HTML."
 
-    λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --jobs "$N" --max-args=500 ge --with-filename --color=always -e 'href="/[a-z0-9-]#fn[0-9]+"' -e 'href="#fn[0-9]+"' -e '"></a>' -e '</p>[^ <"]' -e '[0-9][0-9]−[0-9][0-9]' -e '[^0-9]⁄.' -e '.⁄[^0-9]' | gfv -e 'tabindex="-1"></a>'; }
+    λ(){ find ./ -type f -name "*.md" | gfv '_site' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --jobs "$N" --max-args=500 ge --with-filename --color=always -e 'href="/[a-z0-9-]#fn[0-9]+"' -e 'href="#fn[0-9]+"' -e '"></a>' -e '</p>[^ <"]' -e '[0-9][0-9]−[0-9][0-9]' -e '[^0-9]⁄.' -e '.⁄[^0-9]' -e '<div class="collapse"$' | gfv -e 'tabindex="-1"></a>'; }
     wrap λ "Miscellaneous regexp errors in compiled HTML."
 
     λ(){ ge -e '^"~/' -e '\$";$' -e '$" "doc' -e '\|' -e '\.\*\.\*' -e '\.\*";' -e '"";$' -e '.\*\$ doc' -e '\$" "";' -e '""' -e '^;$' ./static/nginx/redirect/*.conf | gfv -e 'default "";'; }
@@ -1405,10 +1405,9 @@ else
             if [ ! -f "$HTML" ]; then red "Tidy validation pass: file ($PAGE → $HTML) not readable?"; fi
             # we do not reformat HTML files with Tidy, because it has caused too many subtle bugs in the long run.
             # however, we still want to use Tidy to lint and look for HTML validation problems.
-            # But if we do that on the original unmodified HTML, we get a ton of apparently spurious warnings we don't care about and which are Tidy-isms, especially with closing tags.
-            # So we compromise by running Tidy first, which defaults to printing to stdout, and then linting that:
-            TIDY=$(tidy -quiet --fix-style-tags no --doctype html5 "$HTML" 2>/dev/null | \
-                       tidy -quiet -errors --fix-style-tags no --doctype html5 - 2>&1 | \
+            ## WARNING/TODO [currently testing disabling]: "But if we do that on the original unmodified HTML, we get a ton of apparently spurious warnings we don't care about and which are Tidy-isms, especially with closing tags.
+            ## So we compromise by running Tidy first, which defaults to printing to stdout, and then linting that:"
+            TIDY=$(tidy -quiet -errors --fix-style-tags no --doctype html5 "$HTML" 2>&1 | \
                        gfv \
                                   -e '<link> proprietary attribute ' \
                                   `# -e 'Warning: trimming empty <span>'` \
@@ -1423,8 +1422,8 @@ else
                                   `# -e 'Warning: <a> escaping malformed URI reference'` \
                                   -e 'Warning: <script> proprietary attribute "fetchpriority"' \
                                   -e 'Warning: <img> lacks "alt" attribute' \
-                                  -e 'fix-style-tags: yes to move'
-                       )
+                                  -e 'fix-style-tags: yes to move' \
+                       || true)
             if [[ -n $TIDY ]]; then echo -e "\n\e[31m$PAGE\e[0m:\n$TIDY"; fi
         done
 
@@ -1512,7 +1511,7 @@ else
                    done; )
    CHECK_RANDOM_ANNOTATION="$(echo "$FILTERED_ANNOTATIONS" | shuf | head -1)"
    CHECK_RANDOM_ANNOTATION_ENCODED=$(echo "$CHECK_RANDOM_ANNOTATION" | xargs urlencode | xargs urlencode | sed -e 's/^\(.*\)$/https:\/\/gwern\.net\/metadata\/annotation\/\1/'; ) # urlencode twice: once for the on-disk escaping, once for the URL argument to the W3C checker
-   CHECK_REF=$(head -1 metadata/annotation/"$CHECK_RANDOM_ANNOTATION" | tr ' ' '\n' | gf 'id=' | sed -e 's/link-bibliography-//' | cut --delimiter='"' --field=2 | head -1)
+   CHECK_REF=$(head -1 metadata/annotation/"$CHECK_RANDOM_ANNOTATION" | tr ' ' '\n' | gf 'id=' | sed -e 's/link-bibliography-annotation-//' | cut --delimiter='"' --field=2 | head -1)
    echo "$CHECK_RANDOM_ANNOTATION_ENCODED" >> "$CHECKED_URLS_FILE"
 
    ( curl --silent --request POST "https://api.cloudflare.com/client/v4/zones/57d8c26bc34c5cfa11749f1226e5da69/purge_cache" \
