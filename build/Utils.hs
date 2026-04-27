@@ -30,7 +30,7 @@ import Control.Exception (catch, evaluate, try, SomeException)
 import System.IO.Unsafe (unsafePerformIO)
 
 import Text.Pandoc (def, nullAttr, nullMeta, runPure,
-                    writerColumns, writePlain, Block(Div, RawBlock), Pandoc(Pandoc), Inline(..), MathType(InlineMath), Block(Para), readerExtensions, writerExtensions, readHtml, writeMarkdown, pandocExtensions, WriterOptions, Extension(Ext_shortcut_reference_links), enableExtension, Attr, Format(..), topDown, writeHtml5String)
+                    writerColumns, writePlain, Block(Div, RawBlock), Pandoc(Pandoc), Inline(..), MathType(InlineMath), Block(Para), readerExtensions, writerExtensions, readHtml, readMarkdown, writeMarkdown, pandocExtensions, WriterOptions, Extension(Ext_shortcut_reference_links), enableExtension, Attr, Format(..), topDown, writeHtml5String)
 import Text.Pandoc.Walk (walk)
 import Unique (isUniqueList)
 
@@ -193,9 +193,17 @@ simplifiedDoc p = let md = runPure $ writePlain def{writerColumns=100000} p in
                            Left _ -> error $ "Failed to render: " ++ show md
                            Right md' -> md'
 
-toMarkdown :: String -> String
-toMarkdown abst = let clean = runPure $ do
+toMarkdownFromHTML :: String -> String
+toMarkdownFromHTML abst = let clean = runPure $ do
                                    pandoc <- readHtml def{readerExtensions=pandocExtensions} (T.pack abst)
+                                   md <- writeMarkdown def{writerExtensions = pandocExtensions, writerColumns=100000} pandoc
+                                   return $ T.unpack md
+                             in case clean of
+                                  Left e -> error $ ppShow e ++ ": " ++ abst
+                                  Right output -> output
+toMarkdownFromMarkdown :: String -> String
+toMarkdownFromMarkdown abst = let clean = runPure $ do
+                                   pandoc <- readMarkdown def{readerExtensions=pandocExtensions} (T.pack abst)
                                    md <- writeMarkdown def{writerExtensions = pandocExtensions, writerColumns=100000} pandoc
                                    return $ T.unpack md
                              in case clean of

@@ -15,7 +15,7 @@ import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import GTX (readGTXFast)
 import Metadata.Format (cleanAbstractsHTML)
 import LinkMetadataTypes (Metadata)
-import Utils (replace, printGreen, trim, toMarkdown, printRed, safeHtmlWriterOptions, anyInfix, isLocal, delete)
+import Utils (replace, printGreen, trim, toMarkdownFromHTML, printRed, safeHtmlWriterOptions, anyInfix, isLocal, delete)
 import qualified Config.Paragraph as C
 import qualified Config.Misc as CD (cd)
 
@@ -28,7 +28,7 @@ processParagraphizer _ _ "" = return ""
 processParagraphizer md p a = -- the path is necessary to check against the whitelist
       if length a < C.minLength || paragraphized p a then return a
       else do let a' = delete "<p>" $ delete "</p>" a
-              let a'' = trim $ replace "\160" " " $ toMarkdown a'
+              let a'' = trim $ replace "\160" " " $ toMarkdownFromHTML a'
               CD.cd
               (status,_,mb) <- runShellCommand "./" Nothing "python3" ["static/build/paragraphizer.py", a'']
               case status of
