@@ -8559,6 +8559,44 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 }
 
 
+/************/
+/* NOSCRIPT */
+/************/
+
+#noscript-warning-header {
+	position: fixed;
+	width: calc(100% - (2 * var(--GW-body-side-padding)));
+	max-width: calc(var(--GW-body-max-width) - (2 * var(--GW-body-side-padding)));
+	z-index: 1001;
+}
+
+#noscript-warning-header details {
+	position: relative;
+	user-select: none;
+}
+#noscript-warning-header details summary {
+	position: absolute;
+	top: 0;
+	right: -2.5em;
+	z-index: 1;
+	background-color: var(--GW-admonition-error-background-color);
+	font-size: 1.25em;
+}
+@media all and (max-width: 649px) {
+	#noscript-warning-header details summary {
+		right: 0;
+	}
+}
+#noscript-warning-header details summary::marker {
+	content: "[+]";
+	font-family: var(--GW-monospaced-font-stack);
+	color: var(--GW-admonition-error-text-color);
+}
+#noscript-warning-header details[open] summary::marker {
+	content: "[-]";
+}
+
+
 /****************/
 /* PRINT STYLES */
 /****************/

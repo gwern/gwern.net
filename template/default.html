@@ -74,24 +74,6 @@
   <link id="favicon-dark" rel="icon" type="image/png" href="/static/img/logo/logo-favicon-small-dark.png" media="all and (prefers-color-scheme: dark)">
   <link id="favicon-apple-touch" rel="apple-touch-icon" type="image/png" href="/static/img/logo/logo-favicon-appletouch.png">
   <link id="favicon-apple-touch-dark" rel="apple-touch-icon" type="image/png" href="/static/img/logo/logo-favicon-appletouch-dark.png" media="all and (prefers-color-scheme: dark)">
-
-  <!-- CSS for JS-disabled users: ensure that NoScripters know what they are missing even if they jump to a section & miss the warning at top/bottom. -->
-  <noscript>
-    <style>
-      #markdownBody #noscript-warning-header {
-          position: fixed; /* sticky */
-          top: 6px; /* at top */
-          width: 58%;
-          z-index: 99; /* Make sure it is on top */
-          background-color: #f8f8f8; /* Set a solid background color so legible while positioned over text */
-          border-color: var(--GW-abstract-border-color); /* Make look like theme-toggle/admonitions a bit more */
-          border-width: 6px 6px 6px 6px;
-          border-style: double;
-      }
-      #markdownBody #noscript-warning-header p { margin: 10px; }
-      nav#navbar { padding-top: 160px; } /* avoid overlap with page header */
-    </style>
-  </noscript>
 </head>
 
 <body class="page-$safe-url$ $css-extension$$page-created-recently$">
@@ -102,6 +84,24 @@
 
   <main>
     <a id="skip-to-content-link" href="#markdownBody">Skip to main content</a>
+
+    <noscript>
+    <style>
+      #navbar { margin-top: 7em; }
+      @media all and (max-width: 649px) { #navbar { margin-top: 10em; } }
+    </style>
+    <div id="noscript-warning-header" class="markdownBody noscript-container">    
+      <details open>
+        <summary></summary>
+        <div class="admonition error colors-invert">
+          <div class="admonition-title">
+            <p><strong>Warning:</strong> JavaScript Disabled!</p>
+          </div>
+          <p>For support of key <a href="/design" title="About: Gwern.net Design: principles, features, links, tricks">website features</a> (link annotation popups/popovers & transclusions, collapsible sections, backlinks, tablesorting, image zooming, <a href="/sidenote">sidenotes</a> etc), you must enable JavaScript.</p>
+        </div>
+      </details>
+    </div>
+    </noscript>
 
     <!-- SSI: Navbar -->
     <!-- NAVBAR-BEGIN-->
@@ -133,8 +133,16 @@
 
       $body$
 
-      $if(index)$ $else$
-      <noscript><div id="noscript-warning-footer" class="admonition error" title="Warning to NoScript Users"><div class="admonition-title"><p>[<strong>Error</strong>: JavaScript disabled.]</p></div> <p>[Backlinks, similar links, and the bibliography require JS enabled to load.]</p></div></noscript>
+      $if(index)$ $else$<noscript>
+      <div id="noscript-warning-footer" class="markdownBody noscript-container">    
+        <div class="admonition error colors-invert" title="Warning to NoScript Users">
+          <div class="admonition-title">
+            <p><strong>Error:</strong> JavaScript disabled.</p>
+          </div>
+          <p>Backlinks, similar links, and the bibliography require JS enabled to load.</p>
+        </div>
+      </div>
+      </noscript>
       $if(backlinks-yes)$<section id="backlinks-section" class="level1">
         <h1><a href="#backlinks-section" title="Link to section: § 'Backlinks'">Backlinks</a></h1>
         <a id="backlinks" href="/metadata/annotation/backlink/$escaped-url$" title="Reverse citations/backlinks for this page (the list of other pages which link to this page)." class="backlinks include-strict collapsible" data-link-icon="arrows-pointing-inwards-to-dot" data-link-icon-type="svg">[Backlinks (what links here)]</a>

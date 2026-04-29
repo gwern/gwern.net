@@ -31,7 +31,7 @@ global $static_root, $include_dir;
 ## Includes
 
 $includes = [
-	'<link rel="stylesheet" href="/static/css/style.css" media="print" onload="this.media=`all`">', 
+	'<link rel="stylesheet" href="/static/css/style.css">', 
 	'<script src="/static/js/script.js" defer></script>'
 ];
 
