@@ -283,11 +283,37 @@ Annotations = { ...Annotations,
 							  >${linkbibElement.innerHTML}</span>`
 						  : null;
 
-		//	All the aux-links (tags, backlinks, similars, link link-bib).
+		//	File size indicator.
+		let filesizeIndicatorHTML = null;
+		if (link.dataset.filesizePercentage > "") {
+			//	Prettify file size text (for tooltip).
+			let units = [ "KB", "MB", "GB", "TB", "PB", "EB" ];
+			let filesize = parseInt(link.dataset.filesizeBytes);
+			let filesizeUnits = "bytes";
+			while (filesize > 1024) {
+				filesize = Math.round(filesize / 1024);
+				filesizeUnits = units.shift();
+			}
+
+			//	What kind of content is it?
+			let contentTypeText = Content.contentTypes.localPage.matches(link) ? "Text" : "File";
+
+			//	Construct indicator icon.
+			let filesizeIndicatorElement = newElement("span", {
+				"class": "filesize-indicator",
+				"data-progress-percentage": link.dataset.filesizePercentage,
+				"title": `${contentTypeText} size: ${filesize} ${filesizeUnits}`
+			});
+			renderProgressPercentageIcon(filesizeIndicatorElement);
+			filesizeIndicatorElement.querySelector(".progress-indicator-icon")?.removeAttribute("title");
+			filesizeIndicatorHTML = filesizeIndicatorElement.outerHTML;
+		}
+
+		//	All the aux-links (file size, tags, backlinks, similars, link link-bib).
 		let auxLinksFieldSeparatorHTML = `<span class="separator">; </span>`;
 		let auxLinksHTML = ([ backlinksHTML, similarsHTML, linkbibHTML ].nonnull().join(auxLinksFieldSeparatorHTML) || null);
-		if (auxLinksHTML || tagsHTML)
-			auxLinksHTML = `<span class="aux-links-field-container"> (${([ tagsHTML, auxLinksHTML ].nonnull().join(auxLinksFieldSeparatorHTML) || null)})</span>`;
+		if (auxLinksHTML || tagsHTML || filesizeIndicatorHTML)
+			auxLinksHTML = `<span class="aux-links-field-container"> (${([ filesizeIndicatorHTML, tagsHTML, auxLinksHTML ].nonnull().join(auxLinksFieldSeparatorHTML) || null)})</span>`;
 
 		//  Combined author, date, & aux-links.
 		let authorDateAuxHTML = ([ authorHTML, dateHTML, auxLinksHTML ].nonnull().join("") || null);
@@ -358,7 +384,7 @@ Annotations = { ...Annotations,
 				authorDateAux:            authorDateAuxHTML,
 				abstract:                 abstractHTML,
 				thumbnailFigure:          thumbnailFigureHTML,
-				fileIncludes:             fileIncludesHTML
+				fileIncludes:             fileIncludesHTML,
 			},
 			template:                     "annotation-blockquote-inside",
 			popFrameTemplate:             "annotation-blockquote-not",
