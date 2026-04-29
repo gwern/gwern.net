@@ -3521,6 +3521,12 @@ blockquote .TOC,
     margin-left: 0.1em;
 }
 
+/*	Small caps for file size units.
+ */
+.annotation .data-field .file-size .file-size-units {
+	font-variant-caps: small-caps;
+}
+
 /*************************************/
 /*  Content (in annotation abstracts).
  */
