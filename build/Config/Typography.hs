@@ -13,20 +13,20 @@ dateSuffix :: T.Text
 dateSuffix = "([12][0-9][0-9][0-9][a-z]?|[12][0-9][0-9][0-9]/[12][0-9][0-9][0-9]|in press)"
 
 -- sourced from /lorem#unicode-characters - this *should* be pretty much all the lowercase Unicode characters which might turn up in a surname:
--- TODO: "Testing: unique"
+-- Testing: unique characters
 lowercaseUnicode :: T.Text
 lowercaseUnicode = "-azØàáâãäåæçèéêëìíîïðñòóôõöøùúûüýāăąćčēęěğīİıłńņŋōŏőœřśŠšūŮůźžƆǎǐǔǿșɔəʒίαγδεηθλμνοπρστυφχψωϩавгдежзийклмнопрстухцщыьэюяḥṇṣ’"
 
--- TODO: "Testing: unique all, all keys = positive integers 0–100" for all 3 config tests
+-- Testing: unique pairs, unique keys, non-empty keys, and values parse as integer percentages 0–100 for all 3 config lists
 completionMap, essayCompletionMap, confidenceMap :: [(String,String)]
 completionMap = essayCompletionMap ++ confidenceMap
-essayCompletionMap = [("finished", "100"), ("in progress", "75"), ("draft", "50"), ("notes", "25"), ("abandoned", "0"), ("obsolete", "0")]
-confidenceMap = [("certain", "100"), ("highly likely", "84"), ("likely", "67"), ("possible", "50"), ("unlikely", "34"), ("highly unlikely", "17"), ("remote", "0"), ("log", "100"), ("emotional", "0"), ("fiction", "0")]
+essayCompletionMap = setLike [("finished", "100"), ("in progress", "75"), ("draft", "50"), ("notes", "25"), ("abandoned", "0"), ("obsolete", "0")]
+confidenceMap = setLike [("certain", "100"), ("highly likely", "84"), ("likely", "67"), ("possible", "50"), ("unlikely", "34"), ("highly unlikely", "17"), ("remote", "0"), ("log", "100"), ("emotional", "0"), ("fiction", "0")]
 
 -- rewrites for mangled spans by the title-case transform:
--- TODO: "Testing: unique all pairs, unique keys, no cycles"
+-- Testing: unique pairs, unique keys, no cycles
 titlecaseCommonErrors :: [(String, String)]
-titlecaseCommonErrors = [("<span Class=\"SMallcaps\">", "<span class=\"smallcaps\">"), ("<span class=\"SMallcaps\">", "<span class=\"smallcaps\">"), ("<span class=\"Smallcaps\">", "<span class=\"smallcaps\">")
+titlecaseCommonErrors = setLike [("<span Class=\"SMallcaps\">", "<span class=\"smallcaps\">"), ("<span class=\"Smallcaps\">", "<span class=\"smallcaps\">")
                                        , ("=\"Logotype-tex\">", "=\"logotype-tex\">"), ("=\"Logotype-Latex\">", "=\"logotype-latex\">"), ("<span Class=\"Logotype-Tex\">", "<span class=\"logotype-tex\">"), ("<span class=\"Logotype-Tex\">", "<span class=\"logotype-tex\">")
                                        , ("class=\"Cite\"", "class=\"cite\""), ("Cite-author", "cite-author"), ("Cite-Author", "cite-author"), ("Cite-date", "cite-date"), ("Cite-Date", "cite-date"), ("Cite-joiner", "cite-joiner")
                                        , ("Class=","class="), ("<span class=\"Date-Range\">", "<span class=\"date-range\">")

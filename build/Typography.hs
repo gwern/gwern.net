@@ -416,7 +416,7 @@ completionProgressInline status =
                             error $ "Typography.completionProgressInline: was passed an integer which cannot be interpreted as a percentage 0–100; erroring out. Original input: " ++ show status ++ "; parsed integer: " ++ show n
    Just value -> completionProgressSpan value status
 
--- TODO: unit-test when finalized
+-- Testing: covered through completionProgressInline in Test.
 completionProgressSpan :: String -> String -> Inline
 completionProgressSpan "" s = error $ "Typography.completionProgressSpan: passed empty string as one of two arguments, that should never happen. The non-empty argument was: " ++ show s
 completionProgressSpan n "" = error $ "Typography.completionProgressSpan: passed empty string as one of two arguments, that should never happen. The non-empty argument was: " ++ show n

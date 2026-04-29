@@ -7,14 +7,15 @@ import Control.Monad (unless)
 import Data.Either (lefts)
 import Data.List (intersect, isInfixOf, isPrefixOf)
 import qualified Data.Map.Strict as M (keys, toList)
-import Data.Char (isAlpha, isLower)
+import Data.Char (isAlpha, isDigit, isLower)
+import Text.Read (readMaybe)
 import qualified Data.Text as T (unpack, elem, head, pack)
 
 import Text.Regex.Base.RegexLike (makeRegexM)
 import Text.Regex (Regex)
 import Control.Exception (try, SomeException)
 
-import Text.Pandoc (Inline(Link))
+import Text.Pandoc (Inline(Link, Span, Str))
 
 import Cycle (isCycleLess)
 import Metadata.Format (printDoubleTestSuite, cleanAbstractsHTMLTest, balanced, cleanAbstractsHTML,
@@ -33,7 +34,7 @@ import LinkArchive (readArchiveMetadataAndCheck, testLinkRewrites)
 import LinkIcon (linkIconTest)
 import LinkLive (linkLiveTest, linkLivePrioritize)
 import Tags (testTags)
-import Typography (titleCaseTest)
+import Typography (titleCaseTest, completionProgressInline)
 import Metadata.Author (authorCollapseTest, cleanAuthorsTest, extractTwitterUsername, authorDB)
 import GenerateSimilar (generateSimilarTestSuite)
 
@@ -45,7 +46,9 @@ import qualified Config.LinkIcon (prioritizeLinkIconBlackList, linkIconTestUnits
 import qualified Config.LinkLive (goodDomainsSub, goodDomainsSimple, badDomainsSub, badDomainsSimple, goodLinks, badLinks)
 import qualified Config.LinkSuggester (badAnchorStrings, whiteList)
 import qualified Config.Tags (shortTagBlacklist, tagsLong2Short, wholeTagRewritesRegexes, tagsShort2LongRewrites, shortTagTestSuite)
-import qualified Config.Typography (surnameFalsePositivesWhiteList, titleCaseTestCases, dateRangeDurationTestCases)
+import qualified Config.Typography (surnameFalsePositivesWhiteList, titleCaseTestCases, dateRangeDurationTestCases,
+                                    lowercaseUnicode, completionMap, essayCompletionMap, confidenceMap,
+                                    titlecaseCommonErrors)
 import qualified Config.XOfTheDay (siteBlackList, quoteDBPath, siteDBPath)
 import qualified XOfTheDay as XOTD (readTTDB)
 import qualified Config.Inflation (bitcoinUSDExchangeRateHistory, inflationDollarLinkTestCases)
@@ -113,6 +116,13 @@ testConfigs = sum $ map length [isUniqueList Config.Metadata.Format.filterMetaBa
               , length $ isUniqueAll Config.Tags.tagsLong2Short, length $ isUniqueKeys Config.Tags.wholeTagRewritesRegexes, length $ isUniqueKeys Config.Tags.tagsShort2LongRewrites, length $ isCycleLess Config.Tags.tagsShort2LongRewrites, length $ isUniqueKeys Config.Tags.shortTagTestSuite
               , length $ ensure "Test.Config.Tags.tagsLong2Short" "isLower" (all Data.Char.isLower . filter Data.Char.isAlpha . fst) Config.Tags.tagsLong2Short
               , length $ isUniqueKeys Config.Typography.titleCaseTestCases
+              , length $ isUniqueList $ T.unpack Config.Typography.lowercaseUnicode
+              , completionMapConfigTest "completionMap" Config.Typography.completionMap
+              , completionMapConfigTest "essayCompletionMap" Config.Typography.essayCompletionMap
+              , completionMapConfigTest "confidenceMap" Config.Typography.confidenceMap
+              , length $ isUniqueList Config.Typography.titlecaseCommonErrors
+              , length $ isUniqueKeys Config.Typography.titlecaseCommonErrors
+              , length $ isCycleLess Config.Typography.titlecaseCommonErrors
               , length $ isUniqueKeys Config.Misc.tooltipToMetadataTestcases
               , length $ isUniqueKeys Config.Misc.cleanArxivAbstracts
               , length $ isUniqueKeys Config.Misc.arxivAbstractRegexps
@@ -162,6 +172,25 @@ testConfigs = sum $ map length [isUniqueList Config.Metadata.Format.filterMetaBa
   where safeLink :: (Show a) => (a,Inline) -> Bool
         safeLink (_, (Link _ _ (u,_))) = isURLT u
         safeLink x = error $ "Test.isURLT (URL of second).safeLink: passed an Inline which was not a 'Link' (with a valid URL)? erroring out. Original: " ++ show x
+
+        completionMapConfigTest :: String -> [(String,String)] -> Int
+        completionMapConfigTest label xs =
+          sum [ length $ isUniqueList xs
+              , length $ isUniqueKeys xs
+              , length $ ensure ("Test.Config.Typography." ++ label) "non-empty status key" (not . null . fst) xs
+              , length $ ensure ("Test.Config.Typography." ++ label) "percentage integer 0–100" completionPercentage xs
+              ]
+
+        completionPercentage :: (String,String) -> Bool
+        completionPercentage (_, value) =
+          not (null value) && all isDigit value &&
+          case readMaybe value :: Maybe Int of
+            Just n  -> n >= 0 && n <= 100
+            Nothing -> False
+
+completionProgressExpected :: String -> String -> Inline
+completionProgressExpected status progress =
+  Span ("", ["completion-status"], [("progress-percentage", T.pack progress)]) [Str (T.pack status)]
 
 --------------------------------------------------------------------------------------------------------
 
@@ -214,6 +243,11 @@ testAll = do Config.Misc.cd
              unless (null Cycle.testCycleDetection) $ printRed ("Cycle-detection test suite has errors in: " ++ show Cycle.testCycleDetection)
 
              unless (null titleCaseTest) $ printRed ("Title-case typography test suite has errors in: " ++ show titleCaseTest)
+
+             let completionProgressTests =
+                   filter (\(status,progress) -> completionProgressInline status /= completionProgressExpected status progress) $
+                   Config.Typography.completionMap ++ [("0","0"), ("50","50"), ("100","100")]
+             unless (null completionProgressTests) $ printRed ("Completion-progress typography test suite has errors in: " ++ show completionProgressTests)
 
              unless (null dateRangeDurationTestCasesTestsuite) $ printRed ("Date-range-duration subscript typography test suite has errors in: " ++ show dateRangeDurationTestCasesTestsuite)
 
