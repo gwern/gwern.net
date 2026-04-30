@@ -8562,6 +8562,11 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 /************/
 /* NOSCRIPT */
 /************/
+/*	CSS for JS-disabled users: ensure that NoScripters know what they are 
+	missing even if they jump to a section & miss the warning at top/bottom.
+	We do this by making the NoScript warning header float at the top of the
+	viewport, but be minimizable with a click/tap.
+ */
 
 #noscript-warning-header {
 	position: fixed;
