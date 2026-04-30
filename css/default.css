@@ -7435,24 +7435,13 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 #noscript-warning-header details summary {
 	position: absolute;
 	top: 0;
-	right: -2.5em;
+		right: 0;
 	z-index: 1;
 	background-color: var(--GW-admonition-error-background-color);
 	font-size: 1.25em;
 	width: 2em;
 	text-align: center;
 	padding: 0.125em 0;
-	transition:
-		right 0.1s ease;
-}
-#noscript-warning-header details[open] summary {
-	right: -2em;
-}
-@media all and (max-width: 649px) {
-	#noscript-warning-header details summary,
-	#noscript-warning-header details[open] summary {
-		right: 0;
-	}
 }
 #noscript-warning-header details summary::marker {
 	content: "[+]";
