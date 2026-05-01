@@ -196,4 +196,4 @@ stringDelete = setLike [" - The Public Domain Review"
             , " - Famous poems, famous poets. - All Poetry", " - Instructables", " - steph :)", " - Kotaku", " - Clarissa's Blog"
             , " - Unsung", " - The Shamblog", " - Felix Krause", " - apenwarr", "—Clear Language, Clear Mind", " - Project Play"
             , "Haskell for all: ", " | Health &amp; wellbeing", " | Health & wellbeing", " - Project Zero", " - Armand D’Angour"
-            , "God Plays Dice: ", " - by Benjamin Grayzel - Benjamin’s Substack"]
+            , "God Plays Dice: ", " - by Benjamin Grayzel - Benjamin’s Substack", " - by Beau Watson"]
