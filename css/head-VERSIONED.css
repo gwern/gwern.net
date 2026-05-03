@@ -3314,6 +3314,11 @@ body.reader-mode-active .reader-mode-disable-when-clicked {
 	cursor: pointer;
 }
 
+body.reader-mode-active #page-metadata .page-date-range {
+	width: 4ch;
+	overflow: hidden;
+}
+
 /*  Anti-style zone.
  */
 body.reader-mode-active .reader-mode-style-not * {
