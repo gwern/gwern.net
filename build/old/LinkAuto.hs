@@ -553,7 +553,7 @@ custom = setLike [
         , ("Cryptonomicon", "https://en.wikipedia.org/wiki/Cryptonomicon")
         , ("(Cyphernomicon|Timothy C\\. May)", "https://en.wikipedia.org/wiki/Timothy_C._May")
         , ("D4PG", "https://arxiv.org/abs/1804.08617#deepmind")
-        -- , ("DALL[-·]E[ -]2", "https://openai.com/dall-e-2")
+        -- , ("DALL[-·]E[ -]2", "https://openai.com/index/dall-e-2/")
         -- , ("DALL[-·]E[ -]1", "https://openai.com/index/dall-e/")
         -- , ("DALL[-·]E[ -]3", "https://openai.com/index/dall-e-3/")
         , ("DARPA", "https://en.wikipedia.org/wiki/DARPA")

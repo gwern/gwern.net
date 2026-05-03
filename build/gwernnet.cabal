@@ -183,3 +183,8 @@ executable linkSuggester
   import: exe-common
   main-is: linkSuggester.hs
   ghc-options: -threaded -rtsopts
+
+executable linkExtractor
+  import: exe-common
+  main-is: linkExtractor.hs
+  ghc-options: -threaded -rtsopts
