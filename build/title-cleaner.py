@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-04-27 19:03:06 gwern"
+# When:  Time-stamp: "2026-05-01 20:05:02 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -940,6 +940,8 @@ The hidden mathematics of bathrooms
 "Perch 2.0 transfers ‘whale’ to underwater tasks"
 - "https://voxcom.cmail19.com/t/ViewEmail/d/5E61BDB945C3771F2540EF23F30FEDED/7655520C49A52981BA4AF9908B8D85ED Newsletter"
 ""
+- "https://beauetry.substack.com/p/stuff-women-have-told-me-is-hot?open=false#%C2%A7hands Stuff Women Have Told Me Is “Hot” - by Beau Watson"
+"Stuff Women Have Told Me Is “Hot”"
 
 """
 
