@@ -3558,7 +3558,7 @@ badLinks =  setLike ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Par
             , "https://omega0.xyz/omega8008/JaynesBookPdf.html"
             , "https://onlinelibrary.wiley.com/doi/full/10.1111/acel.12880"
             , "https://faseb.onlinelibrary.wiley.com/doi/abs/10.1096/fasebj.26.1_supplement.114.4"
-            , "https://openai.com/dall-e-2"
+            , "https://openai.com/index/dall-e-2/"
             , "https://openai.com/research/learning-to-summarize-with-human-feedback"
             , "https://openai.com/index/openai-five-defeats-dota-2-world-champions/"
             , "https://openai.fund/"

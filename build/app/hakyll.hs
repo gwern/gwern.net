@@ -1,19 +1,17 @@
 #!/usr/bin/env runghc
 {-# LANGUAGE OverloadedStrings, GeneralizedNewtypeDeriving #-}
 
-{-
-Hakyll file for building Gwern.net
+{- Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2026-04-20 10:28:53 gwern"
+When: Time-stamp: "2026-05-03 10:55:25 gwern"
 License: CC-0
 
 Debian dependencies:
 $ sudo apt-get install libghc-hakyll-dev libghc-pandoc-dev libghc-filestore-dev libghc-tagsoup-dev imagemagick rsync git libghc-aeson-dev libghc-missingh-dev libghc-digest-dev tidy gridsite-clients
 
 (GHC is needed for Haskell; Hakyll & Pandoc do the heavy lifting of compiling Markdown files to HTML; tag soup & ImageMagick are runtime dependencies used to help optimize images, and rsync for the server/git upload to hosting/Github respectively.)
-Demo command (for the full script, with all static checks & generation & optimizations, see `sync.sh`):
--}
+Demo command (for the full script, with all static checks & generation & optimizations, see `sync.sh`). -}
 
 import Control.Monad (when, unless, (<=<))
 import Data.Char (toLower)

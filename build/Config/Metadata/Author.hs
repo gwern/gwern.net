@@ -917,6 +917,7 @@ canonicals = M.fromList $ setLike
   , ("Pmarca", "Marc Andreessen")
   , ("Jonathan T. Barron", "Jon Barron")
   , ("MikeIsaac", "Mike Isaac")
+  , ("ChatGPT Image 2.0", "ChatGPT Images 2.0")
   ]
 
 -- tests: unique
@@ -2249,6 +2250,7 @@ authorLinkDB = M.fromList $
     , ("Joseph Redmon", "https://pjreddie.com/")
     , ("Jouko Saramies", "https://scholar.google.com/scholar?q=Jouko%20Saramies")
     , ("AISI", "https://www.aisi.gov.uk/")
+    , ("Piet Hein", "https://en.wikipedia.org/wiki/Piet_Hein_(scientist)")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
