@@ -4,7 +4,7 @@
 {- Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2026-05-03 10:55:25 gwern"
+When: Time-stamp: "2026-05-03 17:01:19 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -52,6 +52,7 @@ import Utils (printGreen, printRed, replace, deleteMany, replaceChecked, safeHtm
 import Test (testAll)
 import qualified Config.Misc as C (cd, currentYear, todayDayStringUnsafe, isOlderThan, isNewWithinNDays, pageMetadataFieldsMandatory, pageTitleMaxWords, pageDescriptionMaxLength, pageDescriptionMinLength, yamlValidStatuses, yamlValidConfidences, yamlValidCssExtensions, root)
 import Metadata.Date (dateRangeDuration, isDate, isDatePossibleGwernnet)
+import qualified Metadata.Author as Author (authorsCanonicalize, authorsLinkify, cleanAuthors)
 import LinkID (writeOutID2URLdb)
 import Blog (writeOutBlogEntries)
 import Utext (rawMarkdown2Utext)
@@ -212,10 +213,35 @@ imgUrls item = do
         Nothing -> return item
         Just _  -> traverse (unsafeCompiler . addImgDimensions) item
 
+lookupAuthorCanonical :: Item a -> Compiler String
+lookupAuthorCanonical item = do
+ metadataMaybe <- getMetadataField (itemIdentifier item) "author"
+ case metadataMaybe of
+  Nothing -> noResult "no author field"
+  Just "" -> noResult "empty author field"
+  Just author -> return $ Author.authorsCanonicalize $ Author.cleanAuthors author
+
+authorPlainField :: String -> Context String
+authorPlainField d = field d lookupAuthorCanonical
+
+authorEscapedField :: String -> Context String
+authorEscapedField d = field d $ \item ->
+ escapeHtml . T.unpack . rawMarkdown2Utext . T.pack <$> lookupAuthorCanonical item
+
+authorHTMLField :: String -> Context String
+authorHTMLField d = field d $ \item -> do
+ author <- lookupAuthorCanonical item
+ case runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta [Plain $ Author.authorsLinkify $ T.pack author]) of
+  Left e -> error ("Failed to compile author metadata to HTML fragment: " ++ show item ++ show author ++ show e)
+  Right html -> return $ T.unpack $ T.strip html
+
 postCtx :: Metadata -> String -> Context String
 postCtx md rts =
     fieldsTagPlain md <>
     fieldsTagHTML  md <>
+    authorPlainField "author" <>
+    authorEscapedField "author-escaped" <>
+    authorHTMLField "author-HTML" <>
     titlePlainField "title-plain" <>
     descField True "title" "title-escaped" <>
     descField False "title" "title" <>

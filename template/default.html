@@ -24,9 +24,9 @@
   <link rel="repository" href="https://github.com/gwern/gwern.net/">
   <link rel="bug-tracker" href="https://github.com/gwern/gwern.net/issues">
   <meta name="creator" content="gwern.net">
-  $if(author)$
-  <meta name="author" content="$author$">
-  <meta name="citation_author" content="$author$">
+  $if(author-escaped)$
+  <meta name="author" content="$author-escaped$">
+  <meta name="citation_author" content="$author-escaped$">
   $else$
   <meta name="author" content="Gwern">
   <meta name="citation_author" content="Gwern">
@@ -64,8 +64,8 @@
   <meta name="citation_fulltext_world_readable" content="">
   <meta name="color-scheme" content="light dark">
 
-  $if(author)$
-  <title>“$title-plain$”, by $author$ · Gwern.net</title>
+  $if(author-escaped)$
+  <title>“$title-plain$”, by $author-escaped$ · Gwern.net</title>
   $else$
   <title>$title-plain$ · Gwern.net</title>
   $endif$
@@ -90,7 +90,7 @@
       #navbar { margin-top: 7em; }
       @media all and (max-width: 649px) { #navbar { margin-top: 10em; } }
     </style>
-    <div id="noscript-warning-header" class="markdownBody noscript-container">    
+    <div id="noscript-warning-header" class="markdownBody noscript-container">
       <details open>
         <summary></summary>
         <div class="admonition error colors-invert">
@@ -119,7 +119,7 @@
         $if(tagsHTML)$ $tagsHTML$ $endif$
         $if(description)$<div class="page-description"><p>$description$</p></div>$endif$
         <div class="page-metadata-fields">
-            $if(author)$<span class="page-author" title="Author of this page.">by: <em>$author$</em></span>$endif$
+            $if(author-HTML)$<span class="page-author" title="Author of this page.">by: <em>$author-HTML$</em></span>$endif$
             $if(date-range-HTML)$<span class="page-date-range">$date-range-HTML$</span>$endif$
             <span class="page-status" title="Writing status of current page: ranges 'abandoned'/'notes'/'draft'/'in progress'/'finished'"><em>$status-plus-progress$</em></span>
             <span class="page-confidence"><a href="/about#confidence-tags" title="Explanation of 'confidence' metadata: probability of overall being meaningfully correct, expressed as Kesselman Estimative Words (ranging 0–100%: 'certain'/'highly likely'/'likely'/'possible'/'unlikely'/'highly unlikely'/'remote'/'impossible')">certainty</a>: <em>$confidence-plus-progress$</em></span>
@@ -134,7 +134,7 @@
       $body$
 
       $if(index)$ $else$<noscript>
-      <div id="noscript-warning-footer" class="markdownBody noscript-container">    
+      <div id="noscript-warning-footer" class="markdownBody noscript-container">
         <div class="admonition error colors-invert" title="Warning to NoScript Users">
           <div class="admonition-title">
             <p><strong>Error:</strong> JavaScript disabled.</p>
