@@ -3,7 +3,7 @@
 {- Metadata.Author.hs: module for managing 'author' metadata & hyperlinking author names in annotations
 Author: Gwern Branwen
 Date: 2024-04-14
-When:  Time-stamp: "2026-03-22 12:55:24 gwern"
+When:  Time-stamp: "2026-05-04 16:53:31 gwern"
 License: CC-0
 
 Authors are useful to hyperlink in annotations, but pose some problems: author names are often ambiguous in both colliding and having many non-canonical versions, are sometimes extremely high frequency & infeasible to link one by one, and there can be a large number of authors (sometimes hundreds or even thousands in some scientific fields).
@@ -44,7 +44,7 @@ import Data.Containers.ListUtils (nubOrd)
 import qualified Data.Map.Strict as M (lookup, map, fromList, toList, unionWithKey, Map)
 import qualified Data.Text as T (find, pack, splitOn, takeWhile, Text, append, unpack)
 import Data.Maybe (isJust, isNothing, fromMaybe)
-import Text.Pandoc (Inline(Link, Span, Space, Str, RawInline), Format(..), nullAttr, Pandoc(Pandoc), Block(Para), nullMeta)
+import Text.Pandoc (Inline(Link, Span, Space, Str, RawInline), Format(..), Pandoc(Pandoc), Block(Para), nullMeta)
 import Network.HTTP (urlEncode)
 
 import Data.FileStore.Utils (runShellCommand)
@@ -245,7 +245,7 @@ linkify aut -- skip anything which might be HTML:
   | isJust (T.find (== '<') aut) || isJust (T.find (== '>') aut) = RawInline (Format "html") aut' -- TODO: my installation of text-1.2.4.1 doesn't provide `T.elem`, so we use a more convoluted `T.find` call until an upgrade
   | otherwise = case M.lookup aut CA.authorLinkDB of
                   Nothing -> Str aut'
-                  Just u ->  Link nullAttr [Str aut'] (u, "") -- TODO: authorsInitialize -- must be done inside the link-ification step, so skip for now; do we really want to initialize authors at all?
+                  Just u ->  Link ("",["id-not"],[]) [Str aut'] (u, "") -- TODO: authorsInitialize -- must be done inside the link-ification step, so skip for now; do we really want to initialize authors at all?
   where aut' :: T.Text
         aut' = T.takeWhile (/= '#') aut -- author disambiguation is done by appending an anchor-style disambig like '#foo'; once we have done the lookup, we no longer need it and delete it for display
 

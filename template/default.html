@@ -119,7 +119,7 @@
         $if(tagsHTML)$ $tagsHTML$ $endif$
         $if(description)$<div class="page-description"><p>$description$</p></div>$endif$
         <div class="page-metadata-fields">
-            $if(author-HTML)$<span class="page-author" title="Author of this page.">by: <em>$author-HTML$</em></span>$endif$
+            $if(author-escaped)$<span class="page-author" title="Author of this page.">by: <em>$author-HTML$</em></span>$endif$
             $if(date-range-HTML)$<span class="page-date-range">$date-range-HTML$</span>$endif$
             <span class="page-status" title="Writing status of current page: ranges 'abandoned'/'notes'/'draft'/'in progress'/'finished'"><em>$status-plus-progress$</em></span>
             <span class="page-confidence"><a href="/about#confidence-tags" title="Explanation of 'confidence' metadata: probability of overall being meaningfully correct, expressed as Kesselman Estimative Words (ranging 0–100%: 'certain'/'highly likely'/'likely'/'possible'/'unlikely'/'highly unlikely'/'remote'/'impossible')">certainty</a>: <em>$confidence-plus-progress$</em></span>
