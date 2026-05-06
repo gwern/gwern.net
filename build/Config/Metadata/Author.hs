@@ -918,6 +918,8 @@ canonicals = M.fromList $ setLike
   , ("Jonathan T. Barron", "Jon Barron")
   , ("MikeIsaac", "Mike Isaac")
   , ("ChatGPT Image 2.0", "ChatGPT Images 2.0")
+  , ("B. Mazur", "Barry Mazur")
+  , ("Guy L. Steele Junior", "Guy L. Steele")
   ]
 
 -- tests: unique
@@ -972,7 +974,7 @@ canonicalsWithInitials = setLike
   , "Patrick S. Li", "Noah D. Goodman", "Nitish Shirish Keskar", "Clint M. Sergi", "Mary K. Wojczynski"
   , "M. Saiful Bari", "Robert A. Freitas", "Roland G. Fryer", "Leslie Stephen Coles", "Mathew John Wedel"
   , "Ralph S. Baric", "Jack D. Cowan", "Paul C. Bressloff", "Claire N. Spottiswoode", "Clemens L. Winter"
-  , "Hervey M. Cleckley", "Miriam A. Mosing", "Murray B. Stein", "David Samuel Margoliouth"]
+  , "Hervey M. Cleckley", "Miriam A. Mosing", "Murray B. Stein", "David Samuel Margoliouth", "Guy L. Steele"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -3552,4 +3554,4 @@ authorWpLinkDB = setLike
     , "Roger Jones", "Kate Trinajstic", "Hervey M. Cleckley", "May Berenbaum", "American Psychological Association"
     , "Alfred Bester", "Martyn Thomas", "Nina Vasan", "Max H. Bazerman", "William Yang Wang", "Larry Tesler", "Peter J. Huber"
     , "Greg Corrado", "Philip Wheelwright", "Cristian Canton Ferrer", "Ian Kershaw", "David Samuel Margoliouth"
-    , "Peter Filkins", "Marta Serra-Garcia", "Martin Fleming"]
+    , "Peter Filkins", "Marta Serra-Garcia", "Martin Fleming", "Barry Mazur", "Weiqi Zhang", "Guy L. Steele"]
