@@ -4,7 +4,7 @@
 {- Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2026-05-03 17:01:19 gwern"
+When: Time-stamp: "2026-05-03 17:52:51 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -123,7 +123,7 @@ main =
                                 let indexp = fromMaybe "" indexpM
                                 unsafeCompiler $ validateYAMLMetadata hakyllMeta (toFilePath ident)
                                 pandocCompilerWithTransformM readerOptions woptions (unsafeCompiler . pandocTransform meta am sizes indexp)
-                                  >>= loadAndApplyTemplate "static/template/default.html" (postCtx meta timestamp)
+                                  >>= loadAndApplyTemplate "static/template/default.html" (postCtx meta am sizes indexp timestamp)
                                   >>= imgUrls
 
                  let static        = route idRoute >> compile copyFileCompiler
@@ -212,7 +212,6 @@ imgUrls item = do
     case rte of
         Nothing -> return item
         Just _  -> traverse (unsafeCompiler . addImgDimensions) item
-
 lookupAuthorCanonical :: Item a -> Compiler String
 lookupAuthorCanonical item = do
  metadataMaybe <- getMetadataField (itemIdentifier item) "author"
@@ -228,20 +227,23 @@ authorEscapedField :: String -> Context String
 authorEscapedField d = field d $ \item ->
  escapeHtml . T.unpack . rawMarkdown2Utext . T.pack <$> lookupAuthorCanonical item
 
-authorHTMLField :: String -> Context String
-authorHTMLField d = field d $ \item -> do
+authorHTMLField :: Metadata -> ArchiveMetadata -> SizeDB -> String -> String -> Context String
+authorHTMLField md am sizes indexp d = field d $ \item -> do
  author <- lookupAuthorCanonical item
- case runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta [Plain $ Author.authorsLinkify $ T.pack author]) of
-  Left e -> error ("Failed to compile author metadata to HTML fragment: " ++ show item ++ show author ++ show e)
-  Right html -> return $ T.unpack $ T.strip html
+ unsafeCompiler $ do
+  let authorPandoc = Pandoc nullMeta [Plain $ Author.authorsLinkify $ T.pack author]
+  authorPandoc' <- pandocTransform md am sizes indexp authorPandoc
+  case runPure $ writeHtml5String safeHtmlWriterOptions authorPandoc' of
+   Left e -> error ("Failed to compile author metadata to HTML fragment: " ++ show item ++ show author ++ show e)
+   Right html -> return $ deleteMany ["<p>", "</p>", "&lt;p&gt;", "&lt;/p&gt;"] $ T.unpack $ T.strip html
 
-postCtx :: Metadata -> String -> Context String
-postCtx md rts =
+postCtx :: Metadata -> ArchiveMetadata -> SizeDB -> String -> String -> Context String
+postCtx md am sizes indexp rts =
     fieldsTagPlain md <>
     fieldsTagHTML  md <>
     authorPlainField "author" <>
     authorEscapedField "author-escaped" <>
-    authorHTMLField "author-HTML" <>
+    authorHTMLField md am sizes indexp "author-HTML" <>
     titlePlainField "title-plain" <>
     descField True "title" "title-escaped" <>
     descField False "title" "title" <>

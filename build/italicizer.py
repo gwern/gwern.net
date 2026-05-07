@@ -4,7 +4,7 @@
 # italicizer.py: reformat a string to add italics as semantically appropriate (eg. book titles) using LLMs
 # Author: Gwern Branwen
 # Date: 2025-01-17
-# When:  Time-stamp: "2026-05-02 00:07:23 gwern"
+# When:  Time-stamp: "2026-05-06 20:26:01 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python italicizer.py
@@ -1493,6 +1493,8 @@ An Orgy, but with Reward Points: The arc of history is long but it bends towards
 - "Eugene Onegin (opera)"
 "<em>Eugene Onegin</em> (opera)"
 - "Agents of Chaos"
+""
+- "Growing a Language"
 ""
 
 [End of examples. Reminder: your only task is to add missing italics you are SURE of.]

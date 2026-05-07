@@ -29,7 +29,7 @@ else
         else
             # Blacklist files from all hits due to issues like being temporary files or containing gibberish
             EXCLUDE=( -e '.#' -e 'static/js/tablesorter.js' -e 'Config/Metadata/Format.hs' )
-            EXCLUDE_SEARCH=("${EXCLUDE[@]}" -e 'auto.hs' -e 'metadata/annotation/' -e 'backlink/' -e '_site/')
+            EXCLUDE_SEARCH=("${EXCLUDE[@]}" -e 'auto.hs' -e 'metadata/annotation/' -e 'backlink/')
             EXCLUDE_SEARCH_AND_REPLACE=("${EXCLUDE[@]}" -e 'Config/LinkArchive.hs' -e 'Config/Metadata/Author.hs' -e 'Config/Metadata/Title.hs' -e 'Typography.hs' -e 'Metadata/Format.hs' -e 'include/inlined-head.html' -e 'include/inlined-standalone.html') # -e 'static/includes/' -e 'Utils.hs'
 
             # proceed with trying to do a normal site-wide replacement:
