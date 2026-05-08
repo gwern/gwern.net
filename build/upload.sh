@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2026-02-06 16:28:58 gwern"
+# When:  Time-stamp: "2026-05-07 17:17:20 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -201,6 +201,15 @@ _upload() {
                       METADATA=$(crossref "$TARGET") && echo "$METADATA" & # background for speed, but print it out mostly-atomically to avoid being mangled & impeding copy-paste of the annotation metadata
                       # run ocrmypdf to try to shrink the PDF w/JBIG2, convert it to PDF/A format for archival longevity, and otherwise generally ensure its validity; we modify the PDF only if it saves X% size to avoid excessive churn from trivial improvements like 1% file size savings (or even getting *larger*!).
                       compressPDF "$TARGET" || true; # sometimes PDFs error out in `ocrmypdf` and yield a size of 0, so we explicitly ignore errors from the 'compressPDF' wrapper
+                      chmod a+r "$TARGET";
+                  fi
+                  if [[ "$TARGET" =~ .*\.mp4 ]]; then
+                      # recompress poorly-bitrated MP4s (publisher supplementary materials, iPhone footage, etc.)
+                      # to H.265+Opus; `compressVideo` preserves the original if savings fall below the
+                      # size-reduction threshold (default 20%), so this is safe to run unconditionally.
+                      # ffmpeg can hang or fault on malformed inputs, so failures are non-fatal.
+                      bold "Possibly recompressing video file…"
+                      compressVideo "$TARGET" || true;
                       chmod a+r "$TARGET";
                   fi
 

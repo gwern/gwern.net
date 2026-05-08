@@ -1,0 +1,245 @@
+#!/bin/bash
+# Author: Gwern Branwen
+# Date: 2026-05-07
+# License: CC-0
+#
+# compressVideo: recompress poorly-compressed MP4 videos for web hosting on Gwern.net.
+#
+# Third-party MP4s—particularly academic supplementary materials run through publisher
+# pipelines like MainConcept (Cell Press, Elsevier, etc.)—routinely arrive at 5–10×
+# the bitrate appropriate for web streaming. iPhone footage is similarly bloated, with
+# the additional complication of HDR (HLG/HDR10), which web browsers do not reliably render.
+# This script transcodes such videos in-place to H.265/HEVC + AAC in MP4, with browser-safe
+# tags: 'hvc1' for Apple HEVC playback, AAC for compatibility, and '+faststart' so the moov atom precedes media data.
+#
+# Behavior:
+#   1. Probes input with ffprobe; skips if already HEVC/hvc1/SDR unless FORCE=1;
+#      fast-remuxes HEVC/SDR files tagged hev1 to hvc1 to avoid generation loss.
+#   2. Detects HDR via color_transfer ('arib-std-b67' = HLG, 'smpte2084' = PQ); when HDR is
+#      present, prepends a tone-mapping filter chain to render to SDR Rec. 709.
+#   3. Encodes to libx265 -crf 26 -preset slow + AAC 128k. CRF 26 is conservative for
+#      content with fine detail (animal behavior, microscopy, foliage). Use lower CRF for
+#      texture-preserving difficult footage; use higher CRF for slides/talking-head footage.
+#   4. Compares output size to input; normally replaces only if the size reduction is at
+#      least SIZE_REDUCTION_THRESHOLD percent (default: 20%). HDR→SDR replaces regardless
+#      of this threshold; HEVC retagging to hvc1 is handled by streamcopy.
+#   5. Preserves filesystem mode/owner when possible. Does not copy QuickTime/EXIF metadata
+#      from the source, because color/HDR/rotation/display-matrix metadata can be unsafe.
+#
+# Usage:
+#
+#   $ compressVideo input.mp4 [input2.mp4 ...]
+#   $ CRF=24 compressVideo noisy-jungle-footage.mp4   # less aggressive; preserves more texture
+#   $ CRF=28 compressVideo slides-or-talking-head.mp4 # more aggressive; smaller output
+#   $ SIZE_REDUCTION_THRESHOLD=10 compressVideo edge-case.mp4
+#   $ FORCE=1 compressVideo already-hevc.mp4          # recompress an existing HEVC file
+#   $ AUDIO_BITRATE=96k compressVideo lecture-or-screen-recording.mp4 # smaller audio if speech-heavy
+#
+# Dependencies: ffmpeg (with libx265, libzimg), ffprobe, awk, GNU coreutils.
+#
+# See also: /static/build/{compressJPG,upload}, <https://gwern.net/style-guide#video-recompression>
+
+. ~/wiki/static/build/bash.sh # red, bold, path2File
+
+set -euo pipefail
+
+CRF="${CRF:-26}"
+AUDIO_BITRATE="${AUDIO_BITRATE:-128k}"
+SIZE_REDUCTION_THRESHOLD="${SIZE_REDUCTION_THRESHOLD:-20}" # %; below this, keep the original unless a compatibility fix is needed
+FORCE="${FORCE:-}"
+
+# HDR → SDR tone-mapping chain (Hable operator, no desaturation, output Rec. 709 limited-range yuv420p):
+HDR_TONEMAP="zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=tonemap=hable:desat=0,zscale=t=bt709:m=bt709:r=tv,format=yuv420p"
+
+TMP=""
+cleanup() {
+    if [ -n "${TMP:-}" ] && [ -f "$TMP" ]; then
+        rm --force -- "$TMP"
+    fi
+    return 0
+}
+trap cleanup EXIT
+trap 'cleanup; exit 130' INT
+trap 'cleanup; exit 143' TERM
+
+commit_tmp() {
+    local input="$1"
+    local final="$2"
+
+    chmod --reference="$input" "$TMP" || true
+    chown --reference="$input" "$TMP" 2>/dev/null || true
+
+    mv -- "$TMP" "$final"
+
+    # On case-sensitive filesystems, foo.MP4 and foo.mp4 are distinct.
+    # After writing foo.mp4, remove the old uppercase path.
+    # On case-insensitive filesystems, they may be the same file; do not remove it.
+    if [ "$final" != "$input" ] && [ -e "$input" ]; then
+        if ! [ "$input" -ef "$final" ] 2>/dev/null; then
+            rm -- "$input" || red "  Warning: wrote $final but could not remove old path $input" >&2
+        fi
+    fi
+    if [ "$final" != "$input" ]; then
+        bold "  Normalized extension: $final"
+    fi
+
+    TMP=""
+    return 0
+}
+
+if [ $# -eq 0 ]; then
+    red "Usage: compressVideo <video-file.mp4> [<video-file.mp4> ...]" >&2
+    exit 2
+fi
+
+for ARG in "$@"; do
+    INPUT="$(path2File "$ARG")"
+    TMP=""
+
+    if [ ! -f "$INPUT" ]; then
+        red "File does not exist: $INPUT" >&2
+        continue
+    fi
+
+    if [[ ! "$INPUT" =~ \.[mM][pP]4$ ]]; then
+        red "Skipping non-MP4 file: $INPUT (other containers require manual conversion to avoid URL changes)" >&2
+        continue
+    fi
+
+    FINAL="${INPUT%.[mM][pP]4}.mp4"
+
+    if [ "$FINAL" != "$INPUT" ]; then
+        if [ -e "$FINAL" ] && ! [ "$INPUT" -ef "$FINAL" ] 2>/dev/null; then
+            red "Refusing to normalize extension: destination already exists: $FINAL" >&2
+            continue
+        fi
+        bold "  Note: may normalize extension: $INPUT → $FINAL"
+    fi
+
+    bold "Recompressing: $INPUT"
+    INPUT_SIZE=$(stat --format='%s' "$INPUT")
+
+    CODEC=$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_name \
+                    -of default=noprint_wrappers=1:nokey=1 "$INPUT" || true)
+    TAG=$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_tag_string \
+                  -of default=noprint_wrappers=1:nokey=1 "$INPUT" || true)
+    TRANSFER=$(ffprobe -v error -select_streams v:0 -show_entries stream=color_transfer \
+                       -of default=noprint_wrappers=1:nokey=1 "$INPUT" || true)
+    AUDIO_CODEC=$(ffprobe -v error -select_streams a:0 -show_entries stream=codec_name \
+                          -of default=noprint_wrappers=1:nokey=1 "$INPUT" || true)
+
+    IS_HDR=0
+    case "$TRANSFER" in
+        arib-std-b67|smpte2084) IS_HDR=1 ;;
+    esac
+
+    # HEVC/SDR needs no lossy transcode. If the only defect is the MP4 sample-entry
+    # tag, fix it with streamcopy: fast, exact video preservation, and no CRF generation loss.
+    if [ "$CODEC" = "hevc" ] && [ "$IS_HDR" -eq 0 ] && [ -z "$FORCE" ]; then
+        if [ "$TAG" = "hvc1" ]; then
+            bold "  Already HEVC/hvc1 SDR; skipping. Set FORCE=1 to recompress anyway."
+            continue
+        fi
+
+        STREAMCOPY_ARGS=(-c:v copy)
+        if [ -n "$AUDIO_CODEC" ] && [ "$AUDIO_CODEC" != "aac" ]; then
+            STREAMCOPY_ARGS+=(-c:a aac -b:a "$AUDIO_BITRATE" -ac 2)
+            bold "  HEVC SDR tagged '$TAG'; copying video to hvc1 and transcoding audio '$AUDIO_CODEC' → AAC."
+        else
+            STREAMCOPY_ARGS+=(-c:a copy)
+            bold "  HEVC SDR tagged '$TAG'; fast-remuxing to hvc1 to avoid generation loss."
+        fi
+
+        TMP="$(mktemp "${INPUT%.*}.XXXXXX.mp4")"
+        if ! nice ffmpeg -nostdin -y -hide_banner -loglevel warning \
+                      -i "$INPUT" \
+                      -map 0:v:0 -map '0:a:0?' \
+                      -map_metadata -1 -map_metadata:s -1 -map_chapters -1 \
+                      "${STREAMCOPY_ARGS[@]}" \
+                      -tag:v:0 hvc1 \
+                      -movflags +faststart \
+                      -f mp4 "$TMP"; then
+            red "  ffmpeg remux failed for $INPUT; keeping original." >&2
+            rm --force -- "$TMP"
+            TMP=""
+            continue
+        fi
+
+        OUTPUT_CODEC=$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_name \
+                               -of default=noprint_wrappers=1:nokey=1 "$TMP" || true)
+        OUTPUT_TAG=$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_tag_string \
+                             -of default=noprint_wrappers=1:nokey=1 "$TMP" || true)
+        if [ "$OUTPUT_CODEC" != "hevc" ] || [ "$OUTPUT_TAG" != "hvc1" ]; then
+            red "  Remux sanity-check failed: output is $OUTPUT_CODEC/$OUTPUT_TAG, not hevc/hvc1; keeping original." >&2
+            rm --force -- "$TMP"
+            TMP=""
+            continue
+        fi
+
+        OUTPUT_SIZE=$(stat --format='%s' "$TMP")
+        REDUCTION=$(awk -v input_size="$INPUT_SIZE" -v output_size="$OUTPUT_SIZE" \
+                        'BEGIN { if (input_size <= 0) printf "0.00"; else printf "%.2f", (1 - output_size / input_size) * 100 }')
+
+        commit_tmp "$INPUT" "$FINAL"
+        bold "  $(numfmt --to=iec-i --suffix=B "$INPUT_SIZE") → $(numfmt --to=iec-i --suffix=B "$OUTPUT_SIZE") (${REDUCTION}% reduction; video stream copied)"
+        continue
+    fi
+
+    VF_ARGS=()
+    MUST_REPLACE=0
+    case "$TRANSFER" in
+        arib-std-b67|smpte2084)
+            VF_ARGS=(-vf "$HDR_TONEMAP")
+            MUST_REPLACE=1
+            bold "  HDR detected (color_transfer=$TRANSFER); applying tone-mapping to SDR Rec. 709."
+            ;;
+    esac
+
+    AUDIO_ARGS=()
+    if [ -n "$AUDIO_CODEC" ]; then
+        AUDIO_ARGS=(-c:a aac -b:a "$AUDIO_BITRATE" -ac 2)
+    fi
+
+    # Temp file in the same directory as the input, so the final mv is atomic on the same filesystem.
+    TMP="$(mktemp "${INPUT%.*}.XXXXXX.mp4")"
+
+    # Map first video stream and optional first audio stream; silent videos should still transcode.
+    if ! nice ffmpeg -nostdin -y -hide_banner -loglevel warning \
+                  -i "$INPUT" \
+                  -map 0:v:0 -map '0:a:0?' \
+                  -map_metadata -1 -map_metadata:s -1 -map_chapters -1 \
+                  "${VF_ARGS[@]}" \
+                  -c:v libx265 -preset slow -crf "$CRF" -tag:v hvc1 \
+                  -pix_fmt yuv420p \
+                  -x265-params "colorprim=bt709:transfer=bt709:colormatrix=bt709" \
+                  "${AUDIO_ARGS[@]}" \
+                  -movflags +faststart \
+                  -f mp4 "$TMP"; then
+        red "  ffmpeg failed for $INPUT; keeping original." >&2
+        rm --force -- "$TMP"
+        TMP=""
+        continue
+    fi
+
+    OUTPUT_CODEC=$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_name \
+                           -of default=noprint_wrappers=1:nokey=1 "$TMP" || true)
+    if [ "$OUTPUT_CODEC" != "hevc" ]; then
+        red "  Output sanity-check failed: no HEVC video stream in temp file; keeping original." >&2
+        rm --force -- "$TMP"
+        TMP=""
+        continue
+    fi
+
+    OUTPUT_SIZE=$(stat --format='%s' "$TMP")
+    REDUCTION=$(awk -v input_size="$INPUT_SIZE" -v output_size="$OUTPUT_SIZE" \
+                    'BEGIN { if (input_size <= 0) printf "0.00"; else printf "%.2f", (1 - output_size / input_size) * 100 }')
+
+    if [ "$MUST_REPLACE" -eq 1 ] || awk -v r="$REDUCTION" -v t="$SIZE_REDUCTION_THRESHOLD" 'BEGIN { exit (r >= t) ? 0 : 1 }'; then
+        commit_tmp "$INPUT" "$FINAL"
+        bold "  $(numfmt --to=iec-i --suffix=B "$INPUT_SIZE") → $(numfmt --to=iec-i --suffix=B "$OUTPUT_SIZE") (${REDUCTION}% reduction)"
+    else
+        red "  Size reduction ${REDUCTION}% below threshold ${SIZE_REDUCTION_THRESHOLD}%; keeping original." >&2
+        rm --force -- "$TMP"
+        TMP=""
+    fi
+done
