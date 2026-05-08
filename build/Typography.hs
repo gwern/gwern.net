@@ -9,6 +9,8 @@
 --    for immediate sub-children, it can't count elements *globally*, and since Pandoc nests horizontal
 --    rulers and other block elements within each section, it is not possible to do the usual trick
 --    like with blockquotes/lists).
+-- 4. promoting unquoted blocks inside `div.abstract` to blockquotes, so Markdown authors do not
+--    have to manually quote every abstract paragraph.
 module Typography (linebreakingTransform, typographyTransformTemporary, typesetHtmlFieldPermanent, titlecase', titlecaseInline, identUniquefy, mergeSpaces, titleCaseTest, typesetHtmlField, titleWrap, completionProgressHTML, completionProgressInline) where
 
 import Control.Monad.State.Lazy (evalState, get, modify, put, State)
@@ -62,6 +64,7 @@ typographyTransformPermanent = let year = CM.currentYear in
                         walk (linkLive . linkIcon) .
                         walk mergeSpaces .
                         linebreakingTransform .
+                        walk abstractBlockquotes .
                         rulersCycle C.cycleCount .
                         walk (citefyInline year) .
                         walk imageCaptionLinebreak .
@@ -70,6 +73,39 @@ typographyTransformPermanent = let year = CM.currentYear in
 
 linebreakingTransform :: Pandoc -> Pandoc
 linebreakingTransform = walk (breakSlashes . breakEquals)
+
+-- Allow the source Markdown for abstracts to be written as ordinary block content:
+--
+-- ~~~{.Markdown}
+-- <div class="abstract">
+-- Background.
+--
+-- Methods.
+-- </div>
+-- ~~~
+--
+-- instead of requiring every paragraph/list/etc. to be manually written as a Markdown blockquote.
+-- (This is surprisingly toilsome and risky, as abstracts will be repeatedly edited indefinitely,
+-- and often broken up into smaller paragraphs, leading to split blockquotes or '>' leakage.)
+--
+-- We preserve existing top-level BlockQuote children and wrap each consecutive run of unquoted
+-- top-level blocks in a BlockQuote, which keeps the rewrite idempotent and avoids generating one
+-- blockquote per paragraph for the common multi-paragraph abstract case.
+abstractBlockquotes :: Block -> Block
+abstractBlockquotes (Div attr@(_, classes, _) blocks)
+  | "abstract" `elem` classes = Div attr (wrapNonBlockquotes blocks)
+  where
+    wrapNonBlockquotes :: [Block] -> [Block]
+    wrapNonBlockquotes = go []
+      where
+        go []      []                        = []
+        go pending []                        = [BlockQuote (reverse pending)]
+        go pending (x@(BlockQuote _) : rest) = flush pending ++ (x : go [] rest)
+        go pending (x : rest)                = go (x : pending) rest
+
+        flush []      = []
+        flush pending = [BlockQuote (reverse pending)]
+abstractBlockquotes x = x
 
 -- Pandoc breaks up strings as much as possible, like [Str "ABC", Space, "notation"], which makes it impossible to match on them, so we remove Space
 mergeSpaces :: [Inline] -> [Inline]
