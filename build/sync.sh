@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-05-07 00:22:17 gwern"
+# When:  Time-stamp: "2026-05-07 12:42:36 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -788,9 +788,10 @@ else
 
     # Pandoc somewhere in 2025–2026 decided to screw around with the footnotes section in a strange way, breaking our JS/CSS, and the workarounds themselves cause problems, so a post-compilation rewrite pass seems to be the easiest fix here.
     bold "Rewriting upstream footnotes '<aside>' → '<section>' Pandocism to be semantically correct…"
-    s '<aside id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">' '<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">';
-    # WARNING: we do not use the '<aside>' element anywhere on Gwern.net so this is safe... for now.
-    s '</aside>' '</section>';
+    cleanFootnotes () { stringReplace '<aside id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">' '<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">' "$@";
+                                 # WARNING: we do not use the '<aside>' element anywhere on Gwern.net so this is safe... for now.
+                                 stringReplace '</aside>' '</section>' "$@"; }; export -f cleanFootnotes
+    echo "$PAGES" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --jobs "$N" --max-args=500 cleanFootnotes || true
 
     # HACK: still haven't figured out how these keep getting reintroduced when the titlecase code responsible should be fixing them automatically now. So hack around by replacing them manually...
     (s 'cite-author-Plural' 'cite-author-plural' ; s 'Date-Range' 'date-range' ; s 'Inflation-Adjusted' 'inflation-adjusted' ; s 'Logotype-Latex-A' 'logotype-latex-a' ; s 'Logotype-Latex-E' 'logotype-latex-e' ; s 'SUbsup' 'subsup'; s 'Cite-Joiner' 'cite-joiner'; s '<span class="Poem"' '<span class="poem"'; s '<div class="Poem"' '<div class="poem"'; s '<span class="SMallcaps">' '<span class="smallcaps">'; ) &> /dev/null;

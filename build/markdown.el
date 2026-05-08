@@ -1,13 +1,14 @@
-;; -*- lexical-binding: t -*-
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2026-04-20 10:37:50 gwern"
+;;; When:  Time-stamp: "2026-05-07 12:49:07 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
 ;;; Helper files for editing Markdown, HTML, and HTML-in-GTX, particularly reformatting & editing annotations in the Gwern.net house style.
 ;;; Additional functions include error-checking and prettifying confusable characters like dashes.
+
+;; -*- lexical-binding: t -*-
 
 ;;; Code:
 
@@ -2147,8 +2148,8 @@ and it will be updated based on any manually-added links."
               (goto-char (point-min))
 
               (dolist (pair markdown-rewrites)
-                (let ((original (first pair))
-                      (replacement (second pair))
+                (let ((original (car pair))
+                      (replacement (cadr pair))
                       )
                   ; skip if already done
                   (if (not (buffer-contains-substring replacement))

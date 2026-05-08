@@ -37,7 +37,7 @@
 #
 # Dependencies: ffmpeg (with libx265, libzimg), ffprobe, awk, GNU coreutils.
 #
-# See also: /static/build/{compressJPG,upload}, <https://gwern.net/style-guide#video-recompression>
+# See also: /static/build/{compressJPG,upload}, https://gwern.net/style-guide#video-recompression
 
 . ~/wiki/static/build/bash.sh # red, bold, path2File
 
