@@ -658,7 +658,7 @@ function anchorsForLink(link) {
             return link.dataset.targetId.split(" ").map(x => `#${x}`);
         } else if (   isAnnotationLink(link) == false
                    && link.hash > "") {
-            return link.hash.match(/#[^#]*/g);
+            return link.hash.slice(1).split(":").map(x => `#${x}`);
         } else if (   isAnnotationLink(link) == false
                    && link.dataset.backlinkTargetUrl > "") {
             return [ link.dataset.backlinkTargetUrl ];
@@ -666,7 +666,7 @@ function anchorsForLink(link) {
             return [ ];
         }
     } else {
-         return link.hash.match(/#[^#]*/g) ?? [ ];
+         return link.hash.slice(1).split(":").map(x => `#${x}`);
     }
 }
 
@@ -1793,18 +1793,19 @@ GW.pageToolbar = {
             && (   GW.isMobile()
             	|| GW.pageToolbar.toolbar.matches(":hover") == false)) {
             //  Collapse on scroll.
-            let thresholdScrollDistance = (0.2 * window.innerHeight);
-            if (   GW.scrollState.unbrokenUpScrollDistance   > (0.2 * window.innerHeight)
-                || GW.scrollState.unbrokenDownScrollDistance > (0.2 * window.innerHeight))
+            let thresholdScrollDistanceForCollapseOnScroll = (0.2 * window.innerHeight);
+            if (   GW.scrollState.unbrokenUpScrollDistance   > thresholdScrollDistanceForCollapseOnScroll
+                || GW.scrollState.unbrokenDownScrollDistance > thresholdScrollDistanceForCollapseOnScroll)
                 GW.pageToolbar.toggleCollapseState(true);
 
             //  Fade on scroll; unfade when scrolling to top.
             let pageScrollPosition = getPageScrollPosition();
+            let thresholdScrollDistanceForFadeOrUnfadeOnScroll = (0.8 * window.innerHeight);
             if (   pageScrollPosition == 0
                 || pageScrollPosition == 100
-                || GW.scrollState.unbrokenUpScrollDistance       > (0.8 * window.innerHeight)) {
+                || GW.scrollState.unbrokenUpScrollDistance       > thresholdScrollDistanceForFadeOrUnfadeOnScroll) {
                 GW.pageToolbar.unfade();
-            } else if (GW.scrollState.unbrokenDownScrollDistance > (0.8 * window.innerHeight)) {
+            } else if (GW.scrollState.unbrokenDownScrollDistance > thresholdScrollDistanceForFadeOrUnfadeOnScroll) {
                 GW.pageToolbar.fade();
             }
         } else {

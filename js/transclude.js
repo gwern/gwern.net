@@ -205,14 +205,14 @@
 	1. Transclude range syntax
 	--------------------------
 
-    The transclusion feature supports PmWiki-style transclude range syntax,
-    very similar to the one described here:
+    The transclusion feature supports a transclude range syntax, inspired by 
+    PmWiki’s range transcludes, as described here:
     https://www.pmwiki.org/wiki/PmWiki/IncludeOtherPages#includeanchor
 
-    To use transclude range syntax, an include-link’s URL should have a “double”
-    hash, i.e. a hash consisting of two ‘#’-prefixed parts:
+    To use transclude range syntax, an include-link’s URL should have a 
+    “two-part” hash, consisting of two ‘:’-delimited parts:
 
-        <a class="include" href="/sidenote#tufte-css#tables"></a>
+        <a class="include" href="/sidenote#tufte-css:tables"></a>
 
     This will include all parts of the "/sidenote" page’s content starting from
     the element with ID `tufte-css`, all the way up to (but *not* including!)
@@ -221,18 +221,18 @@
     Either the first or the second identifier (the parts after the ‘#’) may
     instead be empty. The possibilities are:
 
-    #foo#bar
+    #foo:bar
         Include everything starting from element `#foo` up to (but not
         including) element `#bar`.
 
-    ##bar
+    #:bar
         Include everything from the start of the page content up to (but not
         including) element `#bar`.
 
-    #foo#
+    #foo:
         Include everything starting from element `#foo` to the end of the page.
 
-    ##
+    #:
         Include the entire page content (same as not having a hash at all).
 
     In all cases, only the page content is considered, not any “page furniture”
@@ -1852,7 +1852,7 @@ Transclude = {
         //  If the link’s anchor(s) specify part of the page, extract that.
         let anchors = anchorsForLink(includeLink);
         if (anchors.length == 2) {
-            //  PmWiki-like transclude range syntax.
+            //  Transclude range syntax.
 
 			//	Start element.
 			let startElement = null;

@@ -77,7 +77,6 @@ DarkMode = { ...DarkMode,
 		 */
 		processMainContentAndAddRewriteProcessor("DarkMode.addInlineSelectorsInLoadedContent", (container) => {
 			container.querySelectorAll(".dark-mode-selector-inline").forEach(DarkMode.injectModeSelector);
-			container.querySelectorAll(".dark-mode-selector").forEach(DarkMode.activateModeSelector);
 		});
 	},
 
@@ -162,16 +161,14 @@ DarkMode = { ...DarkMode,
 	injectModeSelector: (replacedElement = null) => {
 		GWLog("DarkMode.injectModeSelector", "dark-mode.js", 1);
 
-		//	Inject the mode selector widget.
+		//	Inject and activate the mode selector widget.
 		let modeSelector;
 		if (replacedElement) {
-			modeSelector = elementFromHTML(DarkMode.modeSelectorHTML(true));
-			replacedElement.replaceWith(modeSelector);
+			replacedElement.replaceWith(modeSelector = elementFromHTML(DarkMode.modeSelectorHTML(true)));
 		} else {
 			modeSelector = DarkMode.modeSelector = GW.pageToolbar.addWidget(DarkMode.modeSelectorHTML());
-			DarkMode.activateModeSelector(modeSelector);
 		}
-
+		DarkMode.activateModeSelector(modeSelector);
 	},
 
 	//	Called by: DarkMode.setup
