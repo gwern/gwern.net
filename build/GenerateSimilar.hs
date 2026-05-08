@@ -1425,7 +1425,7 @@ generateSimilarTestSuite :: IO ()
 generateSimilarTestSuite = do
   let failures = generateSimilarTestFailures
   if null failures
-    then putStrLn "GenerateSimilar: all tests passed."
+    then printGreen "GenerateSimilar: all tests passed."
     else error  $ "GenerateSimilar tests failed:\n" ++ unlines (map ("- " ++) failures)
 
 generateSimilarTestFailures :: [String]

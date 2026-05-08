@@ -23,7 +23,7 @@ import Metadata.Format (printDoubleTestSuite, cleanAbstractsHTMLTest, balanced, 
 import Metadata.Date (isDate, dateRangeDurationTestCasesTestsuite)
 import Utils (printGreen, printRed, isDomainT, isURL, isURLT, isURLAny, isURLAnyT, ensure)
 import LinkID (url2ID, isValidID)
-import Unique (isUniqueAll, isUniqueKeys, isUniqueKeys3, isUniqueKeys4, isUniqueList)
+import Unique (isUniqueAll, isUniqueKeys, isUniqueKeys3, isUniqueKeys4, isUniqueList, isUnique)
 
 -- module self-tests:
 import Annotation (tooltipToMetadata, testGuessAuthorDate)
@@ -34,7 +34,7 @@ import LinkArchive (readArchiveMetadataAndCheck, testLinkRewrites)
 import LinkIcon (linkIconTest)
 import LinkLive (linkLiveTest, linkLivePrioritize)
 import Tags (testTags)
-import Typography (titleCaseTest, completionProgressInline)
+import Typography (titleCaseTest, abstractBlockquotesTest, completionProgressInline)
 import Metadata.Author (authorCollapseTest, cleanAuthorsTest, extractTwitterUsername, authorDB)
 import GenerateSimilar (generateSimilarTestSuite)
 
@@ -137,7 +137,8 @@ testConfigs = sum $ map length [isUniqueList Config.Metadata.Format.filterMetaBa
                , length $ Metadata.Author.authorDB
               , length $ isUniqueKeys Config.Metadata.Author.cleanAuthorsFixedRewrites, length $ isUniqueKeys Config.Misc.cycleTestCases, length $ isUniqueKeys Config.Metadata.Author.cleanAuthorsRegexps, length $ isUniqueKeys Config.Metadata.Format.htmlRewriteRegexpBefore, length $ isUniqueKeys Config.Metadata.Format.htmlRewriteRegexpAfter, length $ isUniqueKeys Config.Metadata.Format.htmlRewriteFixed, length $ isUniqueKeys Config.Metadata.Author.extractTwitterUsernameTestSuite
               , length $ filter (\(input,output) -> Metadata.Format.balanced input /= output) $ isUniqueKeys Config.Metadata.Format.balancedBracketTestCases
-              , length $ isUniqueAll Config.Metadata.Author.authorCollapseTestCases, length $ isUniqueAll (M.toList Config.Metadata.Author.authorLinkDB)
+              , length $ isUniqueKeys Config.Metadata.Author.authorCollapseTestCases, length $ isUnique Config.Metadata.Author.authorCollapseTestCases,
+                length $ isUniqueAll (M.toList Config.Metadata.Author.authorLinkDB)
               , length $ isUniqueKeys (M.toList Config.Metadata.Author.canonicals), length $ isUniqueList Config.Metadata.Author.canonicalsWithInitials, length $ isUniqueList Config.Metadata.Author.authorLinkBlacklist, length $ isUniqueList Config.Metadata.Author.authorWhitelist
               , length $ isUniqueAll Config.Metadata.Format.htmlRewriteTestCases
               , length $ isUniqueList Config.Typography.dateRangeDurationTestCases
@@ -243,6 +244,7 @@ testAll = do Config.Misc.cd
              unless (null Cycle.testCycleDetection) $ printRed ("Cycle-detection test suite has errors in: " ++ show Cycle.testCycleDetection)
 
              unless (null titleCaseTest) $ printRed ("Title-case typography test suite has errors in: " ++ show titleCaseTest)
+             unless (null abstractBlockquotesTest) $ printRed ("Abstract-blockquote typography test suite has errors in: " ++ show abstractBlockquotesTest)
 
              let completionProgressTests =
                    filter (\(status,progress) -> completionProgressInline status /= completionProgressExpected status progress) $

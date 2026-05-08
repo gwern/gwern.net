@@ -11,7 +11,7 @@
 --    like with blockquotes/lists).
 -- 4. promoting unquoted blocks inside `div.abstract` to blockquotes, so Markdown authors do not
 --    have to manually quote every abstract paragraph.
-module Typography (linebreakingTransform, typographyTransformTemporary, typesetHtmlFieldPermanent, titlecase', titlecaseInline, identUniquefy, mergeSpaces, titleCaseTest, typesetHtmlField, titleWrap, completionProgressHTML, completionProgressInline) where
+module Typography (linebreakingTransform, typographyTransformTemporary, typesetHtmlFieldPermanent, titlecase', titlecaseInline, identUniquefy, mergeSpaces, titleCaseTest, abstractBlockquotesTest, typesetHtmlField, titleWrap, completionProgressHTML, completionProgressInline) where
 
 import Control.Monad.State.Lazy (evalState, get, modify, put, State)
 import Data.Char (isPunctuation, isSpace, toUpper)
@@ -106,6 +106,39 @@ abstractBlockquotes (Div attr@(_, classes, _) blocks)
         flush []      = []
         flush pending = [BlockQuote (reverse pending)]
 abstractBlockquotes x = x
+abstractBlockquotesTest :: [(Pandoc, Pandoc)]
+abstractBlockquotesTest = filter (uncurry (/=))
+  [ (typographyTransformPermanent abstractBlockquoteInput, abstractBlockquoteExpected)
+  , (typographyTransformPermanent abstractBlockquoteExpected, abstractBlockquoteExpected)
+  , (typographyTransformPermanent nonAbstractInput, nonAbstractInput)
+  ]
+  where
+    abstractBlockquoteInput = Pandoc nullMeta
+      [ Div ("", ["abstract"], [])
+        [ Para [Str "A."]
+        , Para [Str "B."]
+        , BlockQuote [Para [Str "Already quoted."]]
+        , Para [Str "C."]
+        ]
+      ]
+
+    abstractBlockquoteExpected = Pandoc nullMeta
+      [ Div ("", ["abstract"], [])
+        [ BlockQuote
+          [ Para [Str "A."]
+          , Para [Str "B."]
+          ]
+        , BlockQuote [Para [Str "Already quoted."]]
+        , BlockQuote [Para [Str "C."]]
+        ]
+      ]
+
+    nonAbstractInput = Pandoc nullMeta
+      [ Div ("", ["not-abstract"], [])
+        [ Para [Str "A."]
+        , Para [Str "B."]
+        ]
+      ]
 
 -- Pandoc breaks up strings as much as possible, like [Str "ABC", Space, "notation"], which makes it impossible to match on them, so we remove Space
 mergeSpaces :: [Inline] -> [Inline]
