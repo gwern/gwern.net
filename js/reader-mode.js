@@ -209,7 +209,7 @@ ReaderMode = { ...ReaderMode,
 	injectModeSelector: (replacedElement = null) => {
 		GWLog("ReaderMode.injectModeSelector", "reader-mode.js", 1);
 
-		//	Inject the mode selector widget.
+		//	Inject and activate the mode selector widget.
 		let modeSelector;
 		if (replacedElement) {
 			replacedElement.replaceWith(modeSelector = elementFromHTML(ReaderMode.modeSelectorHTML(true)));
