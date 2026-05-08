@@ -658,7 +658,7 @@ function anchorsForLink(link) {
             return link.dataset.targetId.split(" ").map(x => `#${x}`);
         } else if (   isAnnotationLink(link) == false
                    && link.hash > "") {
-            return link.hash.match(/#[^#]*/g);
+            return link.hash.slice(1).split(":").map(x => `#${x}`);
         } else if (   isAnnotationLink(link) == false
                    && link.dataset.backlinkTargetUrl > "") {
             return [ link.dataset.backlinkTargetUrl ];
@@ -666,7 +666,7 @@ function anchorsForLink(link) {
             return [ ];
         }
     } else {
-         return link.hash.match(/#[^#]*/g) ?? [ ];
+         return link.hash.slice(1).split(":").map(x => `#${x}`);
     }
 }
 
