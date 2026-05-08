@@ -20,7 +20,7 @@ extractTwitterUsernameTestSuite = setLike [("https://x.com/grantslatton/status/1
                                   , ("https://x.com/TylerAlterman/status/1900285728635969841", "TylerAlterman")
                                   ]
 
--- config testing: all unique
+-- config testing: unique keys, unique key-values
 authorCollapseTestCases :: [(String, [Inline])]
 authorCollapseTestCases = setLike
   [ ("a", [Space,Span ("",["author","cite-author"],[]) [Str "a"]])
@@ -34,10 +34,51 @@ authorCollapseTestCases = setLike
   -- hash disambiguation rendering:
   , ("b#disambiguation", [Space,Span ("",["author","cite-author"],[]) [Str "b"]])
 
-  -- test with link rewrites enabled:
-  , ("a, b, c, d, e, f, George Washington", [Space,Span ("",["author"],[]) [Str "a",Str ", ",Str "b",Str ", ",Str "c",Span ("",["collapse"],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f",Str ", ",Link ("",[],[]) [Str "George Washington"] ("https://en.wikipedia.org/wiki/George_Washington","")]]])
-  , ("a, b, c, d, e, f, George Washington#SS", [Space,Span ("",["author"],[]) [Str "a",Str ", ",Str "b",Str ", ",Str "c",Span ("",["collapse"],[]) [Str ", ",Str "d",Str ", ",Str "e",Str ", ",Str "f",Str ", ",Link ("",[],[]) [Str "George Washington"] ("https://en.wikipedia.org/wiki/SS_George_Washington","")]]])
+  -- empty/sentinel rendering:
+  , ("", [])
+  , ("N/A", [])
+  , ("N/\8203A", [])
+
+  -- linkify: single linked author gets both the author/cite-author span
+  -- and the author-link `id-not` class:
+  , ("George Washington",
+     citeAuthorSpan [gw])
+
+  -- hash disambiguation: lookup uses the full key, display strips the suffix:
+  , ("George Washington#SS",
+     citeAuthorSpan [gwSS])
+
+  -- same displayed label, two different lookup keys/URLs:
+  , ("George Washington, George Washington#SS",
+     authorSpan [gw, comma, gwSS])
+
+  -- linked author in a non-collapsed multi-author list:
+  , ("a, b, c, George Washington",
+     authorSpan [Str "a", comma, Str "b", comma, Str "c", comma, gw])
+
+  -- collapse boundary: linked author visible before the collapsed tail:
+  , ("George Washington, b, c, d, e",
+     authorSpan [gw, comma, Str "b", comma, Str "c",
+                 collapseSpan [comma, Str "d", comma, Str "e"]])
+
+  -- collapse boundary: linked author hidden inside the collapsed tail:
+  , ("a, b, c, George Washington, e",
+     authorSpan [Str "a", comma, Str "b", comma, Str "c",
+                 collapseSpan [comma, gw, comma, Str "e"]])
      ]
+  where comma :: Inline
+        comma = Str ", "
+        authorSpan :: [Inline] -> [Inline]
+        authorSpan xs = [Space, Span ("", ["author"], []) xs]
+        citeAuthorSpan :: [Inline] -> [Inline]
+        citeAuthorSpan xs = [Space, Span ("", ["author", "cite-author"], []) xs]
+        collapseSpan :: [Inline] -> Inline
+        collapseSpan = Span ("", ["collapse"], [])
+        authorLink :: T.Text -> T.Text -> Inline
+        authorLink label url = Link ("", ["id-not"], []) [Str label] (url, "")
+        gw, gwSS :: Inline
+        gw   = authorLink "George Washington" "https://en.wikipedia.org/wiki/George_Washington"
+        gwSS = authorLink "George Washington" "https://en.wikipedia.org/wiki/SS_George_Washington"
 
 -- infix rewrites
 -- Testing: unique keys, test keys for regexp validity
@@ -76,6 +117,7 @@ cleanAuthorsFixedRewrites = [(". . ", ". "), ("?",""), (",,", ","), (", ,", ", "
                             , (" DO,", ","), ("M. D. MPH", ""), (" ", " "), (" M. D. MBA", ""), (" Esq.", ""), (" Esq,", ",")
                             , (" CAAB,", ","), (" DVM,", ","), (" D.V.M.", ","), (" M. D. M. P. H.", "")
                             , (" M. D. MMM", ""), (" M. D. MHS", "")]
+
 
 -- Config tests: unique list
 authorLinkBlacklist :: [T.Text]
@@ -974,7 +1016,8 @@ canonicalsWithInitials = setLike
   , "Patrick S. Li", "Noah D. Goodman", "Nitish Shirish Keskar", "Clint M. Sergi", "Mary K. Wojczynski"
   , "M. Saiful Bari", "Robert A. Freitas", "Roland G. Fryer", "Leslie Stephen Coles", "Mathew John Wedel"
   , "Ralph S. Baric", "Jack D. Cowan", "Paul C. Bressloff", "Claire N. Spottiswoode", "Clemens L. Winter"
-  , "Hervey M. Cleckley", "Miriam A. Mosing", "Murray B. Stein", "David Samuel Margoliouth", "Guy L. Steele"]
+  , "Hervey M. Cleckley", "Miriam A. Mosing", "Murray B. Stein", "David Samuel Margoliouth", "Guy L. Steele"
+  , "Nabeel S. Qureshi"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -2253,6 +2296,7 @@ authorLinkDB = M.fromList $
     , ("Jouko Saramies", "https://scholar.google.com/scholar?q=Jouko%20Saramies")
     , ("AISI", "https://www.aisi.gov.uk/")
     , ("Piet Hein", "https://en.wikipedia.org/wiki/Piet_Hein_(scientist)")
+    , ("Nabeel S. Qureshi", "https://nabeelqu.co/")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole

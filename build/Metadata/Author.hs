@@ -3,7 +3,7 @@
 {- Metadata.Author.hs: module for managing 'author' metadata & hyperlinking author names in annotations
 Author: Gwern Branwen
 Date: 2024-04-14
-When:  Time-stamp: "2026-05-04 16:53:31 gwern"
+When:  Time-stamp: "2026-05-07 19:07:46 gwern"
 License: CC-0
 
 Authors are useful to hyperlink in annotations, but pose some problems: author names are often ambiguous in both colliding and having many non-canonical versions, are sometimes extremely high frequency & infeasible to link one by one, and there can be a large number of authors (sometimes hundreds or even thousands in some scientific fields).
@@ -157,8 +157,13 @@ authorsInitialize aut = let authors = split ", " aut in
 authorsTruncateString :: String -> String
 authorsTruncateString a = let (before,after) = splitAt 100 a in before ++ (if null after then "" else head $ split ", " after)
 
-authorCollapseTest :: [(String, [Inline])]
-authorCollapseTest = filter (\(i,o) -> authorCollapse i /= o) CA.authorCollapseTestCases
+authorCollapseTest :: [(String, [Inline], [Inline])]
+authorCollapseTest =
+  [ (i, expected, actual)
+  | (i, expected) <- CA.authorCollapseTestCases
+  , let actual = authorCollapse i
+  , actual /= expected
+  ]
 
 -- NOTE: we deliberately keep the displayed authors outside the span collapse abstract to avoid triggering the ordinal size indicator; this is because, unlike 'normal' span collapses, the length of an author list has little to do with the 'quality' or 'interest' of the author list and so it is not useful to know what percentage of the author list has been collapsed. (In fact, the longer the author list, the less interesting any name in it is, and the less you want to look at it. In a physics or GWAS paper with 1,000+ authors, any name but the first few, possibly is near-meaningless for anyone except a tenure committee.) All the reader needs to know is that the rest of the author list exists, and where to find it in the rare event they need it, but not its size.
 authorCollapse :: String -> [Inline]
