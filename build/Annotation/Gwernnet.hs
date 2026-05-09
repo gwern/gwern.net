@@ -211,7 +211,7 @@ dropToClass    i (TagOpen "div" attrs) = case lookup "class" attrs of
                                              Nothing -> True
                                              Just classes -> not (i `isInfixOf` classes)
 dropToClass _ _                               = True
-dropToAbstract = dropToClass "abstract"
+dropToAbstract t = dropToClass "abstract" t || dropToClass "abstract-small" t
 dropToID    i (TagOpen _ attrs) = case lookup "id" attrs of
                                              Nothing -> True
                                              Just id' -> i /= id'

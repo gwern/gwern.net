@@ -91,6 +91,8 @@ linebreakingTransform = walk (breakSlashes . breakEquals)
 -- We preserve existing top-level BlockQuote children and wrap each consecutive run of unquoted
 -- top-level blocks in a BlockQuote, which keeps the rewrite idempotent and avoids generating one
 -- blockquote per paragraph for the common multi-paragraph abstract case.
+--
+-- If you do *not* want the blockquote, use `div.abstract-small` to skip the wrapper addition.
 abstractBlockquotes :: Block -> Block
 abstractBlockquotes (Div attr@(_, classes, _) blocks)
   | "abstract" `elem` classes = Div attr (wrapNonBlockquotes blocks)
