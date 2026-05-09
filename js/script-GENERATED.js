@@ -1280,7 +1280,7 @@ function updateFootnoteTargeting() {
 /*************/
 
 GW.dropcaps = {
-    dropcapBlockSelector: "p[class*='dropcap-']:not(.dropcap-not)",
+    dropcapBlockSelector: "p.has-dropcap",
 
     graphicalDropcapTypes: [
         "dropcat",
@@ -19144,7 +19144,7 @@ addContentInjectHandler("linkifyDropcaps", (eventInfo) => {
  */
 addContentInjectHandler("preventDropcapsOverlap", (eventInfo) => {
     let blocksNotToBeOverlappedSelector = [
-        "p[class*='dropcap-']",
+        "p.has-dropcap",
         "section",
         "blockquote",
         ".collapse",
@@ -19154,7 +19154,7 @@ addContentInjectHandler("preventDropcapsOverlap", (eventInfo) => {
     ].join(", ");
 
     processContainerNowAndAfterBlockLayout(eventInfo.container, (container) => {
-        container.querySelectorAll("p[class*='dropcap-']:not(.dropcap-not)").forEach(dropcapBlock => {
+        container.querySelectorAll("p.has-dropcap").forEach(dropcapBlock => {
             let nextBlock = nextBlockOf(dropcapBlock);
             if (   nextBlock == null
                 || nextBlock.matches(blocksNotToBeOverlappedSelector))

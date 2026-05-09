@@ -1280,7 +1280,7 @@ function updateFootnoteTargeting() {
 /*************/
 
 GW.dropcaps = {
-    dropcapBlockSelector: "p[class*='dropcap-']:not(.dropcap-not)",
+    dropcapBlockSelector: "p.has-dropcap",
 
     graphicalDropcapTypes: [
         "dropcat",

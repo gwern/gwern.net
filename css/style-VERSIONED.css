@@ -3670,18 +3670,18 @@ script {
     or a specific <p>.)
  */
 @media all and (min-width: 650px) {
-    p[class*='dropcap-'].overlap-not {
+    p.has-dropcap.overlap-not {
         min-height: 6em;
     }
-    p[class*='dropcap-'].graphical-dropcap.overlap-not {
+    p.has-dropcap.graphical-dropcap.overlap-not {
         min-height: 8em;
     }
 
-    p[class*='dropcap-'] a.link-dropcap,
-    p[class*='dropcap-'] a.link-dropcap * {
+    p.has-dropcap a.link-dropcap,
+    p.has-dropcap a.link-dropcap * {
         text-shadow: none;
     }
-    p[class*='dropcap-'] span.dropcap {
+    p.has-dropcap span.dropcap {
         font-style: normal;
         font-weight: normal;
         float: left;
