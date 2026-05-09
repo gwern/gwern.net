@@ -201,7 +201,10 @@ function addRecentlyModifiedIconToLink(link) {
 		return;
 
 	//  Inject indicator hook span.
-	link.insertBefore(newElement("SPAN", { class: "recently-modified-icon-hook" }), link.firstChild);
+	link.insertBefore(newElement("SPAN", {
+		class: "recently-modified-icon-hook",
+		title: "New URL! (modified or first seen site-wide in the past month)"
+	}), link.firstChild);
 
 	if (link.classList.contains("has-indicator-hook")) {
 		/*	If the link has an indicator hook, we must inject a text node
