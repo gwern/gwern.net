@@ -180,18 +180,6 @@ else
 
     bold "Compiling…"
     cd ./static/build
-    # WARNINGS=""
-    # if [ "$SLOW" ]; then WARNINGS="-Wall -Werror"; fi
-    # compile () { ghc -O2 $WARNINGS -rtsopts -threaded --make "$@"; }
-    # compile hakyll.hs
-    # if [ -z "$SKIP_DIRECTORIES" ]; then
-    #     compile generateLinkBibliography.hs
-    #     compile generateDirectory.hs; fi
-    # compile preprocess-markdown.hs
-    # compile guessTag.hs &
-    # compile changeTag.hs &
-    # compile checkMetadata.hs &
-    # compile generateSimilarLinks.hs &
     everyNDays 7 && cabal update &
 
     # WARNING: every cabal install generates potentially gigabytes of new installed binaries, and cabal has no good garbage-collection, so we reap it manually once it gets big:

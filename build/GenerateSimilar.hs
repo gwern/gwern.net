@@ -985,7 +985,7 @@ singleShotMaxDistance = 1
 -- This embeds the supplied text, scans the stored corpus, seriates the hits, and
 -- renders a compact list without writing a persistent similar-link fragment.
 --
--- Make it easy to generate a HTML list of recommendations for an arbitrary piece of text. This is useful for eg. getting the list of recommendations while writing an annotation, to whitelist links or incorporate into the annotation directly (freeing up slots in the 'similar' tab for additional links). Used in `preprocess-markdown.hs`.
+-- Make it easy to generate a HTML list of recommendations for an arbitrary piece of text. This is useful for eg. getting the list of recommendations while writing an annotation, to whitelist links or incorporate into the annotation directly (freeing up slots in the 'similar' tab for additional links). Used in `preprocessMarkdown.hs`.
 singleShotRecommendations :: String -> IO T.Text
 singleShotRecommendations html = do
   let emptyMetadata  = M.empty :: Metadata

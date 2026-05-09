@@ -132,9 +132,9 @@ executable hakyll
   main-is: hakyll.hs
   ghc-options: -threaded -rtsopts
 
-executable preprocess-markdown
+executable preprocessMarkdown
   import: exe-common
-  main-is: preprocess-markdown.hs
+  main-is: preprocessMarkdown.hs
 
 executable generateLinkBibliography
   import: exe-common
