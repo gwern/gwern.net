@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-05-01 20:05:02 gwern"
+# When:  Time-stamp: "2026-05-08 14:25:09 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -942,6 +942,8 @@ The hidden mathematics of bathrooms
 ""
 - "https://beauetry.substack.com/p/stuff-women-have-told-me-is-hot?open=false#%C2%A7hands Stuff Women Have Told Me Is “Hot” - by Beau Watson"
 "Stuff Women Have Told Me Is “Hot”"
+- "About this site:"
+"About this site"
 
 """
 

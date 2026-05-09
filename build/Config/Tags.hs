@@ -168,7 +168,7 @@ tagsShort2LongRewrites =
    , ("neurotic", "neuroticism"), ("instability", "neuroticism"), ("instable", "neuroticism"), ("stable", "neuroticism")
    , ("agreeable", "psychology/personality/agreeableness"), ("agreeble", "agreeable")
    , ("intraversion", "extraversion"), ("introversion", "extraversion"), ("introverted", "extraversion"), ("extravert", "extraversion"), ("extroversion", "extraversion"), ("extroverted", "extraversion")
-   , ("O", "openness"), ("C", "conscientiousness"), ("E", "extraversion"), ("A", "agreeableness"), ("N", "neuroticism"), ("IQ", "iq"), ("G", "iq"), ("rg", "genetics/heritable/correlation")
+   , ("O", "openness"), ("C", "conscientiousness"), ("E", "extraversion"), ("A", "agreeableness"), ("N", "neuroticism"), ("IQ", "iq"), ("G", "iq"), ("rg", "genetics/heritable/correlation"), ("genetic-correlation", "genetics/heritable/correlation"), ("genetic/correlation", "genetics/heritable/correlation")
    , ("physic", "physics"), ("pyhsics", "physics")
    , ("marl", "reinforcement-learning/multi-agent"), ("borge", "borges"), ("jlborge", "borges"), ("jlborges", "borges"), ("iq-ses", "iq/ses")
    , ("chemist", "chemistry"), ("chemisty", "chemistry"), ("chemical", "chemistry")

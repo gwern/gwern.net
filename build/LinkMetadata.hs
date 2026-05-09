@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2026-04-20 10:29:33 gwern"
+When:  Time-stamp: "2026-05-08 17:48:53 gwern"
 License: CC-0
 -}
 
@@ -63,6 +63,7 @@ import qualified Config.Metadata.Author as CA (authorLinkDB, authorWhitelist)
 import qualified Config.LinkMetadata as C (badDOISubstrings, badTitleLeadingChars, badTitleTrailingChars, badAuthorSubstrings, allowedNonHttpURLPrefixes, uriValidationExemptInfixes, ignoredMalformedURLPrefixes, duplicateAffiliationWhitelist, youtubeWatchPrefix, twitterHostPrefix, twitterStatusInfix, wikipediaArticleInfix, documentPreviewableExtensions, codePreviewableExtensions, fileViewableExtensions, futureYearSlack, partialAnnotationIgnoredTagCount, partialAnnotationBacklinkThreshold, partialAnnotationSimilarThreshold, annotationURLWarningLength, annotationURLPreviewLength, missingTitleAbstractMinLength, maxPrefetchBytes, annotationClasses, positiveAnnotationClasses)
 
 -- we have 3 kinds of URLs we can look up sizes for: (1) external URLs which have been locally-archived and have a known fixed on-disk size we can easily obtain; due to the subtleties of splitting HTML files, we outsource that to LinkArchive.calculateArchiveSizePercentiles; (2) local files with extensions like PDFs, which we can simply call `safeGetFileSize`; (3) local *essays* with no extensions, but also no ID/anchor fragment, where we append ".md"; (4) local essays with anchors/IDs, which logically we would parse the Markdown to infer what the 'actual' size is of the specified ID but we will punt and just treat it as if the anchor were not there, by deleting it.
+-- TODO: we don't seem to use the percentile information anymore. Should we remove it (and simplify the code/data considerably, and let us remove the span.filesize wrapper too)?
 annotationSizeDB :: Metadata -> ArchiveMetadata -> IO SizeDB
 annotationSizeDB md am =
   do archiveSizes <- calculateArchiveSizePercentiles am :: IO SizeDB

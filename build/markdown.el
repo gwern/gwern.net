@@ -1,7 +1,7 @@
 ;;; markdown.el --- Emacs support for editing Gwern.net
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2026-05-07 12:49:07 gwern"
+;;; When:  Time-stamp: "2026-05-08 18:32:04 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1463,9 +1463,9 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (replace-all "type II error rate" "false negative rate")
        (replace-all "genome-wide significant" "genome-wide statistically-significant")
        (replace-all "genome-wide significance" "genome-wide statistical-significance")
-       (funcall-interactively #'query-replace-regexp " significantly" (query-replace-compile-replacement "\\,(let* ((replacements '((?1 \" statistically-significantly\") (?2 \" importantly\") (?3 \" largely\") (?4 \" substantially\"))) (choice (read-multiple-choice \"Replace: \" replacements))) (second choice))" t) nil begin end)
-       (funcall-interactively #'query-replace-regexp " significant" (query-replace-compile-replacement "\\,(let* ((replacements '((?1 \" statistically-significant\") (?2 \" important\") (?3 \" large\") (?4 \" substantial\"))) (choice (read-multiple-choice \"Replace: \" replacements))) (second choice))" t) nil begin end)
-       (funcall-interactively #'query-replace-regexp " significance" (query-replace-compile-replacement "\\,(let* ((replacements '((?1 \" statistical-significance\") (?2 \" importance\") (?3 \" large\"))) (choice (read-multiple-choice \"Replace: \" replacements))) (second choice))" t) nil begin end)
+       (funcall-interactively #'query-replace-regexp " significantly" (query-replace-compile-replacement "\\,(let* ((replacements '((?1 \" statistically-significantly\") (?2 \" importantly\") (?3 \" largely\") (?4 \" substantially\"))) (choice (read-multiple-choice \"Replace: \" replacements))) (cdr choice))" t) nil begin end)
+       (funcall-interactively #'query-replace-regexp " significant" (query-replace-compile-replacement "\\,(let* ((replacements '((?1 \" statistically-significant\") (?2 \" important\") (?3 \" large\") (?4 \" substantial\"))) (choice (read-multiple-choice \"Replace: \" replacements))) (cdr choice))" t) nil begin end)
+       (funcall-interactively #'query-replace-regexp " significance" (query-replace-compile-replacement "\\,(let* ((replacements '((?1 \" statistical-significance\") (?2 \" importance\") (?3 \" large\"))) (choice (read-multiple-choice \"Replace: \" replacements))) (cdr choice))" t) nil begin end)
        (query-replace "non-significantly" "non-statistically-significantly" nil begin end)
        (query-replace "non-significance" "non-statistical-significance" nil begin end)
        (query-replace "nonsignificant" "non-statistically-significant" nil begin end)
