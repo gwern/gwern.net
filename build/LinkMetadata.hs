@@ -9,7 +9,7 @@ License: CC-0
 -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataSlow, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, walkAndUpdateLinkMetadataGTX, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readGTXFast, writeGTX, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationTransclusionBlock, authorsToCite, cleanAbstractsHTML, sortItemDate, sortItemPathDate, sortItemPathDateModified, sortItemDateModified, sortByDateModified, sortByDatePublished, lookupFallback, sortItemPathDateCreated, addCanPrefetch, annotationSizeDB, addSizeToLinks, generateFileTransclusionBlock) where
+module LinkMetadata (addPageLinkWalk, isPagePath, readLinkMetadata, readLinkMetadataSlow, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, walkAndUpdateLinkMetadataGTX, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readGTXFast, writeGTX, annotateLink, createAnnotations, hasAnnotation, hasAnnotationOrIDInline, generateAnnotationTransclusionBlock, authorsToCite, cleanAbstractsHTML, sortItemDate, sortItemPathDate, sortItemPathDateModified, sortItemDateModified, sortByDateModified, sortByDatePublished, lookupFallback, sortItemPathDateCreated, addCanPrefetch, annotationSizeDB, generateFileTransclusionBlock) where
 
 import Control.Monad (unless, void, when, foldM_, (<=<))
 
@@ -50,7 +50,7 @@ import Query (extractLinksInlines)
 import Tags (listTagsAll, tagsToLinksSpan)
 import Metadata.Format (processDOI, cleanAbstractsHTML, linkCanonicalize, balanced) -- authorsInitialize,
 import Metadata.Date (dateTruncateBad, isDate)
-import Utils (writeUpdatedFile, printGreen, printRed, anyInfix, anyPrefix, anySuffix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, hasClass, parseRawAllClean, hasExtensionS, isLocal, kvDOI, delete, safeGetFileSize, calculateSizeToPercentileMap, addKey, hasKey, kvLookup)
+import Utils (writeUpdatedFile, printGreen, printRed, anyInfix, anyPrefix, anySuffix, replace, anyPrefixT, hasAny, safeHtmlWriterOptions, addClass, hasClass, parseRawAllClean, hasExtensionS, isLocal, kvDOI, delete, safeGetFileSize, calculateSizeToPercentileMap, kvLookup)
 import Annotation (linkDispatcher)
 import Annotation.Gwernnet (gwern)
 import LinkIcon (linkIcon)
@@ -61,13 +61,6 @@ import qualified Config.LinkID as CLID (affiliationAnchors)
 import qualified Config.Misc as CM (fileExtensionToEnglish, minFileSizeWarning, minimumAnnotationLength, currentMonthAgo, todayDayString, currentYear, gtxKeyValueKeyNames)
 import qualified Config.Metadata.Author as CA (authorLinkDB, authorWhitelist)
 import qualified Config.LinkMetadata as C (badDOISubstrings, badTitleLeadingChars, badTitleTrailingChars, badAuthorSubstrings, allowedNonHttpURLPrefixes, uriValidationExemptInfixes, ignoredMalformedURLPrefixes, duplicateAffiliationWhitelist, youtubeWatchPrefix, twitterHostPrefix, twitterStatusInfix, wikipediaArticleInfix, documentPreviewableExtensions, codePreviewableExtensions, fileViewableExtensions, futureYearSlack, partialAnnotationIgnoredTagCount, partialAnnotationBacklinkThreshold, partialAnnotationSimilarThreshold, annotationURLWarningLength, annotationURLPreviewLength, missingTitleAbstractMinLength, maxPrefetchBytes, annotationClasses, positiveAnnotationClasses)
-
-addSizeToLinks :: SizeDB -> Inline -> Inline
-addSizeToLinks sdb x@(Link _ _ (url,_)) = if hasClass "filesize-not" x || hasKey "filesize-bytes" x || hasKey "filesize-percentage" x then x
-                       else case M.lookup (T.unpack url) sdb of
-                              Nothing -> x
-                              Just (byte,percentile) -> addKey ("filesize-bytes", T.pack $ show byte) $ addKey ("filesize-percentage", T.pack $ show percentile) x
-addSizeToLinks _ x = x
 
 -- we have 3 kinds of URLs we can look up sizes for: (1) external URLs which have been locally-archived and have a known fixed on-disk size we can easily obtain; due to the subtleties of splitting HTML files, we outsource that to LinkArchive.calculateArchiveSizePercentiles; (2) local files with extensions like PDFs, which we can simply call `safeGetFileSize`; (3) local *essays* with no extensions, but also no ID/anchor fragment, where we append ".md"; (4) local essays with anchors/IDs, which logically we would parse the Markdown to infer what the 'actual' size is of the specified ID but we will punt and just treat it as if the anchor were not there, by deleting it.
 annotationSizeDB :: Metadata -> ArchiveMetadata -> IO SizeDB
@@ -95,6 +88,16 @@ annotationSizeDB md am =
      let sizes = essaySizes `M.union` archiveSizes `M.union` fileSizes
 
      return sizes
+
+filesizeSpan :: SizeDB -> FilePath -> [Inline]
+filesizeSpan sdb u =
+  case M.lookup u sdb of
+    Nothing -> []
+    Just (bytes, percentile) ->
+      [Span ("", ["filesize"], [])
+        [Span ("", ["filesize-bytes"], []) [Str (T.pack $ show bytes)],
+         Space,
+         Span ("", ["filesize-percentage"], []) [Str (T.pack $ show percentile)]]]
 
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
 -- we exclude several directories (doc/, static/) entirely; a Gwern.net page is then any
@@ -412,7 +415,8 @@ writeAnnotationFragments am md sizes writeOnlyMissing =
      -- second pass: process all possible annotations. (This is awkward but without building in a whole dependency system or a global database or keeping the per-annotation processing, it's hard to see how to ensure no race condition with the annotation checking.)
      mapM_ (uncurry $ writeAnnotationFragment am md sizes writeOnlyMissing) ml
 writeAnnotationFragment :: ArchiveMetadata -> Metadata -> SizeDB -> Bool -> Path -> MetadataItem -> IO ()
-writeAnnotationFragment _ _ _ _ _ ("","","",_,[],[],"") = return ()
+writeAnnotationFragment _ _ sdb _ u ("","","",_,[],[],"")
+  | M.lookup (linkCanonicalize u) sdb == Nothing = return ()
 writeAnnotationFragment am md sdb onlyMissing u i@(a,b,c,dc,kvs,ts,abst) =
       if (("/index#" `isInfixOf` u && "/index#abstract" /= u) && ("#section" `isInfixOf` u || "-section" `isSuffixOf` u)) ||
          anyInfix u ["/index#see-also", "/index#links", "/index#miscellaneous"] then return ()
@@ -433,8 +437,10 @@ writeAnnotationFragment am md sdb onlyMissing u i@(a,b,c,dc,kvs,ts,abst) =
                   -- How do we decide how much miscellaneous metadata is enough? it is currently rather ad hoc. Currently, we treat each one as a kind of binary threshold, and if any are True, the partial status is true
                   blN    <- getBackLinkCount u'
                   slN    <- getSimilarLinkCount u'
+                  let filesize = filesizeSpan sdb u'
                   let partialScoring = 0 < sum [length (drop C.partialAnnotationIgnoredTagCount ts),
                                                  length abst,
+                                                 if null filesize then 0 else 1,
                                                  if blN > C.partialAnnotationBacklinkThreshold then 1 else 0,
                                                  if slN > C.partialAnnotationSimilarThreshold then 1 else 0]
 
@@ -444,11 +450,10 @@ writeAnnotationFragment am md sdb onlyMissing u i@(a,b,c,dc,kvs,ts,abst) =
                       -- obviously no point in trying to reformatting date/DOI, so skip those
                       let abstractHtml = typesetHtmlField abst
                       -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs; but how to fix without circular dependencies…
-                      let pandoc = Pandoc nullMeta $ generateAnnotationBlock md am (u', Just (titleHtml,authorHtml,c,dc,kvs,ts,abstractHtml)) bl sl lb
+                      let pandoc = Pandoc nullMeta $ generateAnnotationBlock md am sdb (u', Just (titleHtml,authorHtml,c,dc,kvs,ts,abstractHtml)) bl sl lb
                       unless (null abst) $ void $ createAnnotations md pandoc
                       pandoc' <- do let p = walk (hasAnnotation md) $
                                             walk (linkIcon . linkLive . nominalToRealInflationAdjuster) $
-                                            walk (addSizeToLinks sdb) $
                                                   convertInterwikiLinks $
                                                   walk addPageLinkWalk $
                                                   parseRawAllClean pandoc
@@ -655,8 +660,8 @@ wasAnnotated x = error $ "LinkMetadata.wasAnnotated: tried to get annotation sta
 isAnnotatedInline :: Inline -> Bool
 isAnnotatedInline x = any (`hasClass` x) C.positiveAnnotationClasses
 
-generateAnnotationBlock :: Metadata -> ArchiveMetadata -> (FilePath, Maybe MetadataItem) -> FilePath -> FilePath -> FilePath -> [Block]
-generateAnnotationBlock md am (f, ann) blp slp lb =
+generateAnnotationBlock :: Metadata -> ArchiveMetadata -> SizeDB -> (FilePath, Maybe MetadataItem) -> FilePath -> FilePath -> FilePath -> [Block]
+generateAnnotationBlock md am sdb (f, ann) blp slp lb =
   case ann of
      Nothing                 -> nonAnnotatedLink
      -- Just ("",   _,_,_,_,_,_)  -> nonAnnotatedLink
@@ -692,13 +697,14 @@ generateAnnotationBlock md am (f, ann) blp slp lb =
            abst' = if null abst || anyPrefix abst ["<p>", "<ul", "<ol", "<h2", "<h3", "<bl", "<figure", "<div"] then abst else "<p>" ++ abst ++ "</p>"
        in
          map Para
-          [[link]
+          ([[link]
          , author
          , date
-         , tags
-         , backlink
+         , tags] ++
+         filesizeLines ++
+          [backlink
          , similarlink
-         , linkBibliography] ++
+         , linkBibliography]) ++
          (if null abst then []
                   else [BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst') `T.append`
                                                    if (blp++slp++lb)=="" then ""
@@ -710,8 +716,12 @@ generateAnnotationBlock md am (f, ann) blp slp lb =
                        ]) ++
                 generateFileTransclusionBlock am (f, x)
     where
+      filesize = filesizeSpan sdb f
+      filesizeLines = if null filesize then [] else [filesize]
+
       nonAnnotatedLink :: [Block]
       nonAnnotatedLink = [Para [Link nullAttr [Str (T.pack f)] (T.pack f, "")]] ++
+                         map Para filesizeLines ++
                          generateFileTransclusionBlock am (f, ("",undefined,undefined,undefined,undefined,undefined,undefined))
 -- generate an 'annotation block' except we leave the actual heavy-lifting of 'generating the annotation' to transclude.js, which will pull the popups annotation instead dynamically/lazily at runtime. As such, this is a simplified version of `generateAnnotationBlock`.
 generateAnnotationTransclusionBlock :: ArchiveMetadata -> (FilePath, MetadataItem) -> [Block]

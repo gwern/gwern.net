@@ -44,7 +44,7 @@ import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks)
 import LinkArchive (localizeLink, readArchiveMetadataAndCheck, ArchiveMetadata)
 import LinkBacklink (getBackLinkCheck, getLinkBibLinkCheck, getSimilarLinkCheck)
-import LinkMetadata (addPageLinkWalk, readLinkMetadataSlow, writeAnnotationFragments, createAnnotations, hasAnnotation, addCanPrefetch, annotationSizeDB, addSizeToLinks)
+import LinkMetadata (addPageLinkWalk, readLinkMetadataSlow, writeAnnotationFragments, createAnnotations, hasAnnotation, addCanPrefetch, annotationSizeDB)
 import LinkMetadataTypes (Metadata, SizeDB)
 import Tags (tagsToLinksDiv)
 import Typography (linebreakingTransform, typographyTransformTemporary, titlecaseInline, completionProgressHTML)
@@ -122,8 +122,8 @@ main =
                                 indexpM <- getMetadataField ident "index"
                                 let indexp = fromMaybe "" indexpM
                                 unsafeCompiler $ validateYAMLMetadata hakyllMeta (toFilePath ident)
-                                pandocCompilerWithTransformM readerOptions woptions (unsafeCompiler . pandocTransform meta am sizes indexp)
-                                  >>= loadAndApplyTemplate "static/template/default.html" (postCtx meta am sizes indexp timestamp)
+                                pandocCompilerWithTransformM readerOptions woptions (unsafeCompiler . pandocTransform meta am indexp)
+                                  >>= loadAndApplyTemplate "static/template/default.html" (postCtx meta am indexp timestamp)
                                   >>= imgUrls
 
                  let static        = route idRoute >> compile copyFileCompiler
@@ -227,23 +227,23 @@ authorEscapedField :: String -> Context String
 authorEscapedField d = field d $ \item ->
  escapeHtml . T.unpack . rawMarkdown2Utext . T.pack <$> lookupAuthorCanonical item
 
-authorHTMLField :: Metadata -> ArchiveMetadata -> SizeDB -> String -> String -> Context String
-authorHTMLField md am sizes indexp d = field d $ \item -> do
+authorHTMLField :: Metadata -> ArchiveMetadata -> String -> String -> Context String
+authorHTMLField md am indexp d = field d $ \item -> do
  author <- lookupAuthorCanonical item
  unsafeCompiler $ do
   let authorPandoc = Pandoc nullMeta [Plain $ Author.authorsLinkify $ T.pack author]
-  authorPandoc' <- pandocTransform md am sizes indexp authorPandoc
+  authorPandoc' <- pandocTransform md am indexp authorPandoc
   case runPure $ writeHtml5String safeHtmlWriterOptions authorPandoc' of
    Left e -> error ("Failed to compile author metadata to HTML fragment: " ++ show item ++ show author ++ show e)
    Right html -> return $ deleteMany ["<p>", "</p>", "&lt;p&gt;", "&lt;/p&gt;"] $ T.unpack $ T.strip html
 
-postCtx :: Metadata -> ArchiveMetadata -> SizeDB -> String -> String -> Context String
-postCtx md am sizes indexp rts =
+postCtx :: Metadata -> ArchiveMetadata -> String -> String -> Context String
+postCtx md am indexp rts =
     fieldsTagPlain md <>
     fieldsTagHTML  md <>
     authorPlainField "author" <>
     authorEscapedField "author-escaped" <>
-    authorHTMLField md am sizes indexp "author-HTML" <>
+    authorHTMLField md am indexp "author-HTML" <>
     titlePlainField "title-plain" <>
     descField True "title" "title-escaped" <>
     descField False "title" "title" <>
@@ -391,8 +391,8 @@ descField escape d d' = field d' $ \item -> do
                                Left _          -> noResult "no description field"
                                Right finalDesc -> return $ deleteMany ["<p>", "</p>", "&lt;p&gt;", "&lt;/p&gt;"] finalDesc
 
-pandocTransform :: Metadata -> ArchiveMetadata -> SizeDB -> String -> Pandoc -> IO Pandoc
-pandocTransform md adb sizes indexp' p =
+pandocTransform :: Metadata -> ArchiveMetadata -> String -> Pandoc -> IO Pandoc
+pandocTransform md adb indexp' p =
                            -- tag-directories/link-bibliographies special-case: we don't need to run all the heavyweight passes, so we check to see if we are processing a document with 'index: True' set in the YAML metadata, and if we are, we slip several of the rewrite transformations:
   do
      let duplicateHeaders = duplicateTopHeaders p in
@@ -405,7 +405,6 @@ pandocTransform md adb sizes indexp' p =
      unless indexp $ createAnnotations md pw
      let pb = addPageLinkWalk pw  -- we walk local link twice: we need to run it before 'hasAnnotation' so essays don't get overridden, and then we need to add it later after all of the archives have been rewritten, as they will then be local links
      pbt <- fmap typographyTransformTemporary . walkM (localizeLink adb) $ walk (hasAnnotation md)
-              $ walk (addSizeToLinks sizes)
               $ if indexp then pb else
                 walk (map nominalToRealInflationAdjuster) pb
      let pbth = wrapInParagraphs $ addPageLinkWalk $ walk headerSelflinkAndSanitize pbt
