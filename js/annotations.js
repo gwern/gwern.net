@@ -285,9 +285,10 @@ Annotations = { ...Annotations,
 
 		//	File size.
 		let filesizeHTML = null;
-		if (link.dataset.filesizePercentage > "") {
+		let filesizeElement = responseDocument.querySelector(".filesize-bytes");
+		if (filesizeElement) {
 			let units = [ "kb", "mb", "gb", "tb", "pb", "eb" ];
-			let filesize = parseInt(link.dataset.filesizeBytes);
+			let filesize = parseInt(filesizeElement.textContent);
 			let filesizeUnits = "b";
 			while (filesize > 1000) {
 				filesize = Math.round(filesize / 1000);

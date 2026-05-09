@@ -258,6 +258,10 @@ function removeRecentlyModifiedIconFromLink(link) {
 addRewriteProcessor("enableRecentlyModifiedLinkIcons", (blockContainer) => {
     GWLog("enableRecentlyModifiedLinkIcons", "rewrite-initial.js", 2);
 
+	//	Do not do this on new pages.
+	if (blockContainer.getRootNode().body.classList.contains("page-created-recently"))
+		return;
+
     blockContainer.querySelectorAll("a.link-modified-recently:not(.in-list)").forEach(addRecentlyModifiedIconToLink);
 });
 
@@ -267,6 +271,10 @@ addRewriteProcessor("enableRecentlyModifiedLinkIcons", (blockContainer) => {
  */
 addRewriteProcessor("enableRecentlyModifiedLinkListIcons", (blockContainer) => {
     GWLog("enableRecentlyModifiedLinkListIcons", "rewrite-initial.js", 2);
+
+	//	Do not do this on new pages.
+	if (blockContainer.getRootNode().body.classList.contains("page-created-recently"))
+		return;
 
     blockContainer.querySelectorAll("li a.link-modified-recently").forEach(link => {
         let inList = false;
