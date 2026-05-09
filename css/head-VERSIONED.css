@@ -2438,7 +2438,7 @@ body.page-index #markdownBody #notable {
         grid-template-columns: 1fr 1fr;
         grid-column-gap: 2em;
     }
-    body.page-index #markdownBody .abstract,
+    body.page-index #markdownBody #abstract,
     body.page-index #markdownBody hr,
     div#new-popular-notable hr {
         grid-column-start: 1;
@@ -2471,7 +2471,7 @@ body.page-index #markdownBody #notable {
         body.page-index #markdownBody #notable {
             display: block;
         }
-        body.page-index #markdownBody .abstract {
+        body.page-index #markdownBody #abstract {
             max-width: calc(var(--GW-body-max-width) - 2 * var(--GW-body-side-padding));
             margin-left: 20ch;
         }
