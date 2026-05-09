@@ -1004,7 +1004,7 @@ function aggregateMarginNotesInDocument(doc) {
             let marginNoteBlockContainerElementsSelector = [
                 "section",
                 ".markdownBody",
-                ".abstract-collapse:not(.abstract)",
+                ".abstract-collapse:not(.abstract):not(.abstract-small)",
                 ".collapse-content-wrapper",
                 ".annotation-abstract"
             ].join(", ");
@@ -17398,7 +17398,7 @@ addContentInjectHandler("hyphenate", (eventInfo) => {
     let selector = (GW.isMobile()
                     ? ".markdownBody p"
                     : (eventInfo.document == document
-                       ? ".sidenote p, .abstract blockquote p"
+                       ? ".sidenote p, .abstract blockquote p, .abstract-small p"
                        : "p"));
     let blocks = eventInfo.container.querySelectorAll(selector);
     Hyphenopoly.hyphenators.HTML.then((hyphenate) => {
@@ -19749,7 +19749,7 @@ function newDisclosureButton(options) {
 
 /****************************************************************************/
 /*	Before preparing collapse blocks, rectify collapse abstract tag mismatch, 
-	namely cases where a div.abstract (or a section.abstract, etc.) has a 
+	namely cases where a div.collapse (or a section.collapse, etc.) has a 
 	span.abstract-collapse; also fix erroneous HTML structure caused by 
 	well-meaning but misguided Pandoc HTML structure rectification (namely, 
 	wrapping a span.collapse in a <p>) applied to such cases.
@@ -19856,7 +19856,7 @@ addContentLoadHandler("prepareCollapseBlocks", (eventInfo) => {
 				without this being known in advance, so may not have the
 				.abstract-collapse class, as they should.
 			 */
-			let collapseAbstract = collapseWrapper.querySelector(".collapse > .abstract");
+			let collapseAbstract = collapseWrapper.querySelector(".collapse > .abstract, .collapse .abstract-small");
 			if (collapseAbstract?.closest(".collapse") == collapseWrapper)
 				collapseAbstract.classList.add("abstract-collapse");
 
@@ -20421,7 +20421,7 @@ function expandLockCollapseBlock(collapseBlock) {
 	Array.from(collapseBlock.children).filter(x => x.matches([
 		".collapse-content-outer-wrapper",
 		".collapse-content-wrapper",
-		".abstract-collapse:not(.abstract)"
+		".abstract-collapse:not(.abstract):not(.abstract-small)"
 	].join(", "))).forEach(unwrap);
 	
 	//	Unwrap collapse block itself if it’s a bare wrapper.
