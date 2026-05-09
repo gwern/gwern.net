@@ -1,14 +1,13 @@
-;;; markdown.el --- Emacs support for editing Gwern.net
+;;; markdown.el --- Emacs support for editing Gwern.net  -*- lexical-binding: t -*-
+;;;
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2026-05-08 18:32:04 gwern"
+;;; When:  Time-stamp: "2026-05-09 12:57:16 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
 ;;; Helper files for editing Markdown, HTML, and HTML-in-GTX, particularly reformatting & editing annotations in the Gwern.net house style.
 ;;; Additional functions include error-checking and prettifying confusable characters like dashes.
-
-;; -*- lexical-binding: t -*-
 
 ;;; Code:
 
@@ -78,18 +77,18 @@
               ))))
 
 ;I like unusual semantic punctuation!
-(defun interrobang () (interactive (insert-char ?‽ 1))) ;; interrobang: ‽ for replacing "?!"\"!?"
-(defun irony       () (interactive (insert-char ?⸮ 1))) (defalias 'sarcasm 'irony) ;; sarcasm mark: ⸮ (better than '</sarcasm>' or '[!]', anyway)
-(defun bitcoin     () (interactive (insert-char ?₿ 1)))
-(defun en-dash     () (interactive (insert-char ?– 1)))
-(defun em-dash     () (interactive (insert-char ?— 1)))
-(defun arrow-right () (interactive (insert-char ?→ 1)))
-(defun arrow-left  () (interactive (insert-char ?← 1)))
-(defun arrow-both  () (interactive (insert-char ?↔ 1)))
-(defun arrow-up    () (interactive (insert-char ?↑ 1)))
-(defun arrow-down  () (interactive (insert-char ?↓ 1)))
-(defun interpunct  () (interactive (insert-char ?• 1)))
-(defun g-gwern     () (interactive (insert-char ?𝔊 1))) ; 'MATHEMATICAL FRAKTUR CAPITAL G'
+(defun interrobang () (interactive) (insert-char ?‽ 1)) ;; interrobang: ‽ for replacing "?!"\"!?"
+(defun irony       () (interactive) (insert-char ?⸮ 1)) (defalias 'sarcasm 'irony) ;; sarcasm mark: ⸮ (better than '</sarcasm>' or '[!]', anyway)
+(defun bitcoin     () (interactive) (insert-char ?₿ 1))
+(defun en-dash     () (interactive) (insert-char ?– 1))
+(defun em-dash     () (interactive) (insert-char ?— 1))
+(defun arrow-right () (interactive) (insert-char ?→ 1))
+(defun arrow-left  () (interactive) (insert-char ?← 1))
+(defun arrow-both  () (interactive) (insert-char ?↔ 1))
+(defun arrow-up    () (interactive) (insert-char ?↑ 1))
+(defun arrow-down  () (interactive) (insert-char ?↓ 1))
+(defun interpunct  () (interactive) (insert-char ?• 1))
+(defun g-gwern     () (interactive) (insert-char ?𝔊 1)) ; 'MATHEMATICAL FRAKTUR CAPITAL G'
 
 (defun replace-all (original replacement)
   "Do regexp search-and-replace in the current buffer of ORIGINAL to REPLACEMENT.
@@ -237,8 +236,9 @@ START and END specify the region to operate on."
 ; Then 's-' in `kbd` notation is 'Super-'. (I avoid use of 'Compose' key because I find the shortcuts highly unintuitive: <https://en.wikipedia.org/wiki/Compose_key#Common_compose_combinations>.)
 ; TODO: for some reason this collides with XMonad keybindings on the Win key, despite that being assigned to 'Super'/mod4Mask and so in theory not being an issue with these Super keys?
 (defun super-insert (key char)
-  "Bind Super (H-) plus KEY to insert CHAR."
-  (global-set-key (kbd (concat "s-" key)) (lambda () (interactive) (insert char)))  )
+  "Bind Super (s-) plus KEY to insert CHAR."
+  (global-set-key (kbd (concat "s-" key))
+                  `(lambda () (interactive) (insert ,char))))
 (super-insert "\"" "‘") ; eg equivalent to `(global-set-key (kbd "s-'") (lambda () (interactive) (insert "‘")))
 (super-insert "'" "’")
 (super-insert ";" "“")
@@ -2579,26 +2579,29 @@ Runs ORIG-FUN on ARGS to create the selected text (ie. original `gui-get-selecti
              '("^~~~" . "^~~~"))
 (add-to-list 'ispell-skip-region-alist '("#[a-zA-Z]+" forward-word))
 
-;flycheck mode: meant for code errors, but useful for prose linting & Markdown syntax checking as well
-;Supported languages: <https://www.flycheck.org/en/latest/languages.html#flycheck-languages>
-;Currently used CLI: 'proselint'/'mdl' for text Markdown writing; 'hlint'/'ghc' for Haskell; 'tidy' for HTML, 'flake8' (`apt-get install python-flake8`) for Python; 'jshint' (`npm install --prefix ~/src/ jshint`, configured in ~/.jshintrc) for JavaScript
-; NOTE: aside from the 'flycheck' package (from MELPA), you also need a CLI tool to do the actual checking, either <https://github.com/markdownlint/markdownlint/> (`mdl`, Ruby) or <https://github.com/DavidAnson/markdownlint> + <https://github.com/igorshubovych/markdownlint-cli> (`markdown-lint-cli`, a Node.js clone/fork)
-; (load "~/src/flycheck/flycheck.el") ; the MELPA package is out of date and does not have either Markdown or proselint support as of 18 Nov 2019, so we have to load from the Github repo
-(require 'flycheck)
-(defun my/flycheck-disable-for-gtx-files ()
-  "Disable flycheck for files ending with '.gtx'."
-  (let ((filename (buffer-file-name)))
-    (when (and filename (string-match "\\.gtx\\'" filename))
-      (flycheck-mode -1))))
-
-(add-hook 'after-init-hook #'global-flycheck-mode)
-(add-hook 'flycheck-before-syntax-check-hook #'my/flycheck-disable-for-gtx-files)
-; syntax checkers must be whitelisted/enabled individually, so turn on proselint & mdl
-(add-to-list 'flycheck-checkers 'proselint) ; configured in ~/.proselintrc
-(add-to-list 'flycheck-checkers 'markdown-mdl) ; configured in ~/.mdlrc ; list & explanation of rules: <https://github.com/markdownlint/markdownlint/blob/master/docs/RULES.md>
+                                        ;flycheck mode: meant for code errors, but useful for prose linting & Markdown syntax checking as well
+                                        ;Supported languages: <https://www.flycheck.org/en/latest/languages.html#flycheck-languages>
+                                        ;Currently used CLI: 'proselint'/'mdl' for text Markdown writing; 'hlint'/'ghc' for Haskell; 'tidy' for HTML, 'flake8' (`apt-get install python-flake8`) for Python; 'jshint' (`npm install --prefix ~/src/ jshint`, configured in ~/.jshintrc) for JavaScript
+                                        ; NOTE: aside from the 'flycheck' package (from MELPA), you also need a CLI tool to do the actual checking, either <https://github.com/markdownlint/markdownlint/> (`mdl`, Ruby) or <https://github.com/DavidAnson/markdownlint> + <https://github.com/igorshubovych/markdownlint-cli> (`markdown-lint-cli`, a Node.js clone/fork)
+                                        ; (load "~/src/flycheck/flycheck.el") ; the MELPA package is out of date and does not have either Markdown or proselint support as of 18 Nov 2019, so we have to load from the Github repo
+(when (require 'flycheck nil 'noerror)
+  (eval-when-compile (require 'flycheck nil 'noerror))
+  (require 'flycheck)
+  (defun my/flycheck-disable-for-gtx-files ()
+    "Disable flycheck for files ending with '.gtx' due to filesize/length."
+    (let ((filename (buffer-file-name)))
+      (when (and filename (string-match "\\.gtx\\'" filename))
+        (flycheck-mode -1))))
+  (add-hook 'after-init-hook #'global-flycheck-mode)
+  (add-hook 'flycheck-before-syntax-check-hook #'my/flycheck-disable-for-gtx-files)
+                                        ; syntax checkers must be whitelisted/enabled individually, so turn on proselint & mdl
+  (add-to-list 'flycheck-checkers 'proselint) ; configured in ~/.proselintrc
+  (add-to-list 'flycheck-checkers 'markdown-mdl) ; configured in ~/.mdlrc ; list & explanation of rules: <https://github.com/markdownlint/markdownlint/blob/master/docs/RULES.md>
+  )
 
 ; 'langtool': a Java tool for grammar checking: <https://github.com/mhayashi1120/Emacs-langtool> <https://languagetool.org/dev>
 (when (require 'langtool nil 'noerror)
+  (eval-when-compile (require 'langtool nil 'noerror))
   (setq langtool-language-tool-jar "~/bin/bin/LanguageTool-4.7/languagetool-commandline.jar")
   (setq langtool-default-language "en-US")
                                         ; <http://wiki.languagetool.org/command-line-options> <https://community.languagetool.org/rule/list> ; can look up in there or run a command like

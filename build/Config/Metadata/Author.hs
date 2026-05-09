@@ -963,6 +963,7 @@ canonicals = M.fromList $ setLike
   , ("B. Mazur", "Barry Mazur")
   , ("Guy L. Steele Junior", "Guy L. Steele")
   , ("Tim Gowers", "Timothy Gowers")
+  , ("LinchZhang", "Linch")
   ]
 
 -- tests: unique
@@ -2299,6 +2300,8 @@ authorLinkDB = M.fromList $
     , ("Piet Hein", "https://en.wikipedia.org/wiki/Piet_Hein_(scientist)")
     , ("Nabeel S. Qureshi", "https://nabeelqu.co/")
     , ("Robert E. Forsythe", "https://en.wikipedia.org/wiki/Robert_E._Forsythe")
+    , ("Derek Sivers", "https://sive.rs/")
+    , ("Julia Evans", "https://jvns.ca/")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3601,4 +3604,4 @@ authorWpLinkDB = setLike
     , "Alfred Bester", "Martyn Thomas", "Nina Vasan", "Max H. Bazerman", "William Yang Wang", "Larry Tesler", "Peter J. Huber"
     , "Greg Corrado", "Philip Wheelwright", "Cristian Canton Ferrer", "Ian Kershaw", "David Samuel Margoliouth"
     , "Peter Filkins", "Marta Serra-Garcia", "Martin Fleming", "Barry Mazur", "Weiqi Zhang", "Guy L. Steele"
-    , "Carlos M. Herrera"]
+    , "Carlos M. Herrera", "William Fleeson", "Matt Levine", "Andrew Sullivan", "Anne Helen Petersen"]

@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2026-05-07 17:17:20 gwern"
+# When:  Time-stamp: "2026-05-09 19:55:18 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -38,6 +38,27 @@ _upload() {
   FILENAME="$(echo "$1" | tr '[:upper:]' '[:lower:]' | sed -e 's/\.jpeg$/.jpg/')"
   mv "$1" "$FILENAME" 2> /dev/null || true
   (locate "$FILENAME" &)
+
+  # Apple still does not consistently support Ogg/Vorbis, which is why OGG is banned from Gwern.net.
+  # So we need to  convert `.ogg` uploads to MP3 before the extension-whitelist check below (which it'd fail).
+  # This ensures a first-ever `.ogg` upload does not get rejected simply because the source extension is intentionally transient.
+  if [[ $FILENAME == *.ogg ]]; then
+    command -v ffmpeg > /dev/null 2>&1 || { red "ffmpeg is required to convert OGG uploads to MP3."; return 7; }
+    MP3_FILENAME="${FILENAME%.ogg}.mp3"
+    if [[ -e "$MP3_FILENAME" ]]; then
+      red "Error: Refusing to overwrite existing '$MP3_FILENAME' while converting '$FILENAME' to MP3."
+      return 7
+    fi
+    if ffmpeg -nostdin -hide_banner -loglevel error -i "$FILENAME" -map_metadata -1 -vn -codec:a libmp3lame -q:a 2 -id3v2_version 3 "$MP3_FILENAME"; then
+      rm -- "$FILENAME"
+      FILENAME="$MP3_FILENAME"
+      bold "Converted OGG to MP3 for Apple compatibility: $MP3_FILENAME"
+    else
+      red "Failed to convert OGG to MP3: $FILENAME"
+      rm -f -- "$MP3_FILENAME"
+      return 7
+    fi
+  fi
 
   ## Check whether there are any files with the same extension as the upload candidate; if not, it is likely erroneous in some way and we bail out to the user:
   ## TODO: allow an override `--force` option: in the case of large-files, we have no easy way to 'manually' add files, we're supposed to always go through `upload.sh`.

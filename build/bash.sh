@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-05-08 20:45:37 gwern"
+# When:  Time-stamp: "2026-05-09 14:33:29 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -38,7 +38,7 @@ yellow () {
   # \e[0m resets all attributes
   echo -e "\e[33m$@\e[0m"
 }
-## function to wrap checks and print red-highlighted warning if non-zero output (self-documenting):
+## function to wrap checks and print red-highlighted warning if non-zero output (self-documenting); if there is output and it takes >30s, the total elapsed time will be printed as well to help locate sub-optimal codes or hotspots in scripts:
 wrap () {
     local -ir _wrap_start=$SECONDS
     local _wrap_output
@@ -49,13 +49,13 @@ wrap () {
 
     if [[ -n "$_wrap_output" ]]; then
         echo -n "Begin: "; red "$_wrap_warn"
-        echo -e "$_wrap_output"
+        printf '%s\n' "$_wrap_output"
         echo -n "End: "; red "$_wrap_warn"
-    fi
 
-    local -ir _wrap_seconds=$((SECONDS - _wrap_start))
-    if (( _wrap_seconds >= ${ELAPSED_MIN:-30} )); then
-        printf '[%ds] %s\n' "$_wrap_seconds" "$_wrap_warn" >&2
+        local -ir _wrap_seconds=$((SECONDS - _wrap_start))
+        if (( _wrap_seconds >= ${ELAPSED_MIN:-30} )); then
+            printf '[%ds] %s\n' "$_wrap_seconds" "$_wrap_warn" >&2
+        fi
     fi
 
     return 0
