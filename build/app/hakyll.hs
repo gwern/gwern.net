@@ -4,7 +4,7 @@
 {- Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2026-05-03 17:52:51 gwern"
+When: Time-stamp: "2026-05-08 19:34:52 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -269,13 +269,32 @@ postCtx md am indexp rts =
     progressField "confidence" "confidence-plus-progress" <>
     constField "confidence" "log" <>
     constField "importance" "0" <>
-    constField "css-extension" "dropcaps-de-zs" <>
+    pageBodyClassesField     <> -- CSS classes shared by <body> and metadata
+    constField "css-extension" defaultCssExtension <>
     constField "thumbnail-css" "" <> -- constField "thumbnail-css" "outline-not" <> -- TODO: all uses of `thumbnail-css` should be migrated to GTX
     imageDimensionWidth "thumbnail-height" <>
     imageDimensionWidth "thumbnail-width" <>
     -- for use in templating, `<body class="page-$safe-url$">`, allowing page-specific CSS like `.page-sidenote` or `.page-slowing-moores-law`:
     escapedTitleField "safe-url" <>
     (mapContext (\p -> urlEncode $ concatMap (\t -> if t=='/'||t==':' then urlEncode [t] else [t]) ("/" ++ replaceChecked ".md" ".html" p)) . pathField) "escaped-url" -- for use with backlinks ie 'href="/metadata/annotation/backlink/$escaped-url$"', so 'bitcoin-is-worse-is-better.md' → '/metadata/annotation/backlink/%2Fbitcoin-is-worse-is-better.html', 'note/faster.md' → '/metadata/annotation/backlink/%2Fnote%2Ffaster.html'
+
+pageBodyClassesField :: Context String
+pageBodyClassesField = field "page-body-classes" $ \item -> do
+    cssExtensionMaybe <- getMetadataField (itemIdentifier item) "css-extension"
+    pageRecentlyCreated <- isPageCreatedRecently item
+    let cssExtension = fromMaybe defaultCssExtension cssExtensionMaybe
+    return $ unwords $ filter (not . null) $
+        [ "page-" ++ safeURLClass (toFilePath $ itemIdentifier item)
+        , cssExtension
+        ] ++ [pageCreatedRecentlyClass | pageRecentlyCreated]
+  where safeURLClass :: FilePath -> String
+        safeURLClass = map toLower . replace "." "" . replace "/" "-" . delete ".md"
+
+defaultCssExtension :: String
+defaultCssExtension = "dropcaps-de-zs"
+
+pageCreatedRecentlyClass :: String
+pageCreatedRecentlyClass = "page-created-recently"
 
 lookupTags :: Metadata -> Item a -> Compiler (Maybe [String])
 lookupTags m item = do
@@ -349,15 +368,19 @@ progressField d d' = field d' $ \item -> do
 
 -- for 'page-created-recently' CSS body switch (eg. disable the recently-modified black-star link highlighting, which is a bad idea if many links on a page are 'new')
 -- $page-created-recently$ → " page-created recently" when the page is ≤ 90 d old, else ""; we always insert this into `default.html`, we just return either a space-prefixed string (so it can be concatenated) or an empty string, and we skip trying to do a conditional at all.
-isNewField :: Context String
-isNewField = field "page-created-recently" $ \item -> do
+isPageCreatedRecently :: Item a -> Compiler Bool
+isPageCreatedRecently item = do
     mCreated <- getMetadataField (itemIdentifier item) "created"
     case mCreated of
-      Nothing -> pure ""
-      Just created ->  let today   = C.todayDayStringUnsafe
-                           recent  = if created == "N/A" || created == "\"N/A\"" || created == "'N/A'" then False else
-                             maybe False (\c -> not (C.isOlderThan C.isNewWithinNDays c today)) mCreated
-                       in pure $ if recent then " page-created-recently" else ""
+      Nothing -> pure False
+      Just created -> do
+        let createdIsNA = created == "N/A" || created == "\"N/A\"" || created == "'N/A'"
+        pure $ not createdIsNA && maybe False (\c -> not (C.isOlderThan C.isNewWithinNDays c C.todayDayStringUnsafe)) mCreated
+
+isNewField :: Context String
+isNewField = field "page-created-recently" $ \item -> do
+    recent <- isPageCreatedRecently item
+    pure $ if recent then " " ++ pageCreatedRecentlyClass else ""
 
 dateRangeHTMLField :: String -> Context String
 dateRangeHTMLField d = field d $ \item -> do
