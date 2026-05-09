@@ -2593,7 +2593,7 @@ addContentInjectHandler("hyphenate", (eventInfo) => {
     let selector = (GW.isMobile()
                     ? ".markdownBody p"
                     : (eventInfo.document == document
-                       ? ".sidenote p, .abstract blockquote p"
+                       ? ".sidenote p, .abstract blockquote p, .abstract-small p"
                        : "p"));
     let blocks = eventInfo.container.querySelectorAll(selector);
     Hyphenopoly.hyphenators.HTML.then((hyphenate) => {

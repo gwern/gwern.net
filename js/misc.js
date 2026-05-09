@@ -1004,7 +1004,7 @@ function aggregateMarginNotesInDocument(doc) {
             let marginNoteBlockContainerElementsSelector = [
                 "section",
                 ".markdownBody",
-                ".abstract-collapse:not(.abstract)",
+                ".abstract-collapse:not(.abstract):not(.abstract-small)",
                 ".collapse-content-wrapper",
                 ".annotation-abstract"
             ].join(", ");
