@@ -4152,7 +4152,7 @@ function addDropcapClassTo(block, dropcapType) {
 
 	stripDropcapClassesFrom(block);
 
-	block.classList.add(`dropcap-${dropcapType}`);
+	block.classList.add(`dropcap-${dropcapType}`, "has-dropcap");
 }
 
 /*************************************/
@@ -4162,7 +4162,7 @@ function stripDropcapClassesFrom(block) {
 	if (block.classList.contains("force-dropcap"))
 		return;
 
-	block.classList.remove(...(Array.from(block.classList).filter(className => className.startsWith("dropcap-"))));
+	block.classList.remove(...(Array.from(block.classList).filter(className => className.startsWith("dropcap-"))), "has-dropcap");
 }
 
 /**************************************************************************/
@@ -4543,9 +4543,14 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 				 */
 				let dropcapType = null;
 				if (introGraf) {
-					dropcapType = (previousBlock?.matches(".abstract blockquote")
-								   ? dropcapTypeOf(previousBlock)
-								   : null) ?? dropcapTypeOf(containingDocument.body);
+					let bodyDropcapType = dropcapTypeOf(containingDocument.body);
+					if (bodyDropcapType == "not") {
+						dropcapType = "not";
+					} else {
+						dropcapType = (previousBlock?.matches(".abstract blockquote")
+									   ? dropcapTypeOf(previousBlock)
+									   : null) ?? dropcapTypeOf(containingDocument.body);
+					}
 				} else {
 					let dropcapContainerOptions = {
 						alsoBlockContainers: [ "div[class*='dropcap-']" ],
@@ -4555,7 +4560,8 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 					if (   dropcapContainer?.matches("div")
 						&& previousBlockOf(block, dropcapContainerOptions) == null) {
 						dropcapType = dropcapTypeOf(dropcapContainer);
-						block.classList.add("first-graf");
+						if (dropcapType != "not")
+							block.classList.add("first-graf");
 					}
 				}
 				if (   dropcapType 

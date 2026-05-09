@@ -324,7 +324,7 @@ body.special-christmas-light header h1 {
         0 0 2px var(--GW-christmas-lights-gold);
 }
 body.special-christmas-light .heading a,
-body.special-christmas-light p[class*='dropcap-'] span.dropcap,
+body.special-christmas-light p.has-dropcap span.dropcap,
 body.special-christmas-light #navigation a,
 body.special-christmas-light #navbar a {
     text-shadow:
@@ -337,7 +337,7 @@ body.special-christmas-dark header h1 {
         0 0 4px var(--GW-christmas-lights-gold);
 }
 body.special-christmas-dark .heading a,
-body.special-christmas-dark p[class*='dropcap-'] span.dropcap,
+body.special-christmas-dark p.has-dropcap span.dropcap,
 body.special-christmas-dark #navigation a,
 body.special-christmas-dark #navbar a {
     text-shadow:
