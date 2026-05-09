@@ -89,6 +89,25 @@ else
     s() { gwsed "$@"; }
     export SLOW SKIP_DIRECTORIES N s
 
+    # stopwatch utility: if a command takes >30s, print out the total time and command
+    # This is different from the `wrap`/'λ' logging version because it doesn't require a string label, so you can simply run `el foo`.
+    ELAPSED_MIN=${ELAPSED_MIN:-30}
+    el() {
+        local -ir _el_start=$SECONDS
+        local -i _el_status=0
+
+        "$@" || _el_status=$?
+
+        local -ir _el_seconds=$((SECONDS - _el_start))
+        if (( _el_seconds >= ELAPSED_MIN )); then
+            printf '[%ds]  $' "$_el_seconds" >&2
+            printf ' %q' "$@" >&2
+            printf '\n' >&2
+        fi
+
+        return "$_el_status"
+    }
+
     if [ "$SLOW" ]; then (cd ~/wiki/ && git status) || true; fi # quickly summarize pending changes
     bold "Pulling infrastructure updates…"
     # pull from Said Achmiz's repo, with his edits overriding mine in any conflict (`-Xtheirs`) & auto-merging with the default patch text (`--no-edit`), to make sure we have the latest JS/CSS. (This is a bit tricky because the use of versioning in the includes means we get a lot of merge conflicts, for some reason.)
@@ -186,7 +205,7 @@ else
     MAX_CABAL_SIZE_GB=50
     CABAL_DIRS=( "$HOME"/.cabal/store/ghc-*/gwernnet-* )
     [[ $(du --summarize --block-size=1G --total "${CABAL_DIRS[@]}" 2>/dev/null | tail --lines=1 | cut --fields=1) -gt $MAX_CABAL_SIZE_GB ]] && rm --recursive --force "${CABAL_DIRS[@]}"
-    cabal install ; cabal clean
+    el cabal install ; cabal clean
     ## NOTE: the generateSimilarLinks & linkSuggester runs are done at midnight by a cron job because
     ## they are too slow to run during a regular site build & don't need to be super-up-to-date
     ## anyway
@@ -238,18 +257,18 @@ else
 
     if [ -z "$SKIP_DIRECTORIES" ]; then
         bold "Updating similar-links…"
-        generateSimilarLinks +RTS -N"$N" -RTS
+        el generateSimilarLinks +RTS -N"$N" -RTS
 
         bold "Writing missing annotations to support link-bibliography/tag-directory updates…"
         # We add new annotations daily, but all the code in link-bib/tag-directory deal with only the current annotations which have been written out to disk as HTML snippets; thus, since that is done in the main compilation phase, the default would be that annotations would be omitted the first day and only appear the next time. This is annoying and manually working around it is even more tedious, so we provide a 'one-shot' missing-annotation mode and call that phase immediately before the lb/tag phase:
-        hakyll build +RTS -N"$N" -RTS --annotation-missing-one-shot
+        el hakyll build +RTS -N"$N" -RTS --annotation-missing-one-shot
         # rm --recursive --force -- ./_cache/ ./_site/ & # faster than 'hakyll build clean'
         bold "Updating link bibliographies…"
-        generateLinkBibliography +RTS -N"$N" -RTS || true
+        el generateLinkBibliography +RTS -N"$N" -RTS || true
 
         # we want to generate all directories first before running Hakyll in case a new tag was created
         bold "Building directory indexes…"
-        generateDirectory +RTS -N2 -RTS $DIRECTORY_TAGS
+        el generateDirectory +RTS -N2 -RTS $DIRECTORY_TAGS
 
         # ensure that the list of test-cases has been updated so we can look at <https://gwern.net/lorem-link#live-link-testcases> immediately after the current sync (rather than afterwards, delaying it to after the next sync)
         λ() { ghci -istatic/build/ ./static/build/LinkLive.hs \
@@ -547,63 +566,64 @@ else
     # For some document types, Pandoc doesn't support them, or syntax-highlighting wouldn't be too useful for preview popups. So we use LibreOffice to convert them to HTML.
     # <https://en.wikipedia.org/wiki/LibreOffice#Supported_file_formats>
     convert_to_html() {
-        local EMBED_IMAGES="$1"
+        local -r EMBED_IMAGES="$1"
         shift # Remove the first argument to process remaining arguments
         if [[ -f "$1" ]]; then
             local FILE="$1"
             convert_file "$FILE"
         else
-            local FILE_EXTS=("$@") # Remaining arguments are file extensions
+            local -r FILE_EXTS=("$@") # Remaining arguments are file extensions
             find ./doc/ -type f \( $(printf -- "-name *.%s -o " "${FILE_EXTS[@]}" | sed 's/ -o $//') \) | while read -r FILE; do
                 convert_file "$FILE"
             done
         fi
     }
     convert_file() {
-    local FILE="$1"
-    if [ ! -f "_site/${FILE}.html" ]; then
-        local TARGET
-        TARGET="$FILE" # HTML versions are located at "$FILE.html"; we do not strip the extensions
-        local OUTDIR
-        OUTDIR="$(dirname "_site/${FILE}.html")"
-        local CONVERSION_OPTION="html"
+        local -r FILE="$1"
+        if [ ! -f "_site/${FILE}.html" ]; then
+            local TARGET
+            TARGET="$FILE" # HTML versions are located at "$FILE.html"; we do not strip the extensions
+            local OUTDIR
+            OUTDIR="$(dirname "_site/${FILE}.html")"
+            local CONVERSION_OPTION="html"
 
-        # Create output directory if it doesn't exist
-        mkdir -p "$OUTDIR"
+            # Create output directory if it doesn't exist
+            mkdir -p "$OUTDIR"
 
-        # Handle file path properly, especially with spaces
-        if [[ "$EMBED_IMAGES" == "true" ]]; then
-            CONVERSION_OPTION="html:HTML:EmbedImages"
-        fi
+            # Handle file path properly, especially with spaces
+            if [[ "$EMBED_IMAGES" == "true" ]]; then
+                CONVERSION_OPTION="html:HTML:EmbedImages"
+            fi
 
-        # Use quotes around paths and create a clean temporary user profile
-        # WARNING: Libreoffice `--convert-to` will replace the original suffix, like '$FILE.ods' → '$FILE.html'. But we need to preserve the original extension to allow other use-cases like syntax-highlighting HTML (so we can load '$FILE.html.html' to get the presentable version of '$FILE.html'). We have to work around this by restoring the original filename afterwards.
-        timeout 5m libreoffice --headless \
-            --convert-to "$CONVERSION_OPTION" \
-            -env:UserInstallation=file:///tmp/LibO_Conversion \
-            --outdir "$OUTDIR" \
-            "$FILE" >/dev/null 2>&1 || echo "$FILE failed LibreOffice conversion?"
+            # Use quotes around paths and create a clean temporary user profile
+            # WARNING: Libreoffice `--convert-to` will replace the original suffix, like '$FILE.ods' → '$FILE.html'. But we need to preserve the original extension to allow other use-cases like syntax-highlighting HTML (so we can load '$FILE.html.html' to get the presentable version of '$FILE.html'). We have to work around this by restoring the original filename afterwards.
+            timeout 5m libreoffice --headless \
+                --convert-to "$CONVERSION_OPTION" \
+                -env:UserInstallation=file:///tmp/LibO_Conversion \
+                --outdir "$OUTDIR" \
+                "$FILE" >/dev/null 2>&1 || echo "$FILE failed LibreOffice conversion?"
 
-        # If file wasn't created directly in outdir, try to find it
-        if [ ! -f "$OUTDIR/$(basename "${FILE}").html" ]; then
-            # Try to find the generated HTML file in current directory
-            local GENERATED_HTML="$(find _site/ -name "$(basename "${FILE%.*}").html" -print -quit)"
-            if [ -n "$GENERATED_HTML" ]; then
-                mv "$GENERATED_HTML" "$OUTDIR/$(basename "${FILE}").html" || echo "$FILE failed to move HTML file?"
-            else
-                echo "$FILE conversion result not found?"
+            # If file wasn't created directly in outdir, try to find it
+            if [ ! -f "$OUTDIR/$(basename "${FILE}").html" ]; then
+                # Try to find the generated HTML file in current directory
+                local GENERATED_HTML
+                GENERATED_HTML="$(find _site/ -name "$(basename "${FILE%.*}").html" -print -quit)"
+                if [ -n "$GENERATED_HTML" ]; then
+                    mv "$GENERATED_HTML" "$OUTDIR/$(basename "${FILE}").html" || echo "$FILE failed to move HTML file?"
+                else
+                    echo "$FILE conversion result not found?"
+                fi
             fi
         fi
-    fi
     }
 
     # Convert documents with embedded images
     # WARNING: LibreOffice seems to have race-conditions and can't convert >1 files at a time reliably, with sporadic failures or even a GUI popup error dialogue!
     # HACK: Libreoffice for some reason fails if you specify the 'HTML:EmbedImages' on a spreadsheet file, even though that obviously can't be a problem (it works fine on other documents, and spreadsheets don't have images to embed, so why is it a fatal error‽), and also Libreoffice lies about the error, exiting with success, so you can't simply try a second time with the `EmbedImages` removed...
-    convert_to_html "true" "doc" "docx" # document
+    el convert_to_html "true" "doc" "docx" # document
     # Convert spreadsheets without embedded images
     # Note: Specifying 'HTML:EmbedImages' for spreadsheets leads to failures despite being unnecessary.
-    convert_to_html "false" "csv" "ods" "xls" "xlsx" & # spreadsheet; && mv ./2010-nordhaus-nordhaus2007twocenturiesofproductivitygrowthincomputing-appendix_html*.png ./_site/doc/cs/hardware/
+    el convert_to_html "false" "csv" "ods" "xls" "xlsx" & # spreadsheet; && mv ./2010-nordhaus-nordhaus2007twocenturiesofproductivitygrowthincomputing-appendix_html*.png ./_site/doc/cs/hardware/
     # NOTE: special-case: *very* complex multi-sheet spreadsheet with many images; HACK: LibreOffice also appears to ignore the embed option anyway, so we copy the images manually
     # convert_to_html "false" "./doc/cs/hardware/2010-nordhaus-nordhaus2007twocenturiesofproductivitygrowthincomputing-appendix.xlsx"
 
@@ -651,14 +671,14 @@ else
     }
     export -f syntaxHighlight
     set +e
-    find _site/static/ -type f,l -name "*.html" | parallel --jobs "$N" syntaxHighlight # NOTE: run .html first to avoid duplicate files like 'foo.js.html.html'
-    find _site/metadata/ -maxdepth 1 -type f,l -name "*.html" | gfv -e 'metadata/annotation/id/' | parallel --jobs "$N" syntaxHighlight
+    find _site/static/ -type f,l -name "*.html" | el parallel --jobs "$N" syntaxHighlight # NOTE: run .html first to avoid duplicate files like 'foo.js.html.html'
+    find _site/metadata/ -maxdepth 1 -type f,l -name "*.html" | gfv -e 'metadata/annotation/id/' | el parallel --jobs "$N" syntaxHighlight
     find _site/ -type f,l \
          -name "*.R" -or -name "*.c" -or -name "*.css" -or -name "*.hs" -or -name "*.js" -or -name "*.patch" -or -name "*.diff" -or -name "*.py" -or -name "*.sh" -or -name "*.bash" -or -name "*.php" -or -name "*.conf" -or -name "*.opml" -or -name "*.md" -or -name "*.txt" -or -name "*.json" -or -name "*.jsonl" -or -name "*.gtx" -or -name "*.xml" | \
         gfv \
                  `# Pandoc fails on embedded Unicode/regexps in JQuery` \
                  -e 'mountimprobable.com/assets/app.js' -e 'jquery.min.js' -e 'index.md' \
-                 -e 'metadata/backlinks.hs' -e 'metadata/embeddings.bin' -e 'metadata/archive.hs' -e 'doc/www/' -e 'sitemap.xml' | parallel --jobs "$N" syntaxHighlight
+                 -e 'metadata/backlinks.hs' -e 'metadata/embeddings.bin' -e 'metadata/archive.hs' -e 'doc/www/' -e 'sitemap.xml' | el parallel --jobs "$N" syntaxHighlight
 
     # essays only:
     ## eg. './2012-election.md \n...\n ./doc/cs/cryptography/1955-nash.md \n...\n ./newsletter/2022/09.md \n...\n ./review/mcnamara.md \n...\n ./wikipedia-and-knol.md \n...\n ./zeo/zma.md'
@@ -675,7 +695,7 @@ else
         fi
     }
     export -f cleanCodeblockSelflinks
-    echo "$PAGES_ALL" | parallel --jobs "$N" --max-args=50 cleanCodeblockSelflinks || true
+    echo "$PAGES_ALL" | el parallel --jobs "$N" --max-args=50 cleanCodeblockSelflinks || true
 
     # reformat the JSON ID database to be more readable
     for JSON in ./metadata/annotation/id/*.json; do
@@ -702,7 +722,7 @@ else
     export -f staticCompileMathJax
     (find ./ -path ./_site -prune -type f -o -name "*.md" | gfv -e 'doc/www/' -e '#' -e 'static/' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/';
      find _site/metadata/annotation/ -name '*.html') | xargs --max-procs=0 --max-args=1000 grep --fixed-strings --files-with-matches -e '<span class="math inline"' -e '<span class="math display"' | \
-        parallel --jobs "$N" --max-args=1 staticCompileMathJax
+        el parallel --jobs "$N" --max-args=1 staticCompileMathJax
 
     # we mark up fractions in non-TeX using the Unicode '⁄' FRACTION SLASH, which is specified to turn arbitrary integer pairs into oblique fractions in a more generalized way than the hardwired vulgar fractions Unicode supports for a handful of pairs like '½'. (See <https://www.unicode.org/versions/Unicode6.0.0/ch06.pdf#page=15> & <http://www.unicode.org/notes/tn28/UTN28-PlainTextMath-v3.pdf#page=5>.)
     # Unfortunately, support in applications is very patchy, and it seems to not work in most (all?) web browsers like Firefox or Chrome.
@@ -712,7 +732,7 @@ else
     # sed regexp details: conservatively skip lines with any .fraction already; limit it to 4-digit short integers to avoid accidental breakage; and anchor on word boundaries to avoid under-markup & splitting longer numbers.
     fraction () { sed -i --regexp-extended '/class=["'\'']fraction["'\'']/! s/\b([0-9]{1,4})⁄([0-9]{1,4})\b/<span class=fraction>\1⁄\2<\/span>/g' -- "$@"; }
     export -f fraction
-    echo "$PAGES_ALL" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --jobs "$N" --max-args=500 fraction
+    echo "$PAGES_ALL" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | el parallel --jobs "$N" --max-args=500 fraction
 
     # For inline lists which cannot be handled usefully by horizontal rulers nor by '.columns' lists nor collapsed away (such as bullet-pointed summaries at the beginning of paper abstracts), we use dot separators.
     # Specifically, we use BULLET instead of MIDDLE DOT because MIDDLE DOT is overloaded by its use in dot-product multiplication, multiplied-units, proper nouns like 'WALL·E'/'DALL·E'...
@@ -720,14 +740,14 @@ else
     bold "Adding '.separator-inline' span to BULLET (•) uses for better inline-list styling…"
     separator () { sed -i 's/ • / <span class=separator-inline>•<\/span> /g' -- "$@"; }
     export -f separator
-    echo "$PAGES_ALL" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --jobs "$N" --max-args=500 separator
+    echo "$PAGES_ALL" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | el parallel --jobs "$N" --max-args=500 separator
 
     bold "Cleaning up Pandoc’s self-closing-tag-isms…" # TODO: why *does* Pandoc do this even with HTML5 output if it's invalid?
     # Pandoc AST/HTML block problems seem to lead to odd problems with duplicate rulers, so we try to fix that up as well:
     # (They are primarily generated in the footnote section, but who knows where else? Generated tables, poem blockquotes, and horizontal rulers seem especial offenders.)
     hr () { sed -i -e 's/<hr \/>/<hr>/g' -e 's/<hr\/>/<hr>/g' -e 's/<hr><\/hr>/<hr>/g' -e 's/><\/img>/>/g' -e 's/<br \/>/<br>/g' -e 's/<col \(style="width: [0-9]\{1,3\}%"\) \/>/<col \1>/g' -e 's/<col \(style="width: [0-9]\{1,3\}%"\)\/>/<col \1>/g' -- "$@"; }
     export -f hr
-    echo "$PAGES_ALL" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --jobs "$N" --max-args=500 hr
+    echo "$PAGES_ALL" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | el parallel --jobs "$N" --max-args=500 hr
     gwsed "<hr />" "<hr>" &>/dev/null &
     gwsed "<hr><hr>" "<hr>" &>/dev/null &
 
@@ -772,14 +792,14 @@ else
     "$@"; }; export -f cleanClasses
     echo "$PAGES" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --jobs "$N" --max-args=500 cleanClasses || true
     # TODO: rewriting in place doesn't work because of the symbolic links. need to copy ./metadata/ instead of symlinking?
-    find ./_site/metadata/ -type f -name "*.html" | parallel --jobs "$N" --max-args=500 cleanClasses || true
+    find ./_site/metadata/ -type f -name "*.html" | el parallel --jobs "$N" --max-args=500 cleanClasses || true
 
     # Pandoc somewhere in 2025–2026 decided to screw around with the footnotes section in a strange way, breaking our JS/CSS, and the workarounds themselves cause problems, so a post-compilation rewrite pass seems to be the easiest fix here.
     bold "Rewriting upstream footnotes '<aside>' → '<section>' Pandocism to be semantically correct…"
     cleanFootnotes () { stringReplace '<aside id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">' '<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">' "$@";
                                  # WARNING: we do not use the '<aside>' element anywhere on Gwern.net so this is safe... for now.
                                  stringReplace '</aside>' '</section>' "$@"; }; export -f cleanFootnotes
-    echo "$PAGES" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --jobs "$N" --max-args=500 cleanFootnotes || true
+    echo "$PAGES" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | el parallel --jobs "$N" --max-args=500 cleanFootnotes || true
 
     # HACK: still haven't figured out how these keep getting reintroduced when the titlecase code responsible should be fixing them automatically now. So hack around by replacing them manually...
     (s 'cite-author-Plural' 'cite-author-plural' ; s 'Date-Range' 'date-range' ; s 'Inflation-Adjusted' 'inflation-adjusted' ; s 'Logotype-Latex-A' 'logotype-latex-a' ; s 'Logotype-Latex-E' 'logotype-latex-e' ; s 'SUbsup' 'subsup'; s 'Cite-Joiner' 'cite-joiner'; s '<span class="Poem"' '<span class="poem"'; s '<div class="Poem"' '<div class="poem"'; s '<span class="SMallcaps">' '<span class="smallcaps">'; ) &> /dev/null;
@@ -1447,15 +1467,15 @@ else
     ## NOTE: we skip time/size syncs because sometimes the infrastructure changes values but not file size, and it's confusing when JS/CSS doesn't get updated; since the infrastructure is so small (compared to eg. doc/*), just force a hash-based sync every time to reduce risk:
     bold "Syncing static/…"
     REMOTE="gwern@176.9.41.242:/home/gwern/gwern.net/"
-    rsync --perms --exclude=".*" --exclude "*.elc" --exclude '#*' --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ "$REMOTE"/static &
+    el rsync --perms --exclude=".*" --exclude "*.elc" --exclude '#*' --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ "$REMOTE"/static &
     ## Likewise, force checks of the Markdown pages but skip symlinks (ie. non-generated files):
     bold "Syncing pages…"
-    rsync --perms --exclude=".*" --chmod='a+r' --recursive --checksum --quiet --info=skip0 ./_site/ "$REMOTE"
+    el rsync --perms --exclude=".*" --chmod='a+r' --recursive --checksum --quiet --info=skip0 ./_site/ "$REMOTE"
     ## Randomize sync type—usually, fast, but occasionally do a regular slow hash-based rsync which deletes old files:
     bold "Syncing everything else…"
     SPEED=""; if [ "$SLOW" ] && everyNDays 14; then SPEED="--delete --checksum"; else SPEED="--size-only"; fi
     ## note we use `--copy-links` here, which pulls in all the symlinked static documents:
-    rsync --perms --exclude=".*" --chmod='a+r' --recursive $SPEED --copy-links --verbose --itemize-changes --stats ./_site/ "$REMOTE" || true
+    el rsync --perms --exclude=".*" --chmod='a+r' --recursive $SPEED --copy-links --verbose --itemize-changes --stats ./_site/ "$REMOTE" || true
     wait
     set +e
 

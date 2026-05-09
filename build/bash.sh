@@ -39,13 +39,27 @@ yellow () {
   echo -e "\e[33m$@\e[0m"
 }
 ## function to wrap checks and print red-highlighted warning if non-zero output (self-documenting):
-wrap () { local OUTPUT=$($1 2>&1)
-          local WARN="$2"
-          if [ -n "$OUTPUT" ]; then
-              echo -n "Begin: "; red "$WARN";
-              echo -e "$OUTPUT";
-              echo -n "End: "; red "$WARN";
-          fi; }
+wrap () {
+    local -ir _wrap_start=$SECONDS
+    local _wrap_output
+
+    _wrap_output=$("$1" 2>&1) || true
+
+    local -r _wrap_warn="$2"
+
+    if [[ -n "$_wrap_output" ]]; then
+        echo -n "Begin: "; red "$_wrap_warn"
+        echo -e "$_wrap_output"
+        echo -n "End: "; red "$_wrap_warn"
+    fi
+
+    local -ir _wrap_seconds=$((SECONDS - _wrap_start))
+    if (( _wrap_seconds >= ${ELAPSED_MIN:-30} )); then
+        printf '[%ds] %s\n' "$_wrap_seconds" "$_wrap_warn" >&2
+    fi
+
+    return 0
+}
 ge  () { grep --extended-regexp "$@"; }
 gec  () { ge --color=always "$@"; }
 gev () { ge --invert-match "$@"; }
