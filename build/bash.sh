@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-04-24 22:04:36 gwern"
+# When:  Time-stamp: "2026-05-08 20:45:37 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -245,7 +245,7 @@ pdf-append () {
     set -- "${updated_args[@]}"
 
     # The first argument serves as the final destination and primary metadata source
-    local TARGET_DEST_PDF="$1"
+    local -r TARGET_DEST_PDF="$1"
 
     # Create temporary storage locations
     local TEMP_TARGET # Temporary file for the combined PDF before final move
@@ -312,14 +312,14 @@ pdf-append () {
         elif [[ "$file" =~ \.(xlsx|xls|ods|csv)$ ]]; then
             bold "Converting Spreadsheet: $file" >&2
             if command -v libreoffice &> /dev/null; then
-                local LO_USER_PROFILE="file:///tmp/LibO_PDF_Conversion_$(date +%s)_$$"
+                local -r LO_USER_PROFILE="file:///tmp/LibO_PDF_Conversion_$(date +%s)_$$"
                 if libreoffice --headless --invisible \
                             -env:UserInstallation="$LO_USER_PROFILE" \
                             --convert-to pdf:calc_pdf_Export \
                             --outdir "$TEMP_DIR" \
                             "$file" &>/dev/null; then
                     # Check if conversion was successful and find the output file
-                    local expected_lo_output="$TEMP_DIR/$(basename "${file%.*}").pdf"
+                    local -r expected_lo_output="$TEMP_DIR/$(basename "${file%.*}").pdf"
                     if [[ -f "$expected_lo_output" ]]; then
                           # Rename to our predictable name if needed
                          if [[ "$expected_lo_output" != "$output_pdf" ]]; then
@@ -495,7 +495,7 @@ doc2pdf () {
 
 # trim whitespace from around JPG/PNG images
 crop_one () {
-    local file="$1"
+    local -r file="$1"
 
     if [[ "$file" =~ \.(jpg|png)$ ]]; then
 
@@ -506,7 +506,7 @@ crop_one () {
             red "Warning: Image '$file' is larger than 5,000×5,000 pixels." >&2
 
         # Use a temporary file for atomic saving
-        local tmp_file="${file}.tmp"
+        local -r tmp_file="${file}.tmp"
 
         # Only replace the original if the convert command succeeds
         if nice convert "$file" \
@@ -556,7 +556,7 @@ pad-black () {
 crop-pad () { crop "$@" && pad "$@"; }
 crop-pad-black () { crop "$@" && pad-black "$@"; }
 
-# function split_image () {     local image_path="$1";     local base_name=$(basename "$image_path" .png);     local height=$(identify -ping -format "%h" -- "$image_path");     local half_height=$((height / 2))     convert "$image_path" -crop 100%x50%+0+0 "${base_name}-1.png";     convert "$image_path" -crop 100%x50%+0+$half_height "${base_name}-2.png"; }
+# function split_image () {     local -r image_path="$1";     local -r base_name=$(basename "$image_path" .png);     local -ir height=$(identify -ping -format "%h" -- "$image_path");     local -ir half_height=$((height / 2))     convert "$image_path" -crop 100%x50%+0+0 "${base_name}-1.png";     convert "$image_path" -crop 100%x50%+0+$half_height "${base_name}-2.png"; }
 
 # convert black background to white:  `mogrify -fuzz 5% -fill white -draw "color 0,0 floodfill"`
 
@@ -653,16 +653,16 @@ crop-pad-black () { crop "$@" && pad-black "$@"; }
 # Finds .jpg/.jpeg/.png/.webp/.avif (non-recursive, version-sorted). GIF excluded because
 # animations need special handling (MP4 conversion, frame extraction). Assumes no newlines in filenames.
 get_image_files () {
-    local _varname="${1:-REPLY}"
+    local -r _varname="${1:-REPLY}"
     mapfile -t "$_varname" < <(find . -maxdepth 1 -type f                              \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" -o -iname "*.avif" \)                             | sort --version-sort)
 }
 get_ext () {
-    local f="$1"
+    local -r f="$1"
     if [[ "$f" != *.* ]]; then
         red "Error: File '$f' has no extension. Cannot determine output format." >&2
         return 1
     fi
-    local extension="${f##*.}"
+    local -r extension="${f##*.}"
     if [[ -z "$extension" ]]; then
         red "Error: File '$f' has an empty extension." >&2
         return 1
@@ -683,7 +683,7 @@ COMBINE_SMALL_ONLY_THRESHOLD=1296000
 # treated as a regular argument (likely triggering a downstream "file not found"
 # or "invalid pattern token" error, which is the correct response to misuse).
 _combine_pop_small_only () {
-    local _varname="$1"
+    local -r _varname="$1"
     local -n _arr="$_varname"
     COMBINE_SMALL_ONLY_FLAG=0
     if (( ${#_arr[@]} > 0 )) && [[ "${_arr[0]}" == "--small-only" ]]; then
@@ -714,9 +714,9 @@ _combine_all_small () {
 # Wait for a file to exist, be non-empty, and remain untouched for ~3s.
 # Second argument is a timeout in seconds, unlike the global 'is_downloading' helper.
 _combine_wait_ready () {
-    local file="$1"
-    local timeout="${2:-50}"
-    local deadline=$((SECONDS + timeout))
+    local -r file="$1"
+    local -ir timeout="${2:-50}"
+    local -ir deadline=$((SECONDS + timeout))
     local modified elapsed
 
     while true; do
@@ -737,8 +737,8 @@ _combine_wait_ready () {
 
 # Make a black blank tile matching the reference image dimensions.
 _combine_make_blank () {
-    local ref="$1"
-    local ext="$2"
+    local -r ref="$1"
+    local -r ext="$2"
     local T w h
 
     read -r w h < <(identify -ping -format "%w %h" -- "$ref" 2>/dev/null)
@@ -857,7 +857,7 @@ combine () {
         fi
     done
 
-    local batch_size=$max_slot
+    local -ir batch_size=$max_slot
 
     # ── --small-only: bail cleanly if any input image is ≥ threshold ──
     if (( COMBINE_SMALL_ONLY_FLAG == 1 )); then
@@ -989,9 +989,9 @@ combine () {
 # Build a pattern string dynamically: _combine_all_pattern N "-" → "1 - 2 - ... - N"
 #                                      _combine_all_pattern N ""  → "1 2 ... N"
 _combine_all_pattern () {
-    local n="$1"
-    local sep="${2:-}"
-    local i
+    local -r n="$1"
+    local -r sep="${2:-}"
+    local -i i
     local pattern=()
 
     for ((i=1; i<=n; i++)); do
@@ -1008,7 +1008,7 @@ _combine_reversed () {
     local wrapper="$1"
     shift
 
-    local args=("$@")
+    local -a args=("$@")
     local -a prefix=()
     # Preserve a leading '--small-only' at the front of the delegated call,
     # so reversal only affects the file list and the flag keeps its required
@@ -1019,7 +1019,7 @@ _combine_reversed () {
     fi
 
     local reversed=()
-    local i
+    local -i i
 
     if (( ${#args[@]} == 0 )); then
         get_image_files args
@@ -1032,7 +1032,7 @@ _combine_reversed () {
 
 # Fail loudly when explicitly supplied files cannot fill whole fixed-size batches.
 _combine_require_explicit_multiple () {
-    local batch_size="$1"
+    local -r batch_size="$1"
     shift
 
     if (( $# == 0 )); then
@@ -1046,7 +1046,7 @@ _combine_require_explicit_multiple () {
 
 # combine vertically (all images into one column)
 combinev () {
-    local args=("$@")
+    local -a args=("$@")
     local pat_str
     local pat=()
 
@@ -1073,7 +1073,7 @@ alias cvr="combinevr"
 
 # combine horizontally in pairs
 combine2 () {
-    local args=("$@")
+    local -a args=("$@")
     _combine_pop_small_only args
     _combine_require_explicit_multiple 2 "${args[@]}" || return 1
     if (( COMBINE_SMALL_ONLY_FLAG == 1 )); then
@@ -1086,7 +1086,7 @@ alias c2="combine2"
 
 # combine vertically in pairs
 combinev2 () {
-    local args=("$@")
+    local -a args=("$@")
     _combine_pop_small_only args
     _combine_require_explicit_multiple 2 "${args[@]}" || return 1
     if (( COMBINE_SMALL_ONLY_FLAG == 1 )); then
@@ -1103,7 +1103,7 @@ alias cv2r="combinev2r"
 
 # 2×2 grid, batched
 combineSquare () {
-    local args=("$@")
+    local -a args=("$@")
     _combine_pop_small_only args
     _combine_require_explicit_multiple 4 "${args[@]}" || return 1
     if (( COMBINE_SMALL_ONLY_FLAG == 1 )); then
@@ -1131,7 +1131,7 @@ _combine_batch_is_wide () {
 }
 
 _combinev4_next_chunk_size () {
-    local remaining="$1"
+    local -r remaining="$1"
     case "$remaining" in
         2|3|4)
             echo "$remaining"
@@ -1147,7 +1147,7 @@ _combinev4_next_chunk_size () {
 }
 
 _combinev4_run_batch () {
-    local batch=("$@")
+    local -r batch=("$@")
     local pattern=()
 
     case ${#batch[@]} in
@@ -1179,7 +1179,7 @@ _combinev4_run_batch () {
 
 # Smart 2×2 or 1×4 based on aspect ratio, decided per batch.
 combinev4 () {
-    local args=("$@")
+    local -a args=("$@")
     local offset=0 remaining chunk_size
     local batch=()
 
@@ -1211,14 +1211,14 @@ alias cv4="combinev4"
 # used in feh:
 # rotate a 2×2=4 images → 1×4
 combine-unstack () {
-    local args=("$@")
+    local -a args=("$@")
     if (( ${#args[@]} == 0 )); then get_image_files args; fi
     for IMG in "${args[@]}"; do _combine_wait_ready "$IMG" 50 || return 2; done
     for FILE in "${args[@]}"; do mogrify -crop 50%x50% +repage -append -- "$FILE"; done
 }
 # rotate, and delete the last square, under the assumption that it is a 4-square with a blank black final square:
 combine-unstack-last () {
-    local args=("$@")
+    local -a args=("$@")
     if (( ${#args[@]} == 0 )); then get_image_files args; fi
     for IMG in "${args[@]}"; do _combine_wait_ready "$IMG" 50 || return 2; done
     for FILE in "${args[@]}"; do mogrify -crop 50%x50% +repage -delete 3 -append -- "$FILE"; done
@@ -1229,7 +1229,7 @@ combine-unstack-last () {
 # Skips static GIFs. Reports size savings per file.
 # Usage: gifToMp4 [file.gif ...] (defaults to all .gif files in current directory)
 gifToMp4() {
-    local args=("$@")
+    local -a args=("$@")
 
     # Find all GIFs in current directory if no arguments provided
     if [[ ${#args[@]} -eq 0 ]]; then
@@ -1298,7 +1298,7 @@ export -f gifToMp4
 # browsers must download the entire file before playback can begin.
 # Usage: mp4-check-faststart [file.mp4 ...] (defaults to all .mp4 files in current directory)
 mp4-check-faststart () {
-    local args=("$@")
+    local -a args=("$@")
     if [[ ${#args[@]} -eq 0 ]]; then
         mapfile -t args < <(find . -maxdepth 1 -type f -iname "*.mp4" | sort --version-sort)
         if [[ ${#args[@]} -eq 0 ]]; then
@@ -1376,7 +1376,7 @@ export -f mp4-check-faststart
 # Only touches files that actually need it. No re-encoding; bitwise identical audio/video streams.
 # Usage: mp4-fix-faststart [file.mp4 ...] (defaults to all slow MP4s in current directory)
 mp4-fix-faststart () {
-    local args=("$@")
+    local -a args=("$@")
     if [[ ${#args[@]} -eq 0 ]]; then
         # Default: find and fix only the slow ones
         mapfile -t args < <(mp4-check-faststart 2>/dev/null)
@@ -1819,7 +1819,7 @@ mvuri () {
         return 1
     fi
 
-  local ENCODED_PATH="$1"
+  local -r ENCODED_PATH="$1"
   local DECODED_PATH="${ENCODED_PATH//\%/\\x}"
   DECODED_PATH="${DECODED_PATH#file://}"
   DECODED_PATH="${DECODED_PATH%%#*}" # ignore anchors like `foo.html#id` by stripping them
@@ -1829,7 +1829,7 @@ mvuri () {
     DECODED_PATH="/home/gwern/wiki/$DECODED_PATH"
   fi
 
-  local DESTINATION="$DECODED_PATH"
+  local -r DESTINATION="$DECODED_PATH"
   if [ ! -f "$DESTINATION" ]; then red "WARNING: destination target $DESTINATION does not exist!"; fi
 
   local SOURCE
@@ -1913,8 +1913,8 @@ get_lorem_pages () {
 }
 
 lorem_download () {
-    local page=$1
-    local output_file="${SNAPSHOT_DIR}/${page}"
+    local -r page=$1
+    local -r output_file="${SNAPSHOT_DIR}/${page}"
     local temp_file; temp_file=$(mktemp)
     # we version the infrastructure files with a 10-digit seconds-level Unix timestamp to bust caches, and those will change every time those are modified, eg. to add a link-icon, and trigger spurious changes. So we used sed to remove those from both downloaded snapshots & downloaded live pages.
     curl --silent "${SITE_URL}/${page}" |
@@ -1923,8 +1923,8 @@ lorem_download () {
 }
 
 compare_page () {
-    local page=$1
-    local snapshot_file="${SNAPSHOT_DIR}/${page}"
+    local -r page=$1
+    local -r snapshot_file="${SNAPSHOT_DIR}/${page}"
     local temp_file; temp_file=$(mktemp)
 
     curl --silent "${SITE_URL}/${page}" | sed 's/\.\(css\|js\|svg\)?v=[0-9]\{10\}/.\1/g' >> "${temp_file}"

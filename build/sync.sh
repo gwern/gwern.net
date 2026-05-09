@@ -365,8 +365,8 @@ else
     # to transclude a filmstrip, as well as everything else like ffmpeg-sourced metadata, summary, transcription of audio etc.
     generate_large_poster() {
         set -e
-        local VIDEO="$1"
-        local POSTER="${VIDEO}-poster-large.jpg"
+        local -r VIDEO="$1"
+        local -r POSTER="${VIDEO}-poster-large.jpg"
 
         [[ -f "$POSTER" ]] && return 0
 
@@ -440,7 +440,7 @@ else
         [[ -n "$FPS_FMT" ]] && META_LINE+="  |  ${FPS_FMT}"
 
         # Cell dimensions (5×5 grid ≈ 1750px wide)
-        local CELL_WIDTH=350
+        local -ir CELL_WIDTH=350
         local CELL_HEIGHT
         if [[ -n "$WIDTH" && -n "$HEIGHT" && "$HEIGHT" -gt 0 ]]; then
             CELL_HEIGHT=$(( CELL_WIDTH * HEIGHT / WIDTH ))
@@ -484,8 +484,8 @@ else
     # eg. '/doc/ai/nn/gan/stylegan/anime/2021-01-19-gwern-stylegan2ext-danbooru2019-3x10montage-3.png' → '/metadata/thumbnail/256px/%2Fdoc%2Fai%2Fnn%2Fgan%2Fstylegan%2Fanime%2F2021-01-19-gwern-stylegan2ext-danbooru2019-3x10montage-3.png' (and must be requested double-URL-encoded).
     # Because we guarantee they will exist, we do not bother with inlining the thumbnail path into <img>/<figure> (whether by rewriting the href, adding a data-attribute, using a poster/responsive attribute, etc); the frontend JS can simply assume that one exists and try to fetch it when it needs a small version of an image, and fall back.
     generate_thumbnail() {
-        local image="$1"
-        local relative_path="${image#./}"
+        local -r image="$1"
+        local -r relative_path="${image#./}"
         local encoded_path
         encoded_path="$(urlencode "/$relative_path")"
         local thumbnail_path="metadata/thumbnail/256px/${encoded_path}"
