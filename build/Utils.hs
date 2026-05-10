@@ -522,7 +522,7 @@ sedMany :: [(String,String)] -> (String -> String)
 sedMany regexps s = foldr (uncurry sed) s (isUniqueList regexps)
 
 -- (`replace`/`split`/`hasKeyAL` copied from <https://hackage.haskell.org/package/MissingH-1.5.0.1/docs/src/Data.List.Utils.html> to avoid MissingH's dependency on regex-compat)
--- replace requires that the 2 replacements be different, but otherwise does not impose any requirements like non-nullness or that any replacement happened. So it can be used to delete strings without replacement (`replace "foo" ""` or as a shortcut, `delete "foo"`), or 'just in case'.
+-- 'replace' requires that the 2 replacements be different, but otherwise does not impose any requirements like non-nullness or that any replacement happened. So it can be used to delete strings without replacement (`replace "foo" ""` or as a shortcut, `delete "foo"`), or 'just in case'. Use 'replaceT' for Data.Text.
 -- For search-and-replace where you *know* you meant to change the input, use `replaceChecked`.
 replace :: (Eq a, Show a) => [a] -> [a] -> [a] -> [a]
 replace before after = if before == after then error ("Fatal error in `replace`: identical args (before == after): " ++ show before) else intercalate after . split before

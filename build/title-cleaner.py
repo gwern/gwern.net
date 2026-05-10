@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-05-08 14:25:09 gwern"
+# When:  Time-stamp: "2026-05-10 21:36:21 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -944,6 +944,12 @@ The hidden mathematics of bathrooms
 "Stuff Women Have Told Me Is “Hot”"
 - "About this site:"
 "About this site"
+- "https://larryrothwachs.com/2026/05/10/the-mashiach-clause/#post-4710 The Mashiach Clause - To Whom It May Concern"
+"The Mashiach Clause"
+- "https://arstechnica.com/science/2026/02/heres-why-scotch-tape-screeches-when-its-peeled/ Scientists crack the case of “screeching” Scotch tape - Ars Technica"
+"Scientists crack the case of “screeching” Scotch tape"
+- "https://antigonejournal.com/2026/02/science-of-blunders-confessions-textual-critic/ 429 Too Many Request"
+""
 
 """
 

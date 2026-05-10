@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2026-05-08 17:48:53 gwern"
+When:  Time-stamp: "2026-05-10 22:34:06 gwern"
 License: CC-0
 -}
 
@@ -693,6 +693,7 @@ generateAnnotationBlock md am sdb (f, ann) blp slp lb =
            doi = kvDOI kvs
            values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
            link = addRecentlyChanged x $ linkLive $ unsafePerformIO $ localizeLink am $ -- HACK: force archiving & link-living because it is not firing reliably (particularly on Twitter partials); another Raw HTML issue? it's suspicious that we have that RawInline right there… which might disable walks?
+             -- NOTE: 'data-id-ref' is no longer used to provide '/ref/$ID' URLs in popup title-bars due to confusion and bad mobile UX, and currently has no function. I do still want to expose the /ref/ functionality to the reader *somehow*, just don't yet know how...
              Link (lid', [if null abst then "link-annotated-partial" else "link-annotated"], ("id-ref",lid):values) [RawInline (Format "html") (T.pack tle')] (T.pack f,"")
            -- make sure every abstract is wrapped in paragraph tags for proper rendering:
            abst' = if null abst || anyPrefix abst ["<p>", "<ul", "<ol", "<h2", "<h3", "<bl", "<figure", "<div"] then abst else "<p>" ++ abst ++ "</p>"

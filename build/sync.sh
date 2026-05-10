@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-05-09 11:28:13 gwern"
+# When:  Time-stamp: "2026-05-10 22:30:04 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -118,7 +118,7 @@ else
         bold "Executing string rewrite cleanups…" # automatically clean up some Gwern.net bad URL patterns, typos, inconsistencies, house-styles:
         ( set +e
           ## domain/URL rewrites:
-          s 'https://mobile.x.com' 'https://x.com'; s 'https://www.x.com' 'https://x.com'; s 'https://twitter.com/' 'https://x.com/'; s 'https://en.reddit.com/' 'https://www.reddit.com/'; s 'https://www.greaterwrong.com/posts/' 'https://www.lesswrong.com/posts'; s 'http://web.archive.org/web/' 'https://web.archive.org/web/'; s 'https://youtu.be/' 'https://www.youtube.com/watch?v='; s 'http://arxiv.org' 'https://arxiv.org'; s 'https://deepmind.com' 'https://www.deepmind.com'; s 'http://en.wikipedia.org' 'https://en.wikipedia.org'; s 'v1.full' '.full'; s 'v2.full' '.full'; s 'v3.full' '.full'; s 'v4.full' '.full'; s 'v5.full' '.full'; s 'v6.full' '.full'; s 'v7.full' '.full'; s 'v8.full' '.full'; s 'v9.full' '.full'; s '.full-text' '.full'; s '.full.full' '.full'; s '.full-text' '.full'; s '.full-text.full' '.full'; s '.full.full.full' '.full'; s '.full.full' '.full'; s '.gov/labs/pmc/articles/P' '.gov/pmc/articles/P';  s 'rjlipton.wpcomstaging.com' 'rjlipton.wordpress.com'; s 'www.super-memory.com' 'super-memory.com'; s 'https://www.bldgblog.com' 'https://bldgblog.com'; s 'https://www.clinicaltrials.gov' 'https://clinicaltrials.gov'; s 'https://arxiv.org/abs//' 'https://arxiv.org/abs/'; s 'http://paulgraham.com' 'https://paulgraham.com'; s 'http://www.paulgraham.com' 'https://paulgraham.com'; s "https://www.paulgraham.com" "https://paulgraham.com"; s 'https://www.arxiv.org/' 'https://arxiv.org/';
+          s 'https://mobile.x.com' 'https://x.com'; s 'https://www.x.com' 'https://x.com'; s 'https://twitter.com/' 'https://x.com/'; s 'https://en.reddit.com/' 'https://www.reddit.com/'; s 'https://www.greaterwrong.com/posts/' 'https://www.lesswrong.com/posts'; s 'http://web.archive.org/web/' 'https://web.archive.org/web/'; s 'https://youtu.be/' 'https://www.youtube.com/watch?v='; s 'http://arxiv.org' 'https://arxiv.org'; s 'https://deepmind.com' 'https://www.deepmind.com'; s 'http://en.wikipedia.org' 'https://en.wikipedia.org'; s 'v1.full' '.full'; s 'v2.full' '.full'; s 'v3.full' '.full'; s 'v4.full' '.full'; s 'v5.full' '.full'; s 'v6.full' '.full'; s 'v7.full' '.full'; s 'v8.full' '.full'; s 'v9.full' '.full'; s '.full-text' '.full'; s '.full.full' '.full'; s '.full-text' '.full'; s '.full-text.full' '.full'; s '.full.full.full' '.full'; s '.full.full' '.full'; s '.gov/labs/pmc/articles/P' '.gov/pmc/articles/P';  s 'rjlipton.wpcomstaging.com' 'rjlipton.wordpress.com'; s 'www.super-memory.com' 'super-memory.com'; s 'https://www.bldgblog.com' 'https://bldgblog.com'; s 'https://www.clinicaltrials.gov' 'https://clinicaltrials.gov'; s 'https://arxiv.org/abs//' 'https://arxiv.org/abs/'; s 'http://paulgraham.com' 'https://paulgraham.com'; s 'http://www.paulgraham.com' 'https://paulgraham.com'; s "https://www.paulgraham.com" "https://paulgraham.com"; s 'https://www.arxiv.org/' 'https://arxiv.org/'; s 'https:/gwern.net' 'https://gwern.net';
           ## NOTE: domains which are bad or unfixable are handled by a later lint. This is only for safe rewrites.
 
           ## link cruft rewrites:
@@ -777,20 +777,79 @@ else
     #                           `# Big O notation: '𝒪(n)' in some browsers like my Chromium will touch the O/parenthesis (particularly noticeable in /Problem-14's abstract), so add a THIN SPACE (HAIR SPACE is not enough for the highly-tilted italic):` \
     #                           -e 's/𝒪(/𝒪 (/g' \
     #                         "$@"; }; export -f nonbreakSpace;
-    # find ./ -path ./_site -prune -type f -o -name "*.md" | gfv -e '#' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --jobs "$N" --max-args=500 nonbreakSpace || true
-    # find ./_site/metadata/annotation/ -type f -name "*.html" | parallel --jobs "$N" --max-args=500 nonbreakSpace || true
+    # find ./ -path ./_site -prune -type f -o -name "*.md" | gfv -e '#' | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | el parallel --jobs "$N" --max-args=500 nonbreakSpace || true
+    # find ./_site/metadata/annotation/ -type f -name "*.html" | el parallel --jobs "$N" --max-args=500 nonbreakSpace || true
 
     bold "Stripping compile-time-only classes unnecessary at runtime…"
-    cleanClasses () {
-        sed -i -e 's/class=\"\(.*\)archive-not \?/class="\1/g' \
-               -e 's/class=\"\(.*\)id-not \?/class="\1/g' \
-               `# TODO: revert 9f246da03503b3c20d3c38eecd235b5aa7caa0b3 and remove .backlink-not clutter once all link-ID problems are resolved` \
-               -e 's/class=\"\(.*\)link-annotated-not \?/class="\1/g' \
-               -e 's/class=\"\(.*\)link-auto \?/class="\1/g' \
-               -e 's/class=\"\(.*\)link-live-not \?/class="\1/g' \
-               -e 's/class=\"\(.*\)link-modified-recently-not \?/class="\1/g' \
-    "$@"; }; export -f cleanClasses
-    echo "$PAGES" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --jobs "$N" --max-args=500 cleanClasses || true
+cleanClasses () {
+        # Strip compile-time-only HTML class names that have no runtime effect
+        # (used by Hakyll/the link-rewriter as build-system scaffolding, but
+        # waste bytes once shipped to readers).
+        #
+        # WHY THIS USED TO BE 174 SECONDS:
+        #
+        # The previous form ran 7 separate '\(.*\)target \?' substitutions, with
+        # '.*' greedy, against every HTML file in the corpus. Two compounding
+        # costs:
+        #
+        #   1. 'sed --in-place' rewrites and renames every file it's given,
+        #      whether or not the file actually contains any target class.
+        #      The vast majority of pages do not (these classes are sparse
+        #      build-system metadata), so most of the I/O was pure waste.
+        #
+        #   2. '\(.*\)archive-not' on a line lacking 'archive-not' still costs
+        #      O(line_length) per pattern per matching 'class="': '.*' eats to
+        #      end-of-line, then backtracks character-by-character looking for
+        #      the literal. For pages with long lines or many class attributes,
+        #      multiplied by 7 patterns, this dominates wall time. (It's also
+        #      subtly buggy — '.*' can cross '>' and span into the next class
+        #      attribute on the same line.)
+        #
+        # The rewrite below addresses both: (a) a grep pre-filter skips files
+        # entirely if none of the target strings occur, and (b) each
+        # substitution uses '[^"]*' (bounded to one attribute, no end-of-line
+        # backtracking) with one target literal per pattern.
+        #
+        # ONE PATTERN PER TARGET, not a fused alternation: with leftmost-longest
+        # semantics, '(class="[^"]*) (archive-not|id-not|...)' on an attribute
+        # containing multiple targets matches greedily through the earlier
+        # ones to maximize match length, stripping only the rightmost target
+        # in a single pass. Splitting per-target sidesteps the ambiguity —
+        # each pattern is unambiguous about what it removes, and 'g' correctly
+        # handles repeats of the same class across the file.
+
+        local hits
+        hits=$(grep --files-with-matches --extended-regexp --no-messages \
+            '(archive-not|id-not|link-annotated-not|link-auto|link-live-not|link-modified-recently-not)' \
+            "$@") || return 0
+        [ -z "$hits" ] && return 0
+
+        # shellcheck disable=SC2086  # deliberate word-splitting of $hits
+        sed --in-place --regexp-extended \
+            `# Mid- and end-of-attribute occurrences: a target preceded by a` \
+            `# space inside class="...". '[^"]*' keeps us inside one attribute;` \
+            `# '\b' prevents 'archive-not' from partial-matching some longer` \
+            `# hypothetical class name like 'archive-not-really'.` \
+            -e 's/(class="[^"]*) archive-not\b/\1/g' \
+            -e 's/(class="[^"]*) id-not\b/\1/g' \
+            -e 's/(class="[^"]*) link-annotated-not\b/\1/g' \
+            -e 's/(class="[^"]*) link-auto\b/\1/g' \
+            -e 's/(class="[^"]*) link-live-not\b/\1/g' \
+            -e 's/(class="[^"]*) link-modified-recently-not\b/\1/g' \
+            `# Start-of-attribute occurrences: target is the first class listed,` \
+            `# so it has no leading space — the patterns above cannot fire. We` \
+            `# use a fused alternation here because there is at most one such` \
+            `# leading target per attribute, so the leftmost-longest issue does` \
+            `# not apply. Trailing space is optional to handle the lone case` \
+            `# (class="archive-not"), which collapses to class="".` \
+            -e 's/class="(archive-not|id-not|link-annotated-not|link-auto|link-live-not|link-modified-recently-not) ?/class="/g' \
+            `# Garbage-collect any class attribute that was emptied entirely by` \
+            `# the steps above (e.g. <a class="archive-not"> -> <a class="">` \
+            `# -> <a>), including the leading space so we don't leave "<a >".` \
+            -e 's/ class=""//g' \
+            $hits
+    }; export -f cleanClasses
+    echo "$PAGES" | sed -e 's/\.md$//' -e 's/\.\/\(.*\)/_site\/\1/' | el parallel --jobs "$N" --max-args=500 cleanClasses || true
     # TODO: rewriting in place doesn't work because of the symbolic links. need to copy ./metadata/ instead of symlinking?
     find ./_site/metadata/ -type f -name "*.html" | el parallel --jobs "$N" --max-args=500 cleanClasses || true
 

@@ -4,7 +4,7 @@
 # italicizer.py: reformat a string to add italics as semantically appropriate (eg. book titles) using LLMs
 # Author: Gwern Branwen
 # Date: 2025-01-17
-# When:  Time-stamp: "2026-05-09 22:01:55 gwern"
+# When:  Time-stamp: "2026-05-10 20:34:26 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python italicizer.py
@@ -1504,6 +1504,10 @@ An Orgy, but with Reward Points: The arc of history is long but it bends towards
 "How advances in low-<em>g</em> plumbing enable space exploration"
 - "Digit regeneration in mice is stimulated by sequential treatment with FGF2 and BMP2" # gene names are italicized
 "Digit regeneration in mice is stimulated by sequential treatment with <em>FGF2</em> and <em>BMP2</em>"
+- "The Mashiach Clause—To Whom It May Concern" # 'Mashiach' is an Israeli/Hebrew term for 'Messiah' not recognizable to gentiles
+"The <em>Mashiach</em> Clause—To Whom It May Concern"
+- https://archive.org/details/hypnosis_comes_of_age_estabrooks Hypnosis Comes of Age"
+"<em>Hypnosis Comes of Age</em>"
 
 [End of examples. Reminder: your only task is to add missing italics you are SURE of.]
 

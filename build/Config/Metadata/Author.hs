@@ -964,6 +964,7 @@ canonicals = M.fromList $ setLike
   , ("Guy L. Steele Junior", "Guy L. Steele")
   , ("Tim Gowers", "Timothy Gowers")
   , ("LinchZhang", "Linch")
+  , ("zeeshanp_", "Zeeshan Patel")
   ]
 
 -- tests: unique
@@ -1019,7 +1020,7 @@ canonicalsWithInitials = setLike
   , "M. Saiful Bari", "Robert A. Freitas", "Roland G. Fryer", "Leslie Stephen Coles", "Mathew John Wedel"
   , "Ralph S. Baric", "Jack D. Cowan", "Paul C. Bressloff", "Claire N. Spottiswoode", "Clemens L. Winter"
   , "Hervey M. Cleckley", "Miriam A. Mosing", "Murray B. Stein", "David Samuel Margoliouth", "Guy L. Steele"
-  , "Nabeel S. Qureshi", "Robert E. Forsythe"]
+  , "Nabeel S. Qureshi", "Robert E. Forsythe", "Alexander Strudwick Young", "George H. Estabrooks"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -2302,6 +2303,9 @@ authorLinkDB = M.fromList $
     , ("Robert E. Forsythe", "https://en.wikipedia.org/wiki/Robert_E._Forsythe")
     , ("Derek Sivers", "https://sive.rs/")
     , ("Julia Evans", "https://jvns.ca/")
+    , ("Zeeshan Patel", "https://www.zeeshanp.me/")
+    , ("Alexander Strudwick Young", "https://alextisyoung.github.io/")
+    , ("Jonathan Flint", "https://en.wikipedia.org/wiki/Jonathan_Flint_(scientist)")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3604,4 +3608,5 @@ authorWpLinkDB = setLike
     , "Alfred Bester", "Martyn Thomas", "Nina Vasan", "Max H. Bazerman", "William Yang Wang", "Larry Tesler", "Peter J. Huber"
     , "Greg Corrado", "Philip Wheelwright", "Cristian Canton Ferrer", "Ian Kershaw", "David Samuel Margoliouth"
     , "Peter Filkins", "Marta Serra-Garcia", "Martin Fleming", "Barry Mazur", "Weiqi Zhang", "Guy L. Steele"
-    , "Carlos M. Herrera", "William Fleeson", "Matt Levine", "Andrew Sullivan", "Anne Helen Petersen"]
+    , "Carlos M. Herrera", "William Fleeson", "Matt Levine", "Andrew Sullivan", "Anne Helen Petersen"
+    , "Richard A. Howard", "George H. Estabrooks"]

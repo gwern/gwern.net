@@ -3309,7 +3309,7 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
           , ("Mustard_greens", "Brassica_juncea")
           , ("Mutation_accumulation", "Evolution_of_ageing#Mutation_accumulation")
           , ("Mutation_load", "Genetic_load")
-          , ("Mutational_load", "Genetic_load#Mutational_load")
+          , ("Mutational_load", "Genetic_load")
           , ("Mutineers'_Moon", "Mutineers%27_Moon")
           , ("Mutually_Assured_Destruction", "Mutual_assured_destruction")
           , ("Muv-Luv_Alternative", "Muv-Luv")
