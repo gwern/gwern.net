@@ -1319,10 +1319,18 @@ Element.prototype.trimWhitespaceFromEnd = function (options) {
 	}
 };
 
-/*********************************/
+/************************************************************************/
 /*	As the same method of Element.
+
+	See Element.prototype.trimWhitespaceFromStart() for info on available
+	option fields.
  */
 DocumentFragment.prototype.trimWhitespace = function (options) {
+	options = Object.assign({
+		nodeOmissionOptions: null,
+		trimWithinNodes: false
+	}, options);
+
 	this.firstElementChild?.trimWhitespaceFromStart(options);
 	this.lastElementChild?.trimWhitespaceFromEnd(options);
 

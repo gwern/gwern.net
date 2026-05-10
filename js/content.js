@@ -1179,6 +1179,9 @@ Content = {
 					if (isNodeEmpty(node))
 						node.remove();
 				});
+
+				//	Trim whitespace.
+				contentDocument.trimWhitespace({ trimWithinNodes: true });
 			}
 		},
 
