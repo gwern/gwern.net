@@ -3198,7 +3198,8 @@ body.reader-mode-active .annotation.blog-post .aux-links-field-container .separa
 body.reader-mode-active .inflation-adjusted .subsup,
 body.reader-mode-active .has-recently-modified-icon .recently-modified-icon-hook
 body.reader-mode-active .date-range sub,
-body.reader-mode-active .file-includes {
+body.reader-mode-active .file-includes,
+body.reader-mode-active .section-backlinks-container {
     display: none;
 }
 
