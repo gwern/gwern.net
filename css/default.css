@@ -3523,8 +3523,8 @@ blockquote .TOC,
 
 /*	Small caps for file size units.
  */
-.annotation .data-field .file-size .file-size-units,
-.annotation-partial .data-field .file-size .file-size-units {
+.annotation .data-field.file-size .file-size-units,
+.annotation-partial .data-field.file-size .file-size-units {
 	font-variant-caps: small-caps;
 }
 

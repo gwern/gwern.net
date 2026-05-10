@@ -287,19 +287,22 @@ Annotations = { ...Annotations,
 		let filesizeHTML = null;
 		let filesizeElement = responseDocument.querySelector(".filesize-bytes");
 		if (filesizeElement) {
-			let units = [ "kb", "mb", "gb", "tb", "pb", "eb" ];
 			let filesize = parseInt(filesizeElement.textContent);
-			let filesizeUnits = "b";
-			while (filesize > 1000) {
-				filesize = Math.round(filesize / 1000);
-				filesizeUnits = units.shift();
-			}
+			let filesizeDataFieldDisplayFilesizeThreshold = 1e7; // 10 MB
+			if (filesize >= filesizeDataFieldDisplayFilesizeThreshold) {
+				let units = [ "kb", "mb", "gb", "tb", "pb", "eb" ];
+				let filesizeUnits = "b";
+				while (filesize > 1000) {
+					filesize = Math.round(filesize / 1000);
+					filesizeUnits = units.shift();
+				}
 
-			filesizeHTML = `<span
-							 class="data-field file-size"
-							 >${filesize} <span 
-							 			   class="file-size-units"
-							 			   >${filesizeUnits}</span></span>`;
+				filesizeHTML = `<span
+								 class="data-field file-size ${filesizeDataFieldAdditionalClasses}"
+								 >${filesize} <span 
+											   class="file-size-units"
+											   >${filesizeUnits}</span></span>`;
+			}
 		}
 
 		//	All the aux-links (file size, tags, backlinks, similars, link link-bib).
