@@ -27,9 +27,15 @@ External contributor rules for the Gwern.net source code repo.
     (An acceptable answer would look like "The Haskell compiled without warnings and [`Test.testAll`](https://gwern.net/static/build/Test.hs) reported no errors anywhere, including the new unit tests." or "the new JS file with this test HTML page ran successfully on my laptop Firefox-149.0.2 on Ubuntu 24.04.4 LTS." "Tested locally" is inadequate; did you evaluate a JS function call in a browser console? Fully compile and run the site on a remote web server and verified by browsing?)
 7. **AI contribution requirements**: AI-generated contributions are accepted; but:
 
-    - *metadata*: the tools & version used must be mentioned
-    - *highest quality AI*: contributions must have been reviewed by a frontier model from a major lab (Anthropic, OpenAI, Google DeepMind, etc.) at roughly the highest capability of their flagship offering
-    - *human-operated*: there must be an ultimately responsible human who endorses contributions and accepts blame; 'fully' autonomous contributions are disallowed. (Agent-generated PRs with no evidence of human reading of the diff will be closed without review.)
+    - *Metadata*: the tools & version used must be mentioned with attribution. AI agents must disclose what tool and model they are using in the "Assisted-by" commit footer:
+
+        > `Assisted-by: [Model Name] via [Tool Name]`
+
+        Example:
+
+        > Assisted-by: GLM 4.6 via Claude Code
+    - *Highest quality AI*: contributions must have been reviewed by a frontier model from a major lab (Anthropic, OpenAI, Google DeepMind, etc.) at roughly the highest capability of their flagship offering
+    - *Human-operated*: there must be an ultimately responsible human who endorses contributions and accepts blame; 'fully' autonomous contributions are disallowed. (Agent-generated PRs with no evidence of human reading of the diff will be closed without review.)
 8. **Human accountability**: the ultimately responsible human is fully responsible for any contributions (AI or otherwise)
 
     They may be banned from the repo if a contribution has serious errors (eg. fabricated citations, inserted malware/exfiltration, license violations, silent data deletion, repeated submissions of unreviewed AI output...), or just at my sole discretion.
