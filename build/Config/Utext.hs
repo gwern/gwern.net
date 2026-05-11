@@ -2,7 +2,7 @@
 -- | Utext: Markdown to Unicode-rich plain text configuration data & unit-tests
 -- Author: gwern
 -- Date: 2026-04-06
--- When: Time-stamp: "2026-04-19 22:00:13 gwern"
+-- When: Time-stamp: "2026-05-11 14:58:01 gwern"
 -- License: CC-0
 
 module Config.Utext where
@@ -24,18 +24,26 @@ data Style = Style
   } deriving (Eq, Show)
 
 defaultStyle :: Style
-defaultStyle = Style False False True
+defaultStyle = Style False False False
 
 -----------------------------------------------------------------------
 -- Tests
 -----------------------------------------------------------------------
 
--- | Run the full test suite via 'rawMarkdown2Utext'. Returns a list of
--- failures as @(input, expected, actual)@ triples. Empty list = all pass.
-utextTestSuite :: (T.Text -> T.Text) -> [(T.Text, T.Text, T.Text)]
-utextTestSuite f = filter (\(_, expected, actual) -> expected /= actual)
-                   [ (input, expected, f input)
-                   | (input, expected) <- supportedTests ++ unsupportedTests ]
+-- | Run the full test suite. Returns a list of failures as
+-- @(input, expected, actual)@ triples. Empty list = all pass.
+--
+-- Takes two render functions because the ligature feature is an opt-in
+-- style flag (off in 'defaultStyle'): the first renderer exercises the
+-- default style for the bulk of tests; the second has @sLigature = True@
+-- and exercises ligature-substitution cases.
+utextTestSuite :: (T.Text -> T.Text)  -- ^ render with 'defaultStyle'
+               -> (T.Text -> T.Text)  -- ^ render with @defaultStyle { sLigature = True }@
+               -> [(T.Text, T.Text, T.Text)]
+utextTestSuite plainRender ligatureRender =
+  filter (\(_, expected, actual) -> expected /= actual)
+    $  [ (i, e, plainRender    i) | (i, e) <- supportedTests ++ unsupportedTests ]
+    ++ [ (i, e, ligatureRender i) | (i, e) <- ligatureSupportedTests ]
 
 -----------------------------------------------------------------------
 -- Supported: features that compile to fancy Unicode
@@ -60,7 +68,14 @@ supportedTests = concat
   , nonAsciiTests
   , digitTests
   , edgeCaseTests
-  , ligatureTests
+  ]
+
+-- | Cases that exercise ligature substitution. Run with
+-- @defaultStyle { sLigature = True }@ to actually fire the substitution.
+ligatureSupportedTests :: [(T.Text, T.Text)]
+ligatureSupportedTests = concat
+  [ ligatureTests
+  , ligatureIntegrationTests
   ]
 
 -- Plain text and empty input
@@ -179,7 +194,7 @@ smartQuoteTests =
   ]
 
 -- Links: render text followed by URL/title in parentheses.
--- Visible text/title still get ligatures; literal URLs stay untouched.
+-- See 'ligatureIntegrationTests' for ligature-on link/title rendering.
 linkTests :: [(T.Text, T.Text)]
 linkTests =
   [ ("[click here](https://example.com)"
@@ -188,11 +203,6 @@ linkTests =
     , "\x1D456\x1D461\x1D44E\x1D459\x1D456\x1D450 \x1D459\x1D456\x1D45B\x1D458 (<https://example.com>)")
   , ("[foo](https://bar.com \"Title\")"
     , "foo (\x201CTitle\x201D: <https://bar.com>)")
-  , ("[office](https://example.com/office \"Office filing\")"
-    , "oﬃce (\x201COﬃce ﬁling\x201D: <https://example.com/office>)")
-  -- Ligatures apply in label and title but never in the literal URL:
-  , ("[find](https://fi.example.com \"Official\")"
-    , "ﬁnd (\x201COﬃcial\x201D: <https://fi.example.com>)")
   ]
 
 -- HTML tags inside Markdown: the bug that motivated this test suite.
@@ -201,7 +211,7 @@ linkTests =
 htmlInMarkdownTests :: [(T.Text, T.Text)]
 htmlInMarkdownTests =
   [ ("mistakes in <em>Death Note</em> and fixes"
-    , "mistakes in \x1D437\x1D452\x1D44E\x1D461\x1D629 \x1D441\x1D45C\x1D461\x1D452 and \xFB01xes")
+    , "mistakes in \x1D437\x1D452\x1D44E\x1D461\x1D629 \x1D441\x1D45C\x1D461\x1D452 and fixes")
   , ("<strong>bold</strong> word"
     , "\x1D41B\x1D428\x1D425\x1D41D word")
   , ("a <sub>2</sub> b"
@@ -246,9 +256,9 @@ blockTests =
   -- Bullet list:
   , ("- one\n- two"
     , "• one\n\n• two")
-  -- Ordered list (note "first" → "ﬁrst" via ligatures):
+  -- Ordered list:
   , ("1. first\n2. second"
-    , "1. \xFB01rst\n\n2. second")
+    , "1. first\n\n2. second")
   -- Block quote (needs surrounding context so T.strip doesn't eat the indent):
   , ("before\n\n> quote\n\nafter"
     , "before\n\n  quote\n\nafter")
@@ -312,6 +322,29 @@ ligatureTests =
   , ("*firefox*"             , "\x1D453\x1D456\x1D45F\x1D452\x1D453\x1D45C\x1D465")
   ]
 
+-- Integration cases that exercise ligature substitution through other
+-- constructs (links, embedded HTML, lists, definition lists). The same
+-- inputs (or near-equivalents) appear in linkTests / htmlInMarkdownTests /
+-- blockTests / unsupportedTests with non-ligated expected output, so each
+-- construct is covered under both styles.
+ligatureIntegrationTests :: [(T.Text, T.Text)]
+ligatureIntegrationTests =
+  -- Ligatures apply in link label and quoted title, never in the literal URL:
+  [ ("[office](https://example.com/office \"Office filing\")"
+    , "oﬃce (\x201COﬃce ﬁling\x201D: <https://example.com/office>)")
+  , ("[find](https://fi.example.com \"Official\")"
+    , "ﬁnd (\x201COﬃcial\x201D: <https://fi.example.com>)")
+  -- Plain text after an HTML-reassembled tag still gets ligated:
+  , ("mistakes in <em>Death Note</em> and fixes"
+    , "mistakes in \x1D437\x1D452\x1D44E\x1D461\x1D629 \x1D441\x1D45C\x1D461\x1D452 and \xFB01xes")
+  -- Inside ordered list items:
+  , ("1. first\n2. second"
+    , "1. \xFB01rst\n\n2. second")
+  -- Inside definition list definitions (best-effort flatten):
+  , ("Term\n:   Definition"
+    , "Term: De\xFB01nition")
+  ]
+
 -----------------------------------------------------------------------
 -- Unsupported: graceful degradation (trace warning + fallback output)
 --
@@ -330,5 +363,6 @@ unsupportedTests =
   -- Table: entire block is dropped (empty output).
   , ("| a | b |\n|---|---|\n| 1 | 2 |"          , "")
   -- Definition list: best-effort "term: definition" rendering.
-  , ("Term\n:   Definition"                     , "Term: Deﬁnition")
+  , ("Term\n:   Definition"                     , "Term: Definition")
   ]
+

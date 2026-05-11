@@ -61,8 +61,8 @@ import qualified Config.Metadata.Title (badStrings, stringReplace, stringDelete)
 import LinkMetadata (readLinkMetadata, generateFileTransclusionBlock)
 import Config.LinkMetadata (fileTranscludesTest, badDOISubstrings, allowedNonHttpURLPrefixes, uriValidationExemptInfixes, ignoredMalformedURLPrefixes, badAuthorSubstrings, duplicateAffiliationWhitelist, allowedNonHttpURLPrefixes, documentPreviewableExtensions, codePreviewableExtensions, fileViewableExtensions, documentPreviewableExtensions, codePreviewableExtensions, annotationClasses, positiveAnnotationClasses)
 
-import Utext (rawMarkdown2Utext)
-import Config.Utext (utextTestSuite)
+import Utext (rawMarkdown2Utext, rawMarkdown2UtextStyled)
+import Config.Utext (utextTestSuite, defaultStyle, Style(sLigature))
 
 -- test function to validate lists of regex patterns
 testRegexPatterns :: [String] -> IO ()
@@ -278,7 +278,7 @@ testAll = do Config.Misc.cd
                d <- Interwiki.isWPDisambig "George_Washington"
                pure (not a && b && c == Just True && d == Just False)
 
-             let utext = utextTestSuite rawMarkdown2Utext
+             let utext = utextTestSuite rawMarkdown2Utext (rawMarkdown2UtextStyled (defaultStyle { sLigature = True }))
              unless (null utext) $ printRed ("Utext test suite has errors in: " ++ show utext)
 
              unless interwikiUnitTests $

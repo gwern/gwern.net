@@ -2,7 +2,7 @@
 -- | Utext: compile Pandoc AST to Unicode-rich plain text.
 -- Author: gwern
 -- Date: 2026-04-06
--- When: Time-stamp: "2026-04-23 22:06:48 gwern"
+-- When: Time-stamp: "2026-05-11 15:04:24 gwern"
 -- License: CC-0
 --
 -- Intended for social media cards, Open Graph descriptions, and other contexts
@@ -20,6 +20,7 @@
 -- * Simple image figures render like images; when both caption and alt text are
 --   present, the rendered caption wins.
 -- * Ligatures apply to visible text and quoted titles, never to literal URLs.
+-- (We default off because downstream fonts *should* handle ligatures natively and the ligature codepoint substitutions typically render badly in fallback fonts. We include them mostly as a demo.)
 --
 -- Examples:
 --
@@ -113,6 +114,8 @@ module Utext
   , rawText2UtextIO
   , rawHtml2UtextIO
   , rawMarkdown2UtextIO
+  , pandocToUtextStyled
+  , rawMarkdown2UtextStyled
   ) where
 
 import Data.Char (chr, isAlphaNum, isAsciiLower, isAsciiUpper, isDigit, ord, toLower)
@@ -269,6 +272,11 @@ rawHtml2UtextIO t = renderParsedIO pandocToUtextIO t (parseHtml t)
 rawMarkdown2UtextIO :: Text -> IO Text
 rawMarkdown2UtextIO t = renderParsedIO pandocToUtextIO t (parseMarkdown t)
 
+pandocToUtextStyled :: C.Style -> Pandoc -> Text
+pandocToUtextStyled style (Pandoc _ blocks) = renderBlocks style blocks
+rawMarkdown2UtextStyled :: C.Style -> Text -> Text
+rawMarkdown2UtextStyled style t = renderParsed (pandocToUtextStyled style) t (parseMarkdown t)
+
 -----------------------------------------------------------------------
 -- Math preprocessing (IO)
 -----------------------------------------------------------------------
@@ -349,7 +357,7 @@ renderFigure s caption blocks =
     Just (alt, url, title) ->
       let label = chooseText (T.strip (renderCaption s caption))
                              (T.strip (renderInlines s alt))
-      in renderParenthesizedTarget label url title
+      in renderParenthesizedTarget s label url title
     Nothing ->
       traceWarn "complex Figure (best-effort fallback)" $
       joinFigureParts (T.strip (renderBlocks s blocks))
@@ -534,7 +542,7 @@ renderInline _ LineBreak              = "\n"
 renderInline s (Quoted SingleQuote inlines) = "\x2018" <> renderInlines s inlines <> "\x2019"
 renderInline s (Quoted DoubleQuote inlines) = "\x201C" <> renderInlines s inlines <> "\x201D"
 renderInline s (Link _ inlines (url, title)) =
-  renderLinkedTarget (renderInlines s inlines) url title
+  renderLinkedTarget s (renderInlines s inlines) url title
 renderInline s (Span attr inlines)
   | hasClass "smallcaps" attr        = renderInline s (SmallCaps inlines)
   | hasClass "subsup" attr           = renderInlines s inlines
@@ -552,7 +560,7 @@ renderInline _ (RawInline fmt t)     = traceWarnT ("unsupported RawInline (" ++ 
 renderInline _ (Note _)              = traceWarn   "unsupported Note (footnote, dropped)" ""
 renderInline _ (Math _fmt t)         = traceWarnT  "unsupported Math (raw LaTeX fallback)" t t
 renderInline s (Image _ inlines (url, title)) =
-  renderParenthesizedTarget (renderInlines s inlines) url title
+  renderParenthesizedTarget s (renderInlines s inlines) url title
 renderInline s (Cite _ inlines)      = traceWarn   "lossy Cite fallback (visible text only)" (renderInlines s inlines)
 
 renderStyledText :: C.Style -> Text -> Text
@@ -566,24 +574,24 @@ renderStyledText s t =
 applyCombining :: Char -> Text -> Text
 applyCombining mark = T.concatMap (\c -> T.singleton c <> T.singleton mark)
 
-renderLinkedTarget :: Text -> Text -> Text -> Text
-renderLinkedTarget label url title
+renderLinkedTarget :: C.Style -> Text -> Text -> Text -> Text
+renderLinkedTarget s label url title
   | T.null url   = label
   | T.null title = label <> " (<" <> url <> ">)"
-  | otherwise    = label <> " (" <> renderTitle title <> ": <" <> url <> ">)"
+  | otherwise    = label <> " (" <> renderTitle s title <> ": <" <> url <> ">)"
 
-renderParenthesizedTarget :: Text -> Text -> Text -> Text
-renderParenthesizedTarget label url title
+renderParenthesizedTarget :: C.Style -> Text -> Text -> Text -> Text
+renderParenthesizedTarget s label url title
   | T.null label && T.null url = ""
   | T.null label               = "(<" <> url <> ">)"
   | T.null url                 = "(" <> label <> ")"
   | T.null title               = "(" <> label <> ": <" <> url <> ">)"
-  | otherwise                  = "(" <> label <> ", " <> renderTitle title <> ": <" <> url <> ">)"
+  | otherwise                  = "(" <> label <> ", " <> renderTitle s title <> ": <" <> url <> ">)"
 
--- | Render a quoted link/image title. Titles are visible text, so ligatures
--- apply here even though literal URLs stay untouched.
-renderTitle :: Text -> Text
-renderTitle title = "\x201C" <> applyLigatures title <> "\x201D"
+-- | Render a quoted link/image title. Titles are visible text; ligature
+-- substitution respects the style flag, while literal URLs stay untouched.
+renderTitle :: C.Style -> Text -> Text
+renderTitle s title = "\x201C" <> (if C.sLigature s then applyLigatures title else title) <> "\x201D"
 
 hasClass :: Text -> Attr -> Bool
 hasClass cls (_, classes, _) = cls `elem` classes
@@ -763,4 +771,3 @@ ligatureReplacements =
   , ("fl",  "ﬂ")
   , ("fi",  "ﬁ")
   ]
-
