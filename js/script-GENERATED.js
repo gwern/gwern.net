@@ -2572,7 +2572,7 @@ doWhenPageLoaded(() => {
 		additionalSetup: (widgetType) => {
 			//	Add DNS-prefetch tag.
 			//	See https://developer.mozilla.org/en-US/docs/Web/Performance/dns-prefetch
-			document.head.appendChild(elementFromHTML(`<link rel="dns-prefetch" href="https://www.google.com/search" />`));
+			document.head.appendChild(elementFromHTML(`<link rel="dns-prefetch" href="https://www.google.com/search">`));
 		},
 		additionalWidgetActivation: (widget) => {
 			//  Event handler for popup spawn / popover inject.
