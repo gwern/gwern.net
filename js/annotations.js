@@ -364,9 +364,6 @@ Annotations = { ...Annotations,
 				fileIncludesHTML = fileIncludesElement.innerHTML;
 		}
 
-		//	Title bar link should go to /ref/ page for the annotation.
-		let popFrameTitleLinkHref = "/ref/" + titleLink.dataset.idRef;
-
 		return {
 			document: responseDocument,
 			content: {
@@ -385,7 +382,7 @@ Annotations = { ...Annotations,
 			template:                     "annotation-blockquote-inside",
 			popFrameTemplate:             "annotation-blockquote-not",
 			popFrameTitle:                titleLink.cloneNode(true).trimQuotes().innerHTML,
-			popFrameTitleLinkHref:        popFrameTitleLinkHref
+			popFrameTitleLinkHref:        titleLinkHref
 		};
 	},
 
