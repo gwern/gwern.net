@@ -10,7 +10,7 @@ import Text.Pandoc (def, pandocExtensions, runPure, readerExtensions, readMarkdo
 import LinkMetadata (cleanAbstractsHTML)
 import Interwiki (convertInterwikiLinks, isWPArticle, isWPDisambig)
 import qualified GenerateSimilar as GS (singleShotRecommendations)
-import Utils (replace, replaceT, safeHtmlWriterOptions, sed)
+import Utils (replace, safeHtmlWriterOptions, sed)
 import qualified Config.Misc as C (cd)
 import Query (extractURLs)
 
@@ -29,7 +29,7 @@ main = do originalMarkdown <- TIO.getContents
                  let html = case clean of
                        Left       e -> error $ show e ++ ": " ++ show originalMarkdown
                        Right output -> cleanAbstractsHTML $ T.unpack output
-                 putStrLn $ replaceT " class=\"link-live\"" "" html
+                 putStrLn $ replace " class=\"link-live\"" "" html
 
                  -- guarantee we are in the right working directory to read the various metadata databases for extracting recommendations from:
                  C.cd

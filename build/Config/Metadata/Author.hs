@@ -2306,6 +2306,7 @@ authorLinkDB = M.fromList $
     , ("Zeeshan Patel", "https://www.zeeshanp.me/")
     , ("Alexander Strudwick Young", "https://alextisyoung.github.io/")
     , ("Jonathan Flint", "https://en.wikipedia.org/wiki/Jonathan_Flint_(scientist)")
+    , ("Jasmine Sun", "https://jasmi.news/about")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
