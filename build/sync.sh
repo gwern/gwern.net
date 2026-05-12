@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-05-10 22:30:04 gwern"
+# When:  Time-stamp: "2026-05-11 20:59:02 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -149,11 +149,11 @@ else
           ### WARNING: when using `+` in sed, by default, it is treated as an ordinary literal. It MUST be escaped to act as a regexp! Whereas in `grep --extended-regexp`, it's the opposite. So remember: `\+` in sed, and `+` in grep.
           ### WARNING: remember that `sed -i` modifies the last-modified timestamp of all files it runs on, even when the file was not, in fact, modified!
           for file in $(find . -type f -name "*.md" -or -name "*.gtx"); do
-              if grep --extended-regexp --quiet "[A-Z][a-z]+ et al \([1-2][0-9]{3}[a-z]?\)" "$file"; then
+              if ge --quiet "[A-Z][a-z]+ et al \([1-2][0-9]{3}[a-z]?\)" "$file"; then
                   sed -i -e 's/\([A-Z][a-z]\+\) et al (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 et al \2/g' "$file"
               fi
 
-              if grep --extended-regexp --quiet "[A-Z][a-z]+ and [A-Z][a-z]+ \([1-2][0-9]{3}[a-z]?\)" "$file"; then
+              if ge --quiet "[A-Z][a-z]+ and [A-Z][a-z]+ \([1-2][0-9]{3}[a-z]?\)" "$file"; then
                   sed -i -e 's/\([A-Z][a-z]\+\) and \([A-Z][a-z]\+\) (\([1-2][0-9][0-9][0-9][a-z]\?\))/\1 \& \2 \3/g' "$file"
               fi
           done
@@ -997,7 +997,7 @@ cleanClasses () {
 
         # Check for whitelisted classes *not* present, suggesting a typo or stale entry in the whitelist:
         for class in "${html_classes_whitelist[@]}"; do
-            if ! grep --extended-regexp --invert-match --line-regexp --quiet "$class" <<< "$html_classes"; then
+            if ! gev --line-regexp --quiet "$class" <<< "$html_classes"; then
                 echo "'""$class""' is not in HTML classes"
             fi
         done
@@ -1032,7 +1032,7 @@ cleanClasses () {
 
         if [ -n "$html_ids" ]; then
             id_collision_pattern=$(IFS='|'; echo "${id_collision_whitelist[*]}")
-            suspicious_ids=$(echo "$html_ids" | grep --extended-regexp --line-regexp "$id_collision_pattern" || true)
+            suspicious_ids=$(echo "$html_ids" | ge --line-regexp "$id_collision_pattern" || true)
             if [ -n "$suspicious_ids" ]; then
                 red "⚠ HTML IDs matching whitelisted classes/data-attributes (possible typos - should be class/data-attr instead of id?):"
                 echo "$suspicious_ids"
@@ -1070,7 +1070,7 @@ cleanClasses () {
        }
     wrap λ "Essays with redundant or duplicate metadata fields (must have no more than one of any!)"
 
-    λ(){ echo "$PAGES_ALL" | xargs grep --extended-regexp --with-filename 'thumbnail: /doc/.*/.*\.svg$'; }
+    λ(){ echo "$PAGES_ALL" | xargs grep --with-filename 'thumbnail: /doc/.*/.*\.svg$'; }
     wrap λ "SVGs don't work as page thumbnails in Twitter (and perhaps many other websites), so replace with a PNG."
 
     λ(){ ge 'http.*http' ./metadata/archive.hs | \
@@ -1108,7 +1108,7 @@ cleanClasses () {
     λ(){ echo "$PAGES_ALL" | xargs grep --extended-regexp -e '\#[a-z]+\#[a-z]+' | gfv -e '/index#newest#statistics'; }
     wrap λ "Broken HTML: double-anchor hash links? While valid HTML5, this is likely an error; if it's intentional range-transclusion, whitelist it."
 
-    λ(){ find ./ -type f -name "*.md" -type f -exec grep --extended-regexp -e '^css-extension: ' {} \; | \
+    λ(){ find ./ -type f -name "*.md" -type f -exec grep --basic-regexp -e '^css-extension: ' {} \; | \
        gfv -e 'css-extension: dropcaps-cheshire' -e 'css-extension: dropcaps-cheshire reader-mode' -e 'css-extension: dropcaps-de-zs' -e 'css-extension: dropcaps-goudy' -e 'css-extension: dropcaps-goudy reader-mode' -e 'css-extension: dropcaps-kanzlei' -e 'css-extension: "dropcaps-kanzlei reader-mode"' -e 'css-extension: dropcaps-yinit' -e 'css-extension: dropcaps-dropcat' -e 'css-extension: dropcaps-gene-wolfe' -e 'css-extension: dropcaps-not' -e 'css-extension: "dropcaps-not'; }
     wrap λ "Incorrect dropcaps in Markdown."
 
@@ -1349,7 +1349,7 @@ cleanClasses () {
                  -e 'meaningness.wordpress.com' -e 'ibooksonline.com' -e 'tinypic.com' -e 'isteve.com' -e 'j-bradford-delong.net'\
                  -e 'cdn.discordapp.com' -e 'http://https://' -e '#"' -e "#'" -e '.comwww.' -e 'httpss://' -- ./metadata/backlinks.hs;
          # NOTE: we do not need to ban bad domains which are handled by link rewrites like www.reddit.com or medium.com.
-       ge 'https://arxiv.org/abs/[0-9]\{4\}\.[0-9]+v[0-9]' -- ./metadata/backlinks.hs | sort --unique; }
+       ge 'https://arxiv.org/abs/[0-9]{4}\.[0-9]+v[0-9]' -- ./metadata/backlinks.hs | sort --unique; }
     wrap λ "Bad or banned blacklisted domains found? They should be removed or rehosted." &
 
     λ(){ gf -e '""' -- ./metadata/*.gtx | gfv -e ' alt=""' -e 'controls=""' -e 'loop=""' -e '[("doi","")]'; }
@@ -1418,7 +1418,7 @@ cleanClasses () {
     λ(){ find _site/ -type f -name "index" | gf -e '{#'; }
     wrap λ "Broken anchors in directory indexes." &
 
-    λ(){ ls | gf -e '.pdf' -e '.jpg' -e '.png' 2> /dev/null; ls | ge -ec '^[014-9]' 2> /dev/null; }
+    λ(){ ls | gf -e '.pdf' -e '.jpg' -e '.png' 2> /dev/null; ls | ge -e '^[014-9]' 2> /dev/null; }
     wrap λ "Files in root wiki directory which should be in docs/ (perhaps a move gone awry)?" &
 
     λ(){ find ./ -type f -name '*gwner*' -or -name '*\.htm'; }

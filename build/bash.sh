@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-05-09 14:33:29 gwern"
+# When:  Time-stamp: "2026-05-11 20:58:15 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -60,6 +60,10 @@ wrap () {
 
     return 0
 }
+
+# grep helpers to encode common idioms: grepping (filter in), grepping with color, and grepping *non*-matches (filter out). 'g' stands for grep; 'e' for `--extended-regexp`; 'c' for colored output; 'v' for `--invert-match` / negation. Hence 'gec' = 'extended regexp grep with color output'.
+# We obey Principle of Least Power and encourage the weakest matcher sufficient for the task, hence the split between regex grep (ge) and fixed-string grep (gf).
+# We deliberately do *not* offer a `--basic-regexp` helper. BRE and ERE disagree on what `\?`, `\|`, `\+`, `\(`, `\{` mean — literal in ERE, metacharacter in BRE (and vice versa for the unescaped forms) — so moving a pattern between a hypothetical `gb` and `ge` can silently flip its meaning without erroring. Drop a common `https?://` into a `gb` call and it stops matching URLs entirely (the `?` becomes literal), with no diagnostic. The BRE/ERE distinction isn't worth that footgun, since ERE is a strict superset for our purposes.
 ge  () { grep --extended-regexp "$@"; }
 gec  () { ge --color=always "$@"; }
 gev () { ge --invert-match "$@"; }
