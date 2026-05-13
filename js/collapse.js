@@ -908,6 +908,9 @@ function expandLockCollapseBlock(collapseBlock) {
 	//	Remove disclosure button.
 	collapseBlock.querySelector(".disclosure-button").remove();
 
+	//	Remove collapse-only abstract, if present.
+	collapseBlock.querySelector(".abstract-collapse-only")?.remove();
+
 	//	Expand.
 	let wasCollapsed = (isCollapsed(collapseBlock) == true);
 
