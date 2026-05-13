@@ -376,8 +376,9 @@ header h1 em {
     or slashes.
  */
 #page-metadata .page-metadata-fields > span::after {
-    content: "\00B7"; /* interpunct MIDDLE DOT (U+00B7) '·'; TODO: replace with BULLET .separator-inline? */
-    margin: 0 0.75em;
+    content: "•";
+    margin: 0 0.8em;
+    opacity: 0.5;
 }
 /*  No separator at line end.
  */
@@ -388,7 +389,8 @@ header h1 em {
 /*  Adjust icon spacing.
  */
 #page-metadata .page-metadata-fields .progress-indicator-icon {
-    margin: 0 0 0 0.25em;
+    margin: 0 0 0 0.4em;
+    padding-left: calc(var(--icon-width) + 0.05em);
 }
 /*  Adjust z-order of text elements.
  */
@@ -421,6 +423,18 @@ header h1 em {
  */
 #page-metadata .page-metadata-fields .page-author {
     white-space: normal;
+}
+
+/*	Status.
+ */
+#page-metadata .page-metadata-fields .page-status em {
+	margin-right: 0;
+}
+
+/*	Confidence.
+ */
+#page-metadata .page-metadata-fields .page-confidence em {
+	margin-right: 0;
 }
 
 /*  Importance.
