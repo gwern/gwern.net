@@ -281,4 +281,4 @@ arxivAbstractFixedRewrites = setLike [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%")
 gtxKeyValueKeyNames :: [String]
 gtxKeyValueKeyNames = setLike ["id", "doi", "title", "description", "created", "modified"
                       , "status", "importance", "confidence", "css-extension", "invert", "backlink"
-                      , "placeholder", "index", "thumbnail", "thumbnail-text"]
+                      , "placeholder", "index", "thumbnail", "thumbnail-text", "thumbnail-css"]

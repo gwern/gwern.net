@@ -965,6 +965,10 @@ canonicals = M.fromList $ setLike
   , ("Tim Gowers", "Timothy Gowers")
   , ("LinchZhang", "Linch")
   , ("zeeshanp_", "Zeeshan Patel")
+  , ("W. Daniel Hillis", "Danny Hillis")
+  , ("William Daniel Hillis", "Danny Hillis")
+  , ("William D. Hillis", "Danny Hillis")
+  , ("Daniel Hillis", "Danny Hillis")
   ]
 
 -- tests: unique
@@ -1020,7 +1024,7 @@ canonicalsWithInitials = setLike
   , "M. Saiful Bari", "Robert A. Freitas", "Roland G. Fryer", "Leslie Stephen Coles", "Mathew John Wedel"
   , "Ralph S. Baric", "Jack D. Cowan", "Paul C. Bressloff", "Claire N. Spottiswoode", "Clemens L. Winter"
   , "Hervey M. Cleckley", "Miriam A. Mosing", "Murray B. Stein", "David Samuel Margoliouth", "Guy L. Steele"
-  , "Nabeel S. Qureshi", "Robert E. Forsythe", "Alexander Strudwick Young", "George H. Estabrooks"]
+  , "Nabeel S. Qureshi", "Robert E. Forsythe", "Alexander Strudwick Young", "George H. Estabrooks", "David L. Waltz"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -2307,6 +2311,7 @@ authorLinkDB = M.fromList $
     , ("Alexander Strudwick Young", "https://alextisyoung.github.io/")
     , ("Jonathan Flint", "https://en.wikipedia.org/wiki/Jonathan_Flint_(scientist)")
     , ("Jasmine Sun", "https://jasmi.news/about")
+    , ("Lukas Petersson", "https://lukaspetersson.com/")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3610,4 +3615,4 @@ authorWpLinkDB = setLike
     , "Greg Corrado", "Philip Wheelwright", "Cristian Canton Ferrer", "Ian Kershaw", "David Samuel Margoliouth"
     , "Peter Filkins", "Marta Serra-Garcia", "Martin Fleming", "Barry Mazur", "Weiqi Zhang", "Guy L. Steele"
     , "Carlos M. Herrera", "William Fleeson", "Matt Levine", "Andrew Sullivan", "Anne Helen Petersen"
-    , "Richard A. Howard", "George H. Estabrooks"]
+    , "Richard A. Howard", "George H. Estabrooks", "Danny Hillis", "David L. Waltz"]

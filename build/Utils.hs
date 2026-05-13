@@ -71,7 +71,7 @@ calculateSizeToPercentileMap positiveSizes =
 --
 --   The order of the returned percentiles corresponds to the order of the
 --   original positive values in the input list.
---   Percentile is calculated as: round( (rank / (count − 1)) · 100 )
+--   Percentile is calculated as: round( (rank / (count − 1)) ⋅ 100 )
 --   where 'rank' is the 0-based index in the sorted list (using the highest
 --   rank for duplicate values), and 'count' is the total number of positive values.
 --

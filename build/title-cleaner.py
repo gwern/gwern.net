@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-05-10 21:36:21 gwern"
+# When:  Time-stamp: "2026-05-13 18:50:50 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -950,6 +950,10 @@ The hidden mathematics of bathrooms
 "Scientists crack the case of “screeching” Scotch tape"
 - "https://antigonejournal.com/2026/02/science-of-blunders-confessions-textual-critic/ 429 Too Many Request"
 ""
+- "C₁₃H₁₆CℓNO" # chemical formula (ketamine) with hardwired Unicode subscripts (and italics lowercase 'l' for unclear reasons)
+"C<sub>13</sub>H<sub>16</sub>ClNO"
+- "https://xbow.com/blog/mythos-offensive-security-xbow-evaluation XBOW - Mythos for Offensive Security: XBOW’s Evaluation"
+"Mythos for Offensive Security: XBOW’s Evaluation"
 
 """
 
