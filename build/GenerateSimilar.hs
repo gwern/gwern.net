@@ -124,7 +124,7 @@ O(n) scored candidates + O(n log n) sort
 to:
 
 @
-O(k) retained candidates + O(n · k) tiny-list insertion
+O(k) retained candidates + O(n ⋅ k) tiny-list insertion
 @
 
 [NOTE: if updated to a heap, this would be 'O(k) retained candidates + O(n log k)']
@@ -343,11 +343,11 @@ Let:
 Approximate costs:
 
 @
-Build EmbeddingIndex:       O(n · d) memory and time
-Single exact lookup:        O(n · d) time, O(k) retained hits
-Global top-𝑘 cache:         O(n² · d) time, O(n · k) storage
-Greedy seriation walk:      O(m² · d) time, O(m) working storage
-Local seriation cache:      O(m² · d) time, O(m²) storage
+Build EmbeddingIndex:       O(n ⋅ d) memory and time
+Single exact lookup:        O(n ⋅ d) time, O(k) retained hits
+Global top-𝑘 cache:         O(n² ⋅ d) time, O(n ⋅ k) storage
+Greedy seriation walk:      O(m² ⋅ d) time, O(m) working storage
+Local seriation cache:      O(m² ⋅ d) time, O(m²) storage
 
 @
 

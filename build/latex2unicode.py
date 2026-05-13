@@ -4,7 +4,7 @@
 # latex2unicode.py: Convert a simple inline TeX/LaTeX (aimed at ArXiv abstracts) into Unicode+HTML+CSS, using the OA API.
 # Author: Gwern Branwen
 # Date: 2023-06-28
-# When:  Time-stamp: "2026-03-19 12:50:15 gwern"
+# When:  Time-stamp: "2026-05-12 21:15:08 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python latex2unicode.py
@@ -255,7 +255,7 @@ DyT(<em>x</em>) = tanh(α<em>x</em>)
 - '\\hat r'
 <em>r̂</em>
 - '$x = \\frac{o \\cdot e - (1 - e)}{o}$'
-<em>x</em> = <em>o</em> · <em>e</em> − (1 − <em>e</em>) ⧸ <em>o</em>
+<em>x</em> = <em>o</em> ⋅ <em>e</em> − (1 − <em>e</em>) ⧸ <em>o</em>
 - '$\\mathcal{V}$'
 𝒱
 - '\\(\\sim 10^6 \\mathrm{\\mu Lenat/word}\\)'
@@ -271,7 +271,7 @@ DyT(<em>x</em>) = tanh(α<em>x</em>)
 - '1,600'
 1,600
 - '$2*5=10$'
-2 · 5 = 10
+2 ⋅ 5 = 10
 - '$32^\\circ\\text{C}$'
 32℃
 - '$\\binom{m}{2}$'
