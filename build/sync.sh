@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-05-11 20:59:02 gwern"
+# When:  Time-stamp: "2026-05-12 15:51:09 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -565,61 +565,62 @@ else
     bold "Generating HTML previews of document types (like MS Word)…"
     # For some document types, Pandoc doesn't support them, or syntax-highlighting wouldn't be too useful for preview popups. So we use LibreOffice to convert them to HTML.
     # <https://en.wikipedia.org/wiki/LibreOffice#Supported_file_formats>
-    convert_to_html() {
-        local -r EMBED_IMAGES="$1"
-        shift # Remove the first argument to process remaining arguments
-        if [[ -f "$1" ]]; then
-            local FILE="$1"
-            convert_file "$FILE"
-        else
-            local -r FILE_EXTS=("$@") # Remaining arguments are file extensions
-            find ./doc/ -type f \( $(printf -- "-name *.%s -o " "${FILE_EXTS[@]}" | sed 's/ -o $//') \) | while read -r FILE; do
-                convert_file "$FILE"
-            done
-        fi
-    }
-    convert_file() {
-        local -r FILE="$1"
-        if [ ! -f "_site/${FILE}.html" ]; then
-            local TARGET
-            TARGET="$FILE" # HTML versions are located at "$FILE.html"; we do not strip the extensions
-            local OUTDIR
-            OUTDIR="$(dirname "_site/${FILE}.html")"
-            local CONVERSION_OPTION="html"
+	convert_to_html() {
+	    local -r EMBED_IMAGES="$1"; shift
+	    if [[ -f "$1" ]]; then
+	        convert_file "$EMBED_IMAGES" "$1"
+	    else
+	        local -r FILE_EXTS=("$@")
+	        find ./doc/ -type f \( $(printf -- "-name *.%s -o " "${FILE_EXTS[@]}" | sed 's/ -o $//') \) -print0 \
+	          | xargs -0 -n 1 -P "$(nproc)" bash -c 'convert_file "$0" "$1"' "$EMBED_IMAGES"
+	    fi
+	}
+	convert_file() {
+	    local -r EMBED_IMAGES="$1"
+	    local -r FILE="$2"
+	    if [ ! -f "_site/${FILE}.html" ]; then
+            # HTML versions are located at "$FILE.html"; we do not strip the extensions
+	        local OUTDIR
+	        OUTDIR="$(dirname "_site/${FILE}.html")"
+	        local CONVERSION_OPTION="html"
 
-            # Create output directory if it doesn't exist
-            mkdir -p "$OUTDIR"
+	        # Create output directory if it doesn't exist
+	        mkdir -p "$OUTDIR"
 
-            # Handle file path properly, especially with spaces
-            if [[ "$EMBED_IMAGES" == "true" ]]; then
-                CONVERSION_OPTION="html:HTML:EmbedImages"
-            fi
+	        # Handle file path properly, especially with spaces
+	        if [[ "$EMBED_IMAGES" == "true" ]]; then
+	            CONVERSION_OPTION="html:HTML:EmbedImages"
+	        fi
 
-            # Use quotes around paths and create a clean temporary user profile
-            # WARNING: Libreoffice `--convert-to` will replace the original suffix, like '$FILE.ods' → '$FILE.html'. But we need to preserve the original extension to allow other use-cases like syntax-highlighting HTML (so we can load '$FILE.html.html' to get the presentable version of '$FILE.html'). We have to work around this by restoring the original filename afterwards.
-            timeout 5m libreoffice --headless \
-                --convert-to "$CONVERSION_OPTION" \
-                -env:UserInstallation=file:///tmp/LibO_Conversion \
-                --outdir "$OUTDIR" \
-                "$FILE" >/dev/null 2>&1 || echo "$FILE failed LibreOffice conversion?"
+	        # Use quotes around paths and create a clean temporary user profile.
+	        # NOTE: We give each invocation its own `UserInstallation` directory (rather than a shared `/tmp/LibO_Conversion`) because LibreOffice locks its profile dir on startup, so concurrent invocations sharing one profile fight over the lockfile --- this is the real cause of the "race conditions" and the spurious GUI "another instance is running" dialog leaking through `--headless`. With per-invocation profiles, conversions parallelize safely.
+	        # WARNING: Libreoffice `--convert-to` will replace the original suffix, like '$FILE.ods' → '$FILE.html'. But we need to preserve the original extension to allow other use-cases like syntax-highlighting HTML (so we can load '$FILE.html.html' to get the presentable version of '$FILE.html'). We have to work around this by restoring the original filename afterwards.
+	        local USERDIR
+	        USERDIR="$(mktemp -d)"
+	        timeout 5m libreoffice --headless --norestore --nologo --nofirststartwizard \
+	            --convert-to "$CONVERSION_OPTION" \
+	            "-env:UserInstallation=file://$USERDIR" \
+	            --outdir "$OUTDIR" \
+	            "$FILE" >/dev/null 2>&1 || echo "$FILE failed LibreOffice conversion?"
+	        rm -rf "$USERDIR"
 
-            # If file wasn't created directly in outdir, try to find it
-            if [ ! -f "$OUTDIR/$(basename "${FILE}").html" ]; then
-                # Try to find the generated HTML file in current directory
-                local GENERATED_HTML
-                GENERATED_HTML="$(find _site/ -name "$(basename "${FILE%.*}").html" -print -quit)"
-                if [ -n "$GENERATED_HTML" ]; then
-                    mv "$GENERATED_HTML" "$OUTDIR/$(basename "${FILE}").html" || echo "$FILE failed to move HTML file?"
-                else
-                    echo "$FILE conversion result not found?"
-                fi
-            fi
-        fi
-    }
+	        # If file wasn't created directly in outdir, try to find it
+	        if [ ! -f "$OUTDIR/$(basename "${FILE}").html" ]; then
+	            # Try to find the generated HTML file in current directory
+	            local GENERATED_HTML
+	            GENERATED_HTML="$(find _site/ -name "$(basename "${FILE%.*}").html" -print -quit)"
+	            if [ -n "$GENERATED_HTML" ]; then
+	                mv "$GENERATED_HTML" "$OUTDIR/$(basename "${FILE}").html" || echo "$FILE failed to move HTML file?"
+	            else
+	                echo "$FILE conversion result not found?"
+	            fi
+	        fi
+	    fi
+	}
+	export -f convert_file
 
     # Convert documents with embedded images
-    # WARNING: LibreOffice seems to have race-conditions and can't convert >1 files at a time reliably, with sporadic failures or even a GUI popup error dialogue!
-    # HACK: Libreoffice for some reason fails if you specify the 'HTML:EmbedImages' on a spreadsheet file, even though that obviously can't be a problem (it works fine on other documents, and spreadsheets don't have images to embed, so why is it a fatal error‽), and also Libreoffice lies about the error, exiting with success, so you can't simply try a second time with the `EmbedImages` removed...
+    # HACK: LibreOffice for some reason fails if you specify the 'HTML:EmbedImages' on a spreadsheet file, even though that obviously can't be a problem (it works fine on other documents, and spreadsheets don't have images to embed, so why is it a fatal error‽), and also LibreOffice lies about the error, exiting with success, so you can't simply try a second time with the `EmbedImages` removed...
     el convert_to_html "true" "doc" "docx" # document
     # Convert spreadsheets without embedded images
     # Note: Specifying 'HTML:EmbedImages' for spreadsheets leads to failures despite being unnecessary.
