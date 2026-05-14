@@ -140,6 +140,7 @@ GW.layout = {
 			"has-floats",
 			"overlap-not",
 			"force-dropcap",
+			"has-dropcap",
 			"heading"
 		];
 		for (let cssClass of node.classList)
@@ -945,7 +946,9 @@ function addDropcapClassTo(block, dropcapType) {
 
 	stripDropcapClassesFrom(block);
 
-	block.classList.add(`dropcap-${dropcapType}`, "has-dropcap");
+	block.classList.add(`dropcap-${dropcapType}`);
+	if (dropcapType != "not")
+		block.classList.add("has-dropcap");
 }
 
 /*************************************/
@@ -1342,7 +1345,7 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 					} else {
 						dropcapType = (previousBlock?.matches(".abstract blockquote")
 									   ? dropcapTypeOf(previousBlock)
-									   : null) ?? dropcapTypeOf(containingDocument.body);
+									   : null) ?? bodyDropcapType;
 					}
 				} else {
 					let dropcapContainerOptions = {

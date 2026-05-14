@@ -19652,10 +19652,10 @@ function collapseCollapseBlock(collapseBlock, options) {
 /*  Returns true if the given collapse block is currently collapsed.
  */
 function isCollapsed(collapseBlock) {
-	if (collapseBlock.classList.contains("expanded"))
+	if (collapseBlock.classList.contains("expanded") == true)
 		return false;
 		
-	if (collapseBlock.classList.contains("expanded-not"))
+	if (collapseBlock.classList.contains("expanded-not") == true)
 		return true;
 		
     return undefined;
@@ -19750,6 +19750,19 @@ function newDisclosureButton(options) {
 	return elementFromHTML(disclosureButtonHTML);
 }
 
+/*****************************************************************************/
+/*	Enable .collapse-small (and any similar classes) to function as .collapse.
+ */
+addContentLoadHandler("preprocessAuxiliaryCollapseClasses", (eventInfo) => {
+	let auxiliaryCollapseClassesSelector = [
+		"collapse-small"
+	].map(x => `.${x}`).join(", ");
+
+	eventInfo.container.querySelectorAll(auxiliaryCollapseClassesSelector).forEach(collapseElement => {
+		collapseElement.classList.add("collapse");
+	});
+}, "rewrite");
+
 /****************************************************************************/
 /*	Before preparing collapse blocks, rectify collapse abstract tag mismatch, 
 	namely cases where a div.collapse (or a section.collapse, etc.) has a 
@@ -19797,7 +19810,7 @@ addContentLoadHandler("prepareCollapseBlocks", (eventInfo) => {
 							 || collapseBlock.classList.contains("start-expanded") == true);
 
 		//	The collapse block might already be prepared.
-		if (collapseBlock.classList.containsAnyOf([ "collapse-block", "collapse-inline" ])) {
+		if (collapseBlock.classList.containsAnyOf([ "collapse-block", "collapse-inline" ]) == true) {
 			if (isCollapsed(collapseBlock) == startExpanded) {
 				collapseBlock.swapClasses([ "expanded", "expanded-not" ], startExpanded ? 0 : 1);
 
@@ -19872,26 +19885,26 @@ addContentLoadHandler("prepareCollapseBlocks", (eventInfo) => {
 			if (collapseAbstract?.closest(".collapse") == collapseWrapper) {
 				//	Mark those collapse blocks that have abstracts.
 				collapseWrapper.classList.add("has-abstract");
-				if (collapseAbstract.classList.contains("abstract-collapse-only"))
+				if (collapseAbstract.classList.contains("abstract-collapse-only") == true)
 					collapseWrapper.classList.add("has-abstract-collapse-only");
 
 				//	Wrap bare text nodes and inline elements in <p> elements.
-				if (collapseWrapper.classList.contains("collapse-block"))
+				if (collapseWrapper.classList.contains("collapse-block") == true)
 					paragraphizeTextNodesOfElementRetainingMetadata(collapseAbstract);
 
 				//	Make sure “real” abstracts are marked as such.
-				if (   collapseWrapper.classList.contains("collapse-block")
+				if (   collapseWrapper.classList.contains("collapse-block") == true
 					&& collapseAbstract.firstElementChild?.tagName == "BLOCKQUOTE")
 					collapseAbstract.classList.add("abstract");
 
 				//	Hide iceberg indicator on inline collapses with blank abstracts.
-				if (   collapseWrapper.classList.contains("collapse-inline")
+				if (   collapseWrapper.classList.contains("collapse-inline") == true
 					&& (   isNodeEmpty(collapseAbstract)
-						|| collapseWrapper.classList.contains("has-abstract-collapse-only")))
+						|| collapseWrapper.classList.contains("has-abstract-collapse-only") == true))
 					collapseWrapper.classList.add("iceberg-not");
 
 				//	The “collapse-small” class would be an error in this case...
-				if (collapseWrapper.classList.contains("collapse-small")) {
+				if (collapseWrapper.classList.contains("collapse-small") == true) {
 					let collapseWrapperTagName = collapseWrapper.tagName.toLowerCase()
 					GWServerLogError(eventInfo.loadLocation.href + `--contradictory-collapse-class-${collapseWrapperTagName}`, 
 									 `contradictory collapse class (${collapseWrapperTagName})`);	 
@@ -19900,7 +19913,7 @@ addContentLoadHandler("prepareCollapseBlocks", (eventInfo) => {
 				}
 			} else {
 				//	If there is no abstract...
-				if (collapseWrapper.classList.contains("collapse-inline")) {
+				if (collapseWrapper.classList.contains("collapse-inline") == true) {
 					/*	Inline collapses without an abstract get a default 
 						abstract (just an ellipsis)... unless they are marked
 						as .collapse-small.
@@ -19912,15 +19925,15 @@ addContentLoadHandler("prepareCollapseBlocks", (eventInfo) => {
 							innerHTML: " …"
 						}), collapseWrapper.firstChild);
 					}
-
-					/*	Ellipsis or not, the iceberg indicator gets hidden for
-						inline collapses without an abstract.
-					 */
-					collapseWrapper.classList.add("iceberg-not");
-				} else {
-					//	Mark those collapse blocks that have no abstracts.
-					collapseWrapper.classList.add("no-abstract");
 				}
+
+				//	Mark those collapse elements that have no abstracts.
+				collapseWrapper.classList.add("abstract-not");
+
+				/*	The iceberg indicator gets hidden for small collapses.
+				 */
+				if (collapseWrapper.classList.contains("collapse-small") == true)
+					collapseWrapper.classList.add("iceberg-not");
 			}
 
 			//	Designate “bare content” collapse blocks.
@@ -19928,7 +19941,7 @@ addContentLoadHandler("prepareCollapseBlocks", (eventInfo) => {
 				&& collapseWrapper.classList.contains("bare-content-not") == false
 				&& collapseWrapper.tagName != "SECTION") {
 				if (   collapseWrapper.firstElementChild.matches(bareContentSelector)
-					|| (   collapseWrapper.classList.contains("has-abstract")
+					|| (   collapseWrapper.classList.contains("has-abstract") == true
 						&& collapseWrapper.querySelector(collapseAbstractSelector).firstElementChild.matches(bareContentSelector)))
 					collapseWrapper.classList.add("bare-content");
 			}
@@ -19937,7 +19950,7 @@ addContentLoadHandler("prepareCollapseBlocks", (eventInfo) => {
 				block collapse here. Collapse blocks of this type never have 
 				abstracts.
 			 */
-			collapseWrapper = wrapElement(collapseBlock, "div.collapse-block.no-abstract", wrapOptions);
+			collapseWrapper = wrapElement(collapseBlock, "div.collapse-block.abstract-not", wrapOptions);
 
 			//	Designate “bare content” collapse blocks.
 			if (collapseWrapper.firstElementChild.matches(bareContentSelector))
@@ -19978,8 +19991,20 @@ addContentLoadHandler("prepareCollapseBlocks", (eventInfo) => {
 			}				
 		} while (node);
 
+		//	Differentiate among inline collapse structures.
+		if (   collapseWrapper.classList.contains("collapse-inline") == true
+			&& collapseWrapper.classList.contains("abstract-not")    == false) {
+			       if (collapseWrapper.querySelector(".collapse-content-wrapper ~ .abstract-collapse ~ .collapse-content-wrapper")) {
+				collapseWrapper.classList.add("abstract-in-middle");
+			} else if (collapseWrapper.querySelector(                            ".abstract-collapse ~ .collapse-content-wrapper")) {
+				collapseWrapper.classList.add("abstract-at-start");
+			} else if (collapseWrapper.querySelector(".collapse-content-wrapper ~ .abstract-collapse"                            )) {
+				collapseWrapper.classList.add("abstract-at-end");
+			}
+		}
+
 		//  Inject the disclosure button(s).
-		if (collapseWrapper.classList.contains("collapse-inline")) {
+		if (collapseWrapper.classList.contains("collapse-inline") == true) {
 			let collapseContentWrappers = Array.from(collapseWrapper.childNodes).filter(childNode => childNode.matches(".collapse-content-wrapper"));
 			collapseContentWrappers.forEach(collapseContentWrapper => {
 				//	Additional wrapper for inline collapses.
@@ -20000,12 +20025,14 @@ addContentLoadHandler("prepareCollapseBlocks", (eventInfo) => {
 		}
 
 		//	Inject the size indicator.
-		let icebergWhere = collapseWrapper.classList.contains("collapse-block")
-						   ? collapseWrapper.querySelector(".disclosure-button")
-						   : collapseWrapper.querySelector(".disclosure-button.end");
-		icebergWhere.appendChild(newElement("SPAN", {
-			"class": "collapse-iceberg-indicator graf-content-not"
-		}));
+		if (collapseWrapper.classList.contains("iceberg-not") == false) {
+			let icebergWhere = collapseWrapper.classList.contains("collapse-block") == true
+							   ? collapseWrapper.querySelector(".disclosure-button")
+							   : collapseWrapper.querySelector(".disclosure-button.end");
+			icebergWhere.appendChild(newElement("SPAN", {
+				"class": "collapse-iceberg-indicator graf-content-not"
+			}));
+		}
 
 		//	Mark as expanded, if need be.
 		collapseWrapper.swapClasses([ "expanded", "expanded-not" ], startExpanded ? 0 : 1)
@@ -20025,7 +20052,7 @@ addContentLoadHandler("prepareCollapseBlocks", (eventInfo) => {
 	height of section heading text, for section collapses.
  */
 addContentInjectHandler("rectifySectionCollapseLayout", (eventInfo) => {
-	eventInfo.container.querySelectorAll("section.collapse").forEach(section => {
+	eventInfo.container.querySelectorAll("section.collapse:not(.collapse-small)").forEach(section => {
 		section.style.removeProperty("--collapse-toggle-top-height");
 		section.style.removeProperty("--collapse-toggle-top-icon-size");
 
@@ -20083,7 +20110,7 @@ function updateDisclosureButtonState(collapseBlock, options) {
 					? `${action} to expand`
 					: `${action} to collapse`;
 
-	if (collapseBlock.classList.contains("collapse-block")) {
+	if (collapseBlock.classList.contains("collapse-block") == true) {
 		let disclosureButton = collapseBlock.querySelector(".disclosure-button");
 
 		disclosureButton.querySelectorAll(".part .label").forEach(label => {
@@ -20098,7 +20125,8 @@ function updateDisclosureButtonState(collapseBlock, options) {
 	}
 
 	//	Set collapse block iceberg indicator to update when needed.
-	setCollapseBlockIcebergIndicatorUpdateWhenNeeded(collapseBlock);
+	if (collapseBlock.classList.contains("iceberg-not") == false)
+		setCollapseBlockIcebergIndicatorUpdateWhenNeeded(collapseBlock);
 }
 
 /*****************************************************************************/
@@ -20153,11 +20181,11 @@ function updateCollapseBlockIcebergIndicatorIfNeeded(collapseBlock) {
 
 	let progressPercentage = 100;
 	if (isCollapsed(collapseBlock)) {
-		if (collapseBlock.classList.contains("collapse-block")) {
-			if (collapseBlock.classList.contains("no-abstract")) {
+		if (collapseBlock.classList.contains("collapse-block") == true) {
+			if (collapseBlock.classList.contains("abstract-not") == true) {
 				let collapsedContentHeight = collapseBlock.querySelector(".collapse-content-wrapper").clientHeight;
 				let contentHeight;
-				if (collapseBlock.classList.contains("sourceCode")) {
+				if (collapseBlock.classList.contains("sourceCode") == true) {
 					contentHeight = collapseBlock.querySelector("code").clientHeight;
 				} else {
 					contentHeight = Array.from(collapseBlock.querySelector(".collapse-content-wrapper").children).reduce((h, c) => h + c.clientHeight, 0);
@@ -20192,7 +20220,7 @@ function toggleCollapseBlockState(collapseBlock, expanding, options) {
 	if (collapseBlock.dataset.collapseXorStateWithSelector > "") {
 		let otherCollapseElement = collapseBlock.getRootNode().querySelector(collapseBlock.dataset.collapseXorStateWithSelector);
 		if (   otherCollapseElement != options.triggeredByStateChangeOnElement
-			&& otherCollapseElement.classList.contains("collapse")) {
+			&& otherCollapseElement.classList.contains("collapse") == true) {
 			toggleCollapseBlockState(otherCollapseElement, expanding ? false : true, {
 				triggeredByStateChangeOnElement: collapseBlock
 			});
@@ -20210,7 +20238,7 @@ function toggleCollapseBlockState(collapseBlock, expanding, options) {
 		(Also don’t do this for collapses in blockquotes, which get treated
 		 specially.)
 	 */
-	if (   collapseBlock.classList.contains("collapse-block")
+	if (   collapseBlock.classList.contains("collapse-block") == true
 		&& collapseBlock.closest("blockquote") == null
 		&& collapseBlock.querySelector(".collapse-content-wrapper").classList.contains("width-full") == false) {
 		if (expanding) {
@@ -20273,17 +20301,17 @@ addContentInjectHandler("activateCollapseBlockDisclosureButtons", (eventInfo) =>
 			GWLog("Collapse.collapseBlockDisclosureButtonActivated", "collapse.js", 2);
 
 			//	Nullify accidental late clicks in block collapses.
-			if (   collapseBlock.classList.contains("collapse-block")
-				&& collapseBlock.classList.contains("just-auto-expanded"))
+			if (   collapseBlock.classList.contains("collapse-block") == true
+				&& collapseBlock.classList.contains("just-auto-expanded") == true)
 				return;
 
 			//	Expanding? Collapsing? (For readability and consistency.)
-			let expanding = (isCollapsed(collapseBlock) == true);
+			let expanding  = (isCollapsed(collapseBlock) == true);
 			let collapsing = (isCollapsed(collapseBlock) == false);
 
 			//	Keep count of clicks to uncollapse.
 			if (   expanding
-				&& collapseBlock.classList.contains("collapse-block")
+				&& collapseBlock.classList.contains("collapse-block") == true
 				&& event.type == "click")
 				incrementSavedCount("clicked-to-expand-collapse-block-count");
 
@@ -20304,7 +20332,7 @@ addContentInjectHandler("activateCollapseBlockDisclosureButtons", (eventInfo) =>
 				scrollElementIntoView(collapseBlock);
 
 			//	Update temporary state.
-			if (   collapseBlock.classList.contains("expand-on-hover")
+			if (   collapseBlock.classList.contains("expand-on-hover") == true
 				&& GW.collapse.hoverEventsEnabled) {
 				let tempClass = null;
 				switch (event.type) {
@@ -20328,7 +20356,7 @@ addContentInjectHandler("activateCollapseBlockDisclosureButtons", (eventInfo) =>
 		});
 
 		//	Collapse block expand-on-hover.
-		if (   collapseBlock.classList.contains("expand-on-hover")
+		if (   collapseBlock.classList.contains("expand-on-hover") == true
 			&& GW.collapse.hoverEventsEnabled) {
 			collapseBlock.addEventListener("mouseenter", (event) => {
 				if (GW.collapse.hoverEventsActive == false) {
@@ -20344,7 +20372,7 @@ addContentInjectHandler("activateCollapseBlockDisclosureButtons", (eventInfo) =>
 				if (isCollapsed(collapseBlock) == false)
 					return;
 
-				if (collapseBlock.classList.contains("just-clicked"))
+				if (collapseBlock.classList.contains("just-clicked") == true)
 					return;
 
 				disclosureButton.actionHandler(event);
@@ -20356,7 +20384,7 @@ addContentInjectHandler("activateCollapseBlockDisclosureButtons", (eventInfo) =>
 		//	On-hover state changes.
 		if (GW.collapse.hoverEventsEnabled) {
 			//	Add listener to show labels on hover, if need be.
-			if (   collapseBlock.classList.contains("collapse-block")
+			if (   collapseBlock.classList.contains("collapse-block") == true
 				&& GW.collapse.showCollapseInteractionHintsOnHover == true
 				&& GW.collapse.alwaysShowCollapseInteractionHints == false) {
 				disclosureButton.addEventListener("mouseenter", (event) => {
@@ -20376,9 +20404,9 @@ addContentInjectHandler("activateCollapseBlockDisclosureButtons", (eventInfo) =>
 			}
 
 			//	Add listeners to highlight counterpart at other end.
-			if (   collapseBlock.classList.contains("collapse-inline")
-				&& disclosureButton.classList.containsAnyOf([ "start", "end" ])) {
-				let counterpart = disclosureButton.classList.contains("end")
+			if (   collapseBlock.classList.contains("collapse-inline") == true
+				&& disclosureButton.classList.containsAnyOf([ "start", "end" ]) == true) {
+				let counterpart = disclosureButton.classList.contains("end") == true
 								  ? collapseBlock.querySelector(".disclosure-button")
 								  : collapseBlock.querySelector(".collapse-content-wrapper").nextElementSibling;
 				disclosureButton.addEventListener("mouseenter", (event) => {
@@ -20412,7 +20440,7 @@ function expandLockCollapseBlock(collapseBlock) {
 	let wasCollapsed = (isCollapsed(collapseBlock) == true);
 
 	//	Strip collapse-specific classes.
-	collapseBlock.classList.remove("collapse", "collapse-block", "collapse-inline", "expanded", "expanded-not", "expand-on-hover", "has-abstract", "no-abstract", "bare-content", "file-include-collapse", "expanded", "expanded-not");
+	collapseBlock.classList.remove("collapse", "collapse-block", "collapse-inline", "expanded", "expanded-not", "expand-on-hover", "has-abstract", "abstract-not", "bare-content", "file-include-collapse", "expanded", "expanded-not");
 	if (collapseBlock.className == "")
 		collapseBlock.removeAttribute("class");
 
