@@ -1472,7 +1472,7 @@ section.highlight-fading::before {
 
 /*  Collapse blocks with no abstract show some of their contents when collapsed.
  */
-.collapse-block.no-abstract.expanded-not {
+.collapse-block.abstract-not.expanded-not {
     min-height: calc(  var(--collapse-toggle-top-height)
                      + var(--collapse-toggle-bottom-height));
     padding-top: 0;
@@ -1536,7 +1536,7 @@ section.collapse > .heading {
 .collapse-block.has-abstract.expanded-not > .collapse-content-wrapper {
     max-height: 0;
 }
-.collapse-block.no-abstract.expanded-not > .collapse-content-wrapper {
+.collapse-block.abstract-not.expanded-not > .collapse-content-wrapper {
     max-height: calc(  var(--collapse-toggle-top-height)
                      + var(--collapse-toggle-bottom-height));
 }
@@ -1737,7 +1737,7 @@ section.collapse > .heading {
     opacity: 0;
     transition: none;
 }
-.collapse-block.no-abstract.expanded-not > .disclosure-button .part.bottom > span {
+.collapse-block.abstract-not.expanded-not > .disclosure-button .part.bottom > span {
     display: none;
 }
 
@@ -1757,7 +1757,7 @@ section.collapse > .heading {
     background-color: transparent;
 }
 
-/*  Inline disclosure button.
+/*  Disclosure buttons of inline collapses.
  */
 .collapse-inline > .collapse-content-outer-wrapper > .disclosure-button,
 .collapse-inline > .collapse-content-outer-wrapper > .disclosure-button .icon {
@@ -1798,10 +1798,51 @@ section.collapse > .heading {
     height: 90%;
     margin: 0 -0.45em 0 0;
 }
-.collapse-inline.expanded-not > .collapse-content-outer-wrapper > .disclosure-button.end .icon svg:nth-last-of-type(2) {
+
+/*	Disclosure buttons of “abstract-not” inline collapses.
+ */
+.collapse-inline.abstract-not.expanded-not > .collapse-content-outer-wrapper > .disclosure-button.end .icon svg:nth-last-of-type(2) {
     margin: 0 -0.45em 0 -0.45em;
 }
 
+/*	Disclosure buttons of “abstract-at-start” inline collapses.
+ */
+.collapse-inline.abstract-at-start.expanded-not > .collapse-content-outer-wrapper > .disclosure-button.end .icon svg:nth-last-of-type(2) {
+    margin: 0 -0.45em 0 -0.45em;
+}
+
+/*	Disclosure buttons of “abstract-in-middle” inline collapses.
+ */
+.collapse-inline.abstract-in-middle.expanded-not > .collapse-content-outer-wrapper > .disclosure-button.start .icon svg:nth-of-type(1) {
+	margin: 0 0 0 -0.25em;
+}
+.collapse-inline.abstract-in-middle.expanded-not > .collapse-content-outer-wrapper > .disclosure-button.end .icon svg:nth-of-type(1) {
+	margin: 0 -0.45em 0 -0.05em;
+}
+
+/*	Disclosure buttons of “abstract-at-end” inline collapses.
+ */
+.collapse-inline.abstract-at-end.expanded-not > .collapse-content-outer-wrapper > .disclosure-button.start .icon svg:nth-of-type(1) {
+	margin: 0 0 0 -0.25em;
+}
+.collapse-inline.abstract-at-end.expanded-not > .collapse-content-outer-wrapper > .disclosure-button.end .icon svg:nth-last-of-type(2) {
+    margin: 0 -0.45em 0 -0.45em;
+}
+.collapse-inline.abstract-at-end.expanded > .collapse-content-outer-wrapper > .disclosure-button.end .icon svg:nth-last-of-type(2) {
+	margin: 0 -0.45em 0 -0.20em;
+}
+.collapse-inline.abstract-at-end.expanded > .collapse-content-outer-wrapper > .disclosure-button.end .icon svg:nth-last-of-type(1) {
+	margin: 0 0.15em 0 0;
+}
+
+/*	Disclosure buttons of “small” inline collapses.
+ */
+.collapse-inline.collapse-small.expanded-not > .collapse-content-outer-wrapper > .disclosure-button.start .icon svg:nth-of-type(1) {
+	margin: 0 0 0 -0.15em;
+}
+
+/*	Animation of disclosure buttons of inline collapses.
+ */
 .collapse-inline.expanded > .collapse-content-outer-wrapper > .disclosure-button.end .icon svg:nth-last-of-type(2) {
     transform: rotateZ(0.5turn);
 }
@@ -1824,9 +1865,14 @@ section.collapse > .heading {
 .collapse-inline > .collapse-content-outer-wrapper > .disclosure-button .collapse-iceberg-indicator .inline-icon {
     top: 0;
 }
-.collapse-inline.expanded > .collapse-content-outer-wrapper > .disclosure-button .collapse-iceberg-indicator,
-.collapse-inline.iceberg-not > .collapse-content-outer-wrapper > .disclosure-button .collapse-iceberg-indicator {
+.collapse-inline.expanded > .collapse-content-outer-wrapper > .disclosure-button .collapse-iceberg-indicator {
     display: none;
+}
+
+/*	Iceberg indicators in “abstract-at-end” inline collapses.
+ */
+.collapse-inline.abstract-at-end.expanded-not > .collapse-content-outer-wrapper > .disclosure-button .collapse-iceberg-indicator {
+	margin: 0 0.20em 0 0;
 }
 
 /*****************************/
@@ -1866,7 +1912,7 @@ div.collapse-block > .abstract-collapse-only.abstract {
 
 /*  Similar to bare-content collapses, when expanded.
  */
-.collapse.has-abstract-collapse-only.expanded > .collapse-content-wrapper {
+.collapse-block.has-abstract-collapse-only.expanded > .collapse-content-wrapper {
     padding: 0.5em 0;
 }
 
@@ -1903,14 +1949,14 @@ section.collapse.has-abstract.expanded > .collapse-content-wrapper {
 
 /*  When a section has no abstract, show preview of contents.
  */
-section.collapse.no-abstract.expanded-not {
+section.collapse.abstract-not.expanded-not {
     --collapse-toggle-bottom-height: calc(5.25 * var(--base-font-size));
 }
-section.collapse.no-abstract.expanded-not > .collapse-content-wrapper {
+section.collapse.abstract-not.expanded-not > .collapse-content-wrapper {
     max-height: var(--collapse-toggle-bottom-height);
     padding: 0.5em 0.5em 0.5em 0;
 }
-section.collapse.no-abstract.expanded > .collapse-content-wrapper {
+section.collapse.abstract-not.expanded > .collapse-content-wrapper {
     padding: 0.5em 0;
 }
 
@@ -1922,7 +1968,7 @@ section.collapse.expanded > .disclosure-button .part.top .label {
 
 /*  For abstract-less sections, content visible through disclosure button.
  */
-section.collapse.no-abstract.expanded-not > .disclosure-button .part.bottom::before {
+section.collapse.abstract-not.expanded-not > .disclosure-button .part.bottom::before {
     opacity: 0.85;
 }
 
@@ -1974,10 +2020,10 @@ section.collapse.level1 > .heading a::after {
 /*  Collapsible non-section blocks.
  */
 
-div.collapse.no-abstract.expanded-not > .disclosure-button {
+div.collapse.abstract-not.expanded-not > .disclosure-button {
     box-shadow: none;
 }
-div.collapse.no-abstract.expanded-not > .disclosure-button .part::before {
+div.collapse.abstract-not.expanded-not > .disclosure-button .part::before {
     opacity: 0.85;
 }
 
@@ -2046,25 +2092,46 @@ div.collapse.no-abstract.expanded-not > .disclosure-button .part::before {
 /*  “Bare content” collapses (not a section, not code, not table, etc.)
  */
 
-.collapse.bare-content.has-abstract {
+.collapse-block.bare-content.has-abstract {
     --collapse-toggle-top-height: calc(2.25 * var(--base-font-size));
 
     padding-left: var(--collapse-left-offset);
 }
 
-.collapse.bare-content.no-abstract {
+.collapse-block.bare-content.abstract-not {
     --collapse-toggle-bottom-height: calc(2.5 * var(--base-font-size));
 }
 
-.collapse.bare-content.has-abstract.expanded > .collapse-content-wrapper {
+.collapse-block.bare-content.has-abstract.expanded > .collapse-content-wrapper {
     padding: 0 0 0.5em 0;
 }
 
-.collapse.bare-content.no-abstract.expanded-not > .collapse-content-wrapper {
+.collapse-block.bare-content.abstract-not.expanded-not > .collapse-content-wrapper {
     padding: 0.25em 0.5em;
 }
-.collapse.bare-content.no-abstract.expanded > .collapse-content-wrapper {
+.collapse-block.bare-content.abstract-not.expanded > .collapse-content-wrapper {
     padding: 0.5em 0;
+}
+
+/***************************/
+/*	“Small” block collapses.
+ */
+ 
+div.collapse-block.collapse-small {
+	--collapse-toggle-top-height: calc(2.25 * var(--base-font-size));
+}
+div.collapse-block.collapse-small.expanded-not {
+	--collapse-toggle-bottom-height: 0px;
+}
+
+section.collapse-block.collapse-small {
+	--collapse-toggle-top-height: calc(2.25 * var(--base-font-size));
+}
+section.collapse-block.collapse-small.expanded-not {
+	--collapse-toggle-bottom-height: 0px;
+}
+section.collapse-block.collapse-small.abstract-not.expanded-not > .collapse-content-wrapper {
+	padding: 0;
 }
 
 /**********************/
@@ -2102,7 +2169,7 @@ blockquote .collapse-block > .disclosure-button:hover {
     --collapse-button-background-color: var(--GW-collapse-in-blockquote-disclosure-button-hover-color);
 }
 
-blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::before {
+blockquote .collapse-block.abstract-not.expanded-not > .disclosure-button .part::before {
     opacity: 0.70;
 }
 
@@ -2117,15 +2184,15 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
 /****************************************/
 /*  Aux-links and file include collapses.
  */
-.collapse.aux-links-append,
-.collapse.file-include-collapse {
+.collapse-block.aux-links-append,
+.collapse-block.file-include-collapse {
     --collapse-toggle-top-height: calc(2.25 * var(--base-font-size));
     --collapse-toggle-bottom-height: calc(2.25 * var(--base-font-size));
 
     clear: both;
 }
 
-.collapse.aux-links-append > .disclosure-button > .collapse-iceberg-indicator {
+.collapse-block.aux-links-append > .disclosure-button > .collapse-iceberg-indicator {
     display: none;
 }
 
@@ -2133,14 +2200,14 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
 /*  File include collapses.
  */
 
-.collapse.file-include-collapse {
+.collapse-block.file-include-collapse {
     --collapse-toggle-top-height: calc(2.25 * var(--base-font-size));
     --collapse-toggle-bottom-height: calc(2.25 * var(--base-font-size));
 
     padding-left: var(--collapse-left-offset);
 }
 
-.collapse.file-include-collapse > .collapse-content-wrapper {
+.collapse-block.file-include-collapse > .collapse-content-wrapper {
     padding: 0.5em 0.5em 0.5em 0;
 }
 
@@ -2152,22 +2219,22 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
 /*  “Aux links” and “file include” collapses in annotations.
  */
 
-.annotation .collapse.aux-links-append,
-.annotation .collapse.file-include-collapse {
+.annotation .collapse-block.aux-links-append,
+.annotation .collapse-block.file-include-collapse {
     border-top: 1px solid var(--GW-aux-links-collapse-border-color);
 }
 
-.annotation .collapse.aux-links-append.expanded-not,
-.annotation .collapse.file-include-collapse.expanded-not {
+.annotation .collapse-block.aux-links-append.expanded-not,
+.annotation .collapse-block.file-include-collapse.expanded-not {
     display: flow-root;
 }
-.annotation .collapse.aux-links-append.expanded,
-.annotation .collapse.file-include-collapse.expanded {
+.annotation .collapse-block.aux-links-append.expanded,
+.annotation .collapse-block.file-include-collapse.expanded {
     clear: both;
 }
 
-.annotation .collapse.aux-links-append > .collapse-content-wrapper,
-.annotation .collapse.file-include-collapse > .collapse-content-wrapper {
+.annotation .collapse-block.aux-links-append > .collapse-content-wrapper,
+.annotation .collapse-block.file-include-collapse > .collapse-content-wrapper {
     padding: 0.5em 0 0.5em 2px;
 }
 
@@ -2180,7 +2247,7 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
     transcluded (rather than pop-framed) annotations.
  */
 
-.annotation > .data-field.title + .data-field.file-includes .collapse.file-include-collapse {
+.annotation > .data-field.title + .data-field.file-includes .collapse-block.file-include-collapse {
     border-top: none;
 }
 
@@ -2188,12 +2255,12 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
 /*  Collapses in directory index link bibliographies.
  */
 
-.collapse.tag-index-link-bibliography-block.expanded-not {
+.collapse-block.tag-index-link-bibliography-block.expanded-not {
     padding-left: 0.75em;
     margin-left: -1px;
 }
 
-.collapse.tag-index-link-bibliography-block > .collapse-content-wrapper {
+.collapse-block.tag-index-link-bibliography-block > .collapse-content-wrapper {
     padding: 0.5em 0;
 }
 
@@ -2201,7 +2268,7 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
 /*  Per-section backlinks.
  */
 
-.collapse.section-backlinks-container {
+.collapse-block.section-backlinks-container {
     --collapse-toggle-top-height: calc(2.75 * var(--base-font-size));
 
     margin-left: calc(-1 * var(--collapse-left-offset));
@@ -2209,17 +2276,17 @@ blockquote .collapse-block.no-abstract.expanded-not > .disclosure-button .part::
     clear: both;
 }
 
-.collapse.section-backlinks-container > .collapse-content-wrapper {
+.collapse-block.section-backlinks-container > .collapse-content-wrapper {
     padding: 0.5em 0 0.75em 0;
 }
 
-.collapse.section-backlinks-container.expanded-not > .disclosure-button .part::before {
+.collapse-block.section-backlinks-container.expanded-not > .disclosure-button .part::before {
     opacity: 0.70;
 }
 
 /*  In sidenotes.
  */
-.sidenote .collapse.section-backlinks-container {
+.sidenote .collapse-block.section-backlinks-container {
     margin-left: 0;
 }
 
@@ -6278,7 +6345,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 }
 
 
-.popup-body.local-page .collapse.section-backlinks-container {
+.popup-body.local-page .collapse-block.section-backlinks-container {
     padding-right: 0.5em;
     border-color: var(--GW-aux-links-collapse-border-color);
     border-style: solid;
