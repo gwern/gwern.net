@@ -87,8 +87,8 @@ toWikipediaEnURLSearch title = "https://en.wikipedia.org/w/index.php?fulltext=1&
 
 escapeWikiArticleTitle :: T.Text -> T.Text
 escapeWikiArticleTitle ""    = error "Interwiki.escapeWikiArticleTitle: called with an empty string! This should never happen."
-escapeWikiArticleTitle title = E.encodeTextWith (\c -> (E.isAllowed c || c `elem` [':','/', '(', ')', ',', '#', '+'])) $
-                               replaceManyT [("–", "%E2%80%93"), ("\"", "%22"), ("[", "%5B"), ("]", "%5D"), ("%", "%25"), (" ", "_"), ("<span class=\"smallcaps\"", ""), ("</span>", "")] $
+escapeWikiArticleTitle title = E.encodeTextWith (\c -> (E.isAllowed c || c `elem` [':','/', '(', ')', ',', '#'])) $
+                               replaceManyT [(" ", "_"), ("<span class=\"smallcaps\"", ""), ("</span>", "")] $
                                deunicode title
     where deunicode :: T.Text -> T.Text
           deunicode = replaceManyT [("‘", "\'"), ("’", "\'"), (" ", " "), (" ", " "), (" ", "")]
@@ -101,8 +101,6 @@ escapeWikiArticleTitle title = E.encodeTextWith (\c -> (E.isAllowed c || c `elem
 convertInterwikiLinks :: Pandoc -> Pandoc
 convertInterwikiLinks doc = walk (convertInterwikiLinksInline doc) doc
 
--- BUG: Escaping bugs with Unicode: eg. [Pāli Canon](!W) / <https://en.wikipedia.org/wiki/P%C4%81li_Canon>
--- but if I simply Network.HTTP.urlEncode the article, that breaks a lot of other stuff (like colons in namespaces)...? What *is* the right way to escape/encode WP article names?
 convertInterwikiLinksInline :: Pandoc -> Inline -> Inline
 convertInterwikiLinksInline doc x@(Link _ []           _) = error $ "Link error (Interwiki.convertInterwikiLinksInline): no anchor text‽ " ++ show x ++ " :\n" ++ show doc
 convertInterwikiLinksInline _ x@(Link _ _ ("", _))        = x

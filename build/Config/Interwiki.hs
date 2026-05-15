@@ -170,6 +170,20 @@ testCases = setLike [
     -- TODO: historical page versions should be queryable, but the WP popups code doesn't support that yet, so for now we must mark them non-popuable
   , (Link nullAttr [Str "GCTA"] ("https://en.wikipedia.org/w/index.php?title=Genome-wide_complex_trait_analysis&oldid=871165308", ""),
      Link ("", ["content-transform-not", "link-live-not"], []) [Str "GCTA"] ("https://en.wikipedia.org/w/index.php?title=Genome-wide_complex_trait_analysis&oldid=871165308", ""))
+
+  -- Unicode/escaping
+  , (Link nullAttr [Str "2019 nicotine vaping moral panic"] ("!W","2019–2020 vaping lung illness outbreak"),
+     Link ("", ["link-live"], []) [Str "2019 nicotine vaping moral panic"]
+      ("https://en.wikipedia.org/wiki/2019%E2%80%932020_vaping_lung_illness_outbreak", ""))
+  , (Link nullAttr [Str "foo"] ("!W","Pokémon Red and Blue"),
+     Link ("", ["link-live"], []) [Str "foo"]
+      ("https://en.wikipedia.org/wiki/Pok%C3%A9mon_Red_and_Blue", ""))
+  , (Link nullAttr [Str "foo"] ("!W","Senryū"),
+     Link ("", ["link-live"], []) [Str "foo"]
+      ("https://en.wikipedia.org/wiki/Senry%C5%AB", ""))
+  , (Link nullAttr [Str "foo"] ("!W","Blood–brain barrier"),
+     Link ("", ["link-live"], []) [Str "foo"]
+      ("https://en.wikipedia.org/wiki/Blood%E2%80%93brain_barrier", ""))
   ]
 
 quoteOverrides :: [T.Text]
