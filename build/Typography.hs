@@ -27,6 +27,10 @@ import Data.Text.Titlecase (titlecase)
 import Text.Pandoc (Inline(..), Block(..), Pandoc(Pandoc), nullAttr, readerExtensions, runPure, readHtml, def, runPure, writeHtml5String, pandocExtensions, nullMeta) -- Caption(Caption),
 import Text.Pandoc.Walk (walk, walkM)
 
+import Debug.Trace (trace)
+import Text.Pandoc.Shared (stringify)
+import qualified Data.Text as T
+
 import Metadata.Date (dateRangeDuration)
 import LinkIcon (linkIcon)
 import LinkLive (linkLive)
@@ -64,12 +68,29 @@ typographyTransformPermanent = let year = CM.currentYear in
                         walk (linkLive . linkIcon) .
                         walk mergeSpaces .
                         linebreakingTransform .
+                        walk mergeBlockquotes . -- must run after abstractBlockquotes has rewritten any mixed abstracts
                         walk abstractBlockquotes .
                         rulersCycle C.cycleCount .
                         walk (citefyInline year) .
                         walk imageCaptionLinebreak .
                         walk mergeSpaces .
                         parseRawAllClean -- clean up all anonymous or empty spans/divs so we have a clean AST to rewrite
+
+
+-- merge successive blockquotes as probably just the common typo of omitting a blank '>' separate line; there are no legitimate usecases for two immediate but separate blockquotes, since those would always have some sort of wrapper, intermediate text, actually be one blockquote, etc
+-- EXPERIMENTAL: we have tracing on for now to see in the Gwern.net corpus if there are any legitimate examples, or illegitimate ones to fix.
+-- mergeBlockquotes :: [Block] -> [Block]
+-- mergeBlockquotes []                                   = []
+-- mergeBlockquotes (BlockQuote a : BlockQuote b : rest) = mergeBlockquotes (BlockQuote (a ++ b) : rest)
+-- mergeBlockquotes (x : rest)                           = x : mergeBlockquotes rest
+mergeBlockquotes :: [Block] -> [Block]
+mergeBlockquotes []                                   = []
+mergeBlockquotes (BlockQuote a : BlockQuote b : rest) =
+    let endA   = T.unpack $ T.takeEnd 80 $ T.replace "\n" " " $ stringify a
+        startB = T.unpack $ T.take    80 $ T.replace "\n" " " $ stringify b
+    in  trace ("mergeBlockquotes: merging adjacent blockquotes at: …" ++ endA ++ "  ⇒  " ++ startB ++ "…")
+              (mergeBlockquotes (BlockQuote (a ++ b) : rest))
+mergeBlockquotes (x : rest)                           = x : mergeBlockquotes rest
 
 linebreakingTransform :: Pandoc -> Pandoc
 linebreakingTransform = walk (breakSlashes . breakEquals)
@@ -120,7 +141,7 @@ abstractBlockquotesTest = filter (uncurry (/=))
         [ Para [Str "A."]
         , Para [Str "B."]
         , BlockQuote [Para [Str "Already quoted."]]
-        , Para [Str "C."]
+        , Para [Str "1."]
         ]
       ]
 
@@ -129,16 +150,15 @@ abstractBlockquotesTest = filter (uncurry (/=))
         [ BlockQuote
           [ Para [Str "A."]
           , Para [Str "B."]
-          ]
-        , BlockQuote [Para [Str "Already quoted."]]
-        , BlockQuote [Para [Str "C."]]
+          , Para [Str "Already quoted."]
+          , Para [Str "1."]]
         ]
       ]
 
     nonAbstractInput = Pandoc nullMeta
       [ Div ("", ["not-abstract"], [])
         [ Para [Str "A."]
-        , Para [Str "B."]
+        , Para [Str "3."]
         ]
       ]
 
