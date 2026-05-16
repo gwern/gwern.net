@@ -16879,7 +16879,7 @@ addContentLoadHandler("wrapCaesuraMarksInPoems", (eventInfo) => {
 				while (match = textNode.textContent.match(caesuraMarkRegExp)) {
 					[ newTextNode(match[1]),
 					  newElement("SPAN", { class: "caesura-mark" }, { innerHTML: "||" }),
-					  newTextNode(match[2])
+					  newTextNode("\u00A0" + match[2].slice(1)) // \u00A0 = no-break space (nbsp)
 					  ].forEach(newNode => {
 						textNode.parentElement.insertBefore(newNode, textNode);
 					});
