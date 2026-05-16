@@ -2804,7 +2804,7 @@ ul.interview li.exchange ol > li p:not(.first-graf) {
     opacity: 0.4;
 }
 
-.poem span.caesura-mark {
+.poem .caesura-mark {
     --letter-spacing: -0.3em;
     --margin-adjustment: -0.25em;
     --right-margin-tweak: 0.05em;

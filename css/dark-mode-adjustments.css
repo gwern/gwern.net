@@ -162,12 +162,12 @@ div#masked-links-key-toggle-info-alert img {
 
 /*	Poem caesura marks.
  */
-div.poem span.caesura-mark {
-	opacity: 0.3;
+.poem span.caesura-mark {
+	opacity: 0.30;
 }
 @media all and (max-width: 649px) {
-	div.poem span.caesura-mark {
-		opacity: 0.4;
+	.poem span.caesura-mark {
+		opacity: 0.35;
 	}
 }
 
