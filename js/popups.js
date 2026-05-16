@@ -279,11 +279,14 @@ Popups = {
      */
 
     /*  Returns true if the given element is currently visible.
+    	(If ‘margin’ is positive, visibility is counted even if slightly
+    	 off-screen; if negative, visibility not counted unless visible by 
+    	 that much.)
      */
     //  Called by: extracts-content.js
-    isVisible: (element) => {
+    isVisible: (element, margin) => {
         let containingPopup = Popups.containingPopFrame(element);
-        return (containingPopup ? isWithinRect(element, containingPopup.getBoundingClientRect()) : isOnScreen(element));
+        return (isWithinRectOf(element, containingPopup, margin));
     },
 
     //  Called by: extracts.js

@@ -541,9 +541,12 @@ Extracts = { ...Extracts,
         let target = popup.spawningTarget;
 
         /*  Do not spawn footnote popup if the {side|foot}note it points to is
-            visible.
+            sufficiently visible. (The ‘noteVisibilityThreshold’ means that this
+            fraction of the note must be visible in order to prevent the popup
+            from spawning.
          */
-        if (Notes.allNotesForCitation(target).findIndex(note => Popups.isVisible(note)) !== -1)
+        let noteVisibilityThreshold = 0.5;
+        if (Notes.allNotesForCitation(target).findIndex(note => Popups.isVisible(note, -1 * note.clientHeight * noteVisibilityThreshold)) !== -1)
             return null;
 
         /*  Add event listeners to highlight citation when its footnote
