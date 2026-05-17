@@ -21787,7 +21787,7 @@ Sidenotes = { ...Sidenotes,
 					GWLog("bindAdditionalSidenoteSlideEvents", "sidenotes.js", 3);
 
 					eventInfo.container.querySelectorAll("a.footnote-ref").forEach(citation => {
-						let sidenote = Sidenotes.counterpart(citation);
+						let sidenote = Notes.allNotesForCitation(citation).find(note => note.matches(".sidenote"));
 						if (sidenote == null)
 							return;
 
