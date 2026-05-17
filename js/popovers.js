@@ -47,6 +47,9 @@ Popovers = {
 		//  Remove Escape key event listener.
 		document.removeEventListener("keyup", Popovers.keyUp);
 
+		//	Remove history state change event listener.
+		window.removeEventListener("popstate", Popovers.popState);
+
 		//	Fire event.
 		GW.notificationCenter.fireEvent("Popovers.cleanupDidComplete");
 	},
@@ -60,6 +63,9 @@ Popovers = {
 
 		//  Add Escape key event listener.
 		document.addEventListener("keyup", Popovers.keyUp);
+
+		//	Add history state change event listener.
+		window.addEventListener("popstate", Popovers.popState);
 
 		//	Fire event.
 		GW.notificationCenter.fireEvent("Popovers.setupDidComplete");
@@ -348,6 +354,31 @@ Popovers = {
 		}
 	},
 
+	//	Called by: Popovers.injectPopoverForTarget
+	updateLocationForSpawnedPopovers: (newState = true) => {
+		let newHash = location.hash > "" 
+					  ? location.hash.split(";").first 
+					  : "#";
+
+		let popoverIDStrings = null;
+		if (Popovers.spawnedPopovers.length > 0) {
+			popoverIDStrings = Popovers.spawnedPopovers.map(x => {
+				return (x.spawningTarget.id > "" 
+						? x.spawningTarget.id 
+						: fixedEncodeURIComponent(x.spawningTarget.getAttribute("href"))
+						);
+			}).reverse();
+			newHash += ";" + popoverIDStrings.join(":");
+		}
+		if (newState) {
+			history.pushState({ popovers: popoverIDStrings }, null, newHash);
+		} else {
+			history.replaceState({ popovers: popoverIDStrings }, null, newHash);
+		}
+
+		cleanLocationHash();
+	},
+
 	//	Called by: Popovers.targetClicked (event handler)
 	injectPopoverForTarget: (target, options) => {
 		GWLog("Popovers.injectPopoverForTarget", "popovers.js", 2);
@@ -424,6 +455,9 @@ Popovers = {
 		//	Push popover onto spawned popovers stack.
 		Popovers.spawnedPopovers.unshift(popover);
 
+		//	Update location.
+		Popovers.updateLocationForSpawnedPopovers();
+
 		//	Designate ancestors.
 		let ancestor = popover.parentElement;
 		do { ancestor.classList.add("popover-ancestor"); }
@@ -432,7 +466,6 @@ Popovers = {
 
 		//  Mark target as having an open popover associated with it.
 		target.classList.add("popover-open", "highlighted");
-
 		//	Fire event.
 		GW.notificationCenter.fireEvent("Popovers.popoverDidInject", { popover: popover });
 
@@ -546,8 +579,14 @@ Popovers = {
 	//	Called by: Popovers.removeTarget
 	//	Called by: Popovers.titleBarComponents.closeButton
 	//	Called by: Popovers.injectPopoverForTarget
-	removePopover: (popover) => {
+	removePopover: (popover, remove = false) => {
 		GWLog("Popovers.removePopover", "popovers.js", 2);
+
+		//	Proper interaction with history state.
+		if (remove == false) {
+			history.back();
+			return;
+		}
 
 		//  If there’s another popover in the ‘stack’ below this one…
 		let popoverBelow = popover.nextElementSibling?.classList.contains("popover")
@@ -613,6 +652,18 @@ Popovers = {
 	/*******************/
 	/*	Event listeners.
 		*/
+
+	//	Added by: Popovers.setup
+	popState: (event) => {
+		let popoverIDStringsInNewHistoryState = (event.state?.popovers ?? [ ]);
+		if (popoverIDStringsInNewHistoryState.length < Popovers.spawnedPopovers.length) {
+			while (popoverIDStringsInNewHistoryState.length < Popovers.spawnedPopovers.length) {
+				Popovers.removePopover(Popovers.getTopPopover(), true);
+			}
+		} else if (popoverIDStringsInNewHistoryState.length > Popovers.spawnedPopovers.length) {
+			Popovers.updateLocationForSpawnedPopovers(false);
+		}
+	},
 
 	//	Added by: Popovers.addTarget
 	targetClicked: (event) => {
