@@ -103,7 +103,7 @@ gwern md p
                         let thumbnail' = if "https://gwern.net/static/img/logo/logo-whitebg-large-border.png" `isPrefixOf` thumbnail then "" else delete "https://gwern.net/" thumbnail
                         let thumbnailText = if not (any filterThumbnailText metas) then "" else -- WARNING: if there is no thumbnail-text, then bad things will happen downstream as the thumbnail gets rendered as solely an <img> rather than a <figure><img>. We will assume the author will always have a thumbnail-text set.
                                           safeContent $ head $ filter filterThumbnailText metas
-                        when (null thumbnailText) $ printRed ("Warning: no thumbnail-text alt text defined for URL " ++ p)
+                        when (null thumbnailText) $ print ("Minor Warning: no thumbnail-text alt text defined for URL " ++ p)
                         let thumbnailCSS = words $ safeContent $ head $ filter filterThumbnailCSS metas
 
                         (color,h,w) <- if thumbnail' == "" then return (False,"","") else invertImage thumbnail'
@@ -211,7 +211,7 @@ dropToClass    i (TagOpen "div" attrs) = case lookup "class" attrs of
                                              Nothing -> True
                                              Just classes -> not (i `isInfixOf` classes)
 dropToClass _ _                               = True
-dropToAbstract t = dropToClass "abstract" t || dropToClass "abstract-small" t
+dropToAbstract t = dropToClass "abstract" t -- || dropToClass "abstract-small" t
 dropToID    i (TagOpen _ attrs) = case lookup "id" attrs of
                                              Nothing -> True
                                              Just id' -> i /= id'
