@@ -19350,6 +19350,26 @@ addContentInjectHandler("activateMathBlockButtons", (eventInfo) => {
 }, "eventListeners");
 
 
+/********/
+/* /404 */
+/********/
+
+/*************************************************************************/
+/*	Often, illustrated epigraph blocks (an epigraph plus a figure) on /404
+	have the wrong HTML structure. No problem, we fix.
+ */
+addContentLoadHandler("rectify404PageIllustratedEpigraphs", (eventInfo) => {
+	eventInfo.container.querySelectorAll("figure").forEach(figure => {
+		let figureBlock = figure.closest(".display-entry .display-random-1") ?? figure;
+		if (figureBlock == figureBlock.parentElement.firstElementChild)
+			return;
+
+		let insertWhere = figureBlock.closest(".display-entry");
+		insertWhere.insertBefore(figureBlock, insertWhere.firstElementChild);
+	});
+}, "rewrite", (info) => info.loadLocation?.pathname == "/404");
+
+
 /**********************************/
 /* BROKEN HTML STRUCTURE CHECKING */
 /**********************************/
