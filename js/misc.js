@@ -2733,7 +2733,7 @@ doWhenPageLayoutComplete(GW.pageLayoutCompleteHashHandlingSetup = (info) => {
     cleanLocationHash();
 
     //  Save hash, for change tracking.
-    GW.locationHash = location.hash;
+    GW.locationHash = location.hash.split(";").first;
 
     /*  Remove “#top” or “#” from the URL hash (e.g. after user clicks on the
         back-to-top link).
@@ -2748,9 +2748,10 @@ doWhenPageLayoutComplete(GW.pageLayoutCompleteHashHandlingSetup = (info) => {
         cleanLocationHash();
 
         //  If hash really changed, update saved hash and fire event.
-        if (GW.locationHash != location.hash) {
+        let newHash = location.hash.split(";").first;
+        if (GW.locationHash != newHash) {
             GW.notificationCenter.fireEvent("GW.hashDidChange", { oldHash: GW.locationHash });
-            GW.locationHash = location.hash;
+            GW.locationHash = newHash;
         }
     });
 
