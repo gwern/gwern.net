@@ -1594,6 +1594,7 @@ section.collapse > .heading {
     transition:
         color 0.1s ease;
     cursor: pointer;
+    user-select: none;
 }
 .collapse > .disclosure-button:hover {
     --collapse-button-background-color: var(--GW-collapse-disclosure-button-hover-color);
