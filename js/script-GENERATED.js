@@ -19871,6 +19871,23 @@ addContentLoadHandler("preprocessMismatchedCollapseHTML", (eventInfo) => {
 	});
 }, "rewrite");
 
+/*****************************************************************************/
+/*	Since Pandoc doesn’t allow putting a class (such as ‘collapse’) on a 
+	blockquote element, an intended blockquote collapse will always appear 
+	in, or containing, a div.collapse wrapper. We rectify this, so that we can
+	use blockquotes as collapse elements directly.
+ */
+addContentLoadHandler("preprocessBlockquoteCollapses", (eventInfo) => {
+	eventInfo.container.querySelectorAll(".collapse > blockquote:only-child, blockquote > .collapse:only-child").forEach(blockquoteCollapse => {
+		if (blockquoteCollapse.tagName == "BLOCKQUOTE") {
+			unwrap(blockquoteCollapse.parentElement, { moveID: true, moveClasses: true });
+		} else {
+			copyClasses(blockquoteCollapse, blockquoteCollapse.parentElement);
+			unwrap(blockquoteCollapse);
+		}
+	});
+}, "rewrite");
+
 /***********************************************************************/
 /*  Inject disclosure buttons and otherwise prepare the collapse blocks.
  */
@@ -19918,7 +19935,7 @@ addContentLoadHandler("prepareCollapseBlocks", (eventInfo) => {
 			"p",
 			".list"
 		].join(", ");
-		if ([ "DIV", "SECTION", "SPAN", "A" ].includes(collapseBlock.tagName)) {
+		if ([ "DIV", "SECTION", "BLOCKQUOTE", "SPAN", "A" ].includes(collapseBlock.tagName)) {
 			//	Handle collapse-inducing include-links.
 			if (collapseBlock.tagName == "A")
 				collapseBlock = wrapElement(wrapElement(collapseBlock, "p", wrapOptions), "div", wrapOptions);
@@ -19955,7 +19972,7 @@ addContentLoadHandler("prepareCollapseBlocks", (eventInfo) => {
 				without this being known in advance, so may not have the
 				.abstract-collapse class, as they should.
 			 */
-			let collapseAbstract = collapseWrapper.querySelector(".collapse > .abstract, .collapse .abstract-small");
+			let collapseAbstract = collapseWrapper.querySelector(".collapse > .abstract, .collapse > .abstract-small");
 			if (collapseAbstract?.closest(".collapse") == collapseWrapper)
 				collapseAbstract.classList.add("abstract-collapse");
 
@@ -20179,18 +20196,20 @@ addContentInjectHandler("unwrapTooSmallCollapseBlocks", (eventInfo) => {
 			} else {
 				totalContentHeight = Array.from(collapseBlock.querySelector(".collapse-content-wrapper").children).reduce((h, c) => h + c.clientHeight, 0);
 			}
-			if (collapseBlock.classList.contains("abstract-not") == false) {
-				totalContentHeight += collapseBlock.querySelector(".abstract-collapse").clientHeight;
+
+			//	Determine whether the content is too small to collapse.
+			let shouldUnwrap = false;
+			if (isCollapsed(collapseBlock)) {
+				shouldUnwrap = (totalContentHeight <= collapseBlock.querySelector(".collapse-content-wrapper").clientHeight);
+			} else {
+				//	Determine the height of the collapse block when collapsed.
+				let collapseBlockHeight = (  parseInt(collapseBlock.style.getPropertyValue("--collapse-toggle-top-height"))
+										   + parseInt(collapseBlock.style.getPropertyValue("--collapse-toggle-bottom-height")));
+				shouldUnwrap = (totalContentHeight <= collapseBlockHeight);
 			}
 
-			//	Determine the height of the collapse block when collapsed.
-			let collapseBlockHeight = isCollapsed(collapseBlock)
-									  ? collapseBlock.clientHeight
-									  : (  parseInt(collapseBlock.style.getPropertyValue("--collapse-toggle-top-height"))
-									     + parseInt(collapseBlock.style.getPropertyValue("--collapse-toggle-bottom-height")));
-
-			//	If the one is not greater than the other, unwrap.
-			if (totalContentHeight <= collapseBlockHeight)
+			//	If so, unwrap.
+			if (shouldUnwrap == true)
 				expandLockCollapseBlock(collapseBlock);
 		});
 	});
@@ -20339,6 +20358,10 @@ function toggleCollapseBlockState(collapseBlock, expanding, options) {
 	options = Object.assign({
 		triggeredByStateChangeOnElement: null,
 	}, options);
+
+	//	This might be triggered by an unwrapped collapse block. If so, don’t.
+	if (collapseBlock.classList.contains("collapse") == false)
+		return;
 
 	//	Satisfy selector-based state XOR condition.
 	if (collapseBlock.dataset.collapseXorStateWithSelector > "") {
@@ -20583,8 +20606,7 @@ function expandLockCollapseBlock(collapseBlock) {
 	].join(", "))).forEach(unwrap);
 	
 	//	Unwrap collapse block itself if it’s a bare wrapper.
-	if (   isBareWrapper(collapseBlock)
-		&& isOnlyChild(collapseBlock.firstElementChild))
+	if (isBareWrapper(collapseBlock))
 		unwrap(collapseBlock);
 
 	//	Fire event.
