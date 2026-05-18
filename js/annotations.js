@@ -406,9 +406,9 @@ Annotations = { ...Annotations,
 				listLabel.classList.add("aux-links-list-label", "see-also-list-label");
 		}
 
-		//	Prevent erroneous collapse class.
+		//	Prevent erroneous collapse class and superfluous iceberg indicator.
 		abstractDocument.querySelectorAll(".aux-links-append.collapse").forEach(auxLinksAppendCollapse => {
-			auxLinksAppendCollapse.classList.add("bare-content-not");
+			auxLinksAppendCollapse.classList.add("bare-content-not", "iceberg-not");
 		});
 
 		//	Unwrap more extraneous <div>s, if present.

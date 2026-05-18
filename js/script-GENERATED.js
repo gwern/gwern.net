@@ -6665,9 +6665,9 @@ Annotations = { ...Annotations,
 				listLabel.classList.add("aux-links-list-label", "see-also-list-label");
 		}
 
-		//	Prevent erroneous collapse class.
+		//	Prevent erroneous collapse class and superfluous iceberg indicator.
 		abstractDocument.querySelectorAll(".aux-links-append.collapse").forEach(auxLinksAppendCollapse => {
-			auxLinksAppendCollapse.classList.add("bare-content-not");
+			auxLinksAppendCollapse.classList.add("bare-content-not", "iceberg-not");
 		});
 
 		//	Unwrap more extraneous <div>s, if present.
@@ -15449,7 +15449,7 @@ function getBacklinksBlockForSectionOrFootnote(targetBlock, containingDocument) 
 		backlinksBlock.append(newElement("UL", { "class": "aux-links-list backlinks-list" }));
 
 		//	Collapse wrapper.
-		let backlinksBlockCollapseWrapper = newElement("DIV", { "class": "collapse aux-links-append section-backlinks-container" });
+		let backlinksBlockCollapseWrapper = newElement("DIV", { "class": "collapse aux-links-append iceberg-not section-backlinks-container" });
 		backlinksBlockCollapseWrapper.append(backlinksBlock);
 
 		//	Include wrapper.
@@ -17670,6 +17670,9 @@ addContentInjectHandler("rectifyFileAppendClasses", (eventInfo) => {
         fileIncludesBlock.querySelectorAll(".collapse").forEach(fileIncludeCollapse => {
             fileIncludeCollapse.swapClasses([ "aux-links-transclude-file", "file-include-collapse" ], 1);
             fileIncludeCollapse.swapClasses([ "bare-content", "bare-content-not" ], 1);
+
+			//	Prevent spurious iceberg indicator.
+			fileIncludeCollapse.classList.add("iceberg-not");
         });
 		//	Apply annotation classes to previous block, if need be.
 		let previousBlock = previousBlockOf(fileIncludesBlock);
@@ -19901,9 +19904,11 @@ addContentLoadHandler("prepareCollapseBlocks", (eventInfo) => {
 			return;
 		}
 
+		//	Enable hover expansion, if applicable.
 		if (GW.collapse.hoverEventsEnabled)
 			collapseBlock.classList.add("expand-on-hover");
 
+		//	Construct/rectify collapse element HTML structure.
 		let collapseWrapper;
 		let wrapOptions = {
 			useExistingWrapper: true, 
@@ -20035,7 +20040,7 @@ addContentLoadHandler("prepareCollapseBlocks", (eventInfo) => {
 				collapseWrapper.classList.add("bare-content");
 		}
 
-		//	Slight HTML structure rectification.
+		//	Slight surrounding HTML structure rectification.
 		if (   collapseWrapper.parentElement
 			&& [ "P" ].includes(collapseWrapper.parentElement.tagName) == true
 			&& [ "SPAN" ].includes(collapseWrapper.tagName) == false
@@ -20153,6 +20158,44 @@ addContentInjectHandler("rectifySectionCollapseLayout", (eventInfo) => {
 	});
 }, ">rewrite");
 
+/****************************************************************************/
+/*	Unwrap collapse blocks that are too small for the collapsed state to hide
+	any content.
+ */
+addContentInjectHandler("unwrapTooSmallCollapseBlocks", (eventInfo) => {
+	eventInfo.container.querySelectorAll(".collapse-block").forEach(collapseBlock => {
+		/*	If a collapse block has a collapse-only abstract, we assume that the
+			author knows what he’s doing, and the collapse should be displayed
+			no matter how big the contents are.
+		 */
+		if (collapseBlock.querySelector(".abstract-collapse-only") != null)
+			return;
+
+		doWhenPageLayoutComplete(() => {
+			//	Determine height of content.
+			let totalContentHeight;
+			if (collapseBlock.classList.contains("sourceCode") == true) {
+				totalContentHeight = collapseBlock.querySelector("code").clientHeight;
+			} else {
+				totalContentHeight = Array.from(collapseBlock.querySelector(".collapse-content-wrapper").children).reduce((h, c) => h + c.clientHeight, 0);
+			}
+			if (collapseBlock.classList.contains("abstract-not") == false) {
+				totalContentHeight += collapseBlock.querySelector(".abstract-collapse").clientHeight;
+			}
+
+			//	Determine the height of the collapse block when collapsed.
+			let collapseBlockHeight = isCollapsed(collapseBlock)
+									  ? collapseBlock.clientHeight
+									  : (  parseInt(collapseBlock.style.getPropertyValue("--collapse-toggle-top-height"))
+									     + parseInt(collapseBlock.style.getPropertyValue("--collapse-toggle-bottom-height")));
+
+			//	If the one is not greater than the other, unwrap.
+			if (totalContentHeight <= collapseBlockHeight)
+				expandLockCollapseBlock(collapseBlock);
+		});
+	});
+}, ">rewrite");
+
 /******************************************************************************/
 /*  Collapse all expanded collapse blocks. (Mostly relevant when popping up
 	sections of an already-displayed full page, which may have collapses in it,
@@ -20254,6 +20297,9 @@ function invalidateCollapseBlockIcebergIndicator(collapseBlock) {
 	hidden) for the collapse block.
  */
 function updateCollapseBlockIcebergIndicatorIfNeeded(collapseBlock) {
+	if (collapseBlock.classList.contains("collapse") == false)
+		return;
+
 	if (collapseBlockIcebergIndicatorNeedsUpdate(collapseBlock) == false)
 		return;
 
@@ -20518,7 +20564,7 @@ function expandLockCollapseBlock(collapseBlock) {
 	let wasCollapsed = (isCollapsed(collapseBlock) == true);
 
 	//	Strip collapse-specific classes.
-	collapseBlock.classList.remove("collapse", "collapse-block", "collapse-inline", "expanded", "expanded-not", "expand-on-hover", "has-abstract", "abstract-not", "bare-content", "file-include-collapse", "expanded", "expanded-not");
+	collapseBlock.classList.remove("collapse", "collapse-block", "collapse-inline", "expand-on-hover", "has-abstract", "abstract-not", "bare-content", "file-include-collapse", "expanded", "expanded-not");
 	if (collapseBlock.className == "")
 		collapseBlock.removeAttribute("class");
 

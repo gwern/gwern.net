@@ -583,7 +583,7 @@ function getBacklinksBlockForSectionOrFootnote(targetBlock, containingDocument) 
 		backlinksBlock.append(newElement("UL", { "class": "aux-links-list backlinks-list" }));
 
 		//	Collapse wrapper.
-		let backlinksBlockCollapseWrapper = newElement("DIV", { "class": "collapse aux-links-append section-backlinks-container" });
+		let backlinksBlockCollapseWrapper = newElement("DIV", { "class": "collapse aux-links-append iceberg-not section-backlinks-container" });
 		backlinksBlockCollapseWrapper.append(backlinksBlock);
 
 		//	Include wrapper.
@@ -2804,6 +2804,9 @@ addContentInjectHandler("rectifyFileAppendClasses", (eventInfo) => {
         fileIncludesBlock.querySelectorAll(".collapse").forEach(fileIncludeCollapse => {
             fileIncludeCollapse.swapClasses([ "aux-links-transclude-file", "file-include-collapse" ], 1);
             fileIncludeCollapse.swapClasses([ "bare-content", "bare-content-not" ], 1);
+
+			//	Prevent spurious iceberg indicator.
+			fileIncludeCollapse.classList.add("iceberg-not");
         });
 		//	Apply annotation classes to previous block, if need be.
 		let previousBlock = previousBlockOf(fileIncludesBlock);
