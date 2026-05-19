@@ -1594,6 +1594,7 @@ section.collapse > .heading {
     transition:
         color 0.1s ease;
     cursor: pointer;
+    user-select: none;
 }
 .collapse > .disclosure-button:hover {
     --collapse-button-background-color: var(--GW-collapse-disclosure-button-hover-color);
@@ -1603,6 +1604,14 @@ section.collapse > .heading {
     outline: none;
 }
 
+/*	Iceberg indicators.
+ */
+.collapse.iceberg-not > .disclosure-button > .collapse-iceberg-indicator {
+	display: none;
+}
+
+/*	Disclosure buttons in block collapses.
+ */
 .collapse-block > .disclosure-button {
     position: absolute;
     top: 0;
@@ -1656,12 +1665,18 @@ section.collapse > .heading {
 }
 
 .collapse-block > .disclosure-button .part .icon {
-    width: calc(1.5 * var(--icon-size));
+	--extra-width-for-iceberg-indicator: calc(0.6 * var(--icon-size));
+
+    width: calc(var(--icon-size) + var(--extra-width-for-iceberg-indicator));
     height: var(--icon-size);
     padding: calc(var(--icon-size) / 4);
-	border-left: calc(0.5 * var(--icon-size)) solid var(--collapse-button-background-color);
+	border-left: var(--extra-width-for-iceberg-indicator) solid var(--collapse-button-background-color);
     box-sizing: border-box;
 }
+.collapse-block.iceberg-not > .disclosure-button .part .icon {
+	--extra-width-for-iceberg-indicator: 0px;
+}
+
 .collapse-block > .disclosure-button .part .icon svg {
     height: 100%;
 }
@@ -1741,7 +1756,7 @@ section.collapse > .heading {
     display: none;
 }
 
-/*  Iceberg indicators.
+/*  Iceberg indicators in block collapses.
  */
 .collapse-block > .disclosure-button > .collapse-iceberg-indicator {
     --indicator-size: calc(0.5 * var(--collapse-toggle-top-icon-size));
@@ -2192,10 +2207,6 @@ blockquote .collapse-block.abstract-not.expanded-not > .disclosure-button .part:
     clear: both;
 }
 
-.collapse-block.aux-links-append > .disclosure-button > .collapse-iceberg-indicator {
-    display: none;
-}
-
 /**************************/
 /*  File include collapses.
  */
@@ -2209,10 +2220,6 @@ blockquote .collapse-block.abstract-not.expanded-not > .disclosure-button .part:
 
 .collapse-block.file-include-collapse > .collapse-content-wrapper {
     padding: 0.5em 0.5em 0.5em 0;
-}
-
-.collapse.file-include-collapse > .disclosure-button > .collapse-iceberg-indicator {
-    display: none;
 }
 
 /***********************************************************/
