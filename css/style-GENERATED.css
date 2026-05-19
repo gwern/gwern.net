@@ -7219,6 +7219,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
     flex-flow: column-reverse;
     width: var(--GW-page-toolbar-minimum-width);
+    top: unset;
     bottom: calc(0.5em - var(--toolbar-offset-y));
     right:  calc(0.5em - var(--toolbar-offset-x));
     transition:
