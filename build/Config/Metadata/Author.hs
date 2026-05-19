@@ -2,7 +2,8 @@
 
 module Config.Metadata.Author where
 
-import qualified Data.Map.Strict as M (fromList, Map)
+import Data.Map.Strict as M (fromList, Map)
+
 import Text.Pandoc (Inline(Link, Span, Space, Str))
 import qualified Data.Text as T (Text)
 
@@ -74,11 +75,11 @@ authorCollapseTestCases = setLike
         citeAuthorSpan xs = [Space, Span ("", ["author", "cite-author"], []) xs]
         collapseSpan :: [Inline] -> Inline
         collapseSpan = Span ("", ["collapse"], [])
-        authorLink :: T.Text -> T.Text -> Inline
-        authorLink label url = Link ("", ["id-not"], []) [Str label] (url, "")
+        authorHyperLink :: T.Text -> T.Text -> Inline
+        authorHyperLink label url = Link ("", ["id-not"], []) [Str label] (url, "")
         gw, gwSS :: Inline
-        gw   = authorLink "George Washington" "https://en.wikipedia.org/wiki/George_Washington"
-        gwSS = authorLink "George Washington" "https://en.wikipedia.org/wiki/SS_George_Washington"
+        gw   = authorHyperLink "George Washington" "https://en.wikipedia.org/wiki/George_Washington"
+        gwSS = authorHyperLink "George Washington" "https://en.wikipedia.org/wiki/SS_George_Washington"
 
 -- infix rewrites
 -- Testing: unique keys, test keys for regexp validity
@@ -133,8 +134,8 @@ authorWhitelist = setLike ["K. U.", "6510#HN", "N. K.", "0xType", "3D_DLW"]
 
 -- list of rewrites for 'alternative name' → 'canonical name'. This is a simple mapping which doesn't attempt to handle variants like initializations. For that, see `canonicalsWithInitials`.
 -- Config tests: unique keys, no loops
-canonicals :: M.Map String String
-canonicals = M.fromList $ setLike
+canonicals :: [(String, String)]
+canonicals = setLike
   [ ("ESYudkowsky", "Eliezer Yudkowsky")
   , ("AaronKoelker", "Aaron Koelker")
   , ("alexalbert__", "Alex Albert")
@@ -323,7 +324,6 @@ canonicals = M.fromList $ setLike
   , ("anon", "Anonymous")
   , ("anon.", "Anonymous")
   , ("23andMe Research Team", "23andMe")
-  , ("sarah_cone", "Sarah Cone")
   , ("R. Impagliazzo", "Russell Impagliazzo")
   , ("Gary L. Drescher", "Gary Drescher")
   , ("Doug Hofstadter", "Douglas Hofstadter")
@@ -377,7 +377,6 @@ canonicals = M.fromList $ setLike
   , ("Ruth J. F. Loos", "Ruth Loos")
   , ("David M. Hougaard", "David Hougaard")
   , ("Andy Jones", "Andy L. Jones")
-  , ("David M. Hougaard", "David Hougaard")
   , ("Nicolas Hees", "Nicolas Heess")
   , ("Elliot Tucker-Drob", "Elliot M. Tucker-Drob")
   , ("Jon L. Bentley", "Jon Bentley")
@@ -391,7 +390,6 @@ canonicals = M.fromList $ setLike
   , ("André Uitterlinden", "André G. Uitterlinden")
   , ("Andre Uitterlinden", "André G. Uitterlinden")
   , ("Andre G. Uitterlinden", "André G. Uitterlinden")
-  , ("elonmusk", "Elon Musk")
   , ("DimitrisPapail", "Dimitris Papail")
   , ("JonBaronforMD", "Jon Baronfor")
   , ("Andrew Wood", "Andrew R. Wood")
@@ -448,7 +446,6 @@ canonicals = M.fromList $ setLike
   , ("Howard Phillips Lovecraft", "H. P. Lovecraft")
   , ("ramsey nasser", "Ramsey Nasser")
   , ("Cornelius Rietveld", "Cornelius A. Rietveld")
-  , ("Michael A. Woodley of Menie", "Michael A. Woodley")
   , ("hsfzxjy", "Xie Jingyi")
   , ("Altimor", "Flo Crivello")
   , ("Cecilia Lindgren", "Cecilia M. Lindgren")
@@ -505,7 +502,6 @@ canonicals = M.fromList $ setLike
   , ("Arthur Jensen", "Arthur R. Jensen")
   , ("Jurgen Schmidhuber", "J\252rgen Schmidhuber")
   , ("Juergen Schmidhuber", "J\252rgen Schmidhuber")
-  , ("Jurgen Schmidhuber", "J\252rgen Schmidhuber")
   , ("J. Schmidhuber", "J\252rgen Schmidhuber")
   , ("dlberes", "Damon Beres")
   , ("Michelle Meyer", "Michelle N. Meyer")
@@ -706,7 +702,6 @@ canonicals = M.fromList $ setLike
   , ("_Ryobot", "Ryobot")
   , ("Ryobot", "Ryo Nakamura")
   , ("0xfoobar", "foobar")
-  , ("_JeanLannes", "Michael")
   , ("_aixile", "Aixile")
   , ("Roel Andre Ophoff", "Roel André Ophoff")
   , ("Paul Vitányi", "Paul M. B. Vitányi")
@@ -969,6 +964,7 @@ canonicals = M.fromList $ setLike
   , ("William Daniel Hillis", "Danny Hillis")
   , ("William D. Hillis", "Danny Hillis")
   , ("Daniel Hillis", "Danny Hillis")
+  , ("zetalyrae", "Fernando Borretti")
   ]
 
 -- tests: unique
@@ -994,7 +990,7 @@ canonicalsWithInitials = setLike
   , "Stephanie H. Witt", "Paul M. Thompson", "Patricia A. Peyser", "Joshua S. Gans"
   , "Nathan E. Sanders", "Andrew C. Yao", "James L. Kennedy", "Sydney A. Asdell"
   , "Emma C. Johnson", "Paul D. MacLean", "Wilbur H. Highleyman", "Caroline M. Nievergelt"
-  , "Adam Edward Locke", "Samuel T. Cohen", "Thomas J. Bouchard", "Robert Mitchell Lindner"
+  , "Adam Edward Locke", "Thomas J. Bouchard", "Robert Mitchell Lindner"
   , "Sarah E. Bergen", "Roel André Ophoff", "Peter A. Holmans", "Patricia B. Munroe"
   , "Michael A. Woodley", "Mark J. Caulfield", "E. T. Jaynes", "Iris M. Heid", "Hill F. Ip"
   , "Heather M. Stringham", "Christopher A. Haiman", "Catharina A. Hartman", "Bernhard T. Baune"
@@ -1028,8 +1024,9 @@ canonicalsWithInitials = setLike
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
-authorLinkDB = M.fromList $
-  zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we put the WP link first for easier reading/editing, but all WP entries are overridden by by an entry below:
+authorLinkDB = M.fromList authorLink
+authorLink :: [(T.Text, T.Text)]
+authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we put the WP link first for easier reading/editing, but all WP entries are overridden by by an entry below:
    setLike [ ("George Washington#SS", "https://en.wikipedia.org/wiki/SS_George_Washington")
     , ("Alexey Guzey","https://guzey.com/")
     , ("Carl Shulman","https://timelines.issarice.com/wiki/Timeline_of_Carl_Shulman_publications#Full_timeline")
@@ -1070,12 +1067,10 @@ authorLinkDB = M.fromList $
     , ("Ye Li", "https://scholar.google.com/citations?user=_gPcuqIAAAAJ")
     , ("Sam Ritter", "https://scholar.google.co.uk/citations?user=dg7wnfAAAAAJ")
     , ("Blake Richards", "https://mila.quebec/en/person/blake-richards/")
-    , ("Arvind Narayanan", "https://en.wikipedia.org/wiki/Arvind_Narayanan")
     , ("Ian Stewart", "https://en.wikipedia.org/wiki/Ian_Stewart_(mathematician)")
     , ("Mark S. Miller", "https://en.wikipedia.org/wiki/Mark_S._Miller")
     , ("David Décary-Hétu", "https://www.cicc-iccc.org/en/people/regular_researchers/david_decary_hetu")
     , ("Mikel Olazaran", "https://scholar.google.com/citations?user=XoUNbRoAAAAJ")
-    , ("Dan Hendrycks", "https://people.eecs.berkeley.edu/~hendrycks/")
     , ("Matt Shumer", "https://x.com/mattshumer_")
     , ("Richard Ngo", "https://www.richardcngo.com/")
     , ("M. M. Lehman", "https://en.wikipedia.org/wiki/Manny_Lehman_(computer_scientist)")
@@ -1111,7 +1106,6 @@ authorLinkDB = M.fromList $
     , ("Ole A. Andreassen", "https://scholar.google.com/citations?user=dilW0WsAAAAJ")
     , ("Thomas Werge", "https://scholar.google.com/citations?user=mRphVYYAAAAJ")
     , ("Grant W. Montgomery", "https://scholar.google.com/citations?user=4eOEw-IAAAAJ")
-    , ("Benjamin M. Neale", "https://en.wikipedia.org/wiki/Benjamin_Neale")
     , ("David Silver", "https://en.wikipedia.org/wiki/David_Silver_(computer_scientist)")
     , ("Luke Zettlemoyer", "https://scholar.google.com/citations?user=UjpbO6IAAAAJ")
     , ("Caroline Hayward", "https://www.ed.ac.uk/profile/caroline-hayward")
@@ -1397,6 +1391,7 @@ authorLinkDB = M.fromList $
     , ("David W. Scott", "https://www.stat.rice.edu/~scottdw/")
     , ("Dan Rujescu", "https://scholar.google.com/citations?user=SsYIclwAAAAJ")
     , ("Colin Palmer", "https://discovery.dundee.ac.uk/en/persons/colin-palmer")
+    , ("Colin A. Palmer", "https://en.wikipedia.org/wiki/Colin_Palmer")
     , ("Ben A. Oostra", "https://research.com/u/ben-a-oostra")
     , ("jreyesr", "https://blog.jreyesr.com/")
     , ("Avital Balwit", "https://www.avitalbalwit.com/")
@@ -1474,7 +1469,6 @@ authorLinkDB = M.fromList $
     , ("J. Wouter Jukema", "https://www.universiteitleiden.nl/en/staffmembers/johan-jukema#tab-2")
     , ("Ilya Loshchilov", "http://www.loshchilov.com/")
     , ("Stuart Hall", "https://x.com/stuartkhall")
-    , ("Richard Ngo", "https://80000hours.org/podcast/episodes/richard-ngo-large-language-models/")
     , ("Ethan W. Roland", "https://www.ethan-w-roland.com/")
     , ("Andrew N. Carr", "https://x.com/andrew_n_carr")
     , ("Kyunghyun Cho", "https://www.kyunghyuncho.me/")
@@ -1600,7 +1594,6 @@ authorLinkDB = M.fromList $
     , ("Lawrence F. Bielak", "https://sph.umich.edu/faculty-profiles/bielak-lawrence.html")
     , ("Kaili Rimfeld", "https://pure.royalholloway.ac.uk/en/persons/kaili-rimfeld")
     , ("Will DePue", "https://depue.notion.site/Will-DePue-8b7af67a213e429b91134d0529b6dfa7")
-    , ("Amanda Askell", "https://askell.io/")
     , ("Jun Wang", "https://scholar.google.com/citations?user=wIE1tY4AAAAJ")
     , ("Jun Wang#genetics", "https://en.wikipedia.org/wiki/Wang_Jun_(scientist)")
     , ("Judith M. Vonk", "https://www.rug.nl/umcg/research/departments/epidemiology/staff/judith-vonk")
@@ -1826,7 +1819,6 @@ authorLinkDB = M.fromList $
     , ("Wouter J. Peyrot", "https://cncr.nl/people/wouter_peyrot/")
     , ("Wendy L. McArdle", "https://scholargps.com/scholars/35381776723079/wendy-l-mcardle")
     , ("Wei Li", "https://scholar.google.com/citations?user=7IUCbE4AAAAJ")
-    , ("Peter T. Leeson", "https://en.wikipedia.org/wiki/Peter_Leeson")
     , ("eigenrobot", "https://x.com/eigenrobot")
     , ("Sarah Meiklejohn", "https://smeiklej.com/")
     , ("Locus", "https://en.wikipedia.org/wiki/Locus_(magazine)")
@@ -1899,7 +1891,6 @@ authorLinkDB = M.fromList $
     , ("Jennie Hui", "https://research-repository.uwa.edu.au/en/persons/00031033")
     , ("Jeff Donahue", "https://jeffdonahue.com/")
     , ("John P. Beilby", "https://research-repository.uwa.edu.au/en/persons/00045091")
-    , ("Cube Flipper", "https://smoothbrains.net/")
     , ("Sam Patterson", "https://sampatt.com/about")
     , ("James L. Kirkland", "https://www.afar.org/james-l.-kirkland")
     , ("Jakob N. Foerster", "https://www.jakobfoerster.com/")
@@ -2194,7 +2185,6 @@ authorLinkDB = M.fromList $
     , ("Maurycy", "https://maurycyz.com/")
     , ("Ek Type", "https://ektype.in/")
     , ("Hans-Juergen Boehm", "https://www.hboehm.info/")
-    , ("Zhengdong Wang", "https://zhengdongwang.com/")
     , ("Daan Wierstra", "https://scholar.google.com/citations?user=aDbsf28AAAAJ")
     , ("Piotr Bojanowski", "https://scholar.google.com/citations?user=lJ_oh2EAAAAJ")
     , ("Qiang Liu", "https://www.cs.utexas.edu/~lqiang/")
@@ -2312,6 +2302,7 @@ authorLinkDB = M.fromList $
     , ("Jonathan Flint", "https://en.wikipedia.org/wiki/Jonathan_Flint_(scientist)")
     , ("Jasmine Sun", "https://jasmi.news/about")
     , ("Lukas Petersson", "https://lukaspetersson.com/")
+    , ("Willis Barnstone", "https://en.wikipedia.org/wiki/Willis_Barnstone#With_Borges")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -2436,7 +2427,7 @@ authorWpLinkDB = setLike
     ,"Beverly Rodriguez", "Bhramar Mukherjee", "Bhuvana Ramabhadran", "Bian Li", "Bilge Ebiri"
     ,"Bill Casselman", "Bill Dally", "Bill Deakin", "Bill Gates", "Bill Hicks"
     ,"Bin Jiang", "Bin Liu", "Bin Xu", "Bin Yu", "Bing Han"
-    ,"Bing Zhang", "Blair Braverman", "Blaise Aguera y Arcas", "Blaise Ag\252era y Arcas", "Blake Richards"
+    ,"Bing Zhang", "Blair Braverman", "Blaise Aguera y Arcas", "Blaise Ag\252era y Arcas"
     ,"Blake Ross", "Bluma Zeigarnik", "Bo Dai", "Bo Gao", "Bo Li"
     ,"Bo Peng", "Bo Yang", "Bo Zhou", "Boaz Barak", "Boaz Keysar"
     ,"Bob Sturm", "Boban Petrovi\263", "Boehringer Ingelheim", "Bogus\322aw Paw\322owski", "Bokyung Son"
@@ -2447,7 +2438,7 @@ authorWpLinkDB = setLike
     ,"Brian Cantwell Smith", "Brian Charlesworth", "Brian Curtis", "Brian D\8217Onofrio", "Brian Ferguson"
     ,"Brian Flanagan", "Brian Fuller", "Brian G. Wowk", "Brian Hare", "Brian Hicks"
     ,"Brian K. Kennedy", "Brian Krebs", "Brian L. Strom", "Brian Levine", "Brian M. D\8217Onofrio"
-    ,"Brian Moriarty", "Brian Nosek", "Brian Uzzi", "Brian Vaughan", "Brian Wansink"
+    , "Brian Nosek", "Brian Uzzi", "Brian Vaughan", "Brian Wansink"
     ,"Brian Williams", "Brian Wong", "Brian Wowk", "British Medical Journal", "Broadridge Financial Solutions Inc"
     ,"Bruce Berger", "Bruce Bode", "Bruce Bueno de Mesquita", "Bruce C. Gibb", "Bruce Castle"
     ,"Bruce Charles Heezen", "Bruce E. Wampold", "Bruce F. Pennington", "Bruce G. Charlton", "Bruce J. Ellis"
@@ -2475,7 +2466,7 @@ authorWpLinkDB = setLike
     ,"Cecilia Magnusson", "Cees Dekker", "Celeste Kidd", "Celeste Lyn Paul", "Celia Greenwood"
     ,"Cell Press", "Celso Arango", "Chaim Goodman-Strauss", "Chandler Burr", "Chang Jiang"
     ,"Chang Xu", "Chantal Radimilahy", "Chao Agnes Hsiung", "Chao Chen", "Chao Dong"
-    ,"Chao Min", "Chao Xu", "Charles A. Czeisler", "Charles A. Taylor", "Charles B. Nemeroff"
+    ,"Chao Min", "Chao Xu", "Charles A. Czeisler", "Charles B. Nemeroff"
     ,"Charles Beattie", "Charles Curtis", "Charles Dickens", "Charles Duhigg", "Charles E. Leiserson"
     ,"Charles E. Osgood", "Charles F. Hockett", "Charles F. Reynolds III", "Charles Fuchs", "Charles G. Gross"
     ,"Charles George Herbermann", "Charles Geschke", "Charles Goodhart", "Charles H. Haskins", "Charles H. Martin"
@@ -2514,7 +2505,7 @@ authorWpLinkDB = setLike
     ,"Coalition for Evidence-Based Policy", "Cody Wild", "Colin Allen", "Colin Berry", "Colin Burke"
     ,"Colin Camerer", "Colin Cherry", "Colin Drummond", "Colin F. Camerer", "Colin Flaherty"
     ,"Colin G. DeYoung", "Colin Hodgkinson", "Colin Humphreys", "Colin Lankshear", "Colin Mallows"
-    ,"Colin Martindale", "Colin Masters", "Colin Mathers", "Colin Palmer", "Colin Skinner"
+    ,"Colin Martindale", "Colin Masters", "Colin Mathers", "Colin Skinner"
     ,"Colleen Lawless", "Collin Burns", "Collin Y. Ewald", "Colm McDonald", "Companies House"
     ,"Con Stough", "Cong Han", "Cong Zhou", "Connie Wang", "Constantine G. Lyketsos"
     ,"Cordelia Schmid", "Corey Powell", "Corinna Cortes", "Cormac \211 Gr\225da"
@@ -2532,7 +2523,7 @@ authorWpLinkDB = setLike
     ,"Dan Klein", "Dan Liu", "Dan M. Roden", "Dan Mazur", "Dan Roden"
     ,"Dan Roth", "Dan Schmidt", "Dan Schwartz", "Dan Zhang", "Dana Angluin"
     ,"Dana H. Ballard", "Dana H. Born", "Dana Klisanin", "Dana Scott", "Daniel A. Geller"
-    ,"Daniel A. Spielman", "Daniel Acuna", "Daniel B. Wright", "Daniel Bates", "Daniel Dennett"
+    ,"Daniel A. Spielman", "Daniel Acuna", "Daniel B. Wright", "Daniel Bates"
     ,"Daniel Campos", "Daniel D. Johnson", "Daniel Daneshvar", "Daniel Dennett", "Daniel E. Ho"
     ,"Daniel Eriksson", "Daniel Franklin", "Daniel Freeman", "Daniel Fried", "Daniel G. Goldstein"
     ,"Daniel Geschwind", "Daniel Gianola", "Daniel H. Geschwind", "Daniel Hoffman", "Daniel Hsu"
@@ -2759,7 +2750,7 @@ authorWpLinkDB = setLike
     ,"Huanming Yang", "Hubert L. Dreyfus", "Huda Akil", "Hugh Calkins", "Hugh Gurling"
     ,"Hugh Gusterson", "Hugh McColl", "Hugh Sinclair", "Hugo Critchley", "Hui Chen"
     ,"Hui Lei", "Hui Liu", "Hui Shi", "Hui Wu", "Hui Xiong"
-    ,"Hui Yang", "Hyeonwoo Kim", "Hyun Jin Kim", "Hyung Chul Kim", "H\224n Th\7871 Th\224nh"
+    ,"Hui Yang", "Hyun Jin Kim", "Hyung Chul Kim", "H\224n Th\7871 Th\224nh"
     ,"I-Chen Wu", "I. Glenn Cohen", "I. J. Deary", "I. J. Good", "Ian Beer"
     ,"Ian D. Cameron", "Ian Ellis", "Ian Ford", "Ian Goodfellow", "Ian H. Gotlib"
     ,"Ian J. Deary", "Ian Meinertzhagen", "Ian Tomlinson", "Ian Watt", "Ibrahim Oweiss"
@@ -2796,7 +2787,7 @@ authorWpLinkDB = setLike
     ,"James E. Rothman", "James F. Crow", "James F. Fries", "James F. Gusella", "James F. Wilson"
     ,"James Feyrer", "James G. Wilson", "James Glass", "James Griesemer", "James H. Cartwright"
     ,"James H. Leuba", "James H. Stark", "James H. Wyckoff", "James Hammill", "James Hansen"
-    ,"James Heckman", "James J. Bull", "James J. Cimino", "James J. Heckman", "James J. Lee"
+    ,"James Heckman", "James J. Bull", "James J. Cimino", "James J. Heckman"
     ,"James J. Murphy", "James K. Galbraith", "James Koppel", "James L. McClelland", "James L. McGaugh"
     ,"James Landay", "James M. Cook", "James M. Davis", "James MacKillop", "James Manyika"
     ,"James Marston Fitch", "James McCracken", "James Molloy", "James P. Cook", "James P. Crutchfield"
@@ -2949,7 +2940,7 @@ authorWpLinkDB = setLike
     ,"Ken Nakayama", "Ken Norman", "Ken Randall", "Ken Silverstein", "Ken Suzuki"
     ,"Kenji Kobayashi", "Kenneth A. Dodge", "Kenneth B. Clark", "Kenneth E. Boulding", "Kenneth E. Stager"
     ,"Kenneth G. Libbrecht", "Kenneth J. Arrow", "Kenneth J. Gergen", "Kenneth L. Davis", "Kenneth Offit"
-    ,"Kenneth S. Kendler", "Kenneth Silverman", "Kenneth Stanley", "Kent C. Berridge", "Kent M. Pitman"
+    ,"Kenneth S. Kendler", "Kenneth Silverman", "Kenneth Stanley", "Kent C. Berridge"
     ,"Kerstin Lindblad-Toh", "Kevin Buzzard", "Kevin Chen", "Kevin Cheung", "Kevin Fu"
     ,"Kevin G. Lynch", "Kevin Holden", "Kevin Kelly", "Kevin Leyton-Brown", "Kevin Lin"
     ,"Kevin M. Beaver", "Kevin M. Esvelt", "Kevin M. Murphy", "Kevin N. Laland", "Kevin Patrick"
@@ -3037,7 +3028,7 @@ authorWpLinkDB = setLike
     ,"Marianne Simmel", "Marie Phillips", "Marie-Laure Ryan", "Marilyn Jager Adams", "Marilyn Strathern"
     ,"Marilynn B. Brewer", "Marina Butovskaya", "Mario Ivankovic", "Mario Maj", "Mario Szegedy"
     ,"Marion Leboyer", "Marion Roberts", "Marios Papaefthymiou", "Marius Lindauer", "Mariza de Andrade"
-    ,"Marjo-Riitta J\228rvelin", "Marjolein Kriek", "Mark A. Davis", "Mark A. McDaniel", "Mark A. Murphy"
+    , "Marjolein Kriek", "Mark A. Davis", "Mark A. McDaniel", "Mark A. Murphy"
     ,"Mark Aldrich", "Mark Braverman", "Mark Caulfield", "Mark D. McDonnell"
     ,"Mark D. Shriver", "Mark D. West", "Mark Gerstein", "Mark Girolami", "Mark Granovetter"
     ,"Mark Alan Horowitz", "Mark I. McCarthy", "Mark J. Daly", "Mark Jenkinson", "Mark Keil"
@@ -3072,7 +3063,7 @@ authorWpLinkDB = setLike
     ,"Matthew Yu", "Matthias Doepke", "Matthias Egger", "Matthias Endres", "Matthias Grossglauser"
     ,"Matthias H. Tsch\246p", "Matthias Lange", "Matthias Meyer", "Matthias Niessner", "Matthias Schonlau"
     ,"Matthias Schwab", "Maureen Dowd", "Maureen E. Raymo", "Maurice Ptito", "Mauricio R. Delgado"
-    ,"Mauricio Tohen", "Max Abrahms", "Max Bain", "Max Bazerman", "Max Norman"
+    ,"Mauricio Tohen", "Max Abrahms", "Max Bazerman", "Max Norman"
     ,"Max Pfeiffer", "Max Reuter", "Max Rose", "Max Tegmark", "Max Weiss"
     ,"Max Welling", "Max Yates", "Maxwell Goldstein", "May Chen", "Maya Shankar"
     ,"Maya Yamazaki", "Mayank Mishra", "Megan Cooke", "Megan Shanahan", "Megan Smith"
@@ -3084,7 +3075,7 @@ authorWpLinkDB = setLike
     ,"Michael A. Schneider", "Michael A. Sutton", "Michael A. Taylor", "Michael Allaby", "Michael B. Bracken"
     ,"Michael B. Elowitz", "Michael B. Fossel", "Michael Bang Petersen", "Michael Boehnke", "Michael Bolin"
     ,"Michael Bond", "Michael Bowling", "Michael Bronstein", "Michael Bunce", "Michael C. Frank"
-    ,"Michael C. Jensen", "Michael C. Neale", "Michael C. O\8217Donovan", "Michael C. Seto", "Michael Cantor"
+    , "Michael C. Neale", "Michael C. O\8217Donovan", "Michael C. Seto", "Michael Cantor"
     ,"Michael Chang", "Michael Chung", "Michael Crossley", "Michael D. Fox", "Michael D. Rugg"
     ,"Michael Daniels", "Michael Deakin", "Michael E. Goddard", "Michael E. Greenberg", "Michael E. Hochberg"
     ,"Michael Elad", "Michael Elowitz", "Michael Erard", "Michael Ettlinger", "Michael Frank"
@@ -3145,7 +3136,7 @@ authorWpLinkDB = setLike
     , "Nikhil Naik", "Nikhil Tandon", "Niklaus Wirth", "Nikolai Fyodorovich Fyodorov"
     ,"Nikolaos Makris", "Nikolaos Papanikolopoulos", "Nikolaos Pappas", "Nikolaus Rajewsky", "Nikolay Karpov"
     ,"Nilanjan Chatterjee", "Nilay Patel", "Nils Henriksson", "Nils Lid Hjort", "Nina G. Jablonski"
-    ,"Nina Singh", "Nina Wedell", "Ning Ding", "Ning Lu", "Ning Zhang"
+    ,"Nina Singh", "Nina Wedell", "Ning Lu", "Ning Zhang"
     ,"Nir Baram", "Nir Barzilai", "Nir Eyal", "Nir Friedman", "Nir Shavit"
     ,"Niren Murthy", "Nita G. Forouhi", "Noah A. Rosenberg", "Noah Carl", "Noah Fierer"
     ,"Noah Jones", "Nobuo Sasaki", "Nobuyuki Sato", "Nolan Miller", "Nora D. Volkow"
@@ -3278,7 +3269,7 @@ authorWpLinkDB = setLike
     ,"Robert Gerlai", "Robert Greenfield", "Robert H. Brower", "Robert Harcourt", "Robert Harry Socolow"
     ,"Robert Hobbs", "Robert Irvine", "Robert J. Aumann", "Robert J. Gordon", "Robert J. Harvey"
     ,"Robert J. LaLonde", "Robert J. MacCoun", "Robert J. Nemiroff", "Robert J. Shiller", "Robert J. Sternberg"
-    ,"Robert Kaestner", "Robert Kanigel", "Robert Karlsson", "Robert Kleinberg", "Robert Kolker"
+    ,"Robert Kaestner", "Robert Kanigel", "Robert Kleinberg", "Robert Kolker"
     ,"Robert Krulwich", "Robert Kurzban", "Robert L. Forward", "Robert L. Linn", "Robert L. Paarlberg"
     ,"Robert L. Sack", "Robert L. Spitzer", "Robert L. Thorndike", "Robert Langer"
     ,"Robert Leeper", "Robert Lerner", "Robert M. Bond", "Robert M. Hauser", "Robert M. May"
@@ -3307,7 +3298,7 @@ authorWpLinkDB = setLike
     ,"Roy F. Baumeister", "Roy H. Campbell", "Roy M. Anderson", "Roy Pea", "Rudolf Arnheim"
     ,"Rudolf Fehrmann", "Rudolf Uher", "Rudolph E. Tanzi", "Rudyard Kipling", "Rui Xu"
     ,"Ruixiang Zhang", "Ruma Falk", "Rumena Bu\382arovska", "Rune Jacobsen", "Ruslan Salakhutdinov"
-    ,"Russ Altman", "Russel J. Reiter", "Russell A. Poldrack", "Russell Coleman", "Russell Impagliazzo"
+    ,"Russ Altman", "Russel J. Reiter", "Russell A. Poldrack", "Russell Coleman"
     ,"Russell Lande", "Russell Roberts", "Russell Spears", "Russell Thomson", "Ruth Armstrong"
     ,"Ruth E. Ley", "Ruth Faden", "Ruth Johnson", "Ruth M. J. Byrne", "Ruth Mace"
     ,"Ruth Nussinov", "Ruth O\8217Hara", "Ruth Shonle Cavan", "Ruut Veenhoven", "Ryan Bradley"
@@ -3318,13 +3309,13 @@ authorWpLinkDB = setLike
     ,"Sagar Shah", "Sahib Singh", "Sahil Patel", "Salil Vadhan", "Salim Yusuf"
     ,"Sally Satel", "Salman Avestimehr", "Sam Altman", "Sam Blackwell", "Sam Dodge"
     ,"Sam Gross", "Sam Kean", "Sam Kwong", "Sam Mercer", "Sam Peltzman"
-    ,"Sam Ritter", "Samantha Watson", "Sami Haddadin", "Samir Arora", "Samir Saba"
+    , "Samantha Watson", "Sami Haddadin", "Samir Arora", "Samir Saba"
     ,"Samuel A. Stouffer", "Samuel D. Gosling", "Samuel Ginn", "Samuel Gosling", "Samuel J. Holmes"
     ,"Samuel L. Braunstein", "Samuel L. Smith", "Samuel R. Buss", "Samuel S. Kortum"
     ,"Samuel S. Wineburg", "Samuel T. Cohen", "Samy Bengio", "Sana Amanat", "Sandeep Singh"
     ,"Sander Greenland", "Sander van der Linden", "Sandra Scarr", "Sandra Weintraub", "Sandu Popescu"
     ,"Sang-Won Park", "Sanghamitra Mohanty", "Sanja Fidler", "Sanjay Asthana", "Sanjay Ghemawat"
-    ,"Sanjay Jain", "Sanjay Srivastava", "Sanjeev Arora", "Sanjiv Kumar", "Santosh Vempala"
+    ,"Sanjay Jain", "Sanjay Srivastava", "Sanjeev Arora", "Santosh Vempala"
     ,"Sapna Maheshwari", "Sara A. Solla", "Sara Garcia", "Sara M. Lewis", "Sara Moreira"
     ,"Sara Seager", "Sarah A. Tishkoff", "Sarah Byford", "Sarah Chen", "Sarah E. Anderson"
     ,"Sarah Ennis", "Sarah Haider", "Sarah Henderson", "Sarah Jeong", "Sarah Kreps"
@@ -3332,7 +3323,7 @@ authorWpLinkDB = setLike
     ,"Sarah York", "Sarah-Jayne Blakemore", "Sarit Kraus", "Sarnoff A. Mednick", "Satinder Singh"
     ,"Satoshi Iizuka", "Satoshi Matsuoka", "Satoshi Nakamoto", "Satya Nadella", "Saul Perlmutter"
     ,"Saul Rosenzweig", "Saurabh Sinha", "Saurabh Tiwary", "Sayan Ghosh", "Sayantan Das"
-    ,"Scale AI", "Scott Aaronson", "Scott Cunningham", "Scott E. Fahlman", "Scott Heiner"
+    ,"Scale AI", "Scott Aaronson", "Scott E. Fahlman", "Scott Heiner"
     ,"Scott Johnston", "Scott Keeney", "Scott Mahlke", "Scott McCoy", "Scott O. Lilienfeld"
     ,"Scott Pelley", "Scott Shannon", "Scott Small", "Scott W. Brady", "Seamus Heaney"
     ,"Sean Bell", "Sean F. Reardon", "Sean M. Carroll", "Sean M. Ryan", "Sean Mayes"
@@ -3348,7 +3339,7 @@ authorWpLinkDB = setLike
     ,"Shaomeng Wang", "Sharon Begley", "Sharon N. DeWitte", "Shaun Purcell", "Shawn Bayern"
     ,"Sheila McIlraith", "Sheldon C. Reed", "Shelley L. Berger", "Shelly Flagel", "Shen Li"
     ,"Sheng Liu", "Sheng Wang", "Sheri Fink", "Sherry Glied"
-    ,"Sherry Shi", "Sherwin Rosen", "Shi Feng", "Shih-Chii Liu", "Shih-Fu Chang"
+    ,"Sherry Shi", "Sherwin Rosen", "Shih-Chii Liu", "Shih-Fu Chang"
     ,"Shih-Jen Hwang", "Shinji Higuchi", "Shinya Hasegawa", "Shirley Ho", "Shirley Wu"
     ,"Shirly Pinto", "Shivendra Singh", "Shlomo Benartzi", "Shlomo Moran", "Sholto Douglas"
     ,"Shoukhrat Mitalipov", "Shuai Peng", "Shuai Zhang", "Shuai Zhao", "Shuang Zhao"
@@ -3442,7 +3433,7 @@ authorWpLinkDB = setLike
     ,"Trevor Hastie", "Trevor W. Robbins", "Trisha Suppes", "Tristan Thrush", "Truman Lee Kelley"
     ,"Trung Nguyen", "Trygve J. B. Hoff", "Tsukasa Yoshida", "Tuomas Sandholm", "Tyler Anbinder"
     ,"Tyler Cowen", "Tyler Jacks", "Tyler Murray", "Tyrone D. Cannon", "U. S. Department of Justice"
-    ,"Ufuk Akcigit", "Ulric Neisser", "Ulrich Kutschera", "Ulrich M\252ller", "Ulrich Preuss"
+    ,"Ufuk Akcigit", "Ulrich Kutschera", "Ulrich M\252ller", "Ulrich Preuss"
     ,"Ulrich Schmidt", "Ulrich Trautwein", "Ulrike Schmidt", "Uma Ramakrishnan", "Umberto Eco"
     ,"United States Commission on Civil Rights", "United States District Court Southern District of New York", "United States District Court for the Eastern District of Pennsylvania", "Unity Biotechnology", "Urho Kujala"
     ,"Uri Alon", "Uri Gneezy", "Uri Simonsohn", "Uri Zwick", "Urie Bronfenbrenner"
@@ -3491,21 +3482,21 @@ authorWpLinkDB = setLike
     ,"Wolfgang Hoenig", "Wolfgang Hoffmann", "Wolfgang Maier", "Wolfgang Pesendorfer", "Wolfgang Stroebe"
     ,"Wolfgang Viechtbauer", "Wolfram Burgard", "Woo Suk Hwang", "Woo-Suk Hwang", "Wulfram Gerstner"
     ,"Xavier Gabaix", "Xi Chen", "Xi Wang", "Xi Yin", "Xia Hu"
-    ,"Xia Li", "Xian Yang", "Xiang Chen", "Xiang Cheng", "Xiang Zhang"
+    ,"Xia Li", "Xian Yang", "Xiang Chen", "Xiang Zhang"
     ,"Xiao Feng", "Xiao Wang", "Xiao Xiao", "Xiao-Li Meng", "Xiaojie Wang"
     , "Xiaoling Zhang", "Xiaoming Liu", "Xiaonan Zhang", "Xiaoou Tang"
     ,"Xiaowei Li", "Xiaoxin Chen", "Xie Chen", "Xifeng Wu", "Xihong Lin"
     ,"Xin Di", "Xin Huang", "Xin Jiang", "Xin Meng", "Xin Tong"
     ,"Xin Yu", "Xin Zhang", "Xin Zhou", "Xing Sun", "Xinjun Zhang"
     ,"Xinwen Zhu", "Xinyan Zhang", "Xinyi Xu", "Xinyu Zhang", "Xu Chen"
-    ,"Xu Han", "Xu Li", "Xu Shi", "Xu Sun", "Xuan Chen"
+    , "Xu Li", "Xu Shi", "Xu Sun", "Xuan Chen"
     ,"Xuan Zang", "Xuedong Huang", "Xun Wang", "Yaacov Trope", "Yan Ding"
     ,"Yan Li", "Yan Liang", "Yan Long", "Yan Lu", "Yang An"
     ,"Yang Fu", "Yang Gao", "Yang Hu", "Yang Shi", "Yang Song"
     ,"Yang Wu", "Yang You", "Yang Yue", "Yang Zhao", "Yang Zhou"
     ,"Yaniv Altshuler", "Yaniv Erlich", "Yann LeCun", "Yannic Kilcher", "Yasheng Huang"
     ,"Yasin Ozcan", "Yasuhiro Sato", "Yasuhiro Takeda", "Yasuo Kuniyoshi", "Ye Feng"
-    ,"Ye Li", "Ye Xia", "Yee Whye Teh", "Yejin Choi", "Yi Ji"
+    ,"Ye Xia", "Yee Whye Teh", "Yejin Choi", "Yi Ji"
     ,"Yi Jiang", "Yi Ma", "Yi Mao", "Yi Rao", "Yi Shang"
     ,"Yi Wang", "Yi Wei", "Yi Wen", "Yi Wu", "Yi Yu"
     ,"Yi Zuo", "Yifan Xu", "Yihan Wang", "Yili Wu", "Yilin Fan"
@@ -3520,7 +3511,7 @@ authorWpLinkDB = setLike
     ,"Yu Gu", "Yu Hu", "Yu Shi", "Yu Song"
     ,"Yu Tian", "Yu Xie", "Yu Yamamoto", "Yuan Cao", "Yuan Chen"
     ,"Yuan Hao", "Yuan He", "Yuan Jiang", "Yuan Liang", "Yuan Xie"
-    ,"Yuan Yao", "Yuan Yin", "Yuan-Tsong Chen", "Yudhanjaya Wijeratne", "Yue Li"
+    ,"Yuan Yin", "Yuan-Tsong Chen", "Yudhanjaya Wijeratne", "Yue Li"
     ,"Yue Shan", "Yue Wan", "Yue Yang", "Yufeng Zhang", "Yuhua Wang"
     ,"Yuichi Shoda", "Yuji Ijiri", "Yuji Kato", "Yukiyasu Kamitani", "Yulia Kovas"
     ,"Yulin Liu", "Yun Wang", "Yunfeng Liu", "Yuri Matiyasevich", "Yurii Nesterov"
@@ -3531,14 +3522,14 @@ authorWpLinkDB = setLike
     ,"Zellig S. Harris", "Zeng Tao", "Zenobia Jacobs", "Zenon Kulpa", "Zhao Chen"
     ,"Zhao Song", "Zhao Xue", "Zhao Zhong", "Zhen Fan", "Zhen Tan"
     ,"Zhendong Wang", "Zheng Cao", "Zheng Tian", "Zheng Yan", "Zheng Zhu"
-    ,"Zhengyou Zhang", "Zhi Zheng", "Zhi-Li Zhang", "Zhichao Li", "Zhihong Chen"
+    ,"Zhengyou Zhang", "Zhi-Li Zhang", "Zhichao Li", "Zhihong Chen"
     ,"Zhihui Wang", "Zhiping Weng", "Zhiwei Wang", "Zhiwu Lu", "Zhiyi Zhang"
     ,"Zhou Ren", "Zhou Yu", "Zi Wang", "Zicheng Liu", "Zoe Kourtzi"
     ,"Zoe R. Donaldson", "Zong Chen", "Zoubin Ghahramani", "Zuzana Pavelkov\225", "Zvi Galil"
-    ,"Zvi Griliches", "Zvika Brakerski", "\193d\225m Mikl\243si", "OpenAI", "Vladimir Vapnik", "Alexey Chervonenkis"
+    ,"Zvi Griliches", "Zvika Brakerski", "\193d\225m Mikl\243si", "OpenAI", "Alexey Chervonenkis"
     ,"Ronald Coase", "Michael C. Jensen", "William H. Meckling", "John Langdon Down", "Darold A. Treffert"
     , "Andy Hertzfeld", "Ryan North", "Robert Crumb", "Aline Kominsky-Crumb", "Ralph Bakshi"
-    , "Marvin Minsky", "Helen Keller", "Bret Taylor", "Frederick Jelinek", "James P. Gordon", "Simon Rich"
+    , "Marvin Minsky", "Helen Keller", "Frederick Jelinek", "James P. Gordon", "Simon Rich"
     , "Alexander Grothendieck", "Francois Duc De La Rochefoucauld", "Oskar Pfungst", "Kary B. Mullis"
     , "Dana Gioia", "Patrik K. E. Magnusson", "This American Life", "Mervyn O’Gorman", "Matthew Meselson"
     , "Jeffrey Snover", "Bennett Foddy", "Geoffrey Brock", "Dennis Sciama", "Hank Greely"
@@ -3557,10 +3548,10 @@ authorWpLinkDB = setLike
     , "Philip Kapleau", "Gerard Nolst Trenité", "Jerry Fodor", "Kai Li", "Douglas McIlroy"
     , "Kennedy Space Center", "Bill Gosper", "William K. Clifford", "Scott Sumner", "Donald Hall"
     , "Corridor Digital", "Bruce Schneier", "Marjo-Riitta Järvelin", "Chris Argyris", "Andrew C. Yao"
-    , "Greg Egan", "Paul D. MacLean", "John Archibald Wheeler", "Samuel T. Cohen", "Carter Scholz"
+    , "Greg Egan", "Paul D. MacLean", "John Archibald Wheeler", "Carter Scholz"
     , "Hiroshi Nagai", "David Corfield", "Stan Kelly-Bootle", "N. David Mermin", "Simon Tatham"
     , "Roel André Ophoff", "Paul M. B. Vitányi", "Oliver Herford", "Erik Satie", "E. T. Jaynes"
-    , "Kenneth E. Boulding", "Ronan Farrow", "Karl T. Compton", "Björn Kurtén", "Robert R. McCrae"
+    , "Ronan Farrow", "Karl T. Compton", "Björn Kurtén", "Robert R. McCrae"
     , "Milton Rokeach", "Robert Heinlein", "Lauren Faust", "Walter Savage Landor", "Robert Laurence Binyon"
     , "David A. Freedman", "Larry V. Hedges", "Hugh Christian Watkins", "Frank Herbert"
     , "Norman Spinrad", "Willis E. McNelly", "Stephen Cole Kleene", "Warren S. McCulloch"
@@ -3599,10 +3590,10 @@ authorWpLinkDB = setLike
     , "Oliver Sacks", "Keiichi Matsuura", "Aleksandra Faust", "Samuel S. Wilks", "Kenneth Lee Pike", "Josh Lerner"
     , "Robert Hayden", "Michael Ondaatje", "Galway Kinnell", "Li-Young Lee", "Douwe Kiela", "Richmond Lattimore"
     , "William T. Vollmann", "Laurence Perrine", "John Milton", "Ted Hughes", "Hunter S. Thompson", "Kevin D. Williamson"
-    , "Martin Ellison", "David E. Hoffman", "Paul Ginsparg", "Wojciech Kopczuk", "Robert J. White", "Dines Bjørner"
+    , "David E. Hoffman", "Paul Ginsparg", "Wojciech Kopczuk", "Robert J. White", "Dines Bjørner"
     , "Hans-Joachim Voth", "Friedrich Nietzsche", "William Bialek", "E. E. Cummings", "Simon Willison", "Karen Greenlee"
     , "Constance Reid", "Julia Robinson", "Ianthi-Maria Tsimpli", "Graeme Mitchison", "Ravi Vakil", "Ross Koppel"
-    , "Bruce G. Lindsay", "Anne Chao", "John A. Hostetler", "Brian Moriarty", "Archibald MacLeish", "Michael Drew"
+    , "Bruce G. Lindsay", "John A. Hostetler", "Brian Moriarty", "Archibald MacLeish", "Michael Drew"
     , "Herbert H. Clark", "Jean E. Fox Tree", "Mikhail Bulgakov", "David Shor", "Rudolf Sloboda", "Frank Bidart"
     , "Gary McGraw", "Liisa Keltikangas-Järvinen", "fnnch", "Philipp Holliger", "Zbigniew Herbert", "Branko Grünbaum"
     , "Bali Pulendran", "Yascha Mounk", "Peter B. Andrews", "Marty Golubitsky", "Volker Haucke", "Stanisław Ulam"
@@ -3610,9 +3601,9 @@ authorWpLinkDB = setLike
     , "Ulric Neisser", "Leila Chatti", "Bo Burnham", "Daniele Macuglia", "Morteza Dehghani", "Richard Creath"
     , "Nadine Dupérré", "Danica Kragic", "Aude Billard", "Thierry Depaulis", "Jorge Nuno Silva", "Eddie Duggan", "David Parlett"
     , "Bertram Gawronski", "Fei-Fei Li", "Euan Ashley", "John A. Long", "Elga Mark-Kurik",  "Per E. Ahlberg"
-    , "Roger Jones", "Kate Trinajstic", "Hervey M. Cleckley", "May Berenbaum", "American Psychological Association"
+    , "Roger Jones", "Kate Trinajstic", "Hervey M. Cleckley", "May Berenbaum"
     , "Alfred Bester", "Martyn Thomas", "Nina Vasan", "Max H. Bazerman", "William Yang Wang", "Larry Tesler", "Peter J. Huber"
     , "Greg Corrado", "Philip Wheelwright", "Cristian Canton Ferrer", "Ian Kershaw", "David Samuel Margoliouth"
     , "Peter Filkins", "Marta Serra-Garcia", "Martin Fleming", "Barry Mazur", "Weiqi Zhang", "Guy L. Steele"
     , "Carlos M. Herrera", "William Fleeson", "Matt Levine", "Andrew Sullivan", "Anne Helen Petersen"
-    , "Richard A. Howard", "George H. Estabrooks", "Danny Hillis", "David L. Waltz"]
+    , "Richard A. Howard", "George H. Estabrooks", "Danny Hillis", "David L. Waltz", "Margaret E. Roberts", "Solomon Messing"]

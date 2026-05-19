@@ -6,7 +6,7 @@ module Test where
 import Control.Monad (unless)
 import Data.Either (lefts)
 import Data.List (intersect, isInfixOf, isPrefixOf)
-import qualified Data.Map.Strict as M (keys, toList)
+import qualified Data.Map.Strict as M (keys)
 import Data.Char (isAlpha, isDigit, isLower)
 import Text.Read (readMaybe)
 import qualified Data.Text as T (unpack, elem, head, pack)
@@ -56,7 +56,7 @@ import qualified Config.LinkID (linkIDOverrides, affiliationAnchors)
 import qualified Config.Metadata.Format (htmlRewriteRegexpBefore, htmlRewriteRegexpAfter, htmlRewriteFixed, filterMetaBadSubstrings, filterMetaBadWholes, balancedBracketTestCases, htmlRewriteTestCases)
 import qualified Config.Misc (cd, tooltipToMetadataTestcases, cycleTestCases, cleanArxivAbstracts, arxivAbstractFixedRewrites, arxivAbstractRegexps)
 import qualified Config.Paragraph (whitelist)
-import qualified Config.Metadata.Author (authorCollapseTestCases, canonicals, canonicalsWithInitials, authorLinkDB, authorLinkBlacklist, cleanAuthorsFixedRewrites, cleanAuthorsRegexps, extractTwitterUsernameTestSuite, authorWhitelist)
+import qualified Config.Metadata.Author (authorCollapseTestCases, canonicals, canonicalsWithInitials, authorLink, authorLinkBlacklist, cleanAuthorsFixedRewrites, cleanAuthorsRegexps, extractTwitterUsernameTestSuite, authorWhitelist)
 import qualified Config.Metadata.Title (badStrings, stringReplace, stringDelete)
 import LinkMetadata (readLinkMetadata, generateFileTransclusionBlock)
 import Config.LinkMetadata (fileTranscludesTest, badDOISubstrings, allowedNonHttpURLPrefixes, uriValidationExemptInfixes, ignoredMalformedURLPrefixes, badAuthorSubstrings, duplicateAffiliationWhitelist, allowedNonHttpURLPrefixes, documentPreviewableExtensions, codePreviewableExtensions, fileViewableExtensions, documentPreviewableExtensions, codePreviewableExtensions, annotationClasses, positiveAnnotationClasses)
@@ -138,14 +138,14 @@ testConfigs = sum $ map length [isUniqueList Config.Metadata.Format.filterMetaBa
               , length $ isUniqueKeys Config.Metadata.Author.cleanAuthorsFixedRewrites, length $ isUniqueKeys Config.Misc.cycleTestCases, length $ isUniqueKeys Config.Metadata.Author.cleanAuthorsRegexps, length $ isUniqueKeys Config.Metadata.Format.htmlRewriteRegexpBefore, length $ isUniqueKeys Config.Metadata.Format.htmlRewriteRegexpAfter, length $ isUniqueKeys Config.Metadata.Format.htmlRewriteFixed, length $ isUniqueKeys Config.Metadata.Author.extractTwitterUsernameTestSuite
               , length $ filter (\(input,output) -> Metadata.Format.balanced input /= output) $ isUniqueKeys Config.Metadata.Format.balancedBracketTestCases
               , length $ isUniqueKeys Config.Metadata.Author.authorCollapseTestCases, length $ isUnique Config.Metadata.Author.authorCollapseTestCases,
-                length $ isUniqueAll (M.toList Config.Metadata.Author.authorLinkDB)
-              , length $ isUniqueKeys (M.toList Config.Metadata.Author.canonicals), length $ isUniqueList Config.Metadata.Author.canonicalsWithInitials, length $ isUniqueList Config.Metadata.Author.authorLinkBlacklist, length $ isUniqueList Config.Metadata.Author.authorWhitelist
+                length $ isUniqueAll Config.Metadata.Author.authorLink
+              , length $ isUniqueKeys Config.Metadata.Author.canonicals, length $ isUniqueList Config.Metadata.Author.canonicalsWithInitials, length $ isUniqueList Config.Metadata.Author.authorLinkBlacklist, length $ isUniqueList Config.Metadata.Author.authorWhitelist
               , length $ isUniqueAll Config.Metadata.Format.htmlRewriteTestCases
               , length $ isUniqueList Config.Typography.dateRangeDurationTestCases
-              , length $ ensure "Test.authorLinkDB" "isURLAny (URL of second)" (all isURLAnyT) (M.toList Config.Metadata.Author.authorLinkDB)
-              , length $ ensure "Test.authorLinkDB" "no broken HTML entities indicated by a '&'" (\name -> not ('&' `T.elem` name)) (M.keys Config.Metadata.Author.authorLinkDB)
-              , length $ isCycleLess (M.toList Config.Metadata.Author.canonicals), length $ isCycleLess (M.toList Config.Metadata.Author.authorLinkDB)
-              , length $ (map T.unpack $ M.keys Config.Metadata.Author.authorLinkDB) `intersect` (M.keys Config.Metadata.Author.canonicals)
+              , length $ ensure "Test.authorLink" "isURLAny (URL of second)" (all isURLAnyT) Config.Metadata.Author.authorLink
+              , length $ ensure "Test.authorLink" "no broken HTML entities indicated by a '&'" (\name -> not ('&' `T.elem` name)) (map fst Config.Metadata.Author.authorLink)
+              , length $ isCycleLess Config.Metadata.Author.canonicals, length $ isCycleLess Config.Metadata.Author.authorLink
+              , length $ (map T.unpack $ map fst Config.Metadata.Author.authorLink) `intersect` (map fst Config.Metadata.Author.canonicals)
               , length $ isUniqueList Config.Metadata.Title.badStrings, length $ isUniqueList Config.Metadata.Title.stringDelete, length $ isUniqueKeys Config.Metadata.Title.stringReplace
               , length $ isUniqueList Config.Paragraph.whitelist, length $ ensure "Test.Paragraph.whitelist" "isURLAny" isURLAny Config.Paragraph.whitelist
               , length $ isUniqueList Config.LinkMetadata.badDOISubstrings
