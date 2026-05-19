@@ -91,7 +91,6 @@ GW.layout = {
 
 	//	Elements which do not participate in block layout.
 	skipElements: [
-		".empty",
 		".empty-graf",
 		".hidden",
 		".float",
@@ -686,6 +685,15 @@ function isEmpty(element, options) {
 	});
 }
 
+/*****************************************************************************/
+/*	Returns true if the element has content (non-empty, discounting metadata).
+ */
+function hasContent(element, options) {
+	return useLayoutCache(element, "hasContent", options, (element, options) => {
+		return (isNodeEmpty(element) == false);
+	});
+}
+
 /***************************************************************************/
 /*	Returns true if element is an always-not-empty element, false otherwise.
  */
@@ -731,7 +739,7 @@ function sequentialBlockOf(element, direction, options) {
 		}
 
 		//	Skip empty elements.
-		if (   isEmpty(elementSibling, options) == true
+		if (   hasContent(elementSibling, options) == false
 			&& isNonEmpty(elementSibling, options) == false)
 			return sequentialBlockOf(elementSibling, direction, options);
 
@@ -791,7 +799,7 @@ function terminalBlockOf(element, terminus, options, strictDescent = false) {
 				let terminalBlock = terminalBlockOf(childBlocks[i], terminus, options);
 				if (   terminalBlock
 					&& isSkipped(terminalBlock, options) == false
-					&& (   isEmpty(terminalBlock, options) == false
+					&& (   hasContent(terminalBlock, options) == true
 						|| isNonEmpty(terminalBlock, options) == true))
 					return terminalBlock;
 			}
@@ -1058,19 +1066,6 @@ function textContentOf(node) {
 	return Array.from(node.childNodes).reduce((textContent, childNode) => (textContent + textContentOf(childNode)), "");
 }
 
-/**************************************************************************/
-/*	Returns true if it’s ok to remove the given block if it’s empty.
-
-	The purpose of this function is to be conservative by using a whitelist
-	approach to removing empty grafs.
-*/
-function emptyGrafRemovable(block) {
-	if (block.closest(".poem"))
-		return true;
-
-	return false;
-}
-
 
 /*********************/
 /* LAYOUT PROCESSORS */
@@ -1254,15 +1249,17 @@ addLayoutProcessor("applyBlockLayoutClassesInContainer", (blockContainer) => {
 
 		//	Apply special paragraph classes.
 		if (block.matches("p") == true) {
-			//	Empty paragraphs (the .empty-graf class; not displayed).
-			let emptyGraf = isEmpty(block);
-			block.classList.toggle("empty-graf", emptyGraf);
-			if (emptyGraf) {
-				if (emptyGrafRemovable(block))
-					block.remove();
-
+			//	Truly content-less blocks should be removed entirely.
+			if (isEmpty(block)) {
+				block.remove();
 				return;
 			}
+
+			//	Empty paragraphs (the .empty-graf class; not displayed).
+			let emptyGraf = (hasContent(block) == false);
+			block.classList.toggle("empty-graf", emptyGraf);
+			if (emptyGraf)
+				return;
 
 			/*	Paragraphs not preceded directly by other paragraphs
 				(not in lists) (the .first-graf class).

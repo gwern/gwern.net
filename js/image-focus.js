@@ -620,7 +620,7 @@ ImageFocus = {
                 return element;
             }).filter((element, index, array) => (
                     element != null
-                 && isEmpty(element) == false
+                 && hasContent(element) == true
                  && textContentOf(element) != GW.defaultImageAuxText
                  && array.findIndex(otherElement => (
                         otherElement != null
