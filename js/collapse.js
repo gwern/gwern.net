@@ -610,6 +610,10 @@ addContentInjectHandler("unwrapTooSmallCollapseBlocks", (eventInfo) => {
 		if (collapseBlock.querySelector(".abstract-collapse-only") != null)
 			return;
 
+		//	Exclude collapses with include-links in them.
+		if (Transclude.allIncludeLinksInContainer(collapseBlock).length > 0)
+			return;
+
 		doWhenPageLayoutComplete(() => {
 			//	Determine height of content.
 			let totalContentHeight;
@@ -845,7 +849,8 @@ function toggleCollapseBlockState(collapseBlock, expanding, options) {
 	}
 
 	//	Invalidate calculated “iceberg indicator” value.
-	invalidateCollapseBlockIcebergIndicator(collapseBlock);
+	if (collapseBlock.classList.contains("iceberg-not") == false)
+		invalidateCollapseBlockIcebergIndicator(collapseBlock);
 
 	//	Update label text and other HTML-based UI state.
 	updateDisclosureButtonState(collapseBlock, {
@@ -1208,8 +1213,10 @@ GW.notificationCenter.addHandlerForEvent("Rewrite.contentDidChange", (eventInfo)
 
 	let containingCollapseBlock;
 	while ((containingCollapseBlock = where.closest(".collapse"))) {
-		invalidateCollapseBlockIcebergIndicator(containingCollapseBlock);
-		setCollapseBlockIcebergIndicatorUpdateWhenNeeded(containingCollapseBlock);
+		if (containingCollapseBlock.classList.contains("iceberg-not") == false) {
+			invalidateCollapseBlockIcebergIndicator(containingCollapseBlock);
+			setCollapseBlockIcebergIndicatorUpdateWhenNeeded(containingCollapseBlock);
+		}
 
 		where = containingCollapseBlock.parentElement;
 	}
