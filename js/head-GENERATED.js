@@ -3050,8 +3050,12 @@ function updateScrollState(event) {
 }
 addScrollListener(updateScrollState, {
 	name: "updateScrollStateScrollListener",
-	defer: true,
-	ifDeferCallWhenAdd: true
+	defer: false
+});
+doWhenPageLoaded(() => {
+	requestAnimationFrame(() => {
+		updateScrollState();
+	});
 });
 
 /*  Returns true if the page is scrollable, false otherwise.
