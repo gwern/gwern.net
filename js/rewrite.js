@@ -4575,8 +4575,9 @@ GW.notificationCenter.addHandlerForEvent("GW.hashDidChange", GW.brokenAnchorChec
 /* PRINTING */
 /************/
 
-/*********************************************************************/
-/*  Trigger transcludes and expand-lock collapse blocks when printing.
+/*************************************************************************/
+/*  Trigger transcludes and expand-lock collapse blocks when printing, and
+	prepare document for printing in other ways.
  */
 window.addEventListener("beforeprint", GW.beforePrintHandler = (event) => {
     GWLog("Print command received.", "rewrite.js", 1);
@@ -4599,11 +4600,19 @@ window.addEventListener("beforeprint", GW.beforePrintHandler = (event) => {
     });
 
     expand(document);
+
+	//	Set light mode for printing (saving current mode to revert afterwards).
+	DarkMode.previousMode = DarkMode.currentMode();
+	DarkMode.setMode("light");
 });
 window.addEventListener("afterprint", GW.afterPrintHandler = (event) => {
     GWLog("Print command completed.", "rewrite.js", 1);
 
     GW.notificationCenter.removeHandlerForEvent("GW.contentDidInject", GW.expandAllContentWhenLoadingPrintView);
+
+	//	Revert to previously set mode.
+	DarkMode.setMode(DarkMode.previousMode);
+	delete DarkMode.previousMode;
 });
 
 
