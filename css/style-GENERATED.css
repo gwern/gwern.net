@@ -3760,20 +3760,38 @@ script {
         font-size: 1.5em;
     }
 
+	/*	Normal styles for normal browsers (Chrome).
+	 */
+	p.has-dropcap span.dropcap {
+		--top-margin-adjust: 0em;
+	}
+	/*	Special styles for special browsers (Firefox).
+	 */
+	@supports (-moz-appearance: none) {
+		p.has-dropcap span.dropcap {
+			--top-margin-adjust: 0.075em;
+		}
+	}
+	/*	Extra-special styles for extra-special browsers (Safari).
+	 */
+	_::-webkit-full-page-media, _:future, :root p.has-dropcap span.dropcap {
+		--top-margin-adjust: -0.075em;
+	}
+
     /*  All of these numbers are magic.
      */
     p.dropcap-goudy span.dropcap {
         font-family: Goudy Initialen;
         font-size: 7em;
         line-height: 1;
-        margin: 0.025em 0.02em -0.25em 0;
+        margin: calc(0.025em + var(--top-margin-adjust)) 0.02em -0.25em 0;
         color: var(--GW-dropcaps-goudy-color);
     }
     p.dropcap-yinit span.dropcap {
         font-family: Yinit;
         font-size: 5.625em;
         line-height: 1.35;
-        margin: 0.07em 0.08em -0.5em 0;
+        margin: calc(0.07em + var(--top-margin-adjust)) 0.08em -0.5em 0;
         text-shadow: 0 0 0 var(--GW-dropcaps-yinit-text-shadow-color);
         color: var(--GW-dropcaps-yinit-color);
     }
@@ -3781,21 +3799,21 @@ script {
         font-family: Deutsche Zierschrift;
         font-size: 6.625em;
         line-height: 1.1;
-        margin: 0.01em 0.05em -0.25em 0;
+        margin: calc(0.01em + var(--top-margin-adjust)) 0.05em -0.25em 0;
         color: var(--GW-dropcaps-de-zs-color);
     }
     p.dropcap-cheshire span.dropcap {
         font-family: Cheshire Initials;
         font-size: 6.75em;
         line-height: 1;
-        margin: 0.045em 0.06em -0.25em 0;
+        margin: calc(0.045em + var(--top-margin-adjust)) 0.06em -0.25em 0;
         color: var(--GW-dropcaps-cheshire-color);
     }
     p.dropcap-kanzlei span.dropcap {
         font-family: Kanzlei Initialen;
         font-size: 7em;
         line-height: 1;
-        margin: 0.025em 0.025em -0.25em -0.02em;
+        margin: calc(0.025em + var(--top-margin-adjust)) 0.025em -0.25em -0.02em;
         color: var(--GW-dropcaps-kanzlei-color);
     }
 
