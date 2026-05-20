@@ -13277,8 +13277,12 @@ Extracts = { ...Extracts,
             fraction of the note must be visible in order to prevent the popup
             from spawning.
          */
-        let noteVisibilityThreshold = 0.5;
-        if (Notes.allNotesForCitation(target).findIndex(note => Popups.isVisible(note, -1 * note.clientHeight * noteVisibilityThreshold)) !== -1)
+        let footnoteVisibilityThreshold = 0.5;
+        if (Notes.allNotesForCitation(target).findIndex(note => {
+        		return (note.classList.contains("sidenote")
+        				? isOnScreen(note)
+        				: Popups.isVisible(note, -1 * note.clientHeight * footnoteVisibilityThreshold));
+        	}) !== -1)
             return null;
 
         /*  Add event listeners to highlight citation when its footnote
@@ -21598,9 +21602,6 @@ Sidenotes = { ...Sidenotes,
 				target: sidenote.outerWrapper
 			});
 		}
-
-		//	Invalidate cached notes.
-		Notes.invalidateCachedNotesForPathname(injectEventInfo.loadLocation.pathname);
 
 		//	Trigger transcludes.
 		let columns = [ ];

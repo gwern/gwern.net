@@ -789,9 +789,6 @@ Sidenotes = { ...Sidenotes,
 			});
 		}
 
-		//	Invalidate cached notes.
-		Notes.invalidateCachedNotesForPathname(injectEventInfo.loadLocation.pathname);
-
 		//	Trigger transcludes.
 		let columns = [ ];
 		if (Sidenotes.useLeftColumn())

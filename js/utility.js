@@ -1090,6 +1090,7 @@ function isNodeEmpty(node, options) {
     return true;
 }
 
+
 /************************************************************************/
 /*	Wrap text nodes and inline elements in the given element in <p> tags.
 
@@ -1217,6 +1218,11 @@ function getSelectionAsDocument(doc = document) {
     return docFrag;
 }
 
+Element.Terminus = {
+	START: "start",
+	END: "end"
+};
+
 /************************************************************************/
 /*	Removes empty nodes at start and end.
 
@@ -1224,12 +1230,13 @@ function getSelectionAsDocument(doc = document) {
 	option fields.
  */
 Element.prototype.trimWhitespace = function (options) {
-	this.trimWhitespaceFromStart(options);
-	this.trimWhitespaceFromEnd(options);
+	this.trimWhitespaceFromTerminus(Element.Terminus.START, options);
+	this.trimWhitespaceFromTerminus(Element.Terminus.END,   options);
 };
 
 /************************************************************************/
-/*	Removes empty nodes at start.
+/*	Removes empty nodes at start or end (as specified by the ‘terminus’
+	argument, which is an Element.Terminus and can be START or END).
 
 	Available option fields:
 
@@ -1245,16 +1252,23 @@ Element.prototype.trimWhitespace = function (options) {
 		If true is passed, trims whitespace within nodes as well.
 		(Default is false.)
  */
-Element.prototype.trimWhitespaceFromStart = function (options) {
+Element.prototype.trimWhitespaceFromTerminus = function (terminus, options) {
 	options = Object.assign({
 		descend: true,
 		nodeOmissionOptions: null,
 		trimWithinNodes: false
 	}, options);
 
+	//	Always exclude certain elements.
+	if ([ "IMG", "SVG", "VIDEO", "AUDIO", "IFRAME", "OBJECT" ].includes(this.tagName.toUpperCase()))
+		return;
+
 	let nodesToRemove = [ ];
 	for (let i = 0; i < this.childNodes.length; i++) {
-		let node = this.childNodes[i];
+		let index = terminus == Element.Terminus.START
+					? i
+					: this.childNodes.length - (1 + i);
+		let node = this.childNodes[index];
 		if (isNodeEmpty(node, options.nodeOmissionOptions)) {
 			nodesToRemove.push(node);
 		} else {
@@ -1265,64 +1279,51 @@ Element.prototype.trimWhitespaceFromStart = function (options) {
 		this.removeChild(node);
 	});
 
+	let terminalChild = terminus == Element.Terminus.START
+						? this.firstChild
+						: this.lastChild;
 	if (   options.descend == true
-		&& this.firstChild?.nodeType == Node.ELEMENT_NODE)
-		this.firstChild.trimWhitespaceFromStart(options);
+		&& terminalChild?.nodeType == Node.ELEMENT_NODE)
+		terminalChild.trimWhitespaceFromStart(options);
 
 	if (options.trimWithinNodes == true) {
-		let firstTextNode = this.firstTextNode;
-		if (firstTextNode) {
-			firstTextNode.textContent = firstTextNode.textContent.trimStart();
-			if (isNodeEmpty(firstTextNode, options.nodeOmissionOptions))
-				firstTextNode.parentNode.removeChild(firstTextNode);
+		let terminalTextNode = terminus == Element.Terminus.START
+							   ? this.firstTextNode
+							   : this.lastTextNode;
+		if (terminalTextNode) {
+			terminalTextNode.textContent = terminus == Element.Terminus.START
+										   ? terminalTextNode.textContent.trimStart()
+										   : terminalTextNode.textContent.trimEnd();
+			if (isNodeEmpty(terminalTextNode, options.nodeOmissionOptions))
+				terminalTextNode.parentNode.removeChild(terminalTextNode);
 		}
 	}
+};
+
+/************************************************************************/
+/*	Removes empty nodes at start.
+
+	See Element.prototype.trimWhitespaceFromTerminus() for info on available
+	option fields.
+ */
+Element.prototype.trimWhitespaceFromStart = function (options) {
+	this.trimWhitespaceFromTerminus(Element.Terminus.START, options);
 };
 
 /************************************************************************/
 /*	Removes empty nodes at end.
 
-	See Element.prototype.trimWhitespaceFromStart() for info on available
+	See Element.prototype.trimWhitespaceFromTerminus() for info on available
 	option fields.
  */
 Element.prototype.trimWhitespaceFromEnd = function (options) {
-	options = Object.assign({
-		descend: true,
-		nodeOmissionOptions: null,
-		trimWithinNodes: false
-	}, options);
-
-	let nodesToRemove = [ ];
-	for (let j = 0; j < this.childNodes.length; j++) {
-		let node = this.childNodes[this.childNodes.length - (1 + j)];
-		if (isNodeEmpty(node, options.nodeOmissionOptions)) {
-			nodesToRemove.push(node);
-		} else {
-			break;
-		}
-	}
-	nodesToRemove.forEach(node => {
-		this.removeChild(node);
-	});
-
-	if (   options.descend == true
-		&& this.lastChild?.nodeType == Node.ELEMENT_NODE)
-		this.lastChild.trimWhitespaceFromEnd(options);
-
-	if (options.trimWithinNodes == true) {
-		let lastTextNode = this.lastTextNode;
-		if (lastTextNode) {
-			lastTextNode.textContent = lastTextNode.textContent.trimEnd();
-			if (isNodeEmpty(lastTextNode, options.nodeOmissionOptions))
-				lastTextNode.parentNode.removeChild(lastTextNode);
-		}
-	}
+	this.trimWhitespaceFromTerminus(Element.Terminus.END, options);
 };
 
 /************************************************************************/
 /*	As the same method of Element.
 
-	See Element.prototype.trimWhitespaceFromStart() for info on available
+	See Element.prototype.trimWhitespaceFromTerminus() for info on available
 	option fields.
  */
 DocumentFragment.prototype.trimWhitespace = function (options) {
