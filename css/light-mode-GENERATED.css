@@ -307,11 +307,6 @@
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-key-icon-border-color: #bbb;
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-key-icon-background-color: #444;
 
-	/*	“Back to top” link.
-	 */
-	--GW-back-to-top-link-color: #ccc;
-	--GW-back-to-top-link-hover-color: #999;
-
 	/*	Mobile floating header.
 	 */
 	--GW-floating-header-box-shadow-color: #ccc;

@@ -2030,65 +2030,8 @@ doWhenBodyExists(GW.pageToolbar.setup);
 /* BACK TO TOP LINK */
 /********************/
 
-/*********************************************************************/
-/*  Show/hide the back-to-top link in response to scrolling.
-
-    Called by the ‘updateBackToTopLinkScrollListener’ scroll listener.
- */
-function updateBackToTopLinkVisibility(event) {
-    GWLog("updateBackToTopLinkVisibility", "misc.js", 3);
-
-    //  One PgDn’s worth of scroll distance, approximately.
-    let onePageScrollDistance = (0.8 * window.innerHeight);
-
-    let pageScrollPosition = getPageScrollPosition();
-
-    //  Hide back-to-top link when scrolling to top.
-    if (pageScrollPosition == 0)
-        GW.backToTop.classList.toggle("hidden", true);
-    //  Show back-to-top link when scrolling to bottom.
-    else if (pageScrollPosition == 100)
-        GW.backToTop.classList.toggle("hidden", false);
-    //  Show back-to-top link when scrolling a full page down from the top.
-    else if (GW.scrollState.unbrokenDownScrollDistance > onePageScrollDistance * 2.0)
-        GW.backToTop.classList.toggle("hidden", false);
-    //  Hide back-to-top link on half a page’s worth of scroll up.
-    else if (GW.scrollState.unbrokenUpScrollDistance > onePageScrollDistance * 0.5)
-        GW.backToTop.classList.toggle("hidden", true);
-}
-
-/**********************************/
-/*  Injects the “back to top” link.
- */
-if (GW.isMobile() == false) doWhenPageLoaded(() => {
-    GWLog("injectBackToTopLink", "misc.js", 1);
-
-    GW.backToTop = addUIElement(`<div id="back-to-top"><a href="#top" tabindex="-1" title="Back to top">`
-        + GW.svg("arrow-up-to-line-light")
-        + `</a></div>`);
-
-    //  Show/hide the back-to-top link on scroll up/down.
-    addScrollListener(updateBackToTopLinkVisibility, {
-        name: "updateBackToTopLinkScrollListener",
-        defer: true,
-        ifDeferCallWhenAdd: true
-    });
-
-    //  Show the back-to-top link on mouseover.
-    GW.backToTop.addEventListener("mouseenter", (event) => {
-        GW.backToTop.style.transition = "none";
-        GW.backToTop.classList.toggle("hidden", false);
-    });
-    GW.backToTop.addEventListener("mouseleave", (event) => {
-        GW.backToTop.style.transition = "";
-    });
-    GW.backToTop.addEventListener("click", (event) => {
-        GW.backToTop.style.transition = "";
-    });
-});
-
-/***********************************************************/
-/*	Rewrite footer logo link to also link to #top on /index.
+/******************************************************/
+/*	Rewrite footer logo link to link to #top on /index.
  */
 addContentLoadHandler("rewriteIndexFooterLogoLinkHref", (eventInfo) => {
     eventInfo.container.querySelectorAll("#footer-decoration-container .footer-logo").forEach(footerLogo => {
@@ -2313,7 +2256,7 @@ GW.floatingHeader = {
                                          + GW.scrollState.lastScrollTop
                                          + thresholdElement.offsetHeight;
 
-        //  Show/hide the back-to-top link on scroll up/down.
+        //  Show/hide the floating header on scroll up/down.
         addScrollListener(GW.floatingHeader.updateState, {
             name: "updateFloatingHeaderScrollListener",
             defer: true,
@@ -2736,7 +2679,7 @@ doWhenPageLayoutComplete(GW.pageLayoutCompleteHashHandlingSetup = (info) => {
     GW.locationHash = location.hash.split(";").first;
 
     /*  Remove “#top” or “#” from the URL hash (e.g. after user clicks on the
-        back-to-top link).
+        page name in the floating header).
      */
     window.addEventListener("hashchange", GW.handleBrowserHashChangeEvent = () => {
         GWLog("GW.handleBrowserHashChangeEvent", "misc.js", 1);

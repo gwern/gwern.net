@@ -2799,9 +2799,6 @@ body.special-halloween-dark {
 
     --GW-bottom-ornament-line-color: var(--GW-blood-red-arterial);
 
-    --GW-back-to-top-link-color: var(--GW-blood-red-dried);
-    --GW-back-to-top-link-hover-color: var(--GW-blood-red-arterial);
-
     --GW-floating-header-scroll-indicator-color: var(--GW-blood-red);
 
     --GW-body-link-hover-color: var(--GW-blood-red-arterial);
@@ -2980,9 +2977,6 @@ body[class*='special-christmas'] {
     --GW-page-toolbar-control-button-color: var(--GW-holly-leaf-green);
 
     --GW-bottom-ornament-line-color: var(--GW-holly-leaf-green);
-
-    --GW-back-to-top-link-color: var(--GW-holly-leaf-green);
-    --GW-back-to-top-link-hover-color: var(--GW-holly-berry-red);
 
     --GW-floating-header-scroll-indicator-color: var(--GW-holly-leaf-green);
 

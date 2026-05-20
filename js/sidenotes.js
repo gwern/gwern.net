@@ -1203,9 +1203,6 @@ Sidenotes = { ...Sidenotes,
 				//	Page toolbar.
 				GW.pageToolbar?.toggleCollapseState(true);
 				GW.pageToolbar?.fade();
-
-				//	Back-to-top link.
-				GW.backToTop?.classList.toggle("hidden", true)
 			}, 25);
 		});
 	},

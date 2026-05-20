@@ -3913,74 +3913,6 @@ ol.link-bibliography-list-compact blockquote.data-field.annotation-abstract.in-l
 }
 
 
-/********************/
-/* BACK-TO-TOP LINK */
-/********************/
-
-#back-to-top {
-    position: absolute;
-    bottom: 0.75rem;
-    opacity: 1.0;
-    visibility: visible;
-    transition:
-        opacity 2s ease;
-}
-#back-to-top.hidden {
-    opacity: 0;
-}
-#back-to-top a {
-    --background-color: var(--GW-body-background-color);
-
-    display: block;
-    width: 2.25em;
-    height: 2.25em;
-    padding: 0.25em 0.25em;
-    box-sizing: border-box;
-    color: var(--GW-back-to-top-link-color);
-    filter:
-        drop-shadow(0 0 1px var(--background-color))
-        drop-shadow(0 0 1px var(--background-color))
-        drop-shadow(0 0 1px var(--background-color));
-}
-#back-to-top a:hover {
-    color: var(--GW-back-to-top-link-hover-color);
-}
-#back-to-top svg {
-    display: block;
-    width: 100%;
-    height: 100%;
-}
-
-@media all and (min-width: 1080px) {
-    #back-to-top {
-        right: calc(((100% - (var(--GW-body-max-width) + 2 * var(--GW-body-side-padding))) / 2) - 5px);
-    }
-    #back-to-top a {
-        border: 3px double transparent;
-    }
-    #back-to-top a:hover {
-        border-color: currentColor;
-    }
-}
-@media all and (max-width: 1079px) {
-    #back-to-top {
-        right: 1rem;
-        bottom: 1rem;
-    }
-    #back-to-top a {
-        border: 1px solid currentColor;
-    }
-    #back-to-top {
-        background-color: var(--background-color);
-        background-image: linear-gradient(var(--GW-back-to-top-link-color),
-                                          var(--GW-back-to-top-link-color));
-        background-position: 0 0;
-        background-repeat: no-repeat;
-        background-size: 0 0;
-    }
-}
-
-
 /*******************************/
 /* PAGE-SPECIFIC MODIFICATIONS */
 /*******************************/
@@ -6993,13 +6925,6 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
      */
     body.page-index #floating-header {
         display: none;
-    }
-
-    /*  Back-to-top link on home page.
-     */
-    body.page-index #back-to-top {
-        left: calc((100% - 1430px - 50px)/2);
-        right: unset;
     }
 }
 
