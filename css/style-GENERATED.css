@@ -9157,44 +9157,6 @@ a[data-link-icon-type*='tri'][data-link-icon-type*='mono'] {
     --link-icon-opacity-default: 0.7;
 }
 
-/*  Quad-letter ‘quad’ square icons.
-
-    NOTE: Currently unused, due to SVG rendering of quad icons.
-        —SA 2025-02-25
- */
-a[data-link-icon-type*='text'][data-link-icon-type*='quad'] .link-icon-hook::after {
-    text-indent: 0;
-    overflow-wrap: break-word;
-    display: inline-block;
-    text-align: center;
-    left: 0;
-    bottom: 0.3em;
-    font-size: 0.52em;
-    font-weight: bold;
-    letter-spacing: 0.05em;
-    line-height: 0.85;
-    width: 1.7em;
-    opacity: 0.83;
-}
-
-/*  Quad-letter square icons in a sans face.
-
-    NOTE: Currently unused, due to SVG rendering of quad icons.
-        —SA 2025-02-25
-    */
-a[data-link-icon-type*='text'][data-link-icon-type*='quad'][data-link-icon-type*='sans'] .link-icon-hook::after {
-    /*  Nothing, for now. */
-}
-
-/*  Quad-letter square icons in a monospaced face.
-
-    NOTE: Currently unused, due to SVG rendering of quad icons.
-        —SA 2025-02-25
-    */
-a[data-link-icon-type*='text'][data-link-icon-type*='quad'][data-link-icon-type*='mono'] .link-icon-hook::after {
-    line-height: 0.90;
-}
-
 /******************************/
 /*  Colored textual link icons.
  */
