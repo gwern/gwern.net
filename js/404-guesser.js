@@ -108,8 +108,6 @@ function findSimilarUrlPaths(urlPaths, targetPath, numResults, maxDistance) {
     return urlPaths.filter(
 	    //	Quick filter based on length difference
     	urlPath => (Math.abs(urlPath.length - targetPath.length) <= maxDistance)
-// 	).unique(
-	//	NOTE: Aren’t the URLs in the sitemap unique already? —SA 2025-12-17
     ).map(
     	//	Calculate bounded Levenshtein distance.
     	urlPath => ({
@@ -159,8 +157,6 @@ function findSimilarByBasename(urlPaths, targetPath, numResults, maxDistance) {
     ).sort(
     	//	Sort by distance.
 		(a, b) => a.distance - b.distance
-// 	).unique(
-	//	NOTE: Aren’t the URLs in the sitemap unique already? —SA 2025-12-17
 	).map(
 		item => item.pathname
 	);
