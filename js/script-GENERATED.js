@@ -23864,6 +23864,15 @@ ReaderMode = { ...ReaderMode,
 			link.savedOnClick = null;
 		});
 
+		//	Disable click-to-disable.
+		document.querySelectorAll(ReaderMode.deactivateOnClickTriggerElementSelector).forEach(clickableToDisableElement => {
+			if (clickableToDisableElement.clickToDisableReaderModeListener == null)
+				return;
+
+			clickableToDisableElement.removeActivateEvent();
+			clickableToDisableElement.clickToDisableReaderModeListener = null;
+		});
+
 		if (GW.isMobile() == false) {
 			//	Remove key down/up listeners (for the Alt key toggle).
 			document.removeEventListener("keydown", ReaderMode.altKeyDownOrUp);
