@@ -8884,15 +8884,8 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     position: relative;
     z-index: 1;
 
-/*  This is currently broken in Safari. Since it’s not important enough to
-    figure out a way to scope it to only non-Safari browsers, I’m disabling it
-    for now. This should be revisited in a year.
-        —SA 2023-09-24
- */
-/*
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
- */
 }
 
 .markdownBody a.has-indicator-hook .indicator-hook {
