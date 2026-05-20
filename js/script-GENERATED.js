@@ -6557,7 +6557,7 @@ Annotations = { ...Annotations,
 				}
 
 				filesizeHTML = `<span
-								 class="data-field file-size ${filesizeDataFieldAdditionalClasses}"
+								 class="data-field file-size"
 								 >${filesize} <span 
 											   class="file-size-units"
 											   >${filesizeUnits}</span></span>`;
