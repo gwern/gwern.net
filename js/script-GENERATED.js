@@ -10289,12 +10289,7 @@ Transclude = {
         "include-block-context",
         "include-rectify-not",
         "include-identify-not",
-        "include-localize-not",
-
-		/*	TEMPORARY.
-				—SA 2024-12-31
-		 */
-		"include-replace-container"
+        "include-localize-not"
     ],
 
     transcludeAnnotationsByDefault: true,
