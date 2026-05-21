@@ -3615,13 +3615,6 @@ function enableLinkIcon(link) {
     if (link.dataset.linkIconType.includes("text")) {
 		let linkIcon = link.dataset.linkIcon;
 
-		//	Inject newline into quad link icons.
-// 		if (link.dataset.linkIconType.includes("quad"))
-// 			linkIcon = linkIcon.slice(0, 2) + "\\a " + linkIcon.slice(2);
-		/*	NOTE: Currently unused, due to SVG rendering of quad icons.
-				—SA 2025-02-25
-		 */
-
 		/*	Render SVG quad-letter icon, change the link icon type, then call
 			this function again, to enable the newly rendered icon.
 		 */
