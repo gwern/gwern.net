@@ -593,26 +593,13 @@ function targetElementInDocument(link, doc) {
     if (   element == null
         && link instanceof HTMLAnchorElement
         && link.dataset.backlinkTargetUrl > "") {
-        //  HAX. (Remove when link IDs are fixed. —SA 2023-03-22)
-        /*  Disabling this hack, hopefully it’s no longer needed.
-            (See also line below.) —SA 2023-04-29
-         */
-//      let exactBacklinkSelector = null;
-//      if (anchor.startsWith("#gwern")) {
-//          let targetID = "#" + anchor.slice(("#gwern" + link.dataset.backlinkTargetUrl.slice(1).replace("/", "-") + "-").length);
-//          if (targetID > "")
-//              exactBacklinkSelector = `a[href*='${CSS.escape(link.dataset.backlinkTargetUrl + targetID)}']`;
-//      }
-
         let backlinkSelector = `a[href*='${CSS.escape(link.dataset.backlinkTargetUrl)}']:not(.backlink-not)`;
         let exclusionSelector = [
             "#page-metadata a",
             ".aux-links-list a"
         ].join(", ");
-        /*  Disabling this hack, hopefully it’s no longer needed.
-            (See also lines above.) —SA 2023-04-29
-         */
-        element = /* doc.querySelector(exactBacklinkSelector) ?? */ (Array.from(doc.querySelectorAll(backlinkSelector)).filter(backlink => {
+
+        element = (Array.from(doc.querySelectorAll(backlinkSelector)).filter(backlink => {
             return (   (link.dataset.backlinkTargetUrl.startsWith("/")
                         ? backlink.pathname == link.dataset.backlinkTargetUrl
                         : backlink.href == link.dataset.backlinkTargetUrl)
