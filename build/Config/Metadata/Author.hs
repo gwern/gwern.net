@@ -965,6 +965,7 @@ canonicals = setLike
   , ("William D. Hillis", "Danny Hillis")
   , ("Daniel Hillis", "Danny Hillis")
   , ("zetalyrae", "Fernando Borretti")
+  , ("nottombrown", "Tom Brown")
   ]
 
 -- tests: unique
@@ -3606,4 +3607,4 @@ authorWpLinkDB = setLike
     , "Greg Corrado", "Philip Wheelwright", "Cristian Canton Ferrer", "Ian Kershaw", "David Samuel Margoliouth"
     , "Peter Filkins", "Marta Serra-Garcia", "Martin Fleming", "Barry Mazur", "Weiqi Zhang", "Guy L. Steele"
     , "Carlos M. Herrera", "William Fleeson", "Matt Levine", "Andrew Sullivan", "Anne Helen Petersen"
-    , "Richard A. Howard", "George H. Estabrooks", "Danny Hillis", "David L. Waltz", "Margaret E. Roberts", "Solomon Messing"]
+    , "Richard A. Howard", "George H. Estabrooks", "Danny Hillis", "David L. Waltz", "Margaret E. Roberts", "Solomon Messing", "Katha Pollitt", "Dai Mahou Touge"]

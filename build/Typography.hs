@@ -16,7 +16,7 @@ module Typography (linebreakingTransform, typographyTransformTemporary, typesetH
 import Control.Monad.State.Lazy (evalState, get, modify, put, State)
 import Data.Char (isPunctuation, isSpace, toUpper)
 import Data.List (isPrefixOf, isSuffixOf)
-import qualified Data.Text as T (append, concat, pack, unpack, replace, splitOn, strip, Text, head, null)
+import qualified Data.Text as T (append, concat, pack, unpack, replace, splitOn, strip, Text, head, null, take, takeEnd)
 import Data.Text.Read (decimal)
 import Text.Regex.TDFA (Regex, makeRegex, match)
 import qualified Data.Map.Strict as M (empty, insert, lookup, Map)
@@ -29,7 +29,6 @@ import Text.Pandoc.Walk (walk, walkM)
 
 import Debug.Trace (trace)
 import Text.Pandoc.Shared (stringify)
-import qualified Data.Text as T
 
 import Metadata.Date (dateRangeDuration)
 import LinkIcon (linkIcon)
@@ -140,7 +139,7 @@ abstractBlockquotesTest = filter (uncurry (/=))
       [ Div ("", ["abstract"], [])
         [ Para [Str "A."]
         , Para [Str "B."]
-        , BlockQuote [Para [Str "Already quoted."]]
+        , BlockQuote [Para [Str "Already quoted (1)."]]
         , Para [Str "1."]
         ]
       ]
@@ -150,7 +149,7 @@ abstractBlockquotesTest = filter (uncurry (/=))
         [ BlockQuote
           [ Para [Str "A."]
           , Para [Str "B."]
-          , Para [Str "Already quoted."]
+          , Para [Str "Already quoted (1)."]
           , Para [Str "1."]]
         ]
       ]
