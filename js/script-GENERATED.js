@@ -18290,15 +18290,31 @@ addContentInjectHandler("designateLocalNavigationLinkIcons", (eventInfo) => {
 		if (link.hash == "#top")
 			link.dataset.linkIcon = "\u{2191}" // ‘↑’ UPWARDS ARROW;
 
+		let targetFollowsLink = false;
         let target = eventInfo.document.querySelector(selectorFromHash(link.hash));
-        if (target == null)
-        	return;
+        if (target != null) {
+			targetFollowsLink = (link.compareDocumentPosition(target) & Node.DOCUMENT_POSITION_FOLLOWING);
+		} else {
+			/*	The link might be in a pop-frame, but might refer to a target
+				in the root document; in this case, we determine arrow direction
+				not based on the position of the link itself, but that of the
+				root-level spawning target for the pop-frame stack.
+			 */
+        	let sourceLink = link;
+        	let containingPopFrame;
+        	while (containingPopFrame = Extracts.popFrameProvider.containingPopFrame(sourceLink))
+        		sourceLink = containingPopFrame.spawningTarget;
+        	target = sourceLink.getRootNode().querySelector(selectorFromHash(link.hash));
+        	if (target != null) {
+				targetFollowsLink = (sourceLink.compareDocumentPosition(target) & Node.DOCUMENT_POSITION_FOLLOWING);
+			} else {
+				return;
+			}
+		}
 
-        link.dataset.linkIcon =
-            (link.compareDocumentPosition(target) & Node.DOCUMENT_POSITION_FOLLOWING
-             ? "\u{2193}" // ‘↓’ DOWNWARDS ARROW
-             : "\u{2191}" // ‘↑’ UPWARDS ARROW
-             );
+		link.dataset.linkIcon = targetFollowsLink
+								? "\u{2193}"  // ‘↓’ DOWNWARDS ARROW
+								: "\u{2191}"; // ‘↑’ UPWARDS ARROW
     });
 
     //  Local links (to other pages on the site).
