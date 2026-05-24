@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-05-13 18:50:50 gwern"
+# When:  Time-stamp: "2026-05-20 18:00:01 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -954,6 +954,12 @@ The hidden mathematics of bathrooms
 "C<sub>13</sub>H<sub>16</sub>ClNO"
 - "https://xbow.com/blog/mythos-offensive-security-xbow-evaluation XBOW - Mythos for Offensive Security: XBOW’s Evaluation"
 "Mythos for Offensive Security: XBOW’s Evaluation"
+- https://blog.himanshuanand.com/2026/05/the-90-day-disclosure-policy-is-dead/ the 90 day disclosure policy is dead :: Himanshu Anand :: Threat Notes"
+"The 90 day disclosure policy is dead"
+- "https://lithub.com/a-prize-winning-story-published-in-granta-was-very-likely-written-by-ai/ Literary Hub - A prize-winning story published in Granta was (very likely) written by AI"
+"A prize-winning story published in Granta was (very likely) written by AI"
+- "http://news.bbc.co.uk/2/hi/health/3826857.stm Health"
+""
 
 """
 
