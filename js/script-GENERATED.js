@@ -15145,6 +15145,9 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 					}).filter(item => 
 						//	Filter by max distance.
 						(item.distance <= maxDistance)
+					).filter(item =>
+						//	Filter out duplicates.
+						(allMatches.findIndex(match => (match.last == item.entry.last)) === -1)
 					).sort((a, b) => 
 						//	Sort by distance.
 						(a.distance - b.distance)
@@ -15236,7 +15239,10 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 							return (   (   refComponents.year == null
 										|| entryComponents.year?.startsWith(refComponents.year.slice(0, 4)) == true)
 									&& refComponents.authors.findIndex(author => entryComponents.authors.includes(author) == false) === -1);
-						});
+						}).filter(entry =>
+							//	Filter out duplicates.
+							(allMatches.findIndex(match => (match.first == entry.first)) === -1)
+						);
 						allMatches.push(...partialAuthorMatches);
 					}
 
@@ -15259,6 +15265,9 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 						}).filter(item => 
 							//	Filter by max distance.
 							(item.distance <= maxDistance)
+						).filter(item =>
+							//	Filter out duplicates.
+							(allMatches.findIndex(match => (match.first == item.entry.first)) === -1)
 						).sort((a, b) => 
 							//	Sort by distance.
 							(a.distance - b.distance)
