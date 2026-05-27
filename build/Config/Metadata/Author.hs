@@ -2304,6 +2304,8 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("Jasmine Sun", "https://jasmi.news/about")
     , ("Lukas Petersson", "https://lukaspetersson.com/")
     , ("Willis Barnstone", "https://en.wikipedia.org/wiki/Willis_Barnstone#With_Borges")
+    , ("Daniel Abraham", "https://en.wikipedia.org/wiki/Daniel_Abraham_(author)")
+    , ("Linch", "https://linch.substack.com/")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3607,4 +3609,5 @@ authorWpLinkDB = setLike
     , "Greg Corrado", "Philip Wheelwright", "Cristian Canton Ferrer", "Ian Kershaw", "David Samuel Margoliouth"
     , "Peter Filkins", "Marta Serra-Garcia", "Martin Fleming", "Barry Mazur", "Weiqi Zhang", "Guy L. Steele"
     , "Carlos M. Herrera", "William Fleeson", "Matt Levine", "Andrew Sullivan", "Anne Helen Petersen"
-    , "Richard A. Howard", "George H. Estabrooks", "Danny Hillis", "David L. Waltz", "Margaret E. Roberts", "Solomon Messing", "Katha Pollitt", "Dai Mahou Touge"]
+    , "Richard A. Howard", "George H. Estabrooks", "Danny Hillis", "David L. Waltz", "Margaret E. Roberts"
+    , "Solomon Messing", "Katha Pollitt", "Dai Mahou Touge", "Irina Blok", "Dwarkesh Patel"]

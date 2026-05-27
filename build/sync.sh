@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-05-12 15:51:09 gwern"
+# When:  Time-stamp: "2026-05-25 18:13:53 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -141,7 +141,7 @@ else
           stringReplace '<sup>St</sup>' '<sup>st</sup>' ./metadata/*.gtx; stringReplace '<sup>Nd</sup>' '<sup>nd</sup>' ./metadata/*.gtx; stringReplace '<sup>Rd</sup>' '<sup>rd</sup>' ./metadata/*.gtx; stringReplace ' 1st ' ' 1<sup>st</sup> ' ./metadata/*.gtx; stringReplace ' 2nd' ' 2<sup>nd</sup>' ./metadata/*.gtx; stringReplace ' 3rd' ' 3<sup>rd</sup>' ./metadata/*.gtx; stringReplace ' 4th' ' 4<sup>th</sup>' ./metadata/*.gtx;
 
           ## spelling errors:
-          s 'border colly' 'border collie'; s 'genomewide' 'genome-wide'; s 'regularise' 'regularize'; s ' residualis' ' residualiz'; s 'endelian randomisation' 'endelian randomization'; s 'mendelian randomization' 'Mendelian Randomization'; s 'Mendelian randomization' 'Mendelian Randomization'; s 'canalization' 'canalisation'; s 'Statistical significance' 'Statistical-significance'; s 'Statistical Significance' 'Statistical-Significance'; s 'statistical significance' 'statistical-significance'; s ' longstanding' ' long-standing'; s 'utilise' 'utilize'; s 'facebookok' 'facebook'; s 'Tartarian' 'Tatarian'; s 'tartarian' 'tatarian'; s ' an One' ' a One'; s ' an one' ' a one'; s '<p>he ' '<p>He '; s ' lik ' ' like '; s ' Behaviour ' ' Behavior '; s ' behaviour ' ' behavior '; s ' anaesthesia' ' anesthesia'; s ' Modelling' ' Modeling'; s ' modelling' ' modeling'; s ' colour' ' color'; s ' Colour' ' Color'; s 'multicentre' 'multicenter'; s 'Multicentre' 'Multicenter'; s ' Cluster-Randomis' ' Cluster-Randomiz'; s ' Non-Randomis' ' Non-Randomiz'; s ' Non-randomised' ' Non-randomized'; s ' Randomis' ' Randomiz'; s ' cluster-randomis' ' cluster-randomiz'; s ' non-randomis' ' non-randomiz'; s ' non-randomised' ' non-randomized'; s ' nonrandomised' ' non-randomised'; s ' quasi-randomised' ' quasi-randomized'; s ' randomis' ' randomiz'; s 'categoris' 'categoriz'; s ' ageing' ' aging'; s ' Ageing' ' Aging'; s 'Likert-scale' 'Likert scale'; s 'discussiom' 'discussion'; s ' Homogeneous' ' Homogenous'; s ' homogeneous' ' homogenous'; s ' Non-Homogeneous' ' Non-Homogenous'; s ' non-homogeneous' ' non-homogenous'; s 'Homogeneous:' 'Homogenous:'; s '“homogeneous”' '“homogenous”'; s ' ancestry-homogeneous' ' ancestry-homogenous'; s ' inhomogeneous' ' inhomogenous'; s ' continuee ' ' continue '; s ' A LLM' ' An LLM'; s ' a LLM' ' an LLM';
+          s 'border colly' 'border collie'; s 'genomewide' 'genome-wide'; s 'regularise' 'regularize'; s ' residualis' ' residualiz'; s 'endelian randomisation' 'endelian randomization'; s 'mendelian randomization' 'Mendelian Randomization'; s 'Mendelian randomization' 'Mendelian Randomization'; s 'canalization' 'canalisation'; s 'Statistical significance' 'Statistical-significance'; s 'Statistical Significance' 'Statistical-Significance'; s 'statistical significance' 'statistical-significance'; s ' longstanding' ' long-standing'; s 'utilise' 'utilize'; s 'facebookok' 'facebook'; s 'Tartarian' 'Tatarian'; s 'tartarian' 'tatarian'; s ' an One' ' a One'; s ' an one' ' a one'; s '<p>he ' '<p>He '; s ' lik ' ' like '; s ' Behaviour ' ' Behavior '; s ' behaviour ' ' behavior '; s ' anaesthesia' ' anesthesia'; s ' Modelling' ' Modeling'; s ' modelling' ' modeling'; s ' colour' ' color'; s ' Colour' ' Color'; s 'multicentre' 'multicenter'; s 'Multicentre' 'Multicenter'; s ' Cluster-Randomis' ' Cluster-Randomiz'; s ' Non-Randomis' ' Non-Randomiz'; s ' Non-randomised' ' Non-randomized'; s ' Randomis' ' Randomiz'; s ' cluster-randomis' ' cluster-randomiz'; s ' non-randomis' ' non-randomiz'; s ' non-randomised' ' non-randomized'; s ' nonrandomised' ' non-randomised'; s ' quasi-randomised' ' quasi-randomized'; s ' randomis' ' randomiz'; s 'categoris' 'categoriz'; s ' ageing' ' aging'; s ' Ageing' ' Aging'; s 'Likert-scale' 'Likert scale'; s 'discussiom' 'discussion'; s ' Homogeneous' ' Homogenous'; s ' homogeneous' ' homogenous'; s ' Non-Homogeneous' ' Non-Homogenous'; s ' non-homogeneous' ' non-homogenous'; s 'Homogeneous:' 'Homogenous:'; s '“homogeneous”' '“homogenous”'; s ' ancestry-homogeneous' ' ancestry-homogenous'; s ' inhomogeneous' ' inhomogenous'; s ' continuee ' ' continue '; s ' A LLM' ' An LLM'; s ' a LLM' ' an LLM'; s 'over-parameterized' 'overparameterized'; s 'Over-parameterized' 'Overparameterized'; s ' epoches' ' epochs';
 
           ## citation consistency:
           s ']^[' '] ^['; s 'et. al.' 'et al'; s 'et al. (' 'et al ('; s ' et al. 1'  ' et al 1'; s ' et al. 2'  ' et al 2'; s ' et al., ' ' et al '; s 'et al., ' 'et al '; s ' et. al ' ' et al ';
@@ -177,7 +177,7 @@ else
           s 'link-icon-not' 'icon-not'; s '<!--<p>' '<!-- <p>'; s '</p>-->' '</p> -->';
           s '](W!' '](!W'; s '<em>𝛽</em>' '<em>β</em>'; s '𝛽' '<em>β</em>'; s 'class="table-simple' 'class="table-small';
           s ' > > ' ' >> '; s '</pan>' '</span>'; s 'display:none;' 'display: none;'; s '</spam>' '</span>'; s '\U0001D4AA' '𝒪̃';
-          s 'class="Editorial"' 'class="editorial"'; s '<a herf=' '<a href='; s '<a ref=' '<a href='; s '<a hrfe=' '<a href='; s '<a rhef=' '<a href='; s '<a href"$' '<a href="$'; s '<a hrref=' '<a href='; s '1-5 stars' '1–5 stars'; s '_p_<.' '_p_ < 0.'; s '<div clss=' '<div class='; s '<a hre=f"' '<a href="';
+          s 'class="Editorial"' 'class="editorial"'; s '<a herf=' '<a href='; s '<a ref=' '<a href='; s '<a hrfe=' '<a href='; s '<a rhef=' '<a href='; s '<a href"$' '<a href="$'; s '<a hrref=' '<a href='; s '1-5 stars' '1–5 stars'; s '_p_<.' '_p_ < 0.'; s '<div clss=' '<div class='; s '<a hre=f"' '<a href="'; s ' PCSK9' ' <em>PCSK9</em>';
 
           ## TODO: duplicate HTML classes from Pandoc reported as issue #8705 & fixed; fix should be in >pandoc 3.1.1 (2023-03-05), so can remove these two rewrites once I upgrade past that:
           s 'class="odd odd' 'class="odd'; s 'class="even even' 'class="even';
@@ -472,7 +472,7 @@ else
             -annotate +0+13 "$META_LINE" \
             "$POSTER"
         compressJPG "$POSTER"
-        rm --force"$TMPSTRIP"
+        rm --force "$TMPSTRIP"
     }
     for VIDEO in $(find . -type f \( -name "*.mp4" -o -name "*.webm" -o -name "*.avi" \) | gfv "doc/www/" | sort); do
         generate_large_poster "$VIDEO" &
@@ -565,59 +565,59 @@ else
     bold "Generating HTML previews of document types (like MS Word)…"
     # For some document types, Pandoc doesn't support them, or syntax-highlighting wouldn't be too useful for preview popups. So we use LibreOffice to convert them to HTML.
     # <https://en.wikipedia.org/wiki/LibreOffice#Supported_file_formats>
-	convert_to_html() {
-	    local -r EMBED_IMAGES="$1"; shift
-	    if [[ -f "$1" ]]; then
-	        convert_file "$EMBED_IMAGES" "$1"
-	    else
-	        local -r FILE_EXTS=("$@")
-	        find ./doc/ -type f \( $(printf -- "-name *.%s -o " "${FILE_EXTS[@]}" | sed 's/ -o $//') \) -print0 \
-	          | xargs -0 -n 1 -P "$(nproc)" bash -c 'convert_file "$0" "$1"' "$EMBED_IMAGES"
-	    fi
-	}
-	convert_file() {
-	    local -r EMBED_IMAGES="$1"
-	    local -r FILE="$2"
-	    if [ ! -f "_site/${FILE}.html" ]; then
+    convert_to_html() {
+        local -r EMBED_IMAGES="$1"; shift
+        if [[ -f "$1" ]]; then
+            convert_file "$EMBED_IMAGES" "$1"
+        else
+            local -r FILE_EXTS=("$@")
+            find ./doc/ -type f \( $(printf -- "-name *.%s -o " "${FILE_EXTS[@]}" | sed 's/ -o $//') \) -print0 \
+              | xargs -0 -n 1 -P "$(nproc)" bash -c 'convert_file "$0" "$1"' "$EMBED_IMAGES"
+        fi
+    }
+    convert_file() {
+        local -r EMBED_IMAGES="$1"
+        local -r FILE="$2"
+        if [ ! -f "_site/${FILE}.html" ]; then
             # HTML versions are located at "$FILE.html"; we do not strip the extensions
-	        local OUTDIR
-	        OUTDIR="$(dirname "_site/${FILE}.html")"
-	        local CONVERSION_OPTION="html"
+            local OUTDIR
+            OUTDIR="$(dirname "_site/${FILE}.html")"
+            local CONVERSION_OPTION="html"
 
-	        # Create output directory if it doesn't exist
-	        mkdir -p "$OUTDIR"
+            # Create output directory if it doesn't exist
+            mkdir -p "$OUTDIR"
 
-	        # Handle file path properly, especially with spaces
-	        if [[ "$EMBED_IMAGES" == "true" ]]; then
-	            CONVERSION_OPTION="html:HTML:EmbedImages"
-	        fi
+            # Handle file path properly, especially with spaces
+            if [[ "$EMBED_IMAGES" == "true" ]]; then
+                CONVERSION_OPTION="html:HTML:EmbedImages"
+            fi
 
-	        # Use quotes around paths and create a clean temporary user profile.
-	        # NOTE: We give each invocation its own `UserInstallation` directory (rather than a shared `/tmp/LibO_Conversion`) because LibreOffice locks its profile dir on startup, so concurrent invocations sharing one profile fight over the lockfile --- this is the real cause of the "race conditions" and the spurious GUI "another instance is running" dialog leaking through `--headless`. With per-invocation profiles, conversions parallelize safely.
-	        # WARNING: Libreoffice `--convert-to` will replace the original suffix, like '$FILE.ods' → '$FILE.html'. But we need to preserve the original extension to allow other use-cases like syntax-highlighting HTML (so we can load '$FILE.html.html' to get the presentable version of '$FILE.html'). We have to work around this by restoring the original filename afterwards.
-	        local USERDIR
-	        USERDIR="$(mktemp -d)"
-	        timeout 5m libreoffice --headless --norestore --nologo --nofirststartwizard \
-	            --convert-to "$CONVERSION_OPTION" \
-	            "-env:UserInstallation=file://$USERDIR" \
-	            --outdir "$OUTDIR" \
-	            "$FILE" >/dev/null 2>&1 || echo "$FILE failed LibreOffice conversion?"
-	        rm -rf "$USERDIR"
+            # Use quotes around paths and create a clean temporary user profile.
+            # NOTE: We give each invocation its own `UserInstallation` directory (rather than a shared `/tmp/LibO_Conversion`) because LibreOffice locks its profile dir on startup, so concurrent invocations sharing one profile fight over the lockfile --- this is the real cause of the "race conditions" and the spurious GUI "another instance is running" dialog leaking through `--headless`. With per-invocation profiles, conversions parallelize safely.
+            # WARNING: Libreoffice `--convert-to` will replace the original suffix, like '$FILE.ods' → '$FILE.html'. But we need to preserve the original extension to allow other use-cases like syntax-highlighting HTML (so we can load '$FILE.html.html' to get the presentable version of '$FILE.html'). We have to work around this by restoring the original filename afterwards.
+            local USERDIR
+            USERDIR="$(mktemp -d)"
+            timeout 5m libreoffice --headless --norestore --nologo --nofirststartwizard \
+                --convert-to "$CONVERSION_OPTION" \
+                "-env:UserInstallation=file://$USERDIR" \
+                --outdir "$OUTDIR" \
+                "$FILE" >/dev/null 2>&1 || echo "$FILE failed LibreOffice conversion?"
+            rm -rf "$USERDIR"
 
-	        # If file wasn't created directly in outdir, try to find it
-	        if [ ! -f "$OUTDIR/$(basename "${FILE}").html" ]; then
-	            # Try to find the generated HTML file in current directory
-	            local GENERATED_HTML
-	            GENERATED_HTML="$(find _site/ -name "$(basename "${FILE%.*}").html" -print -quit)"
-	            if [ -n "$GENERATED_HTML" ]; then
-	                mv "$GENERATED_HTML" "$OUTDIR/$(basename "${FILE}").html" || echo "$FILE failed to move HTML file?"
-	            else
-	                echo "$FILE conversion result not found?"
-	            fi
-	        fi
-	    fi
-	}
-	export -f convert_file
+            # If file wasn't created directly in outdir, try to find it
+            if [ ! -f "$OUTDIR/$(basename "${FILE}").html" ]; then
+                # Try to find the generated HTML file in current directory
+                local GENERATED_HTML
+                GENERATED_HTML="$(find _site/ -name "$(basename "${FILE%.*}").html" -print -quit)"
+                if [ -n "$GENERATED_HTML" ]; then
+                    mv "$GENERATED_HTML" "$OUTDIR/$(basename "${FILE}").html" || echo "$FILE failed to move HTML file?"
+                else
+                    echo "$FILE conversion result not found?"
+                fi
+            fi
+        fi
+    }
+    export -f convert_file
 
     # Convert documents with embedded images
     # HACK: LibreOffice for some reason fails if you specify the 'HTML:EmbedImages' on a spreadsheet file, even though that obviously can't be a problem (it works fine on other documents, and spreadsheets don't have images to embed, so why is it a fatal error‽), and also LibreOffice lies about the error, exiting with success, so you can't simply try a second time with the `EmbedImages` removed...

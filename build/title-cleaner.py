@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-05-20 18:00:01 gwern"
+# When:  Time-stamp: "2026-05-25 17:07:44 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -959,6 +959,10 @@ The hidden mathematics of bathrooms
 - "https://lithub.com/a-prize-winning-story-published-in-granta-was-very-likely-written-by-ai/ Literary Hub - A prize-winning story published in Granta was (very likely) written by AI"
 "A prize-winning story published in Granta was (very likely) written by AI"
 - "http://news.bbc.co.uk/2/hi/health/3826857.stm Health"
+""
+- "https://www.isrctn.com/ISRCTN31571714 ISRCTN"
+""
+- "https://www.epicresearch.org/articles/two-years-after-stopping-glp-1s-most-patients-sustain-at-least-some-weight-loss Epic Research"
 ""
 
 """

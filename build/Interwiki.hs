@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+-- TODO: should crash on redundant links like "[Foo bar](!W "Foo bar")". Should crash on mismatched parentheses like "[Foo](!W "Foo (bar")", as that's such a common typo.
 module Interwiki (convertInterwikiLinks, convertInterwikiLinksInline, wpPopupClasses, isWPLive, isWPAPI, interwikiTestSuite, interwikiCycleTestSuite, isWPDisambig, isWPArticle, escapeWikiArticleTitle, toWikipediaEnURL, toWikipediaEnURLSearch) where
 
 import Control.Monad (when)
