@@ -2356,6 +2356,12 @@ addContentLoadHandler("disableSingleItemColumnBlocks", (eventInfo) => {
 /****************************************************************************/
 /*  Rectify HTML structure of interviews, and implement ‘interview’ <section>
 	and page body classes.
+
+	NOTE: If there are *nested* interview sections (`section.interview`),
+	this code may not handle that case properly. If it turns out that this
+	case must be supported, a fix will need to be made. (See the second 
+	block below.)
+		—SA 2026-05-29
  */
 addContentLoadHandler("rewriteInterviews", (eventInfo) => {
 	if (eventInfo.document.body?.classList.contains("interview")) {
