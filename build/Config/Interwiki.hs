@@ -6043,4 +6043,6 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("Her", "Her_(2013_film)")
         , ("Marginalize", "Marginal_distribution")
         , ("Erdős", "Paul Erdős")
+        , ("Active_learning", "Active_learning_(machine_learning)")
+        , ("SGD", "Stochastic_gradient_descent")
         ]
