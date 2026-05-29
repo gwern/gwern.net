@@ -12971,9 +12971,83 @@ Extracts = { ...Extracts,
 			&& popFrame.classList.containsAnyOf([ "full-page", "full-backlink-context" ]))
 			highlightTargetElementInDocument(target, popFrame.document);
 
+		//	Load adjacent sections.
+		if (contentContainer.firstElementChild.tagName == "SECTION")
+			Extracts.loadAdjacentSectionsInPopFrame_LOCAL_PAGE(popFrame, contentContainer);
+
 		//  Scroll to the target.
 		Extracts.scrollToTargetedElementInPopFrame(popFrame);
     },
+
+	//	Called by: Extracts.rewritePopFrameContent_LOCAL_PAGE
+	loadAdjacentSectionsInPopFrame_LOCAL_PAGE: (popFrame, contentContainer) => {
+        GWLog("Extracts.loadAdjacentSectionsInPopFrame_LOCAL_PAGE", "extracts-content.js", 2);
+
+		Extracts.loadPreviousSectionInPopFrame_LOCAL_PAGE(popFrame, contentContainer);
+		Extracts.loadNextSectionInPopFrame_LOCAL_PAGE(popFrame, contentContainer);
+
+
+
+//         let lastSection  = contentContainer.lastElementChild;
+//         let lastSectionInCachedContentDocument  = referenceData.content.querySelector("#" + lastSection.id);
+//         let nextSectionInCachedContentDocument     = lastSectionInCachedContentDocument.nextElementSibling;
+// 		if (   previousSectionInCachedContentDocument == null
+// 			|| nextSectionInCachedContentDocument     == null
+// 			|| previousSectionInCachedContentDocument.tagName.toLowerCase() != "section") {
+// 			let parentSection = previousSectionInCachedContentDocument.parentElement;
+// 			if (parentSection != null) {
+// 				
+// 			}
+// 		}
+	},
+
+	//	Called by: Extracts.loadAdjacentSectionsInPopFrame_LOCAL_PAGE
+	loadPreviousSectionInPopFrame_LOCAL_PAGE: (popFrame, contentContainer) => {
+        GWLog("Extracts.loadPreviousSectionInPopFrame_LOCAL_PAGE", "extracts-content.js", 2);
+
+		//	Get cached source document.
+        let referenceData = Content.referenceDataForLink(popFrame.spawningTarget);
+
+		//	Load previous section.
+        let firstSection = contentContainer.firstElementChild;
+        let firstSectionInCachedContentDocument = referenceData.content.querySelector("#" + firstSection.id);
+        if (firstSectionInCachedContentDocument.previousElementSibling?.tagName == "SECTION") {
+        	let includeLink = synthesizeIncludeLink(modifiedURL(popFrame.spawningTarget.href, {
+        		hash: "#" + firstSectionInCachedContentDocument.previousElementSibling.id
+        	}));
+			contentContainer.insertBefore(includeLink, firstSection);
+			Transclude.triggerTransclude(includeLink, {
+				source: "Extracts.loadPreviousSectionInPopFrame_LOCAL_PAGE",
+				container: popFrame.body,
+				document: popFrame.document,
+				context: "popFrame"
+			});
+        }
+	},
+
+	//	Called by: Extracts.loadAdjacentSectionsInPopFrame_LOCAL_PAGE
+	loadNextSectionInPopFrame_LOCAL_PAGE: (popFrame, contentContainer) => {
+        GWLog("Extracts.loadNextSectionInPopFrame_LOCAL_PAGE", "extracts-content.js", 2);
+
+		//	Get cached source document.
+        let referenceData = Content.referenceDataForLink(popFrame.spawningTarget);
+
+		//	Load next section.
+        let lastSection = contentContainer.lastElementChild;
+        let lastSectionInCachedContentDocument = referenceData.content.querySelector("#" + lastSection.id);
+        if (lastSectionInCachedContentDocument.nextElementSibling?.tagName == "SECTION") {
+        	let includeLink = synthesizeIncludeLink(modifiedURL(popFrame.spawningTarget.href, {
+        		hash: "#" + lastSectionInCachedContentDocument.nextElementSibling.id
+        	}));
+			contentContainer.insertBefore(includeLink, null);
+			Transclude.triggerTransclude(includeLink, {
+				source: "Extracts.loadNextSectionInPopFrame_LOCAL_PAGE",
+				container: popFrame.body,
+				document: popFrame.document,
+				context: "popFrame"
+			});
+        }
+	},
 
     //  Called by: Extracts.rewritePopFrameContent (as `rewritePop${suffix}Content_${targetTypeName}`)
     rewritePopupContent_LOCAL_PAGE: (popup, contentContainer) => {
