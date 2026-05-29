@@ -314,9 +314,95 @@ Extracts = { ...Extracts,
 			&& popFrame.classList.containsAnyOf([ "full-page", "full-backlink-context" ]))
 			highlightTargetElementInDocument(target, popFrame.document);
 
+		//	Load adjacent sections.
+		if (contentContainer.firstElementChild.tagName == "SECTION")
+			Extracts.loadAdjacentSectionsInPopFrame_LOCAL_PAGE(popFrame, contentContainer);
+
 		//  Scroll to the target.
 		Extracts.scrollToTargetedElementInPopFrame(popFrame);
     },
+
+	//	Called by: Extracts.rewritePopFrameContent_LOCAL_PAGE
+	loadAdjacentSectionsInPopFrame_LOCAL_PAGE: (popFrame, contentContainer) => {
+        GWLog("Extracts.loadAdjacentSectionsInPopFrame_LOCAL_PAGE", "extracts-content.js", 2);
+
+		Extracts.loadAdjacentSectionInPopFrame_LOCAL_PAGE(popFrame, contentContainer, "previous");
+		Extracts.loadAdjacentSectionInPopFrame_LOCAL_PAGE(popFrame, contentContainer, "next");
+	},
+
+	//	Called by: Extracts.loadAdjacentSectionsInPopFrame_LOCAL_PAGE
+	loadAdjacentSectionInPopFrame_LOCAL_PAGE: (popFrame, contentContainer, direction) => {
+        GWLog("Extracts.loadAdjacentSectionInPopFrame_LOCAL_PAGE", "extracts-content.js", 2);
+
+		//	Get cached source document.
+        let referenceData = Content.referenceDataForLink(popFrame.spawningTarget);
+
+		//	Get terminal section.
+		let terminus = (direction == "previous" ? "first" : "last");
+		let terminalSection = contentContainer[terminus + "ElementChild"];
+		if (terminalSection.tagName != "SECTION")
+			return;
+
+		//	Prepare include-link.
+		let includeLink = null;
+		let terminalSectionInCachedContentDocument = referenceData.content.querySelector("#" + terminalSection.id);
+		let terminalSectionAdjacentElementInCachedContentDocument = terminalSectionInCachedContentDocument[direction + "ElementSibling"];
+		if (terminalSectionAdjacentElementInCachedContentDocument?.tagName == "SECTION") {
+        	includeLink = synthesizeIncludeLink(modifiedURL(popFrame.spawningTarget.href, {
+        		hash: "#" + terminalSectionInCachedContentDocument[direction + "ElementSibling"].id
+        	}));
+			contentContainer.insertBefore(includeLink, direction == "previous" ? terminalSection : null);
+		} else {
+			//	Handle non-section content at start of a section (or page).
+			if (   terminalSectionAdjacentElementInCachedContentDocument != null
+				&& direction == "previous") {
+				includeLink = synthesizeIncludeLink(modifiedURL(popFrame.spawningTarget.href, {
+					hash: ("#" + (terminalSectionInCachedContentDocument.parentElement?.id ?? "") + ":" + terminalSectionInCachedContentDocument.id)
+				}), {
+					"data-include-selector-not": "header, #page-metadata, #page-metadata + .abstract"
+				});
+				if (terminalSectionInCachedContentDocument.parentElement != null)
+					includeLink.classList.add("include-unwrap");
+				contentContainer.insertBefore(includeLink, terminalSection);
+			}
+
+			//	Replicate containing section (not transclusion!).
+			if (terminalSectionInCachedContentDocument.parentElement?.tagName == "SECTION") {
+				let existingNodes = Array.from(contentContainer.childNodes);
+				let clonedParentSection = terminalSectionInCachedContentDocument.parentElement.cloneNode(true);
+				clonedParentSection.replaceChildren();
+				contentContainer.appendChild(clonedParentSection);
+				clonedParentSection.append(...existingNodes);
+
+				if (terminalSectionAdjacentElementInCachedContentDocument == null) {
+					Extracts.loadAdjacentSectionInPopFrame_LOCAL_PAGE(popFrame, contentContainer, direction);
+					return;
+				}
+			}
+		}
+
+		//	Activate the include-link (standard lazy triggering).
+		if (includeLink != null) {
+			Transclude.triggerTransclude(includeLink, {
+				source: "Extracts.loadAdjacentSectionInPopFrame_LOCAL_PAGE",
+				container: popFrame.body,
+				document: popFrame.document,
+				context: "popFrame"
+			}, {
+				immediately: false,
+				doWhenDidInject: (info) => {
+					//  Scroll to the target on initial load only.
+					if (contentContainer != popFrame.body)
+						Extracts.scrollToTargetedElementInPopFrame(popFrame);
+
+					//	Queue load of next section.
+					requestAnimationFrame(() => {
+						Extracts.loadAdjacentSectionInPopFrame_LOCAL_PAGE(popFrame, popFrame.body, direction);
+					});
+				}
+			});
+		}
+	},
 
     //  Called by: Extracts.rewritePopFrameContent (as `rewritePop${suffix}Content_${targetTypeName}`)
     rewritePopupContent_LOCAL_PAGE: (popup, contentContainer) => {

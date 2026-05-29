@@ -3036,7 +3036,7 @@ Popups = {
 
         let bottomBound = alwaysRevealTopEdge ? elementRect.top : elementRect.bottom;
         if (   popup.scrollView.scrollTop                              >= elementRect.top    - popupBodyRect.top
-            && popup.scrollView.scrollTop + popupScrollViewRect.height <= bottomBound - popupBodyRect.top)
+            && popup.scrollView.scrollTop + popupScrollViewRect.height <= bottomBound        - popupBodyRect.top)
             return;
 
         popup.scrollView.scrollTop = elementRect.top - popupBodyRect.top;
@@ -11996,11 +11996,11 @@ Extracts = {
                 if (   popFrame
                     && (element = targetElementInDocument(target, popFrame.document))) {
 					//	Scroll to element immediately...
-                    revealElement(element);
+                    revealElement(element, { alwaysRevealTopEdgeInPopFrame: true });
 
 					//	... and also after the first layout pass completes.
 					GW.notificationCenter.addHandlerForEvent("Layout.layoutProcessorDidComplete", (layoutEventInfo) => {
-						revealElement(element);
+						revealElement(element, { alwaysRevealTopEdgeInPopFrame: true });
 					}, {
 						condition: (layoutEventInfo) => (   layoutEventInfo.container == popFrame.body
 														 && layoutEventInfo.processorName == "applyBlockSpacingInContainer"),
@@ -12983,70 +12983,82 @@ Extracts = { ...Extracts,
 	loadAdjacentSectionsInPopFrame_LOCAL_PAGE: (popFrame, contentContainer) => {
         GWLog("Extracts.loadAdjacentSectionsInPopFrame_LOCAL_PAGE", "extracts-content.js", 2);
 
-		Extracts.loadPreviousSectionInPopFrame_LOCAL_PAGE(popFrame, contentContainer);
-		Extracts.loadNextSectionInPopFrame_LOCAL_PAGE(popFrame, contentContainer);
-
-
-
-//         let lastSection  = contentContainer.lastElementChild;
-//         let lastSectionInCachedContentDocument  = referenceData.content.querySelector("#" + lastSection.id);
-//         let nextSectionInCachedContentDocument     = lastSectionInCachedContentDocument.nextElementSibling;
-// 		if (   previousSectionInCachedContentDocument == null
-// 			|| nextSectionInCachedContentDocument     == null
-// 			|| previousSectionInCachedContentDocument.tagName.toLowerCase() != "section") {
-// 			let parentSection = previousSectionInCachedContentDocument.parentElement;
-// 			if (parentSection != null) {
-// 				
-// 			}
-// 		}
+		Extracts.loadAdjacentSectionInPopFrame_LOCAL_PAGE(popFrame, contentContainer, "previous");
+		Extracts.loadAdjacentSectionInPopFrame_LOCAL_PAGE(popFrame, contentContainer, "next");
 	},
 
 	//	Called by: Extracts.loadAdjacentSectionsInPopFrame_LOCAL_PAGE
-	loadPreviousSectionInPopFrame_LOCAL_PAGE: (popFrame, contentContainer) => {
-        GWLog("Extracts.loadPreviousSectionInPopFrame_LOCAL_PAGE", "extracts-content.js", 2);
+	loadAdjacentSectionInPopFrame_LOCAL_PAGE: (popFrame, contentContainer, direction) => {
+        GWLog("Extracts.loadAdjacentSectionInPopFrame_LOCAL_PAGE", "extracts-content.js", 2);
 
 		//	Get cached source document.
         let referenceData = Content.referenceDataForLink(popFrame.spawningTarget);
 
-		//	Load previous section.
-        let firstSection = contentContainer.firstElementChild;
-        let firstSectionInCachedContentDocument = referenceData.content.querySelector("#" + firstSection.id);
-        if (firstSectionInCachedContentDocument.previousElementSibling?.tagName == "SECTION") {
-        	let includeLink = synthesizeIncludeLink(modifiedURL(popFrame.spawningTarget.href, {
-        		hash: "#" + firstSectionInCachedContentDocument.previousElementSibling.id
+		//	Get terminal section.
+		let terminus = (direction == "previous" ? "first" : "last");
+		let terminalSection = contentContainer[terminus + "ElementChild"];
+		if (terminalSection.tagName != "SECTION")
+			return;
+
+		//	Prepare include-link.
+		let includeLink = null;
+		let terminalSectionInCachedContentDocument = referenceData.content.querySelector("#" + terminalSection.id);
+		let terminalSectionAdjacentElementInCachedContentDocument = terminalSectionInCachedContentDocument[direction + "ElementSibling"];
+		if (terminalSectionAdjacentElementInCachedContentDocument?.tagName == "SECTION") {
+        	includeLink = synthesizeIncludeLink(modifiedURL(popFrame.spawningTarget.href, {
+        		hash: "#" + terminalSectionInCachedContentDocument[direction + "ElementSibling"].id
         	}));
-			contentContainer.insertBefore(includeLink, firstSection);
+			contentContainer.insertBefore(includeLink, direction == "previous" ? terminalSection : null);
+		} else {
+			//	Handle non-section content at start of a section (or page).
+			if (   terminalSectionAdjacentElementInCachedContentDocument != null
+				&& direction == "previous") {
+				includeLink = synthesizeIncludeLink(modifiedURL(popFrame.spawningTarget.href, {
+					hash: ("#" + (terminalSectionInCachedContentDocument.parentElement?.id ?? "") + ":" + terminalSectionInCachedContentDocument.id)
+				}), {
+					"data-include-selector-not": "header, #page-metadata, #page-metadata + .abstract"
+				});
+				if (terminalSectionInCachedContentDocument.parentElement != null)
+					includeLink.classList.add("include-unwrap");
+				contentContainer.insertBefore(includeLink, terminalSection);
+			}
+
+			//	Replicate containing section (not transclusion!).
+			if (terminalSectionInCachedContentDocument.parentElement?.tagName == "SECTION") {
+				let existingNodes = Array.from(contentContainer.childNodes);
+				let clonedParentSection = terminalSectionInCachedContentDocument.parentElement.cloneNode(true);
+				clonedParentSection.replaceChildren();
+				contentContainer.appendChild(clonedParentSection);
+				clonedParentSection.append(...existingNodes);
+
+				if (terminalSectionAdjacentElementInCachedContentDocument == null) {
+					Extracts.loadAdjacentSectionInPopFrame_LOCAL_PAGE(popFrame, contentContainer, direction);
+					return;
+				}
+			}
+		}
+
+		//	Activate the include-link (standard lazy triggering).
+		if (includeLink != null) {
 			Transclude.triggerTransclude(includeLink, {
-				source: "Extracts.loadPreviousSectionInPopFrame_LOCAL_PAGE",
+				source: "Extracts.loadAdjacentSectionInPopFrame_LOCAL_PAGE",
 				container: popFrame.body,
 				document: popFrame.document,
 				context: "popFrame"
+			}, {
+				immediately: false,
+				doWhenDidInject: (info) => {
+					//  Scroll to the target on initial load only.
+					if (contentContainer != popFrame.body)
+						Extracts.scrollToTargetedElementInPopFrame(popFrame);
+
+					//	Queue load of next section.
+					requestAnimationFrame(() => {
+						Extracts.loadAdjacentSectionInPopFrame_LOCAL_PAGE(popFrame, popFrame.body, direction);
+					});
+				}
 			});
-        }
-	},
-
-	//	Called by: Extracts.loadAdjacentSectionsInPopFrame_LOCAL_PAGE
-	loadNextSectionInPopFrame_LOCAL_PAGE: (popFrame, contentContainer) => {
-        GWLog("Extracts.loadNextSectionInPopFrame_LOCAL_PAGE", "extracts-content.js", 2);
-
-		//	Get cached source document.
-        let referenceData = Content.referenceDataForLink(popFrame.spawningTarget);
-
-		//	Load next section.
-        let lastSection = contentContainer.lastElementChild;
-        let lastSectionInCachedContentDocument = referenceData.content.querySelector("#" + lastSection.id);
-        if (lastSectionInCachedContentDocument.nextElementSibling?.tagName == "SECTION") {
-        	let includeLink = synthesizeIncludeLink(modifiedURL(popFrame.spawningTarget.href, {
-        		hash: "#" + lastSectionInCachedContentDocument.nextElementSibling.id
-        	}));
-			contentContainer.insertBefore(includeLink, null);
-			Transclude.triggerTransclude(includeLink, {
-				source: "Extracts.loadNextSectionInPopFrame_LOCAL_PAGE",
-				container: popFrame.body,
-				document: popFrame.document,
-				context: "popFrame"
-			});
-        }
+		}
 	},
 
     //  Called by: Extracts.rewritePopFrameContent (as `rewritePop${suffix}Content_${targetTypeName}`)
@@ -20684,18 +20696,20 @@ addContentInjectHandler("expandLockCollapseBlocks", (eventInfo) => {
 		after scrolling the element into view, scroll the page down by the given
 		offset. (If the element is in a pop-frame or similar, `offset` is
 		ignored.)
+
+	alwaysRevealTopEdgeInPopFrame (boolean)
+		Passed to Extracts.popFrameProvider.scrollElementIntoViewInPopFrame().
  */
 function scrollElementIntoView(element, options) {
     GWLog("scrollElementIntoView", "collapse.js", 2);
 
 	options = Object.assign({
-		offset: 0
+		offset: 0,
+		alwaysRevealTopEdgeInPopFrame: false
 	}, options);
 
-	if (   Extracts 
-		&& Extracts.popFrameProvider
-		&& Extracts.popFrameProvider.containingPopFrame(element)) {
-		Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(element);
+	if (Extracts?.popFrameProvider?.containingPopFrame(element)) {
+		Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(element, options.alwaysRevealTopEdgeInPopFrame);
 	} else {	
 		doWhenPageLayoutComplete(() => {
 			element.scrollIntoView();
@@ -20718,13 +20732,17 @@ function scrollElementIntoView(element, options) {
 	offset (float)
 		If `scrollIntoView` is `true`, then `offset` is passed to 
 		scrollElementIntoView() as an option.
+
+	alwaysRevealTopEdgeInPopFrame (boolean)
+		Passed to Extracts.popFrameProvider.scrollElementIntoViewInPopFrame().
  */
 function revealElement(element, options) {
     GWLog("revealElement", "collapse.js", 2);
 
 	options = Object.assign({
 		scrollIntoView: true,
-		offset: 0
+		offset: 0,
+		alwaysRevealTopEdgeInPopFrame: false
 	}, options);
 
 	let didExpandCollapseBlocks = expandCollapseBlocksToReveal(element);
@@ -20733,12 +20751,14 @@ function revealElement(element, options) {
 		if (didExpandCollapseBlocks) {
 			requestAnimationFrame(() => {
 				scrollElementIntoView(element, {
-					offset: options.offset
+					offset: options.offset,
+					alwaysRevealTopEdgeInPopFrame: options.alwaysRevealTopEdgeInPopFrame
 				});		
 			});
 		} else {
 			scrollElementIntoView(element, {
-				offset: options.offset
+				offset: options.offset,
+				alwaysRevealTopEdgeInPopFrame: options.alwaysRevealTopEdgeInPopFrame
 			});
 		}
 	}

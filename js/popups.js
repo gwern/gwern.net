@@ -299,7 +299,7 @@ Popups = {
 
         let bottomBound = alwaysRevealTopEdge ? elementRect.top : elementRect.bottom;
         if (   popup.scrollView.scrollTop                              >= elementRect.top    - popupBodyRect.top
-            && popup.scrollView.scrollTop + popupScrollViewRect.height <= bottomBound - popupBodyRect.top)
+            && popup.scrollView.scrollTop + popupScrollViewRect.height <= bottomBound        - popupBodyRect.top)
             return;
 
         popup.scrollView.scrollTop = elementRect.top - popupBodyRect.top;

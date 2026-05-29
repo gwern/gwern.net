@@ -580,11 +580,11 @@ Extracts = {
                 if (   popFrame
                     && (element = targetElementInDocument(target, popFrame.document))) {
 					//	Scroll to element immediately...
-                    revealElement(element);
+                    revealElement(element, { alwaysRevealTopEdgeInPopFrame: true });
 
 					//	... and also after the first layout pass completes.
 					GW.notificationCenter.addHandlerForEvent("Layout.layoutProcessorDidComplete", (layoutEventInfo) => {
-						revealElement(element);
+						revealElement(element, { alwaysRevealTopEdgeInPopFrame: true });
 					}, {
 						condition: (layoutEventInfo) => (   layoutEventInfo.container == popFrame.body
 														 && layoutEventInfo.processorName == "applyBlockSpacingInContainer"),

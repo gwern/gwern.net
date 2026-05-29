@@ -1076,18 +1076,20 @@ addContentInjectHandler("expandLockCollapseBlocks", (eventInfo) => {
 		after scrolling the element into view, scroll the page down by the given
 		offset. (If the element is in a pop-frame or similar, `offset` is
 		ignored.)
+
+	alwaysRevealTopEdgeInPopFrame (boolean)
+		Passed to Extracts.popFrameProvider.scrollElementIntoViewInPopFrame().
  */
 function scrollElementIntoView(element, options) {
     GWLog("scrollElementIntoView", "collapse.js", 2);
 
 	options = Object.assign({
-		offset: 0
+		offset: 0,
+		alwaysRevealTopEdgeInPopFrame: false
 	}, options);
 
-	if (   Extracts 
-		&& Extracts.popFrameProvider
-		&& Extracts.popFrameProvider.containingPopFrame(element)) {
-		Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(element);
+	if (Extracts?.popFrameProvider?.containingPopFrame(element)) {
+		Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(element, options.alwaysRevealTopEdgeInPopFrame);
 	} else {	
 		doWhenPageLayoutComplete(() => {
 			element.scrollIntoView();
@@ -1110,13 +1112,17 @@ function scrollElementIntoView(element, options) {
 	offset (float)
 		If `scrollIntoView` is `true`, then `offset` is passed to 
 		scrollElementIntoView() as an option.
+
+	alwaysRevealTopEdgeInPopFrame (boolean)
+		Passed to Extracts.popFrameProvider.scrollElementIntoViewInPopFrame().
  */
 function revealElement(element, options) {
     GWLog("revealElement", "collapse.js", 2);
 
 	options = Object.assign({
 		scrollIntoView: true,
-		offset: 0
+		offset: 0,
+		alwaysRevealTopEdgeInPopFrame: false
 	}, options);
 
 	let didExpandCollapseBlocks = expandCollapseBlocksToReveal(element);
@@ -1125,12 +1131,14 @@ function revealElement(element, options) {
 		if (didExpandCollapseBlocks) {
 			requestAnimationFrame(() => {
 				scrollElementIntoView(element, {
-					offset: options.offset
+					offset: options.offset,
+					alwaysRevealTopEdgeInPopFrame: options.alwaysRevealTopEdgeInPopFrame
 				});		
 			});
 		} else {
 			scrollElementIntoView(element, {
-				offset: options.offset
+				offset: options.offset,
+				alwaysRevealTopEdgeInPopFrame: options.alwaysRevealTopEdgeInPopFrame
 			});
 		}
 	}
