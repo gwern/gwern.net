@@ -2169,16 +2169,16 @@ GW.notificationCenter = {
 				Name of the handler. Used for debugging purposes.
 
             - ‘once’ (key) [optional]
-                Boolean value; if true, the handler will be removed after the
-                handler function is called once (note that if there is a
+                Boolean value; if true, the handler will be removed the first
+                time the handler function is called (note that if there is a 
                 condition function provided [see the ‘condition’ key], the
                 handler function will not be called - and therefore will not be
                 removed - if the named event is fired but the condition
                 evaluates to false).
 
                 If not set, defaults to false (ie. by default a handler is
-                not removed after an event is fired once, but will continue to
-                be invoked each time the named event fires and the condition,
+                not removed when an event is fired, but will continue to be 
+                invoked each time the named event fires and the condition,
                 if any, evaluates as true).
 
             - ‘phase’ (key) [optional]
@@ -2638,14 +2638,8 @@ GW.notificationCenter = {
                     && handler.options.condition(eventInfo) == false)
                     continue;
 
-                /*  If the condition function evaluated true, or if no condition
-                    function was provided, we call the handler.
-                 */
-				let runtime = GWTimer(handler.f, eventInfo);
-				GWLog(`\t${eventName}\t${(handler.options.name ?? "UNKNOWN_HANDLER")}\t${runtime}`, "", (handler.options.once ? 2 : 1));
-
                 /*  If the handler options specified a true value for the ‘once’
-                    key, we unregister this handler after having called it once.
+                    key, we unregister this handler when we call it.
 
                     (Note that in the case of an once-only handler that’s called
                      conditionally, i.e. one with a specified condition function,
@@ -2657,6 +2651,12 @@ GW.notificationCenter = {
                     GW.notificationCenter.eventHandlers[eventName].splice(i, 1);
                     i--;
                 }
+
+                /*  If the condition function evaluated true, or if no condition
+                    function was provided, we call the handler.
+                 */
+				let runtime = GWTimer(handler.f, eventInfo);
+				GWLog(`\t${eventName}\t${(handler.options.name ?? "UNKNOWN_HANDLER")}\t${runtime}`, "", (handler.options.once ? 2 : 1));
             }
         }
 
