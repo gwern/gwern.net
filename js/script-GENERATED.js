@@ -17234,11 +17234,60 @@ addContentLoadHandler("disableSingleItemColumnBlocks", (eventInfo) => {
 /* INTERVIEWS */
 /**************/
 
-/****************************************/
-/*  Rectify HTML structure of interviews.
+/****************************************************************************/
+/*  Rectify HTML structure of interviews, and implement ‘interview’ <section>
+	and page body classes.
  */
 addContentLoadHandler("rewriteInterviews", (eventInfo) => {
-    eventInfo.container.querySelectorAll(".interview, .interview > .collapse").forEach(interviewWrapper => {
+	if (eventInfo.document.body?.classList.contains("interview")) {
+		eventInfo.container.querySelectorAll("section").forEach(section => {
+			let firstBlock = firstBlockOf(section, {
+				alsoBlockElements: [ ".heading" ],
+				cacheKey: "alsoBlocks_sectionHeadings"
+			}, true);
+			if (firstBlock?.matches(".heading") == false)
+				return;
+
+			let nextBlock = nextBlockOf(firstBlock, {
+				alsoBlockElements: [ "ul" ],
+				cacheKey: "alsoBlocks_unorderedLists"
+			});
+			if (nextBlock?.matches("ul") == false)
+				return;
+
+			section.classList.add("interview");
+		});
+	}
+
+	eventInfo.container.querySelectorAll("section.interview").forEach(interviewSection => {
+		atomicDOMUpdate(interviewSection, (interviewSection) => {
+			let sectionContentNodes = Array.from(interviewSection.childNodes);
+			let node;
+			let interviewContentNodes = [ ];
+			while (node = sectionContentNodes.shift()) {
+				if (node.matches?.("hr") == true) {
+					node.remove();
+					continue;
+				}
+
+				if (node.matches?.("ul") == true)
+					interviewContentNodes.push(node);
+
+				if (   interviewContentNodes.length > 0
+					&& (   node.matches?.("ul") == false
+						|| sectionContentNodes.length == 0)) {
+					let interviewWrapper = interviewSection.appendChild(newElement("div", { class: "interview"}));
+					interviewWrapper.append(...interviewContentNodes);
+					interviewContentNodes = [ ];
+				}
+
+				if (node.matches?.("ul") == false)
+					interviewSection.appendChild(node);
+			}
+		});
+	});
+
+    eventInfo.container.querySelectorAll("div.interview, div.interview > .collapse").forEach(interviewWrapper => {
 		if (interviewWrapper.firstElementChild == null) {
 			console.log("Empty interview!");
 			interviewWrapper.remove();
