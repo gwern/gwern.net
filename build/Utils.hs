@@ -481,6 +481,13 @@ printRed s = putStrRed (s ++ "\n")
 printRed' :: String -> String -> IO ()
 printRed' e l = putStrRed e >> printGreen l
 
+-- Print a red warning from pure code, then return the supplied value unchanged.
+-- This is intended for trace-like authoring diagnostics where aborting the build
+-- would be too aggressive, but silently accepting the input would hide likely bugs.
+printRedIO :: String -> a -> a
+printRedIO msg x = unsafePerformIO (printRed msg >> return x)
+{-# NOINLINE printRedIO #-}
+
 putStrStdErr :: String -> IO ()
 putStrStdErr = hPutStr stderr
 

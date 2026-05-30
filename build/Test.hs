@@ -89,7 +89,15 @@ testXOTD = do s <- XOTD.readTTDB Config.XOfTheDay.siteDBPath
                           , length $ isUniqueKeys3 q
                           ]
 
--- we prefer to test configs in a single centralized place, as inconvenient as that is, because if we simply test inside the function itself on every call, we incur overhead and we risk accidentally-quadratic behavior (like when a filter or cleaning function is applied to every entry in list or database, and has to test every entry in the config for uniqueness each time).
+{- Run pure config sanity checks in one place rather than in the hot paths that consume each config.
+Many checks scan whole lists or maps. Embedding them in link conversion, filtering, or cleanup
+functions would repeat that scan for every input element, quietly turning an otherwise-linear
+pass into an accidental quadratic one.
+
+The Int is only a strictness/accounting hook: `testAll` prints `show testConfigs`, which forces
+these pure checks and reports roughly how many config entries were inspected. Failed checks abort
+during evaluation with their own error messages; callers should not interpret the numeric value
+as a pass/fail result. -}
 testConfigs :: Int
 testConfigs = sum $ map length [isUniqueList Config.Metadata.Format.filterMetaBadSubstrings, isUniqueList Config.Metadata.Format.filterMetaBadWholes
                                , ensure "Test.GenerateSimilar.blackListURLs" "isURLAny (URL & file)" isURLAny $

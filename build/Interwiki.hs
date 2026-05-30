@@ -1,12 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
--- TODO: should crash on redundant links like "[Foo bar](!W "Foo bar")". Should crash on mismatched parentheses like "[Foo](!W "Foo (bar")", as that's such a common typo.
 module Interwiki (convertInterwikiLinks, convertInterwikiLinksInline, wpPopupClasses, isWPLive, isWPAPI, interwikiTestSuite, interwikiCycleTestSuite, isWPDisambig, isWPArticle, escapeWikiArticleTitle, toWikipediaEnURL, toWikipediaEnURLSearch) where
 
 import Control.Monad (when)
-import Data.List (isInfixOf, intersect)
+import Data.List (isInfixOf, intercalate, intersect)
 import Data.Containers.ListUtils (nubOrd)
 import qualified Data.Map as M (fromList, lookup, Map)
-import qualified Data.Text as T (append, head, isInfixOf, null, tail, take, toUpper, pack, unpack, Text, isPrefixOf, isSuffixOf, takeWhile, init, replace)
+import qualified Data.Text as T (append, head, isInfixOf, null, tail, take, toUpper, pack, unpack, Text, isPrefixOf, isSuffixOf, takeWhile, init, replace, concat)
 import Network.URI (parseURIReference, uriPath, uriAuthority, uriRegName)
 import qualified Network.URI.Encode as E (encodeTextWith, isAllowed)
 
@@ -15,7 +14,7 @@ import Text.Pandoc.Walk (walk)
 
 import Cycle (isCycleLess, findCycles)
 import Inflation (isInflationURL)
-import Utils (replaceManyT, anyPrefixT, anySuffixT, fixedPoint, inlinesToText, deleteT)
+import Utils (replaceManyT, anyPrefixT, anySuffixT, fixedPoint, inlinesToText, deleteT, printRedIO)
 import qualified Config.Interwiki as C (redirectDB, quoteOverrides, testCases)
 
 import Network.HTTP.Simple (parseRequest, httpLBS, getResponseBody, Response, getResponseStatusCode, addRequestHeader) -- http-conduit
@@ -109,29 +108,72 @@ convertInterwikiLinksInline _ x@(Link (ident, classes, kvs) ref (interwiki, arti
   if not (T.null article) && T.head article == ' ' then error $ "Link error (convertInterwikiLinksInline): tooltip malformed with excess whitespace? " ++ show x else
   if T.head interwiki == '!' then if article/="" && isInflationURL article then error $ "Interwiki.convertInterwikiLinksInline called with accidental inflation-adjustment amount instead? " ++ show x else
         case M.lookup (T.tail interwiki) interwikiMap of
-                Just url  -> let attr' = (ident,
-                                            nubOrd (wpPopupClasses (url `interwikiurl` (if article=="" then inlinesToText ref else article)) ++
-                                            classes),
-                                           kvs) in
-                             case article of
-                                  -- NOTE: only in cases of displayed text do we want to run the transformations like deleting possessives.
-                                  -- So eg. `[George Washington's](!W)` is automatically transformed to 'George Washington' but if we explicitly write `[George Washington](!W "George Washington's")`, then we respect the user override because there must be a reason for it.
-                                  "" -> Link attr' ref (url `interwikiurl` wpURLRewrites (inlinesToText ref), "") -- tooltip is now handled by LinkMetadata.hs
-                                  _  -> Link attr' ref (url `interwikiurl` article, "")
+                Just url  ->
+                  let targetArticle = if article=="" then wpURLRewrites (inlinesToText ref) else article
+                      targetURLRaw = url `interwikiurlRaw` targetArticle
+                      targetURL = url `interwikiurl` targetArticle
+                      attr' = (ident,
+                                nubOrd (wpPopupClasses targetURL ++ classes),
+                                kvs)
+                      converted = Link attr' ref (targetURL, "") -- tooltip is now handled by LinkMetadata.hs
+                      -- Redundancy is checked before redirect rewrites. `redirectDB` deliberately
+                      -- canonicalizes shortcuts, plurals, disambiguators, and historical revisions
+                      -- for backlinks/search, so a shared final URL does not imply redundant source.
+                      redundantTitle = case simpleInterwikiAnchorText ref of
+                          Just refText ->
+                            let inferredArticle = wpURLRewrites refText
+                                inferredURLRaw = url `interwikiurlRaw` inferredArticle
+                            in article /= "" && not (T.null refText) &&
+                               (article == refText || targetURLRaw == inferredURLRaw)
+                          Nothing -> False
+                      warnings =
+                        [ "Warning (Interwiki.convertInterwikiLinksInline): mismatched parentheses in interwiki article title? " ++ show x
+                        | not (balancedParentheses targetArticle)
+                        ] ++
+                        [ "Warning (Interwiki.convertInterwikiLinksInline): redundant interwiki title duplicates simple link text or pre-redirect inferred target; delete the explicit title? " ++ show x
+                        | redundantTitle                        ]
+                  in if null warnings then converted else printRedIO (intercalate "\n" warnings) converted
                 Nothing -> error $ "Attempted to use an interwiki link with no defined interwiki: " ++ show x
   else let classes' = nubOrd (wpPopupClasses interwiki ++ classes) in
          if ".wikipedia.org/wiki/" `T.isInfixOf` interwiki || ".wikipedia.org/w/index.php" `T.isInfixOf` interwiki then
            Link (ident, classes', kvs) ref (wpURLRedirectRewrites interwiki, article)
               else x
   where
-    interwikiurl :: T.Text -> T.Text -> T.Text
+    interwikiurlRaw, interwikiurl :: T.Text -> T.Text -> T.Text
     -- normalize links; MediaWiki requires first letter to be capitalized, and prefers '_' to ' '/'%20' for whitespace
-    interwikiurl "" _ = error $ "Interwiki.interwikiurl called with an empty URL; original argument to parent function was: " ++ show x
-    interwikiurl _ "" = error $ "Interwiki.interwikiurl called with an empty argument; original argument to parent function was: " ++ show x
-    interwikiurl u a = let a' = if ".wikipedia.org/wiki/" `T.isInfixOf` u then T.toUpper (T.take 1 a) `T.append` T.tail a else a
-                       in
-                         fixedPoint wpURLRedirectRewrites $ u `T.append` escapeWikiArticleTitle a'
+    interwikiurlRaw "" _ = error $ "Interwiki.interwikiurlRaw called with an empty URL; original argument to parent function was: " ++ show x
+    interwikiurlRaw _ "" = error $ "Interwiki.interwikiurlRaw called with an empty argument; original argument to parent function was: " ++ show x
+    interwikiurlRaw u a = let a' = if ".wikipedia.org/wiki/" `T.isInfixOf` u then T.toUpper (T.take 1 a) `T.append` T.tail a else a
+                          in u `T.append` escapeWikiArticleTitle a'
+    interwikiurl u a = fixedPoint wpURLRedirectRewrites $ interwikiurlRaw u a
 convertInterwikiLinksInline _ x = x
+
+simpleInterwikiAnchorText :: [Inline] -> Maybe T.Text
+simpleInterwikiAnchorText xs = T.concat <$> mapM go xs
+  where
+    go (Str s)       = Just s
+    go Space         = Just " "
+    go SoftBreak     = Just " "
+    go LineBreak     = Just " "
+    go (Emph xs')    = simpleInterwikiAnchorText xs'
+    go (Strong xs')  = simpleInterwikiAnchorText xs'
+    go (Underline xs') = simpleInterwikiAnchorText xs'
+    go (Strikeout xs') = simpleInterwikiAnchorText xs'
+    go (SmallCaps xs') = simpleInterwikiAnchorText xs'
+    go (Quoted _ xs')  = simpleInterwikiAnchorText xs'
+    go (Cite _ xs')    = simpleInterwikiAnchorText xs'
+    go _             = Nothing
+
+balancedParentheses :: T.Text -> Bool
+balancedParentheses = go (0 :: Int) . T.unpack
+  where
+    go 0 []       = True
+    go _ []       = False
+    go depth (c:cs)
+      | c == '('  = go (depth + 1) cs
+      | c == ')'  = depth > 0 && go (depth - 1) cs
+      | otherwise = go depth cs
+
 
 -- special case rewrites: for example, automatically rewrite anchor texts ending in "'s" to delete it (eg. "George Washington's" to "George Washington") if it is not a special-case where that is part of the official name (eg. "Antoine's"). This makes writing much easier because you can simply write '[George Washington's](!W) first act as president was' instead of ''[George Washington's](!W "George Washington") first act...'. This sort of possessive rewriting gets especially annoying in long runs of "$CREATOR's $MEDIA" like in reviews.
 wpURLRewrites, wpURLRedirectRewrites :: T.Text -> T.Text
@@ -159,7 +201,7 @@ interwikiTestSuite = let redirectsCircular = map fst C.redirectDB `intersect` ma
   in if not (null redirectsCircular) then error ("Interwiki.hs: circular redirects detected: " ++ show redirectsCircular)
      else if redirectsDuplicate then error "Interwiki.hs: duplicate redirects detected (in either original or destination)"
   else
-            map (\(a,b) -> (a, (convertInterwikiLinksInline undefined) a, b)) $ filter (\(link1, link2) -> (convertInterwikiLinksInline undefined) link1 /= link2) C.testCases
+            map (\(a,b) -> (a, (convertInterwikiLinksInline undefined) a, b)) (filter (\(link1, link2) -> (convertInterwikiLinksInline undefined) link1 /= link2) C.testCases)
 
 interwikiCycleTestSuite :: [(T.Text, T.Text)]
 interwikiCycleTestSuite = if null (isCycleLess C.redirectDB) then [] else findCycles C.redirectDB

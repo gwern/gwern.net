@@ -82,8 +82,6 @@ testCases = setLike [
       Link ("", ["link-live"], []) [Emph [Str "George Washington"]] ("https://en.wikipedia.org/wiki/George_Washington%27s", ""))
   , (Link nullAttr [Emph [Str "Antoine's"]] ("!Wikipedia",""),
       Link ("", ["link-live"], []) [Emph [Str "Antoine's"]] ("https://en.wikipedia.org/wiki/Antoine%27s", ""))
-  , (Link nullAttr [Emph [Str "Antoine's"]] ("!Wikipedia","Antoine's"),
-      Link ("", ["link-live"], []) [Emph [Str "Antoine's"]] ("https://en.wikipedia.org/wiki/Antoine%27s", ""))
   , (Link nullAttr [Emph [Str "famous restaurant"]] ("!Wikipedia","Antoine's"),
       Link ("", ["link-live"], []) [Emph [Str "famous restaurant"]] ("https://en.wikipedia.org/wiki/Antoine%27s", ""))
 
