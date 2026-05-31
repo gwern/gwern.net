@@ -3462,7 +3462,7 @@ GW.layout = {
 		[ "section.footnotes",			14 ],
 		[ ".footnote",					 6 ],
 
-		[ "hr.horizontal-rule-small",    6 ],
+		[ "hr.horizontal-rule-small",    5 ],
 		[ "hr",							10 ],
 
 		[ ".aux-links-append .columns",	 4 ],
@@ -4080,7 +4080,7 @@ function childBlocksOf(element, options) {
 		let childBlocks = [ ];
 		for (let block of element.children) {
 			if (isWrapper(block, "downIn", options)) {
-				childBlocks.push(...(childBlocksOf(block)));
+				childBlocks.push(...(childBlocksOf(block, options)));
 			} else if (isBlock(block, options)) {
 				childBlocks.push(block);
 			}
@@ -5701,16 +5701,18 @@ addRewriteProcessor("designateHorizontalRuleStyles", (blockContainer) => {
 	blockContainer.querySelectorAll("hr").forEach(hr => {
 		hr.classList.add("dark-mode-invert");
 
-		//	If there is no type class, just add the default one and return.
 		let classBearerBlock = hr.closest("[class*='horizontal-rule-']");
 		if (classBearerBlock == null) {
+			//	If there is no type class, add the default one.
 			hr.classList.add(hrTypeClassPrefix + "nth-1");
-			return;
+		} else if (classBearerBlock != hr) {
+			//	If the type class is on a containing div, unwrap, moving attributes.
+			unwrap(classBearerBlock, { moveID: true, moveClasses: true });
 		}
 
-		//	If the type class is on a containing div, unwrap, moving attributes.
-		if (classBearerBlock != hr)
-			unwrap(classBearerBlock, { moveID: true, moveClasses: true });
+		//	On mobile, make <hr>s small.
+		if (GW.isMobile())
+			hr.classList.add("horizontal-rule-small");
 
 		//	If the type class is a sequence designator, do nothing.
 		let specialHRTypeClasses = [

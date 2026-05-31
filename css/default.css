@@ -1203,9 +1203,7 @@ hr {
     --icon-opacity: 0.85;
     --icon-dark-mode-invert-filter: invert(1) drop-shadow(0 0 0 currentColor);
 }
-hr.horizontal-rule-small {
-    --icon-size: 15px;
-}
+
 hr.horizontal-rule-nth-1 {
     /*  https://commons.wikimedia.org/wiki/File:Sun_of_Vergina_black.svg
         */
@@ -1214,6 +1212,12 @@ hr.horizontal-rule-nth-1 {
     --icon-opacity: 0.85;
     --icon-dark-mode-invert-filter: invert(1) drop-shadow(0 0 0 currentColor);
 }
+hr.horizontal-rule-nth-1.horizontal-rule-small {
+    --icon-image: var(--GW-image-sun-verginasun-black-small-svg);
+    --icon-size: 25px;
+    --icon-opacity: 0.80;
+}
+
 hr.horizontal-rule-nth-2 {
     /*  https://commons.wikimedia.org/wiki/File:Japanese_crest_Tsuki_ni_Hoshi.svg
 
@@ -1226,11 +1230,23 @@ hr.horizontal-rule-nth-2 {
     --icon-opacity: 0.85;
     --icon-dark-mode-invert-filter: invert(1);
 }
+hr.horizontal-rule-nth-2.horizontal-rule-small {
+    --icon-image: var(--GW-image-japanesecrest-tsukinihoshi-dotlessmoon-svg);
+    --icon-size: 18px;
+    --icon-opacity: 0.80;
+}
+
 hr.horizontal-rule-nth-3 {
     --icon-image: var(--GW-image-asterism-triplewhitestar-svg);
     --icon-size: 38px;
     --icon-opacity: 0.90;
     --icon-dark-mode-invert-filter: invert(1) drop-shadow(0 0 0 currentColor);
+}
+hr.horizontal-rule-nth-3.horizontal-rule-small {
+    --icon-image: var(--GW-image-single-white-star-svg);
+    --icon-size: 23px;
+    --icon-opacity: 0.70;
+    --icon-dark-mode-invert-filter: invert(1);
 }
 
 @media all and (min-width: 650px) {
@@ -1478,34 +1494,25 @@ iframe.search {
     (e.g. https://gwern.net/lorem-block#interviews )
  */
 
-/*  Interview.
- */
-ul.interview {
-    --list-left-padding: 1.5em;
-    --speaker-spacing: 0.75ch;
-}
-
 /*  Exchanges.
  */
-ul.interview li.exchange ul {
+.interview ul.exchange {
     --list-left-padding: 1.625em;
-}
-ul.interview li.exchange::before {
-    left: 0;
+    --speaker-spacing: 0.75ch;
 }
 
 /*  Utterances.
  */
-ul.interview li.utterance {
+.interview li.utterance {
     text-indent: calc(-1 * var(--list-left-padding));
 }
-ul.interview li.utterance::before {
+.interview li.utterance::before {
     display: none;
 }
 
 /*  Speakers.
  */
-ul.interview .speaker {
+.interview .speaker {
     font-variant-caps: small-caps;
     letter-spacing: -0.25px;
     display: inline-block;
@@ -1517,10 +1524,14 @@ ul.interview .speaker {
 /*	Miscellaneous edge cases.
  */
  
-.markdownBody ul.interview p.list-heading {
+.markdownBody .interview p.list-heading {
     text-indent: inherit;
 }
 
+/*	Check whether this is still needed.
+		—SA 2026-05-31
+ */
+/* 
 ul.interview li.exchange ol {
 	--list-left-padding: 1.625em;
 }
@@ -1534,6 +1545,7 @@ ul.interview li.exchange ol > li p {
 ul.interview li.exchange ol > li p:not(.first-graf) {
 	text-indent: var(--text-indent);
 }
+ */
 
 
 /*************/

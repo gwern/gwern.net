@@ -242,7 +242,7 @@ GW.layout = {
 		[ "section.footnotes",			14 ],
 		[ ".footnote",					 6 ],
 
-		[ "hr.horizontal-rule-small",    6 ],
+		[ "hr.horizontal-rule-small",    5 ],
 		[ "hr",							10 ],
 
 		[ ".aux-links-append .columns",	 4 ],
@@ -860,7 +860,7 @@ function childBlocksOf(element, options) {
 		let childBlocks = [ ];
 		for (let block of element.children) {
 			if (isWrapper(block, "downIn", options)) {
-				childBlocks.push(...(childBlocksOf(block)));
+				childBlocks.push(...(childBlocksOf(block, options)));
 			} else if (isBlock(block, options)) {
 				childBlocks.push(block);
 			}

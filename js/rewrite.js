@@ -2375,7 +2375,8 @@ addContentLoadHandler("rewriteInterviews", (eventInfo) => {
 
 			let nextBlock = nextBlockOf(firstBlock, {
 				alsoBlockElements: [ "ul" ],
-				cacheKey: "alsoBlocks_unorderedLists"
+				notWrapperElements: [ ".list" ],
+				cacheKey: "alsoBlocks_unorderedLists_notWrappers_unorderedLists"
 			});
 			if (nextBlock?.matches("ul") == false)
 				return;
@@ -2384,22 +2385,25 @@ addContentLoadHandler("rewriteInterviews", (eventInfo) => {
 		});
 	}
 
+	let horizontalRuleSelector = "hr, div[class*='horizontal-rule-']";
+	let listOrHorizontalRuleSelector = [ "ul", horizontalRuleSelector ].join(", ");
+
 	eventInfo.container.querySelectorAll("section.interview").forEach(interviewSection => {
 		atomicDOMUpdate(interviewSection, (interviewSection) => {
-			let sectionContentNodes = Array.from(interviewSection.childNodes);
+			let sectionContentNodes = childBlocksOf(interviewSection, {
+				cacheKey: "alsoBlocks_unorderedLists_notWrappers_unorderedLists"
+			});
 			let node;
 			let interviewContentNodes = [ ];
 			while (node = sectionContentNodes.shift()) {
-				if (node.matches?.("hr") == true) {
-					node.remove();
-					continue;
-				}
+				if (node.matches?.(horizontalRuleSelector) == true)
+					node.classList.add("horizontal-rule-small");
 
-				if (node.matches?.("ul") == true)
+				if (node.matches?.(listOrHorizontalRuleSelector) == true)
 					interviewContentNodes.push(node);
 
 				if (   interviewContentNodes.length > 0
-					&& (   node.matches?.("ul") == false
+					&& (   node.matches?.(listOrHorizontalRuleSelector) == false
 						|| sectionContentNodes.length == 0)) {
 					let interviewWrapper = interviewSection.appendChild(newElement("div", { class: "interview"}));
 					interviewWrapper.append(...interviewContentNodes);
@@ -2425,16 +2429,12 @@ addContentLoadHandler("rewriteInterviews", (eventInfo) => {
 		}
 
 		atomicDOMUpdate(interviewWrapper, (interviewWrapper) => {
-			let interview = newElement("UL", { class: `list ${interviewWrapper.className}` });
-
 			for (let child of Array.from(interviewWrapper.children)) {
 				if (child.tagName != "UL")
 					continue;
 
-				let exchange = interview.appendChild(newElement("LI", { class: "exchange" }));
-				exchange.append(child.cloneNode(true));
-
-				for (let utterance of exchange.firstElementChild?.children) {
+				child.classList.add("exchange");
+				for (let utterance of child.children) {
 					utterance.classList.add("utterance");
 
 					let speaker = utterance.querySelector("strong");
@@ -2451,8 +2451,6 @@ addContentLoadHandler("rewriteInterviews", (eventInfo) => {
 					speaker.nextSibling.textContent = speaker.nextSibling.textContent.slice(1).trimStart();
 				}
 			}
-
-			interviewWrapper.replaceWith(interview);
 		});
     });
 }, "rewrite");
@@ -2827,6 +2825,18 @@ addContentInjectHandler("setMarginsOnFullWidthBlocks", (eventInfo) => {
 /***************/
 /* ANNOTATIONS */
 /***************/
+
+/***************************************/
+/*	Annotations should have small <hr>s.
+ */
+addContentLoadHandler("setHorizontalRuleStylesInAnnotations", (eventInfo) => {
+	eventInfo.container.querySelectorAll("hr").forEach(hr => {
+		let classBearerBlock = hr.closest("[class*='horizontal-rule-']") ?? hr;
+		classBearerBlock.classList.add("horizontal-rule-small");
+	});
+}, "rewrite", (info) => (   info.source      == "transclude"
+						 && info.contentType == "annotation"));
+
 
 /******************************************************************************/
 /*  Transform title-link of truncated annotations (i.e., full annotations
