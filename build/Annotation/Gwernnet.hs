@@ -150,7 +150,7 @@ gwern md p
           safeTitle        = safeTagContent "title"
           safeDateIssued   = safeTagContent "dc.date.issued"
           safeDateModified = safeTagContent "dcterms.modified"
-          safeDescription  = safeTagContent "description"
+          safeDescription  = safeTagContent "description-raw"
           safeAuthor       = safeTagContent "author"
           safeContent      = safeMetaContent
 

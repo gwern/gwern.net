@@ -47,7 +47,7 @@ yamlValidCssExtensions = setLike ["dark-mode", "dropcaps-not" -- "dropcap-not" i
                          , "dropcaps-kanzlei", "dropcaps-yinit", "extract-not", "index"
                          , "reader-mode", "test-april-fools-2024", "test-april-fools-2025"
                          , "test-april-fools-2026", "test-christmas", "test-easter"
-                         , "test-halloween", "toc-not"]
+                         , "test-halloween", "toc-not", "interview"]
 
 -- NOTE: all time operations are done in the local timezone, unless otherwise specified.
 currentYear :: Int

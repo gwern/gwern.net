@@ -4584,7 +4584,7 @@ badLinks =  setLike ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Par
             , "https://ki.se/en/people/anders-hamsten"
             , "https://pmc.ncbi.nlm.nih.gov/articles/PMC10587091/"
             , "https://www.manifold1.com/"
-            , "/interview-dwarkesh"
+            , "https://www.dwarkesh.com/p/progress-update"
             , "https://jamanetwork.com/journals/jama/fullarticle/183580"
             , "https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/1108810"
             , "https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/414784"

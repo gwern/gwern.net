@@ -833,7 +833,7 @@ canonicals = setLike
   , ("primalpoly", "Geoffrey Miller")
   , ("xai", "X.ai")
   , ("poetengineer__", "Kat Zhang")
-  , ("Jeffrey R. O’Connell", "Jeffrey R. O'Connell")
+  , ("Jeffrey R. O'Connell", "Jeffrey R. O’Connell")
   , ("JE Savage", "Jeanne E. Savage")
   , ("Jean Ferrieres", "Jean Ferrières")
   , ("abramdemski", "Abram Demski")
@@ -1625,6 +1625,7 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("Bjarke Feenstra", "https://en.ssi.dk/about-us/contact/employees/b/bjarke-feenstra-fee")
     , ("DeepSeek", "https://www.deepseek.com/")
     , ("DeepSeek-R1", "https://arxiv.org/abs/2501.12948#deepseek")
+    , ("DeepSeek-v4", "https://api-docs.deepseek.com/news/news260424")
     , ("Nayuki", "https://www.nayuki.io/page/about")
     , ("Aella", "https://x.com/aella_girl")
     , ("Fernando Borretti", "https://borretti.me/about/")
@@ -2017,7 +2018,7 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("James Y. Zou", "https://www.james-zou.com/")
     , ("Ida L. Surakka", "https://experts.umich.edu/8949-ida-surakka")
     , ("Neel Nanda", "https://www.neelnanda.io/about")
-    , ("Jeffrey R. O'Connell", "https://www.medschool.umaryland.edu/profiles/oconnell-jeffrey/")
+    , ("Jeffrey R. O’Connell", "https://www.medschool.umaryland.edu/profiles/oconnell-jeffrey/")
     , ("Jeanne E. Savage", "https://cncr.nl/people/jeanne_savage/")
     , ("Jean Ferrières", "https://cerpop.inserm.fr/jean-ferrieres-publications-1")
     , ("GPT-5", "https://openai.com/gpt-5/")
@@ -2081,6 +2082,7 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("larry-dial", "https://www.lesswrong.com/users/larry-dial")
     , ("Kimi K2", "https://arxiv.org/abs/2507.20534#moonshot")
     , ("Kimi K2 Thinking", "https://moonshotai.github.io/Kimi-K2/thinking.html")
+    , ("Kimi K2.6 Thinking", "https://www.kimi.com/blog/kimi-k2-6")
     , ("Kimi K2.5 Thinking", "https://www.kimi.com/blog/kimi-k2-5.html")
     , ("Peter Seibel", "https://gigamonkeys.com/resume/")
     , ("Zvi Mowshowitz", "https://en.wikipedia.org/wiki/Zvi_Mowshowitz")
@@ -2232,6 +2234,7 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("LLaMA-3-70b", "https://ai.meta.com/blog/meta-llama-3/")
     , ("Claude-4.6-opus", "https://www.anthropic.com/news/claude-opus-4-6")
     , ("Claude-4.7-opus", "https://www.anthropic.com/news/claude-opus-4-7")
+    , ("Claude-4.8-opus", "https://www.anthropic.com/news/claude-opus-4-8")
     , ("Vishal Prasad", "https://substack.com/@vishalprasad1")
     , ("GPT-5.3-Codex", "https://openai.com/index/introducing-gpt-5-3-codex/")
     , ("GPT-5.5 Pro", "https://openai.com/index/introducing-gpt-5-5/#pro")
@@ -3610,4 +3613,4 @@ authorWpLinkDB = setLike
     , "Peter Filkins", "Marta Serra-Garcia", "Martin Fleming", "Barry Mazur", "Weiqi Zhang", "Guy L. Steele"
     , "Carlos M. Herrera", "William Fleeson", "Matt Levine", "Andrew Sullivan", "Anne Helen Petersen"
     , "Richard A. Howard", "George H. Estabrooks", "Danny Hillis", "David L. Waltz", "Margaret E. Roberts"
-    , "Solomon Messing", "Katha Pollitt", "Dai Mahou Touge", "Irina Blok", "Dwarkesh Patel"]
+    , "Solomon Messing", "Katha Pollitt", "Dai Mahou Touge", "Irina Blok", "Dwarkesh Patel", "Karol Hausman", "Andy Zeng"]

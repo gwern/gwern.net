@@ -2,7 +2,7 @@
 ;;;
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2026-05-10 15:39:55 gwern"
+;;; When:  Time-stamp: "2026-05-29 13:55:40 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -918,9 +918,9 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("n-back" . "_n_-back")
                         (" n-body" . " _n_-body")
                         ("log 2" . "log<sub>2</sub>")
-                        ("fuck" . "f—k")
-                        ("damn" . "d—n")
-                        ("shit" . "s—t")
+                        ("fuck" . "f⁠—k")
+                        ("damn" . "d⁠—n")
+                        ("shit" . "s⁠—t")
                         ("95%CI" . "95% CI")
                         ("allowlist" . "whitelist")
                         ("denylist" . "blacklist")

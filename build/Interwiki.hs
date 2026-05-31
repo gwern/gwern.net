@@ -132,6 +132,7 @@ convertInterwikiLinksInline _ x@(Link (ident, classes, kvs) ref (interwiki, arti
                         ] ++
                         [ "Warning (Interwiki.convertInterwikiLinksInline): redundant interwiki title duplicates simple link text or pre-redirect inferred target; delete the explicit title? " ++ show x
                         | redundantTitle                        ]
+                        -- TODO: someday, when the entire Gwern.net corpus is clean, we can convert this to a fatal error
                   in if null warnings then converted else printRedIO (intercalate "\n" warnings) converted
                 Nothing -> error $ "Attempted to use an interwiki link with no defined interwiki: " ++ show x
   else let classes' = nubOrd (wpPopupClasses interwiki ++ classes) in
