@@ -46,7 +46,7 @@ Sidenotes = {
 		".width-full .caption-wrapper",
 		".width-full table",
 		".width-full pre",
-		".marginnote"
+		".margin-note"
 	],
 
 	constrainMarginNotesWithinSelectors: [
@@ -897,7 +897,7 @@ Sidenotes = { ...Sidenotes,
 				margin note is in a constrained block, and whether it’s on the
 				main page or in something like a pop-frame.
 			 */
-			eventInfo.container.querySelectorAll(".marginnote").forEach(marginNote => {
+			eventInfo.container.querySelectorAll(".margin-note").forEach(marginNote => {
 				let inline = (   marginNote.closest(Sidenotes.constrainMarginNotesWithinSelectors.join(", "))
 							  || Sidenotes.mediaQueries.marginNoteViewportWidthBreakpoint.matches == false
 							  || eventInfo.document != document);

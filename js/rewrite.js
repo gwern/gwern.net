@@ -2464,20 +2464,20 @@ addContentLoadHandler("rewriteInterviews", (eventInfo) => {
 /*  Wrap the contents of all margin notes in an inner wrapper.
  */
 addContentLoadHandler("wrapMarginNotes", (eventInfo) => {
-    eventInfo.container.querySelectorAll(".marginnote").forEach(marginnote => {
-        let innerWrapper = newElement("SPAN", { "class": "marginnote-inner-wrapper" });
-        innerWrapper.append(...marginnote.childNodes);
-        marginnote.append(innerWrapper);
+    eventInfo.container.querySelectorAll(".margin-note").forEach(marginNote => {
+        let innerWrapper = newElement("SPAN", { "class": "margin-note-inner-wrapper" });
+        innerWrapper.append(...marginNote.childNodes);
+        marginNote.append(innerWrapper);
 
 		/*	Designate those margin notes which consist of just an icon (e.g.
 			manicule).
 		 */
 		if (innerWrapper.textContent.trim().length <= 1)
-			marginnote.classList.add("only-icon");
+			marginNote.classList.add("only-icon");
 
 		/*	Get containing paragraph.
 		 */
-		let graf = marginnote.closest("p");
+		let graf = marginNote.closest("p");
 		if (graf == null)
 			return;
 
@@ -2489,7 +2489,7 @@ addContentLoadHandler("wrapMarginNotes", (eventInfo) => {
 		 */
 		let nodesBefore = [ ];
 		for (let i = 0; i < graf.childNodes.length; i++) {
-			if (marginnote.compareDocumentPosition(graf.childNodes[i]) & Node.DOCUMENT_POSITION_PRECEDING) {
+			if (marginNote.compareDocumentPosition(graf.childNodes[i]) & Node.DOCUMENT_POSITION_PRECEDING) {
 				if (   graf.childNodes[i].nodeType == Node.ELEMENT_NODE
 					|| graf.childNodes[i].nodeType == Node.TEXT_NODE) {
 					nodesBefore.push(graf.childNodes[i])
@@ -2499,7 +2499,7 @@ addContentLoadHandler("wrapMarginNotes", (eventInfo) => {
 			}
 		}
 		let fractionalPosition = nodesBefore.map(node => node.textContent).join("").length / graf.textContent.length;
-		marginnote.style.setProperty("--marginnote-vertical-position", Math.round(100 * fractionalPosition) + "%");
+		marginNote.style.setProperty("--margin-note-vertical-position", Math.round(100 * fractionalPosition) + "%");
     });
 }, "rewrite");
 

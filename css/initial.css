@@ -1749,13 +1749,13 @@ figure.width-full {
 /****************/
 /* display inline on mobile/narrow windows; on sufficiently-wide screens, pop out as number-less sidenotes */
 
-.marginnote {
+.margin-note {
     /* bolding turns out to be too obtrusive for users' liking; italicized both inline & popped-out */
     font-style: italic;
     color: var(--GW-body-text-color);
     font-family: var(--GW-serif-font-stack);
 }
-.marginnote.inline {
+.margin-note.inline {
     color: inherit;
     font-variant-caps: initial;
 }
@@ -1769,7 +1769,7 @@ figure.width-full {
     }
 }
 
-#markdownBody .marginnote.sidenote {
+#markdownBody .margin-note.sidenote {
     --text-hyphenation: none;
     --background-color: transparent;
 
@@ -1779,7 +1779,7 @@ figure.width-full {
     max-width: var(--GW-sidenotes-max-width);
     right: calc(100% + 64px);
     left: unset;
-    top: max(var(--marginnote-vertical-position) - 1.35em, 0px);
+    top: max(var(--margin-note-vertical-position) - 1.35em, 0px);
 
     /*  We inherit left and right padding from .sidenote class. */
     padding-top: 0.2em;
@@ -1790,35 +1790,35 @@ figure.width-full {
     opacity: 0.85;
     z-index: 1;
 }
-#markdownBody .marginnote.sidenote .marginnote-inner-wrapper {
+#markdownBody .margin-note.sidenote .margin-note-inner-wrapper {
     display: block;
     width: fit-content;
 }
 
-#markdownBody .marginnote.sidenote:hover {
+#markdownBody .margin-note.sidenote:hover {
     box-shadow: none;
 }
-#markdownBody .marginnote.sidenote::after {
+#markdownBody .margin-note.sidenote::after {
     display: none;
 }
 
 /*  Margin notes within admonitions need special layout.
     This is based on the width of the admonition icon area.
  */
-#markdownBody .admonition .marginnote.sidenote {
+#markdownBody .admonition .margin-note.sidenote {
     width: calc(50vw - ((var(--GW-body-max-width) + (2.875em / (0.85/0.875)))/2 + 96px));
     right: calc(var(--GW-body-max-width) + (2.875em / (0.85/0.875)) + 64px);
 }
 
 /*  Special “icon only” margin notes.
  */
-#markdownBody .marginnote.only-icon {
+#markdownBody .margin-note.only-icon {
     pointer-events: none;
 }
-#markdownBody .marginnote.only-icon.inline {
+#markdownBody .margin-note.only-icon.inline {
     margin-right: 0.2em;
 }
-#markdownBody .marginnote.only-icon.sidenote {
+#markdownBody .margin-note.only-icon.sidenote {
     font-size: inherit;
     padding-top: 0.1em;
 }
@@ -1842,7 +1842,7 @@ figure.width-full {
     display: none;
 }
 
-.markdownBody .margin-notes-block .marginnote:nth-last-child(n+2)::after {
+.markdownBody .margin-notes-block .margin-note:nth-last-child(n+2)::after {
     content: "•";
     margin: 0 0.75em;
     opacity: 0.5;
@@ -2315,7 +2315,7 @@ span.smallcaps {
     form it should take (‘sidenote’ or ‘inline’).
  */
 @media all and (min-width: 1497px) {
-    .marginnote:not(.inline):not(.sidenote) {
+    .margin-note:not(.inline):not(.sidenote) {
         display: none;
     }
 }

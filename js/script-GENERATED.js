@@ -967,7 +967,7 @@ function aggregateMarginNotesInDocument(doc) {
 
     let marginNotesBlockClass = "margin-notes-block";
 
-    doc.querySelectorAll(".marginnote").forEach(marginNote => {
+    doc.querySelectorAll(".margin-note").forEach(marginNote => {
         if (marginNote.classList.contains("only-icon"))
             return;
 
@@ -1013,7 +1013,7 @@ function aggregateMarginNotesInDocument(doc) {
         clonedNote.swapClasses([ "inline", "sidenote" ], 0);
 
         //  Unwrap the inner wrapper (unneeded here).
-        unwrap(clonedNote.querySelector(".marginnote-inner-wrapper"));
+        unwrap(clonedNote.querySelector(".margin-note-inner-wrapper"));
 
         //  Remove dropcap, if any.
         resetDropcapInBlock(clonedNote);
@@ -1084,7 +1084,7 @@ function aggregateMarginNotesInDocument(doc) {
 /*  Child nodes of a paragraph, excluding any margin notes in sidenote mode.
  */
 function nodesOfGraf(graf) {
-    return Array.from(graf.childNodes).filter(node => ((node instanceof Element && node.matches(".marginnote.sidenote")) == false));
+    return Array.from(graf.childNodes).filter(node => ((node instanceof Element && node.matches(".margin-note.sidenote")) == false));
 }
 
 /*****************************************************************************/
@@ -17345,20 +17345,20 @@ addContentLoadHandler("rewriteInterviews", (eventInfo) => {
 /*  Wrap the contents of all margin notes in an inner wrapper.
  */
 addContentLoadHandler("wrapMarginNotes", (eventInfo) => {
-    eventInfo.container.querySelectorAll(".marginnote").forEach(marginnote => {
-        let innerWrapper = newElement("SPAN", { "class": "marginnote-inner-wrapper" });
-        innerWrapper.append(...marginnote.childNodes);
-        marginnote.append(innerWrapper);
+    eventInfo.container.querySelectorAll(".margin-note").forEach(marginNote => {
+        let innerWrapper = newElement("SPAN", { "class": "margin-note-inner-wrapper" });
+        innerWrapper.append(...marginNote.childNodes);
+        marginNote.append(innerWrapper);
 
 		/*	Designate those margin notes which consist of just an icon (e.g.
 			manicule).
 		 */
 		if (innerWrapper.textContent.trim().length <= 1)
-			marginnote.classList.add("only-icon");
+			marginNote.classList.add("only-icon");
 
 		/*	Get containing paragraph.
 		 */
-		let graf = marginnote.closest("p");
+		let graf = marginNote.closest("p");
 		if (graf == null)
 			return;
 
@@ -17370,7 +17370,7 @@ addContentLoadHandler("wrapMarginNotes", (eventInfo) => {
 		 */
 		let nodesBefore = [ ];
 		for (let i = 0; i < graf.childNodes.length; i++) {
-			if (marginnote.compareDocumentPosition(graf.childNodes[i]) & Node.DOCUMENT_POSITION_PRECEDING) {
+			if (marginNote.compareDocumentPosition(graf.childNodes[i]) & Node.DOCUMENT_POSITION_PRECEDING) {
 				if (   graf.childNodes[i].nodeType == Node.ELEMENT_NODE
 					|| graf.childNodes[i].nodeType == Node.TEXT_NODE) {
 					nodesBefore.push(graf.childNodes[i])
@@ -17380,7 +17380,7 @@ addContentLoadHandler("wrapMarginNotes", (eventInfo) => {
 			}
 		}
 		let fractionalPosition = nodesBefore.map(node => node.textContent).join("").length / graf.textContent.length;
-		marginnote.style.setProperty("--marginnote-vertical-position", Math.round(100 * fractionalPosition) + "%");
+		marginNote.style.setProperty("--margin-note-vertical-position", Math.round(100 * fractionalPosition) + "%");
     });
 }, "rewrite");
 
@@ -20962,7 +20962,7 @@ Sidenotes = {
 		".width-full .caption-wrapper",
 		".width-full table",
 		".width-full pre",
-		".marginnote"
+		".margin-note"
 	],
 
 	constrainMarginNotesWithinSelectors: [
@@ -21813,7 +21813,7 @@ Sidenotes = { ...Sidenotes,
 				margin note is in a constrained block, and whether it’s on the
 				main page or in something like a pop-frame.
 			 */
-			eventInfo.container.querySelectorAll(".marginnote").forEach(marginNote => {
+			eventInfo.container.querySelectorAll(".margin-note").forEach(marginNote => {
 				let inline = (   marginNote.closest(Sidenotes.constrainMarginNotesWithinSelectors.join(", "))
 							  || Sidenotes.mediaQueries.marginNoteViewportWidthBreakpoint.matches == false
 							  || eventInfo.document != document);

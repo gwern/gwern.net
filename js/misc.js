@@ -967,7 +967,7 @@ function aggregateMarginNotesInDocument(doc) {
 
     let marginNotesBlockClass = "margin-notes-block";
 
-    doc.querySelectorAll(".marginnote").forEach(marginNote => {
+    doc.querySelectorAll(".margin-note").forEach(marginNote => {
         if (marginNote.classList.contains("only-icon"))
             return;
 
@@ -1013,7 +1013,7 @@ function aggregateMarginNotesInDocument(doc) {
         clonedNote.swapClasses([ "inline", "sidenote" ], 0);
 
         //  Unwrap the inner wrapper (unneeded here).
-        unwrap(clonedNote.querySelector(".marginnote-inner-wrapper"));
+        unwrap(clonedNote.querySelector(".margin-note-inner-wrapper"));
 
         //  Remove dropcap, if any.
         resetDropcapInBlock(clonedNote);
@@ -1084,7 +1084,7 @@ function aggregateMarginNotesInDocument(doc) {
 /*  Child nodes of a paragraph, excluding any margin notes in sidenote mode.
  */
 function nodesOfGraf(graf) {
-    return Array.from(graf.childNodes).filter(node => ((node instanceof Element && node.matches(".marginnote.sidenote")) == false));
+    return Array.from(graf.childNodes).filter(node => ((node instanceof Element && node.matches(".margin-note.sidenote")) == false));
 }
 
 /*****************************************************************************/
