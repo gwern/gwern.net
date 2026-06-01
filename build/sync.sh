@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-05-30 22:08:59 gwern"
+# When:  Time-stamp: "2026-05-31 18:25:43 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -165,7 +165,7 @@ else
           s '<p> ' '<p>'; s ' _n_s' ' <em>n</em>s'; s ' (n = ' ' (<em>n</em> = '; s ' (N = ' ' (<em>n</em> = '; s ' de novo ' ' <em>de novo</em> '; s ' De Novo ' ' <em>De Novo</em> '; s '. De novo ' '. <em>De novo</em> '; s 'backlinks-not' 'backlink-not'; s ',</a>' '</a>,'; s ':</a> ' '</a>: '; s ';</a>' '</a>;'; s ' <<a href' ' <a href'; s '_X_s' '<em>X</em>s'; s ' _r_s' ' <em>r</em>s'; s '<em ' '<em>'; s '# External links' '# External Links'; s '# See also' '# See Also'; s '"abstract-collapse abstract"' '"abstract abstract-collapse"'; s "‐" "-"; s 'class="link-auto"' ''; s '𝑂(' '𝒪('; s '</strong> and <strong>' '</strong> & <strong>'; s '<Sub>' '<sub>'; s '<Sup>' '<sup>';
           s 'class="invertible"' 'class="invert"'; s '”&gt;' '">'; s '<br/>' '<br>'; s '<br />' '<br>'; s ' id="cb1"' ''; s ' id="cb2"' ''; s ' id="cb3"' ''; s ' id="cb4"' '';
           s '.svg-530px.jpg' '.svg'; s ' (”' ' (“'; s '<A Href' '<a href'; s '</a>’s' '’s</a>'; s '-530px.jpg' ''; s '-768px.png' ''; s '-768px.jpg' ''; s '—-' '—'; s 'collapse-summary' 'abstract-collapse'; s 'collapse-abstract' 'abstract-collapse';
-          s 'href="ttp' 'href="http'; s '\xmlpi{\\}' ''; s '°C' '℃'; s ' degrees Celsius' '℃'; s '° C' '℃'; s '°F' '℉'; s '° F' '℉'; s '℉ahrenheit' '℉'; s '℃elsius' '℃'; s ' ℃' '℃'; s ' ℉' '℉'; s 'marginnnote' 'marginnote'; s ' <br></li>' '</li>';
+          s 'href="ttp' 'href="http'; s '\xmlpi{\\}' ''; s '°C' '℃'; s ' degrees Celsius' '℃'; s '° C' '℃'; s '°F' '℉'; s '° F' '℉'; s '℉ahrenheit' '℉'; s '℃elsius' '℃'; s ' ℃' '℃'; s ' ℉' '℉'; s 'marginnnote' 'margin-note'; s ' <br></li>' '</li>';
           s ' <br> </li>' '</li>'; s '<psna ' '<span '; s '……' '…'; s '</strong>::' '</strong>:'; s '](//' '[(/'; s '{.full-width' '{.width-full'; s '<div class="admonition">' '<div class="admonition note">'; s '](/home/gwern/wiki/' '](/'; s '](wiki/' '](/';
           s '<a href="/home/gwern/wiki/' '<a href="/'; s '.png.png' '.png'; s '.jpg.jpg' '.jpg'; s '.’</p>' '’.</p>';
           s 'Cite-Author' 'cite-author'; s 'cite-author-Plural' 'cite-author-plural'; s 'Cite-Date' 'cite-date'; s 'Cite-Joiner' 'cite-joiner'; s 'class="Cite' 'class="cite'; s 'Logotype-Tex' 'logotype-tex'; s 'Date-Range' 'date-range'; s 'Inflation-Adjusted' 'inflation-adjusted'; s 'Logotype-Latex-A' 'logotype-latex-a'; s 'Logotype-Latex-E' 'logotype-latex-e'; s 'SUbsup' 'subsup';
@@ -959,7 +959,7 @@ cleanClasses () {
             "directory-indexes" "directory-indexes-sideways" "display-pop-not" "footnote-back" "footnotes" "image-focus-not"
             "include" "include-strict" "include-lazy" "include-annotation" "include-even-when-collapsed" "include-spinner-not"
             "include-unwrap" "include-block-context" "include-omit-metadata" "include-content"
-            "include-content-no-header" "include-block-context-expanded" "include-annotation-core" "include-annotation-partial" "include-content-core" "marginnote" "markdownBody"
+            "include-content-no-header" "include-block-context-expanded" "include-annotation-core" "include-annotation-partial" "include-content-core" "margin-note" "markdownBody"
             "mjpage" "mjpage__block" "mjx-base" "mjx-box" "MJXc-display" "mjx-cell"
             "mjx-char" "mjx-charbox" "mjx-chtml" "MJXc-space1" "MJXc-space2" "MJXc-space3"
             "MJXc-stacked" "MJXc-TeX-ams-R" "MJXc-TeX-cal-R" "MJXc-TeX-main-R" "MJXc-TeX-math-I" "MJXc-TeX-size1-R"

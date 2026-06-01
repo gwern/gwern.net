@@ -2,7 +2,7 @@
 ;;;
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2026-05-29 13:55:40 gwern"
+;;; When:  Time-stamp: "2026-05-31 20:08:36 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -2406,7 +2406,7 @@ This creates marginal glosses (in the left margin) as counterparts to sidenotes.
 These margin-notes are used as very abbreviated italicized summaries of the
  paragraph \(like very small inlined section headers\)."
   (interactive)
-  (surround-region-or-word "[" "]{.marginnote}"))
+  (surround-region-or-word "[" "]{.margin-note}"))
 (defun html-insert-margin-note ()
   "Surround selected region FOO BAR (or word FOO) with a `margin-note`.
 \(Implemented as a special `<span>` HTML class.\)
@@ -2421,8 +2421,8 @@ To save typing effort, we add those as well if not present."
                      (buffer-substring-no-properties (region-beginning) (region-end))
                    (thing-at-point 'word t))))
     (if (and (string-prefix-p "[" content) (string-suffix-p "]" content))
-        (surround-region-or-word "<span class=\"marginnote\">" "</span>")
-      (surround-region-or-word "<span class=\"marginnote\">[" "]</span>"))))
+        (surround-region-or-word "<span class=\"margin-note\">" "</span>")
+      (surround-region-or-word "<span class=\"margin-note\">[" "]</span>"))))
 
 (defun markdown-insert-editorial-note ()
   "Surround selected region (or word) with editorial syntax.
