@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-05-11 20:58:15 gwern"
+# When:  Time-stamp: "2026-05-31 20:09:17 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -1520,7 +1520,7 @@ gw () {
     RESULTS=$( (find ~/wiki/ -type f -name "*.md";
          ls ~/.emacs ~/*.md;
          find ~/wiki/metadata/ ~/wiki/haskell/ -name "*.hs" -or -name "*.gtx" | grep --fixed-strings -v -e 'metadata/listsortedmagic.hs' -e 'metadata/listname.hs';
-         find ~/wiki/static/ -type f -name "*.js" -or -name "*.css" -or -name "*.hs" -or -name "*.conf" -or -name "*.gtx" -or -name "*.py" -or -name "*.sh";
+         find ~/wiki/static/ -type f -name "*.js" -or -name "*.css" -or -name "*.hs" -or -name "*.conf" -or -name "*.gtx" -or -name "*.py" -or -name "*.sh" -or -name "*.el";
          find ~/wiki/ -type f -name "*.html" -not -wholename "*/doc/*" ) | \
            grep --fixed-strings -v -e '.#' -e 'auto.hs' -e doc/link-bibliography/ -e metadata/annotation/ -e _site/ -e _cache/ | sort --unique  | \
            xargs grep --fixed-strings --color=always --ignore-case --with-filename -- "$QUERY" | cut -c 1-2548);
