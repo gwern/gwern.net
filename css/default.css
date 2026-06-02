@@ -7522,9 +7522,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
     #footer-decoration-container,
     .recently-modified-icon-hook,
     .markdownBody .footnotes a.footnote-back,
-    .print-mode-not {
-        display: none;
-    }
+    .section-backlinks-container,
     #link-bibliography-section,
     .link-bibliography-append {
         display: none;
@@ -7533,6 +7531,9 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
         display: none;
     }
     .similars-list li:has(.similar-links-search) {
+        display: none;
+    }
+    .print-mode-not {
         display: none;
     }
 
