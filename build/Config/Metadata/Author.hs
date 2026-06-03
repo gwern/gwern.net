@@ -966,6 +966,8 @@ canonicals = setLike
   , ("Daniel Hillis", "Danny Hillis")
   , ("zetalyrae", "Fernando Borretti")
   , ("nottombrown", "Tom Brown")
+  , ("Levant Alpoge", "Levent Alpöge")
+  , ("__alpoge__", "Levant Alpöge")
   ]
 
 -- tests: unique

@@ -645,6 +645,7 @@ EXAMPLES: list[ExampleRow] = [
     ("Published Date: 13/12/23", "2023-12-13"),
     ("Updated 24-01-15", "2024-01-15"),
     ("Updated 95-01-15", "1995-01-15"),
+    ("20 May 202611:40 AM ET" "2026-05-20"),
     ("Posted: Yesterday at 3pm", EMPTY),
     ("today is 2025-09-30; posted 8 days ago", "2025-09-22"),
     ("Updated: 2 days ago", EMPTY),

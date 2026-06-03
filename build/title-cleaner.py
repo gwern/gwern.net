@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-05-25 17:07:44 gwern"
+# When:  Time-stamp: "2026-06-02 16:38:35 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -964,6 +964,10 @@ The hidden mathematics of bathrooms
 ""
 - "https://www.epicresearch.org/articles/two-years-after-stopping-glp-1s-most-patients-sustain-at-least-some-weight-loss Epic Research"
 ""
+- https://qwantz.com/index.php?comic=4116 "<em>Dinosaur Comics</em>—October 30<sup>th</sup>, 2023—awesome fun times!" # everything but the date is boilerplate, and the date is the best we can do here:
+"October 30<sup>th</sup>, 2023"
+- "https://davidoks.blog/p/why-china-got-rich-and-india-didnt Why China got rich, and India didn’t - David Oks"
+"Why China got rich, and India didn’t"
 
 """
 
