@@ -1361,8 +1361,16 @@ DocumentFragment.prototype.trimWhitespace = function (options) {
 
 	appendEllipsis (boolean)
 		If true, appends ellipsis (‘…’) at end of truncated text.
-		(If byWords is true, ellipsis is preceded by a space.)
+		(If byWords is true, ellipsis is preceded by a space if 
+		 spaceSeparatedEllipsisWhenTrimmingByWords is also true.)
 		Default is false.
+
+	spaceSeparatedEllipsisWhenTrimmingByWords (boolean)
+		If appendEllipsis and byWords are both true, and this is true, then
+		the ellipsis is separated from the previous node by a space. Otherwise,
+		not. (If either appendEllipsis or byWords is false, then this option
+		has no effect.)
+		Default is true.
 
 	trimTrailingWhitespace (boolean)
 		If true (the default), trailing whitespace that remains after truncating
@@ -1373,6 +1381,7 @@ function truncatedNode(node, lengthLimit, options) {
 	options = Object.assign({
 		byWords: false,
 		appendEllipsis: false,
+		spaceSeparatedEllipsisWhenTrimmingByWords: true,
 		trimTrailingWhitespace: true
 	}, options)
 
@@ -1381,7 +1390,12 @@ function truncatedNode(node, lengthLimit, options) {
 		return newNode;
 
 	//	Adjust length limit to account for ellipsis, if need be.
-	lengthLimit = (lengthLimit - (options.appendEllipsis ? (options.byWords ? 2 : 1) : 0));
+	let ellipsisLength = options.appendEllipsis
+						 ? (options.byWords && options.spaceSeparatedEllipsisWhenTrimmingByWords
+						 	? 2
+						 	: 1)
+						 : 0;
+	lengthLimit = (lengthLimit - ellipsisLength);
 
 	if (newNode.nodeType == Node.TEXT_NODE) {
 		if (options.byWords == true) {
@@ -1395,23 +1409,23 @@ function truncatedNode(node, lengthLimit, options) {
 				newTextContent.push(word);
 			}
 
-			//	Append ellipsis, if need be.
-			if (options.appendEllipsis == true)
-				newTextContent.push("…");
-
 			newNode.textContent = newTextContent.join(" ");
 		} else {
 			newNode.textContent = newNode.textContent.slice(0, lengthLimit);
-
-			//	Append ellipsis, if need be.
-			if (options.appendEllipsis == true)
-				newNode.textContent += "…";
 		}
 
 		//	Trim whitespace, if need be.
-		if (   options.appendEllipsis == false
-			&& options.trimTrailingWhitespace == true)
+		if (   options.appendEllipsis
+			|| options.trimTrailingWhitespace)
 			newNode.textContent = newNode.textContent.trimEnd();
+
+		if (options.appendEllipsis == true) {
+			//	Append ellipsis, if need be.
+			if (   options.byWords
+				&& options.spaceSeparatedEllipsisWhenTrimmingByWords)
+				newNode.textContent += " ";
+			newNode.textContent += "…";
+		}
 	} else if (newNode.nodeType == Node.ELEMENT_NODE) {
 		let totalNodeLength = (nodes) => { return nodes.reduce((totalLength, node) => (totalLength + node.textContent.length), 0); };
 		let childNodes = Array.from(newNode.childNodes);
@@ -1430,8 +1444,14 @@ function truncatedNode(node, lengthLimit, options) {
 		}
 
 		//	Append ellipsis, if need be.
-		if (options.appendEllipsis == true)
-			newChildNodes.push(newTextNode(" …"));
+		if (options.appendEllipsis == true) {
+			if (   options.byWords 
+				&& options.spaceSeparatedEllipsisWhenTrimmingByWords) {
+				newChildNodes.push(newTextNode(" …"));
+			} else {
+				newChildNodes.push(newTextNode("…"));
+			}
+		}
 
 		newNode.replaceChildren(...newChildNodes);
 

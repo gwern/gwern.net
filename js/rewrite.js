@@ -163,12 +163,11 @@ addContentLoadHandler("loadReferencedIdentifier", (eventInfo) => {
 		//	Update the <title> element, if it exists.
 		eventInfo.document.querySelector("title")?.replaceChildren(newPageTitle.textContent);
 
-		//	Truncate page header.
 		//	Update the page header (truncating if need be), if it exists.
 		eventInfo.document.querySelector("header h1")?.replaceChildren(truncatedHTMLToLengthInCharacters(newPageTitle, 80, {
 			byWords: true,
 			appendEllipsis: true,
-			trimTrailingWhitespace: true
+			spaceSeparatedEllipsisWhenTrimmingByWords: false
 		}));
 	};
 
