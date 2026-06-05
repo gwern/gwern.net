@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-06-02 16:38:35 gwern"
+# When:  Time-stamp: "2026-06-03 22:22:06 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -968,6 +968,8 @@ The hidden mathematics of bathrooms
 "October 30<sup>th</sup>, 2023"
 - "https://davidoks.blog/p/why-china-got-rich-and-india-didnt Why China got rich, and India didn’t - David Oks"
 "Why China got rich, and India didn’t"
+- "https://www.interconnects.ai/p/notes-from-inside-chinas-ai-labs Notes from inside China’s AI labs - by Nathan Lambert"
+"Notes from inside China’s AI labs"
 
 """
 

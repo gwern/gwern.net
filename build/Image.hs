@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 -- Optimize or stylize images
+-- TODO: warn on image filenames with whitespace in them!
 module Image where
 
 import Control.Exception (onException)

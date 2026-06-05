@@ -3616,4 +3616,4 @@ authorWpLinkDB = setLike
     , "Carlos M. Herrera", "William Fleeson", "Matt Levine", "Andrew Sullivan", "Anne Helen Petersen"
     , "Richard A. Howard", "George H. Estabrooks", "Danny Hillis", "David L. Waltz", "Margaret E. Roberts"
     , "Solomon Messing", "Katha Pollitt", "Dai Mahou Touge", "Irina Blok", "Dwarkesh Patel", "Karol Hausman", "Andy Zeng"
-    , "William Sims Bainbridge"]
+    , "William Sims Bainbridge", "Kat Rosenfield", "M. Anthony Lewis"]
