@@ -968,6 +968,8 @@ canonicals = setLike
   , ("nottombrown", "Tom Brown")
   , ("Levant Alpoge", "Levent Alpöge")
   , ("__alpoge__", "Levant Alpöge")
+  , ("industriaalist", "Samip Dahal")
+  , ("jacob_drori", "Jacob Drori")
   ]
 
 -- tests: unique
@@ -2311,6 +2313,7 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("Willis Barnstone", "https://en.wikipedia.org/wiki/Willis_Barnstone#With_Borges")
     , ("Daniel Abraham", "https://en.wikipedia.org/wiki/Daniel_Abraham_(author)")
     , ("Linch", "https://linch.substack.com/")
+    , ("Jacob Drori", "https://www.lesswrong.com/users/jacob_drori")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3616,4 +3619,4 @@ authorWpLinkDB = setLike
     , "Carlos M. Herrera", "William Fleeson", "Matt Levine", "Andrew Sullivan", "Anne Helen Petersen"
     , "Richard A. Howard", "George H. Estabrooks", "Danny Hillis", "David L. Waltz", "Margaret E. Roberts"
     , "Solomon Messing", "Katha Pollitt", "Dai Mahou Touge", "Irina Blok", "Dwarkesh Patel", "Karol Hausman", "Andy Zeng"
-    , "William Sims Bainbridge", "Kat Rosenfield", "M. Anthony Lewis"]
+    , "William Sims Bainbridge", "Kat Rosenfield", "M. Anthony Lewis", "Giorgio Parisi", "Arthur Machen"]

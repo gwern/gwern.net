@@ -184,7 +184,7 @@ filterMetaBadWholes = setLike ["P", "b", "cretu", "user", "yeh", "Canon", "times
                       , "bar", "tmp", "jvore", "ÿþ", "I.R.I.S.", "C&M", "C&amp;M", "()", "[]", "{}"
                       , "Gundars Strads", "Error - CORE file server", "comp2", "u2ps", "mac2"
                       , "Chrome", "Chromium", "Firefox", "Safari", "Author", "Binsbench"
-                      , "Western Publishing", "John Wiley, Sons", "40505-40237-1-PB.pdf", "Gresham College"]
+                      , "Western Publishing", "John Wiley, Sons", "40505-40237-1-PB.pdf", "Gresham College", "Pages"]
 
 -- tests: unique-all
 htmlRewriteTestCases :: [(String, String)]

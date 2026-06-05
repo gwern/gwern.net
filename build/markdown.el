@@ -2,7 +2,7 @@
 ;;;
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2026-05-31 20:08:36 gwern"
+;;; When:  Time-stamp: "2026-06-05 20:05:28 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -926,8 +926,6 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("denylist" . "blacklist")
                         ("PGI" . "PGS")
                         (" <sup>" . "<sup>") ; can't auto-replace because of instances like isotopic elements with *prefixed* superscripts, eg ' <sup>60</sup>Co'
-                        ("BCE" . "BC")
-                        ("CE"  . "AD")
                         (", opens new tab " . "") ; Reuters tooltip/alt for links, which copy-pastes, annoyingly
                                         ; replace all word-numbers with actual numbers:
                         (" one-hundred" . " 100")
@@ -1170,6 +1168,9 @@ Mostly string search-and-replace to enforce house style in terms of format."
                         ("CI:\\([0-9]\\)" . "CI: \\1") ; "95% CI:0.01-0.99"
                         (" ~ \\([0-9]+\\)" . " ~\\1") ; "a period of ~ 20 min"
                         ("\\([^-]\\)->"   . "\\1→") ; avoid closing HTML comment syntax false positives
+                        ("BCE" . "BC")
+                        ("CE\\([^O]\\)"  . "AD\\1") ; look for '0 CE' etc but avoid matching 'CEO'
+
                         )
                       ))
          (dolist (pair regexps)
@@ -1661,7 +1662,7 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace-regexp " \\[\\([0-9, -]+\\)\\]\\([[:punct:]]\\)" "\\2<sup>\\1</sup> " nil begin end) ; 'contributing to higher energy intake [42].'
        (query-replace-regexp "\\[\\([0-9, -]+\\)\\] " "<sup>\\1</sup> " nil begin end)
        (query-replace-regexp "\\([0-9]+\\)- and \\([0-9]+\\)-" "\\1 & \\2-" nil begin end) ; "We use 1979- and 1997-cohort National Longitudinal Survey of Youth (NLSY) data" → "We use 1979 & 1997-cohort"
-       (query-replace-regexp "pg?\\.? \\([0-9]\\)" "pg\\1") ; page citations: 'p. 50', 'pg. 50', 'pg 50' → 'pg50'
+       (query-replace-regexp " pg?\\.? \\([0-9]\\)" " pg\\1") ; page citations: 'p. 50', 'pg. 50', 'pg 50' → 'pg50'
 
        (query-replace-regexp "\\([[:alnum:]]\\)- " "\\1---" nil begin end)
        (query-replace-regexp "\\([[:alnum:]]\\)\\.\\. " "\\1... " nil begin end)

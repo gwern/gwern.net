@@ -5292,7 +5292,7 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
           , ("Wedge's_Gamble", "Star_Wars:_X-wing_(book_series)#Wedge%27s_Gamble_(1996)")
           , ("Weekly_Shonen_Jump", "Weekly_Sh%C5%8Dnen_Jump")
           , ("Wegovy", "Semaglutide")
-          , ("Weight_decay", "Ridge_regression#Tikhonov_regularization")
+          , ("Weight_decay", "Ridge_regression")
           , ("Weighted_blankets", "Weighted_blanket")
           , ("Weird_Al_Yankovic", "%22Weird_Al%22_Yankovic")
           , ("Well-powered", "Power_(statistics)")
@@ -6043,4 +6043,5 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("Erdős", "Paul Erdős")
         , ("Active_learning", "Active_learning_(machine_learning)")
         , ("SGD", "Stochastic_gradient_descent")
+        , ("Engram", "Engram_(neuropsychology)")
         ]
