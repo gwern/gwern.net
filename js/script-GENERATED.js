@@ -13011,12 +13011,18 @@ Extracts = { ...Extracts,
 			contentContainer.insertBefore(includeLink, direction == "previous" ? terminalSection : null);
 		} else {
 			//	Handle non-section content at start of a section (or page).
+			let nonSectionContentAtPageStartSelector = [
+				"header",
+				"#page-metadata",
+				"#page-metadata + .abstract"
+			].join(", ");
 			if (   terminalSectionAdjacentElementInCachedContentDocument != null
-				&& direction == "previous") {
+				&& direction == "previous"
+				&& terminalSectionAdjacentElementInCachedContentDocument.matches(nonSectionContentAtPageStartSelector) == false) {
 				includeLink = synthesizeIncludeLink(modifiedURL(popFrame.spawningTarget.href, {
 					hash: ("#" + (terminalSectionInCachedContentDocument.parentElement?.id ?? "") + ":" + terminalSectionInCachedContentDocument.id)
 				}), {
-					"data-include-selector-not": "header, #page-metadata, #page-metadata + .abstract"
+					"data-include-selector-not": nonSectionContentAtPageStartSelector
 				});
 				if (terminalSectionInCachedContentDocument.parentElement != null)
 					includeLink.classList.add("include-unwrap");
