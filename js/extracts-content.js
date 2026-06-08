@@ -315,7 +315,8 @@ Extracts = { ...Extracts,
 			highlightTargetElementInDocument(target, popFrame.document);
 
 		//	Load adjacent sections.
-		if (contentContainer.firstElementChild.tagName == "SECTION")
+		if (   popFrame.classList.contains("full-page") == false
+			&& contentContainer.firstElementChild.tagName == "SECTION")
 			Extracts.loadAdjacentSectionsInPopFrame_LOCAL_PAGE(popFrame, contentContainer);
 
 		//  Scroll to the target.
@@ -345,12 +346,18 @@ Extracts = { ...Extracts,
 
 		//	Prepare include-link.
 		let includeLink = null;
+		let includeLinkClassName = [
+			"collapse",
+			"collapse-small"
+		].join(" ");
 		let terminalSectionInCachedContentDocument = referenceData.content.querySelector("#" + terminalSection.id);
 		let terminalSectionAdjacentElementInCachedContentDocument = terminalSectionInCachedContentDocument[direction + "ElementSibling"];
 		if (terminalSectionAdjacentElementInCachedContentDocument?.tagName == "SECTION") {
         	includeLink = synthesizeIncludeLink(modifiedURL(popFrame.spawningTarget.href, {
         		hash: "#" + terminalSectionInCachedContentDocument[direction + "ElementSibling"].id
-        	}));
+        	}), {
+        		class: includeLinkClassName
+        	});
 			contentContainer.insertBefore(includeLink, direction == "previous" ? terminalSection : null);
 		} else {
 			//	Handle non-section content at start of a section (or page).
@@ -365,6 +372,7 @@ Extracts = { ...Extracts,
 				includeLink = synthesizeIncludeLink(modifiedURL(popFrame.spawningTarget.href, {
 					hash: ("#" + (terminalSectionInCachedContentDocument.parentElement?.id ?? "") + ":" + terminalSectionInCachedContentDocument.id)
 				}), {
+					class: includeLinkClassName,
 					"data-include-selector-not": nonSectionContentAtPageStartSelector
 				});
 				if (terminalSectionInCachedContentDocument.parentElement != null)
@@ -387,8 +395,28 @@ Extracts = { ...Extracts,
 			}
 		}
 
-		//	Activate the include-link (standard lazy triggering).
 		if (includeLink != null) {
+			/*	Call handler directly (no need for the whole GW.contentDidLoad
+				edifice here, we just want this one specific rewrite).
+			 */
+			GW.contentLoadHandlers["prepareCollapseBlocks"]({
+				source: "Extracts.loadAdjacentSectionInPopFrame_LOCAL_PAGE",
+				container: popFrame.body,
+				document: popFrame.document
+			});
+
+			//	... and this one inject handler.
+			GW.contentInjectHandlers["activateCollapseBlockDisclosureButtons"]({
+				source: "Extracts.loadAdjacentSectionInPopFrame_LOCAL_PAGE",
+				container: popFrame.body,
+				document: popFrame.document,
+				flags: GW.contentDidInjectEventFlags.clickable
+			});
+
+			//	Add class for styling.
+			includeLink.closest(".collapse").classList.add("load-adjacent-section-collapse");
+
+			//	Activate the include-link (standard lazy triggering).
 			Transclude.triggerTransclude(includeLink, {
 				source: "Extracts.loadAdjacentSectionInPopFrame_LOCAL_PAGE",
 				container: popFrame.body,
@@ -397,12 +425,11 @@ Extracts = { ...Extracts,
 			}, {
 				immediately: false,
 				doWhenDidInject: (info) => {
-					//  Scroll to the target on initial load only.
-					if (contentContainer != popFrame.body)
-						Extracts.scrollToTargetedElementInPopFrame(popFrame);
+					//	Expand-lock collapse.
+					expandLockCollapseBlock(popFrame.body[terminus + "ElementChild"]);
 
-					//	Queue load of next section.
 					requestAnimationFrame(() => {
+						//	Queue load of next section.
 						Extracts.loadAdjacentSectionInPopFrame_LOCAL_PAGE(popFrame, popFrame.body, direction);
 					});
 				}

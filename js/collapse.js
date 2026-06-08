@@ -351,7 +351,7 @@ addContentLoadHandler("prepareCollapseBlocks", (eventInfo) => {
 		let collapseWrapper;
 		let wrapOptions = {
 			useExistingWrapper: true, 
-			moveClasses: [ "collapse", "expand-on-hover" ]
+			moveClasses: [ "collapse", "expand-on-hover", "collapse-small" ]
 		};
 		let bareContentSelector = [ 
 			"p",
@@ -366,7 +366,7 @@ addContentLoadHandler("prepareCollapseBlocks", (eventInfo) => {
 			collapseWrapper = collapseBlock;
 
 			//	Check for empty collapses; if empty, log error and do nothing.
-			if (isNodeEmpty(collapseWrapper)) {
+			if (isNodeEmpty(collapseWrapper, { alsoExcludeSelector: "a" })) {
 				let collapseWrapperTagName = collapseWrapper.tagName.toLowerCase()
 				GWServerLogError(eventInfo.loadLocation.href + `--empty-collapse-${collapseWrapperTagName}`, 
 								 `empty collapse element (${collapseWrapperTagName})`);
@@ -1014,7 +1014,22 @@ function expandLockCollapseBlock(collapseBlock) {
 	let wasCollapsed = (isCollapsed(collapseBlock) == true);
 
 	//	Strip collapse-specific classes.
-	collapseBlock.classList.remove("collapse", "collapse-block", "collapse-inline", "expand-on-hover", "has-abstract", "abstract-not", "bare-content", "file-include-collapse", "expanded", "expanded-not");
+	let collapseClasses = [
+		"collapse",
+		"collapse-block",
+		"collapse-inline",
+		"collapse-small",
+		"expand-on-hover",
+		"iceberg-not",
+		"has-abstract",
+		"abstract-not",
+		"bare-content",
+		"file-include-collapse",
+		"expanded",
+		"expanded-not",
+		"just-auto-expanded"
+	];
+	collapseBlock.classList.remove(...collapseClasses);
 	if (collapseBlock.className == "")
 		collapseBlock.removeAttribute("class");
 

@@ -3359,6 +3359,23 @@ GW.layout = {
 		".sidenote-column"
 	].join(", "),
 
+	layoutClasses: [
+		"block",
+		"first-block",
+		"last-block",
+		"empty-graf",
+		"first-graf",
+		"intro-graf",
+		"list",
+		"in-list",
+		"float",
+		"has-floats",
+		"overlap-not",
+		"force-dropcap",
+		"has-dropcap",
+		"heading"
+	],
+
 	emptyNodeExclusionPredicate: (node) => {
 		if (node.nodeType != Node.ELEMENT_NODE)
 			return false;
@@ -3366,24 +3383,8 @@ GW.layout = {
 		/*	Exclude elements that have any classes (discounting 
 			classes added by the layout system).
 		 */
-		let layoutClasses = [
-			"block",
-			"first-block",
-			"last-block",
-			"empty-graf",
-			"first-graf",
-			"intro-graf",
-			"list",
-			"in-list",
-			"float",
-			"has-floats",
-			"overlap-not",
-			"force-dropcap",
-			"has-dropcap",
-			"heading"
-		];
 		for (let cssClass of node.classList)
-			if (   layoutClasses.includes(cssClass) == false
+			if (   GW.layout.layoutClasses.includes(cssClass) == false
 				&& /^dropcaps?-/.test(cssClass) == false)
 				return true;
 
@@ -4112,13 +4113,12 @@ function childBlocksOf(element, options) {
 
 /****************************************************************************/
 /*	Returns true if the element is a “bare wrapper”, i.e. a <div> or <span> 
-	with no classes (or, in the <div> case, possibly just the ‘block’ class); 
+	with no classes (other than those added by the layout system); 
 	false otherwise.
  */
 function isBareWrapper(element) {
 	return (   (   element.tagName == "DIV"
-				&& (   element.className.trim() == ""
-					|| element.className.trim() == "block"))
+				&& Array.from(element.classList).findIndex(cssClass => GW.layout.layoutClasses.includes(cssClass) == false) === -1)
 			|| (   element.tagName == "SPAN"
 				&& element.className.trim() == ""));
 }
