@@ -428,7 +428,7 @@ Extracts = { ...Extracts,
 					//	Expand-lock collapse.
 					expandLockCollapseBlock(popFrame.body[terminus + "ElementChild"]);
 
-					requestAnimationFrame(() => {
+					requestIdleCallback(() => {
 						//	Queue load of next section.
 						Extracts.loadAdjacentSectionInPopFrame_LOCAL_PAGE(popFrame, popFrame.body, direction);
 					});

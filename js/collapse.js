@@ -1024,10 +1024,12 @@ function expandLockCollapseBlock(collapseBlock) {
 		"has-abstract",
 		"abstract-not",
 		"bare-content",
-		"file-include-collapse",
 		"expanded",
 		"expanded-not",
-		"just-auto-expanded"
+		"just-auto-expanded",
+
+		"file-include-collapse",
+		"load-adjacent-section-collapse"
 	];
 	collapseBlock.classList.remove(...collapseClasses);
 	if (collapseBlock.className == "")

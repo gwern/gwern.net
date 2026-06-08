@@ -13085,7 +13085,7 @@ Extracts = { ...Extracts,
 					//	Expand-lock collapse.
 					expandLockCollapseBlock(popFrame.body[terminus + "ElementChild"]);
 
-					requestAnimationFrame(() => {
+					requestIdleCallback(() => {
 						//	Queue load of next section.
 						Extracts.loadAdjacentSectionInPopFrame_LOCAL_PAGE(popFrame, popFrame.body, direction);
 					});
@@ -20741,10 +20741,12 @@ function expandLockCollapseBlock(collapseBlock) {
 		"has-abstract",
 		"abstract-not",
 		"bare-content",
-		"file-include-collapse",
 		"expanded",
 		"expanded-not",
-		"just-auto-expanded"
+		"just-auto-expanded",
+
+		"file-include-collapse",
+		"load-adjacent-section-collapse"
 	];
 	collapseBlock.classList.remove(...collapseClasses);
 	if (collapseBlock.className == "")
