@@ -2,7 +2,7 @@
 ;;;
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2026-06-05 20:05:28 gwern"
+;;; When:  Time-stamp: "2026-06-08 20:27:05 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -89,6 +89,20 @@
 (defun arrow-down  () (interactive) (insert-char ?↓ 1))
 (defun interpunct  () (interactive) (insert-char ?• 1))
 (defun g-gwern     () (interactive) (insert-char ?𝔊 1)) ; 'MATHEMATICAL FRAKTUR CAPITAL G'
+
+(defun zap-to-char-backward (char &optional arg)
+  "Kill backward up to and including the ARGth occurrence of CHAR.
+This is `zap-to-char' run in the backward direction: by default it
+searches before point.  A prefix ARG specifies the occurrence count;
+a negative ARG reverses direction (i.e. searches forward).  Case is
+handled exactly as in `zap-to-char' (case-sensitive when CHAR is
+upper-case)."
+  (interactive
+   (list (read-char-from-minibuffer "Zap backward to char: "
+                                    nil 'read-char-history)
+         (prefix-numeric-value current-prefix-arg)))
+  (zap-to-char (- arg) char t))
+(keymap-global-set "M-Z" #'zap-to-char-backward)
 
 (defun replace-all (original replacement)
   "Do regexp search-and-replace in the current buffer of ORIGINAL to REPLACEMENT.
