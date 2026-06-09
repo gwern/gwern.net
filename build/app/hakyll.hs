@@ -4,7 +4,7 @@
 {- Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2026-05-08 19:34:52 gwern"
+When: Time-stamp: "2026-06-09 21:17:58 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -268,7 +268,7 @@ postCtx md am indexp rts =
     constField "status" "notes" <>
     progressField "confidence" "confidence-plus-progress" <>
     constField "confidence" "log" <>
-    constField "importance" "0" <>
+    constField "importance" "N/A" <>
     pageBodyClassesField     <> -- CSS classes shared by <body> and metadata
     constField "css-extension" defaultCssExtension <>
     constField "thumbnail-css" "" <> -- constField "thumbnail-css" "outline-not" <> -- TODO: all uses of `thumbnail-css` should be migrated to GTX
@@ -492,12 +492,13 @@ validateYAMLMetadata hakyllMeta filepath = do
     Just conf -> unless (conf `elem` C.yamlValidConfidences) $
       error $ "hakyll.validateYAMLMetadata C.yamlValidConfidences (" ++ filepath ++ "): 'confidence' must be a Kesselman word from " ++ show C.yamlValidConfidences ++ ", got: " ++ conf
 
-  -- `importance`: 0–10
+  -- `importance`: N/A, 0–10
   case getString "importance" of
     Nothing -> return ()
+    Just "N/A" -> return ()
     Just imp -> case reads imp of
       [(n, "")] | n >= (0 :: Int) && n <= 10 -> return ()
-      _ -> error $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'importance' must be 0-10, got: " ++ imp
+      _ -> error $ "hakyll.validateYAMLMetadata (" ++ filepath ++ "): 'importance' must be 0-10 or N/A, got: " ++ imp
 
   -- `css-extension`: known classes only
   case getString "css-extension" of
