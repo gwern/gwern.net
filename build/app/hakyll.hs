@@ -4,7 +4,7 @@
 {- Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2026-06-09 21:17:58 gwern"
+When: Time-stamp: "2026-06-10 19:30:40 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -268,7 +268,7 @@ postCtx md am indexp rts =
     constField "status" "notes" <>
     progressField "confidence" "confidence-plus-progress" <>
     constField "confidence" "log" <>
-    constField "importance" "N/A" <>
+    knownImportanceField "importance-display" <>
     pageBodyClassesField     <> -- CSS classes shared by <body> and metadata
     constField "css-extension" defaultCssExtension <>
     constField "thumbnail-css" "" <> -- constField "thumbnail-css" "outline-not" <> -- TODO: all uses of `thumbnail-css` should be migrated to GTX
@@ -289,6 +289,17 @@ pageBodyClassesField = field "page-body-classes" $ \item -> do
         ] ++ [pageCreatedRecentlyClass | pageRecentlyCreated]
   where safeURLClass :: FilePath -> String
         safeURLClass = map toLower . replace "." "" . replace "/" "-" . delete ".md"
+
+knownImportanceField :: String -> Context String
+knownImportanceField d = field d $ \item -> do
+ metadataMaybe <- getMetadataField (itemIdentifier item) "importance"
+ case metadataMaybe of
+   Nothing -> noResult "no importance field"
+   Just importance -> do
+     let importance' = T.unpack $ T.strip $ T.pack importance
+     if importance' `elem` ["", "N/A", "\"N/A\"", "'N/A'"]
+       then noResult "importance is N/A"
+       else return importance'
 
 defaultCssExtension :: String
 defaultCssExtension = "dropcaps-de-zs"

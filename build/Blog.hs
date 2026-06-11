@@ -139,7 +139,7 @@ annotation2Markdown _url (title, author, dateCreated, dateModified, kvs, _, abst
   let get k defalt = fromMaybe defalt (lookup k kvs)
       description = get "description"   "N/A"
       status      = get "status"         "finished"
-      importance  = get "importance"     "0"
+      importance  = get "importance"     "N/A"
       confidence  = get "confidence"     "log"
       cssExt      = get "css-extension"  "dropcaps-de-zs toc-not"
       thumbnail   = get "thumbnail"      ""
