@@ -197,4 +197,4 @@ stringDelete = setLike [" - The Public Domain Review"
             , " - Unsung", " - The Shamblog", " - Felix Krause", " - apenwarr", "—Clear Language, Clear Mind", " - Project Play"
             , "Haskell for all: ", " | Health &amp; wellbeing", " | Health & wellbeing", " - Project Zero", " - Armand D’Angour"
             , "God Plays Dice: ", " - by Benjamin Grayzel - Benjamin’s Substack", " - by Beau Watson", " - To Whom It May Concern"
-            , " - Ars Technica", "XBOW - ", " :: Himanshu Anand :: Threat Notes", "Literary Hub - ", "Dinosaur Comics - ", " - awesome fun times!", " - David Oks", " - by Nathan Lambert"]
+            , " - Ars Technica", "XBOW - ", " :: Himanshu Anand :: Threat Notes", "Literary Hub - ", "Dinosaur Comics - ", " - awesome fun times!", " - David Oks", " - by Nathan Lambert", " - Biblioklept"]

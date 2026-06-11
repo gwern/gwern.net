@@ -6044,4 +6044,5 @@ redirectDB = let wp u = if "http" `T.isPrefixOf` u then u -- allow overrides of 
         , ("Active_learning", "Active_learning_(machine_learning)")
         , ("SGD", "Stochastic_gradient_descent")
         , ("Engram", "Engram_(neuropsychology)")
+        , ("Luria", "Alexander_Luria")
         ]

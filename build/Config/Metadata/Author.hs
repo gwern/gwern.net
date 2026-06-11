@@ -133,7 +133,7 @@ authorWhitelist :: [String]
 authorWhitelist = setLike ["K. U.", "6510#HN", "N. K.", "0xType", "3D_DLW"]
 
 -- list of rewrites for 'alternative name' → 'canonical name'. This is a simple mapping which doesn't attempt to handle variants like initializations. For that, see `canonicalsWithInitials`.
--- Config tests: unique keys, no loops
+-- Config tests: unique keys, no loops; none are URLs
 canonicals :: [(String, String)]
 canonicals = setLike
   [ ("ESYudkowsky", "Eliezer Yudkowsky")
@@ -972,9 +972,12 @@ canonicals = setLike
   , ("jacob_drori", "Jacob Drori")
   , ("Wenfeng Liang", "Liang Wenfeng")
   , ("Dan S. Tawfik", "Dan Tawfik")
+  , ("gleech", "Gavin Leech")
+  , ("Fable", "Claude-5-Fable")
+  , ("Mythos", "Claude-5-Mythos")
   ]
 
--- tests: unique
+-- tests: unique; none are URLs
 canonicalsWithInitials :: [String]
 canonicalsWithInitials = setLike
  ["Ingrid Sigfrid Melle", "Ken K. Ong", "Lenore J. Launer", "Olli T. Raitakari"
@@ -2241,6 +2244,8 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("Claude-4.6-opus", "https://www.anthropic.com/news/claude-opus-4-6")
     , ("Claude-4.7-opus", "https://www.anthropic.com/news/claude-opus-4-7")
     , ("Claude-4.8-opus", "https://www.anthropic.com/news/claude-opus-4-8")
+    , ("Claude-5-Mythos", "https://www-cdn.anthropic.com/3edfc1a7f947aa81841cf88305cb513f184c36ae.pdf")
+    , ("Claude-5-Fable", "https://www.anthropic.com/news/claude-fable-5-mythos-5")
     , ("Vishal Prasad", "https://substack.com/@vishalprasad1")
     , ("GPT-5.3-Codex", "https://openai.com/index/introducing-gpt-5-3-codex/")
     , ("GPT-5.5 Pro", "https://openai.com/index/introducing-gpt-5-5/#pro")
@@ -3623,4 +3628,5 @@ authorWpLinkDB = setLike
     , "Carlos M. Herrera", "William Fleeson", "Matt Levine", "Andrew Sullivan", "Anne Helen Petersen"
     , "Richard A. Howard", "George H. Estabrooks", "Danny Hillis", "David L. Waltz", "Margaret E. Roberts"
     , "Solomon Messing", "Katha Pollitt", "Dai Mahou Touge", "Irina Blok", "Dwarkesh Patel", "Karol Hausman", "Andy Zeng"
-    , "William Sims Bainbridge", "Kat Rosenfield", "M. Anthony Lewis", "Giorgio Parisi", "Arthur Machen", "Dan Tawfik"]
+    , "William Sims Bainbridge", "Kat Rosenfield", "M. Anthony Lewis", "Giorgio Parisi", "Arthur Machen", "Dan Tawfik"
+    , "Benton J. Underwood"]

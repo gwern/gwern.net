@@ -148,6 +148,8 @@ testConfigs = sum $ map length [isUniqueList Config.Metadata.Format.filterMetaBa
               , length $ isUniqueKeys Config.Metadata.Author.authorCollapseTestCases, length $ isUnique Config.Metadata.Author.authorCollapseTestCases,
                 length $ isUniqueAll Config.Metadata.Author.authorLink
               , length $ isUniqueKeys Config.Metadata.Author.canonicals, length $ isUniqueList Config.Metadata.Author.canonicalsWithInitials, length $ isUniqueList Config.Metadata.Author.authorLinkBlacklist, length $ isUniqueList Config.Metadata.Author.authorWhitelist
+              , length $ ensure "Test.canonicals" "no URLs in author names (neither alias nor canonical)" (\(a,b) -> not (isURLAny a || isURLAny b)) Config.Metadata.Author.canonicals
+              , length $ ensure "Test.canonicalsWithInitials" "no URLs" (not . isURLAny) Config.Metadata.Author.canonicalsWithInitials
               , length $ isUniqueAll Config.Metadata.Format.htmlRewriteTestCases
               , length $ isUniqueList Config.Typography.dateRangeDurationTestCases
               , length $ ensure "Test.authorLink" "isURLAny (URL of second)" (all isURLAnyT) Config.Metadata.Author.authorLink
