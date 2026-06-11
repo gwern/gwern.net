@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-06-03 22:22:06 gwern"
+# When:  Time-stamp: "2026-06-10 18:07:26 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -28,6 +28,10 @@ if len(sys.argv) == 1:
 else:
     target = sys.argv[1]
 
+if not target: # short-circuit the empty title to avoid a pointless API call
+    print('""')
+    sys.exit(0)
+
 PROMPT_PREFIX = """
 Task: Clean website titles parsed from <title> tags.
 If a title input is useless or meaningless or an error, print out the empty string `""` instead of the original title.
@@ -37,6 +41,11 @@ Convert inline Markdown to HTML, like '*foo*' → '<em>foo</em>'; convert inline
 Convert straight quotes/apostrophes to curly quotes.
 First remove boilerplate sections such as site name, domain, author, newsletter, publisher, and platform.
 Fix initial lowercase letters in titles. (Full titlecasing is optional.)
+Always strip a trailing period (but keep “…”, “?”, “!”, or periods belonging to abbreviations like “U.S.”).
+Fix obvious typos and mojibake when the intended text is unambiguous.
+Convert “x” between numbers to “×” (eg. “5x5” → “5×5”); convert hardwired Unicode subscripts/superscripts to <sub>/<sup>.
+Normalize separators between a title and a sub-section to “§”; normalize spaced hyphens or en-dashes used as title separators to em-dashes (“—”).
+Exception: literal search-query strings are reproduced verbatim, including straight quotes.
 If the title has no junk and needs no mechanical normalization, print the original title.
 Otherwise apply only the required normalizations.
 If you are unsure how to fix it, then simply print out the original title.
@@ -198,8 +207,6 @@ Not Lisp again…
 Morbid attraction to leopard urine in Toxoplasma-infected chimpanzees
 - "EP021 - Bulbapedia, the community-driven PokÃ©mon encyclopedia"
 EP021
-- "Your Book Review: Two Arms and a Head - Astral Codex Ten"
-Your Book Review: Two Arms and a Head
 - "Redirecting"
 ""
 - "From Bing to Sydney – Stratechery by Ben Thompson"
@@ -261,7 +268,7 @@ Ce générateur de WAIFU "ThisWaifuDoesNotExist" sur le forum Blabla 18-25 ans -
 - "Steamed Hams But It's The Confrontation From Les MisÃ©rables"
 Steamed Hams But It’s The Confrontation From Les Misérables
 - "[Touhou Vocal] Raven's Jig—Une Semaine chez les Ãcarlates (Embodiment of Scarlet Devil)"
-[Touhou Vocal] Raven’s Jig - Une Semaine chez les Écarlates (Embodiment of Scarlet Devil)
+[Touhou Vocal] Raven’s Jig—Une Semaine chez les Écarlates (Embodiment of Scarlet Devil)
 - "ãæ±æ¹ Post-Metalã denshÅ«to—LÃ¦vateinn"
 【東方 Post-Metal】 denshūto - Lævateinn
 - "2017 CODE Plenary Session 2: Susan Athey, RenÃ©e Richardson Gosline, and Ron Kohavi"
@@ -319,7 +326,7 @@ How Anthropic built Artifacts
 - "Untitled Document"
 ""
 - "Welcome to Our Website | Home"
-Home
+""
 - "Welcome, [Username]!"
 ""
 - "[Object object]"
@@ -400,7 +407,7 @@ Sunrise
 TIHKAL § #26 LSD-25
 - ""[EoE] gives the same end as the TV series"?"
 “[EoE] gives the same end as the TV series”?
-- ""n-back" AND ("fluid intelligence" OR "IQ")—Search Results"
+- ""n-back" AND ("fluid intelligence" OR "IQ")—Search Results" # literal search query: keep straight quotes verbatim
 "n-back" AND ("fluid intelligence" OR "IQ")—Search Results
 - "#147: Forging the mRNA Revolution—Katalin Karikó § Education & Ambition" # NOTE: "#147" is an ID, not a section.
 #147: Forging the mRNA Revolution—Katalin Karikó § Education & Ambition
@@ -409,7 +416,7 @@ TIHKAL § #26 LSD-25
 - "#3843: Merge plugins into HEAD"
 #3843: Merge plugins into HEAD
 - "#GPT3 gives some interesting true and false answers to some questions. But it's important to note that it gives opposite answers just as often, I cheery picked the most ‘sensational’ ones. Usually it said the opposite thing, and it also role-plays sometimes (eg. as a spy)"
-#GPT3 gives some interesting true and false answers to some questions. But it’s important to note that it gives opposite answers just as often, I cheery picked the most ‘sensational’ ones. Usually it said the opposite thing, and it also role-plays sometimes (eg. as a spy)
+#GPT3 gives some interesting true and false answers to some questions. But it’s important to note that it gives opposite answers just as often, I cherry picked the most ‘sensational’ ones. Usually it said the opposite thing, and it also role-plays sometimes (eg. as a spy)
 - "#bitcoin-otc"
 #bitcoin-otc
 - "#bitcoin-otc gpg key data"
@@ -594,8 +601,6 @@ Your AI can’t see gorillas
 Three Orders of Magnitude: Transforming PDC Technology at US Synthetic
 - "https://aresluna.org/the-hardest-working-font-in-manhattan/ The hardest working font in Manhattan—Aresluna"
 The hardest working font in Manhattan
-- "Are you a robot?"
-""
 - "https://ericneyman.wordpress.com/2021/06/05/social-behavior-curves-equilibria-and-radicalism/ Social behavior curves, equilibria, and radicalism - Unexpected Values"
 Social behavior curves, equilibria, and radicalism
 - "http://www.iqscorner.com/2007/05/temp.html?m=1 IQ’s Corner: IQ and wealth: The dumb rich and the smart poor"
@@ -615,7 +620,7 @@ Computer Games: Vol 3 No 2 (1984-06) (Carnegie Publications) (US)
 - "https://archive.org/details/innocentassassin00kurt <em>The innocent assassins : biological essays on life in the present and distant past</em> : Kurtén, Björn"
 <em>The innocent assassins: biological essays on life in the present and distant past</em>, Kurtén, Björn
 - "https://www.talkchess.com/forum/viewtopic.php?t=48733 Scaling at 2× nodes (or doubling time control).—TalkChess.com"
-Scaling at 2× nodes (or doubling time control).
+Scaling at 2× nodes (or doubling time control)
 - "https://reddit.com/r/EuropeanCulture/comments/ozpsxv/inside_intourist_robert_a_heinlein_1960/ Heart of the internet"
 ""
 - "https://worksinprogress.co/issue/steam-networks/ Steam networks—Works in Progress"
@@ -754,8 +759,8 @@ The Name is Shrdlu… Etaoin Shrdlu
 ""
 - "https://xcancel.com/tszzl/status/1955073047700066485 X Cancelled"
 ""
-- "https://developers.googleblog.com/en/announcing-imagen-4-fast-and-imagen-4-family-generally-available-in-the-gemini-api/ Announcing Imagen 4 Fast and the generally availability of the Imagen 4 family in the Gemini API - Google Developers Blog"
-Announcing Imagen 4 Fast and the generally availability of the Imagen 4 family in the Gemini API
+- "https://developers.googleblog.com/en/announcing-imagen-4-fast-and-imagen-4-family-generally-available-in-the-gemini-api/ Announcing Imagen 4 Fast and the generally availability of the Imagen 4 family in the Gemini API - Google Developers Blog" # fix obvious typo (“generally availability”)
+Announcing Imagen 4 Fast and the general availability of the Imagen 4 family in the Gemini API
 - "https://minusx.ai/blog/decoding-claude-code/ Minusx"
 ""
 - "https://marianogappa.github.io/software/2025/08/24/i-made-two-card-games-in-go/ Mariano Gappa’s Blog"
@@ -841,7 +846,7 @@ Phenibut—Erowid Exp—‘Drunk for Hours’
 - "https://www.anthropic.com/research/many-shot-jailbreaking Many-shot jailbreaking \\ Anthropic"
 Many-shot jailbreaking
 - "https://www.cambridge.org/core/journals/national-institute-economic-review/article/curious-case-of-the-national-fund/C4C5A421F70BAD2F0A0D01F99977C616 THE CURIOUS CASE OF THE NATIONAL FUND"
-The Curious Case of The National Fund
+The Curious Case of the National Fund
 - "https://maurycyz.com/misc/raw_photo/ What an unprocessed photo looks like: (Maurycy’s blog)"
 What an unprocessed photo looks like
 - "Disney Imagineering Reveals Robotic OlafCharacter"
@@ -865,7 +870,7 @@ Implementing a web server in a single printf() call
 - "https://dmvaldman.github.io/rooklift/ Writings"
 ""
 - "https://dmvaldman.github.io/rooklift/ RookLift - Writings (Training my watch to track intelligence)"
-RookLift - Training my watch to track intelligence
+RookLift—Training my watch to track intelligence
 - "https://www.sfweekly.com/archives/the-worst-run-big-city-in-the-u-s/article_ff893b10-e35a-57cc-a52b-47162048b2c8.html The Worst-Run Big City in the US | Archives"
 The Worst-Run Big City in the US
 - "https://mchav.github.io/learning-better-decision-tree-splits/ Learning better decision tree splits—LLMs as Heuristics for Program Synthesis - Michael Chavinda - A collection of my thoughts on the various topics I find myself interested in."
@@ -933,47 +938,49 @@ The hidden mathematics of bathrooms
 - "https://www.reddit.com/r/OpenAI/comments/1srat00/image_20_is_now_online_on_chatgpt_and_its/ Reddit—Please wait for verification"
 ""
 - "5x5 Pixel font for tiny screens"
-"5×5 Pixel font for tiny screens"
+5×5 Pixel font for tiny screens
 - "have you heard of <em>Blood On The Clocktower</em>?"
-"Have you heard of <em>Blood On The Clocktower</em>?"
+Have you heard of <em>Blood On The Clocktower</em>?
 - "Perch 2.0 transfers ’whale’ to underwater tasks"
-"Perch 2.0 transfers ‘whale’ to underwater tasks"
+Perch 2.0 transfers ‘whale’ to underwater tasks
 - "https://voxcom.cmail19.com/t/ViewEmail/d/5E61BDB945C3771F2540EF23F30FEDED/7655520C49A52981BA4AF9908B8D85ED Newsletter"
 ""
 - "https://beauetry.substack.com/p/stuff-women-have-told-me-is-hot?open=false#%C2%A7hands Stuff Women Have Told Me Is “Hot” - by Beau Watson"
-"Stuff Women Have Told Me Is “Hot”"
+Stuff Women Have Told Me Is “Hot”
 - "About this site:"
-"About this site"
+About this site
 - "https://larryrothwachs.com/2026/05/10/the-mashiach-clause/#post-4710 The Mashiach Clause - To Whom It May Concern"
-"The Mashiach Clause"
+The Mashiach Clause
 - "https://arstechnica.com/science/2026/02/heres-why-scotch-tape-screeches-when-its-peeled/ Scientists crack the case of “screeching” Scotch tape - Ars Technica"
-"Scientists crack the case of “screeching” Scotch tape"
+Scientists crack the case of “screeching” Scotch tape
 - "https://antigonejournal.com/2026/02/science-of-blunders-confessions-textual-critic/ 429 Too Many Request"
 ""
 - "C₁₃H₁₆CℓNO" # chemical formula (ketamine) with hardwired Unicode subscripts (and italics lowercase 'l' for unclear reasons)
-"C<sub>13</sub>H<sub>16</sub>ClNO"
+C<sub>13</sub>H<sub>16</sub>ClNO
 - "https://xbow.com/blog/mythos-offensive-security-xbow-evaluation XBOW - Mythos for Offensive Security: XBOW’s Evaluation"
-"Mythos for Offensive Security: XBOW’s Evaluation"
-- https://blog.himanshuanand.com/2026/05/the-90-day-disclosure-policy-is-dead/ the 90 day disclosure policy is dead :: Himanshu Anand :: Threat Notes"
-"The 90 day disclosure policy is dead"
+Mythos for Offensive Security: XBOW’s Evaluation
+- "https://blog.himanshuanand.com/2026/05/the-90-day-disclosure-policy-is-dead/ the 90 day disclosure policy is dead :: Himanshu Anand :: Threat Notes"
+The 90 day disclosure policy is dead
 - "https://lithub.com/a-prize-winning-story-published-in-granta-was-very-likely-written-by-ai/ Literary Hub - A prize-winning story published in Granta was (very likely) written by AI"
-"A prize-winning story published in Granta was (very likely) written by AI"
+A prize-winning story published in Granta was (very likely) written by AI
 - "http://news.bbc.co.uk/2/hi/health/3826857.stm Health"
 ""
 - "https://www.isrctn.com/ISRCTN31571714 ISRCTN"
 ""
 - "https://www.epicresearch.org/articles/two-years-after-stopping-glp-1s-most-patients-sustain-at-least-some-weight-loss Epic Research"
 ""
-- https://qwantz.com/index.php?comic=4116 "<em>Dinosaur Comics</em>—October 30<sup>th</sup>, 2023—awesome fun times!" # everything but the date is boilerplate, and the date is the best we can do here:
-"October 30<sup>th</sup>, 2023"
+- "https://qwantz.com/index.php?comic=4116 <em>Dinosaur Comics</em>—October 30<sup>th</sup>, 2023—awesome fun times!" # everything but the date is boilerplate, and the date is the best we can do here:
+October 30<sup>th</sup>, 2023
 - "https://davidoks.blog/p/why-china-got-rich-and-india-didnt Why China got rich, and India didn’t - David Oks"
-"Why China got rich, and India didn’t"
+Why China got rich, and India didn’t
 - "https://www.interconnects.ai/p/notes-from-inside-chinas-ai-labs Notes from inside China’s AI labs - by Nathan Lambert"
-"Notes from inside China’s AI labs"
+Notes from inside China’s AI labs
+- "https://biblioklept.org/2019/05/05/covered-mirrors-a-very-short-story-by-jorge-luis-borges/ “Covered Mirrors”, a very short story by Jorge Luis Borges - Biblioklept"
+“Covered Mirrors”, a very short story by Jorge Luis Borges
 
 """
 
-prompt = PROMPT_PREFIX + "\nTask:\n\nInput title to clean:\n\n- " + json.dumps(target, ensure_ascii=False) + "\n"
+prompt = PROMPT_PREFIX + "\nInput title to clean:\n\n- " + json.dumps(target, ensure_ascii=False) + "\n"
 
 completion = client.chat.completions.create(
     temperature=1, # OA reasoning models do not support any temperature but 1, so 'temperature=0' is impossible
@@ -985,4 +992,12 @@ completion = client.chat.completions.create(
   ]
 )
 
-print(completion.choices[0].message.content)
+content = completion.choices[0].message.content
+assert content is not None, "error: API returned no message content"
+content = content.strip()
+# Defense-in-depth: unwrap a single layer of erroneous wrapping straight double-quotes
+# (a known LLM failure mode), but leave the empty-string sentinel '""' untouched.
+# (Legitimate quotation marks in titles are curly per the prompt rules, so this is safe.)
+if len(content) > 2 and content.startswith('"') and content.endswith('"'):
+    content = content[1:-1]
+print(content)

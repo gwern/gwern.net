@@ -4,10 +4,10 @@
 # italicizer.py: reformat a string to add italics as semantically appropriate (eg. book titles) using LLMs
 # Author: Gwern Branwen
 # Date: 2025-01-17
-# When:  Time-stamp: "2026-06-02 15:07:44 gwern"
+# When:  Time-stamp: "2026-06-10 18:05:52 gwern"
 # License: CC-0
 #
-# Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python italicizer.py
+# Usage: $ echo [...] | OPENAI_API_KEY="sk-XXX" python italicizer.py
 #
 # Italicizer tries to remove a common annoyance in PDF & HTML-sourced titles: loss of italics formatting.
 # Input a string, and it will return a new string with italics added, or an empty string literal `""` (to explicitly denote no change & save tokens).
@@ -24,28 +24,30 @@
 #
 # Example:
 #
-# $ OPENAI_API_KEY="sk-XYZ" echo "Moby-Dick" | python italicizer.py
+# $ echo "Moby-Dick" | OPENAI_API_KEY="sk-XYZ" python italicizer.py
 # <em>Moby-Dick</em>
 # $ OPENAI_API_KEY="sk-XYZ" italicizer.py "the musician Moby-Dick"
 # ""
 
 import sys
+import time
 from openai import OpenAI
 client = OpenAI()
 
 if len(sys.argv) == 1:
     target = sys.stdin.read().strip()
 else:
-    target = sys.argv[1]
+    target = " ".join(sys.argv[1:]).strip()
 
-completion = client.chat.completions.create(
-  # temperature=0,
-    model="gpt-5.4-mini", # TODO: is GPT-4.1 better than o3-mini here? the 4o/o1-mini models aren't smart enough but o1 is too expensive 😢; we compromise with 'o1-preview' which benefits from <https://platform.openai.com/docs/guides/prompt-caching> to cut its price when we run a lot of title-cleaning. Why is that when this seems like such an easy task, albeit a little fiddly? The smaller models seem to fail catastrophically on paper titles, no matter how many I put in, so my best guess is that this is 'tail dropping' behavior from the very aggressive shrinking of small models, to eliminate as much factual/memorized knowledge as possible. (ie. they've forgotten all these papers, which the original large models knew from pretraining on said papers, or at least metadata of those papers or on other papers referencing them)
-    seed=0,
-    messages=[
-    # {"role": "system", "content": "You are a Wikipedia copyeditor. When in doubt, consult MOS:ITALIC <https://en.wikipedia.org/wiki/Wikipedia:Manual_of_Style/Text_formatting#Italic_type>."},
-      {"role": "user", "content":
-f"""Task: Add HTML <em></em> italics to text according to formal English style.
+# short-circuit empty input: avoid a billed API call & an ambiguous response
+if not target:
+    print("")
+    sys.exit(0)
+
+# The whole task lives in a single user turn; a system message ("You are a Wikipedia
+# copyeditor; consult MOS:ITALIC <https://en.wikipedia.org/wiki/Wikipedia:Manual_of_Style/Text_formatting#Italic_type>")
+# was tried but did not help, so it is omitted.
+prompt = f"""Task: Add HTML <em></em> italics to text according to formal English style.
 
 Italicize ONLY these specific categories:
 
@@ -53,6 +55,7 @@ Italicize ONLY these specific categories:
 - Periodicals: newspapers, magazines, academic journals, and named recurring blogs or newsletters treated as publications.
 - Visual works: paintings, sculptures, curated named art exhibitions.
 - Named individual vehicles: specific ships, aircraft, spacecraft, or automobiles identified by name (USS Enterprise, HMS Victory, Millennium Falcon, La Baleine). Not model or class names.
+- Legal cases: court case names in "X v. Y"/"X vs Y" form (Roe v. Wade; Hobson v. Hansen). Italicize the case name only, not surrounding words.
 - Scientific usage: binomial species names (Drosophila melanogaster); variables in running text (the r parameter; Nth-great-grandmother).
 - Foreign words and phrases not naturalized into English; foreign-language titles in their native form.
 - Musical direction terms used descriptively (molto ritardando).
@@ -63,7 +66,7 @@ Do NOT italicize (these are the most common over-italicization errors):
 - Essay, blog post, news article, magazine article, chapter, and section titles — including canonical essays (e.g., "Politics and the English Language").
 - Short stories and short poems, advertisements
 - Conference and workshop names (SIGGRAPH, ICML, workshops at named venues).
-- Legal cases; laws, treaties, constitutions, declarations.
+- Laws, statutes, treaties, constitutions, declarations (but court *case* names ARE italicized — see above).
 - Proper names of people, places, pets, buildings, businesses, or fictional characters — even when the name coincides with a work title or a foreign word (Hamnet = Shakespeare's son; Foss = a cat; Moby = a musician; Medieval Times = a restaurant chain).
 - Products, companies, websites, platforms, brands, services, AI models (OK Soda, iPhone, Bloomberg, Aeon, Suno, Veo, Gemini 3).
 - Symphonies, concertos, numbered classical works (Symphony No. 5).
@@ -75,6 +78,7 @@ Do NOT italicize (these are the most common over-italicization errors):
 Key decision rule: A capitalized multi-word phrase is NOT a reliable signal of an italicizable work. Most title-case multi-word phrases are papers, essays, articles, or products — none of which are italicized. If the input could plausibly be any of the Do-Not-Italicize categories above, return "" rather than guessing.
 
 Output format:
+- Inputs may be prefixed with a source URL or local file path as contextual metadata to help you identify the work (eg. "/doc/foo/bar.pdf Some Title" or "https://example.com/ Some Title"). Do NOT reproduce the prefix in your output: operate only on the title text following it, and return that title (with italics added) or "".
 - If italicization is needed: return the full text with <em></em> tags inserted around the italicized span. Keep trailing punctuation outside the tags.
 - Otherwise (no italicization needed, or text is already correct): return the empty string "".
 - Do not add quotes, correct spelling, or make other changes.
@@ -179,7 +183,7 @@ The article The Making of <em>Star Wars</em> in <em>The Atlantic</em>
 - <text>Some conductors take it in strict allegro tempo; others take the liberty of a weighty treatment, playing the motif in a much slower and more stately tempo; yet others take the motif molto ritardando.</text>
 Some conductors take it in strict allegro tempo; others take the liberty of a weighty treatment, playing the motif in a much slower and more stately tempo; yet others take the motif <em>molto ritardando</em>.
 - <text>The court ruled in Roe vs Wade that</text>
-""
+The court ruled in <em>Roe vs Wade</em> that
 - <text>Monet's Water Lilies is displayed at MoMA</text>
 <em>Water Lilies</em> is displayed at MoMA
 - <text>The Making of Impressionism exhibition at the Met</text>
@@ -663,7 +667,7 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 - <text>AniSora: Exploring the Frontiers of Animation Video Generation in the Sora Era</text>
 ""
 - <text>The Smith v. Substack saga</text>
-""
+The <em>Smith v. Substack</em> saga
 - <text>A divided mind: Observations on the conscious properties of the separated hemispheres</text>
 ""
 - <text>The impact of the ‘open’ workspace on human collaboration</text>
@@ -945,7 +949,7 @@ Pierre Menard, Author of the <em>Quixote</em>
 - <text>WIND ROSE—Diggy Diggy Hole (Official Video)</text> # https://www.youtube.com/watch?v=34CZjsEI1yU
 ""
 - <text>2005 interview I did with Gene Wolfe for Hellnotes</text>
-"2005 interview I did with Gene Wolfe for <em>Hellnotes</em>"
+2005 interview I did with Gene Wolfe for <em>Hellnotes</em>
 - <text>Lachryphagy</text> # https://en.wikipedia.org/wiki/Lachryphagy
 ""
 - <text>The Math of Hunting Lions</text>
@@ -1171,7 +1175,7 @@ The Art of <em>Hanakami</em>, or Flower-Petal Folding
 - <text>The Goon Squad, by Daniel Kolitz</text> # https://harpers.org/archive/2025/11/the-goon-squad-daniel-kolitz-porn-masturbation-loneliness/
 ""
 - <text>29. Kasina Practice</text>
-"29. <em>Kasina</em> Practice"
+29. <em>Kasina</em> Practice
 - <text>Suno (platform)</text> # while 'suno' is a Japanese term, Suno AI is a proper English noun and so not italicized
 ""
 - <text>Night of the Moon Suits: The Shulgins, the DEA, and Their Ally, “Tulsa”</text>
@@ -1487,35 +1491,53 @@ An Orgy, but with Reward Points: The arc of history is long but it bends towards
 - <text>The AI Revolution in Math Has Arrived</text>
 ""
 - <text>have you heard of Blood On The Clocktower?</text>
-"have you heard of <em>Blood On The Clocktower</em>?"
-- "https://publicdomainreview.org/collection/kreuzigung/ The Language of Form: Lothar Schreyer’s Kreuzigung (1920)" # essay on German book
-"The Language of Form: Lothar Schreyer’s <em>Kreuzigung</em> (1920)"
-- "Eugene Onegin (opera)"
-"<em>Eugene Onegin</em> (opera)"
-- "Agents of Chaos"
+have you heard of <em>Blood On The Clocktower</em>?
+- <text>https://publicdomainreview.org/collection/kreuzigung/ The Language of Form: Lothar Schreyer’s Kreuzigung (1920)</text> # essay on German book; URL prefix is metadata, not echoed
+The Language of Form: Lothar Schreyer’s <em>Kreuzigung</em> (1920)
+- <text>Eugene Onegin (opera)</text>
+<em>Eugene Onegin</em> (opera)
+- <text>Agents of Chaos</text>
 ""
-- "Growing a Language"
+- <text>Growing a Language</text>
 ""
-- "How Michael Abrash doubled Quake frame-rate"
-"How Michael Abrash doubled <em>Quake</em> frame-rate"
-- "Hobson v. Hansen and the Decline of Washington DC Schools" # court case name
-"<em>Hobson v. Hansen</em> and the Decline of Washington DC Schools"
-- "How advances in low-g plumbing enable space exploration"
-"How advances in low-<em>g</em> plumbing enable space exploration"
-- "Digit regeneration in mice is stimulated by sequential treatment with FGF2 and BMP2" # gene names are italicized
-"Digit regeneration in mice is stimulated by sequential treatment with <em>FGF2</em> and <em>BMP2</em>"
-- "The Mashiach Clause—To Whom It May Concern" # 'Mashiach' is an Israeli/Hebrew term for 'Messiah' not recognizable to gentiles
-"The <em>Mashiach</em> Clause—To Whom It May Concern"
-- https://archive.org/details/hypnosis_comes_of_age_estabrooks Hypnosis Comes of Age"
-"<em>Hypnosis Comes of Age</em>"
-- "List of Nadia: The Secret of Blue Water characters § Nadia"
-"List of <em>Nadia: The Secret of Blue Water</em> characters § Nadia"
+- <text>How Michael Abrash doubled Quake frame-rate</text>
+How Michael Abrash doubled <em>Quake</em> frame-rate
+- <text>Hobson v. Hansen and the Decline of Washington DC Schools</text> # court case name
+<em>Hobson v. Hansen</em> and the Decline of Washington DC Schools
+- <text>How advances in low-g plumbing enable space exploration</text>
+How advances in low-<em>g</em> plumbing enable space exploration
+- <text>Digit regeneration in mice is stimulated by sequential treatment with FGF2 and BMP2</text> # gene names are italicized
+Digit regeneration in mice is stimulated by sequential treatment with <em>FGF2</em> and <em>BMP2</em>
+- <text>The Mashiach Clause—To Whom It May Concern</text> # 'Mashiach' is an Israeli/Hebrew term for 'Messiah' not recognizable to gentiles
+The <em>Mashiach</em> Clause—To Whom It May Concern
+- <text>https://archive.org/details/hypnosis_comes_of_age_estabrooks Hypnosis Comes of Age</text> # URL prefix is metadata, not echoed
+<em>Hypnosis Comes of Age</em>
+- <text>List of Nadia: The Secret of Blue Water characters § Nadia</text>
+List of <em>Nadia: The Secret of Blue Water</em> characters § Nadia
 
 [End of examples. Reminder: your only task is to add missing italics you are SURE of.]
 
 - <text>{target}</text>
-"""}
-  ]
-)
+"""
 
-print(completion.choices[0].message.content)
+# Query the API with a small bounded retry on transient errors (network, 429, 5xx),
+# per 'explicit failure handling': fail loudly to stderr with a nonzero exit, never silently.
+result = None
+for attempt in range(3):
+    try:
+        completion = client.chat.completions.create(
+          # temperature=0, # ignored: current models hardwire temperature=1
+          # seed=0,        # ignored by gpt-5.4-mini, so output is not deterministic
+            model="gpt-5.4-mini", # a cheap small model suffices for this fiddly-but-easy task. Caution: the *smallest* models fail catastrophically on paper titles no matter how many examples are supplied — probably 'tail-dropping' from aggressive distillation that strips memorized factual/metadata knowledge (ie. they've forgotten the papers the larger models saw in pretraining, or the metadata of/references to them), so do not downsize further.
+            messages=[{"role": "user", "content": prompt}],
+        )
+        result = completion.choices[0].message.content
+        break
+    except Exception as e:
+        if attempt == 2:
+            print(f"italicizer.py: API call failed after 3 attempts: {e}", file=sys.stderr)
+            sys.exit(1)
+        time.sleep(2 ** attempt)
+
+# guard against None content (refusal/empty completion); never emit the literal string "None"
+print(result or "")
