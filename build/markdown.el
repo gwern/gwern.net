@@ -2,7 +2,7 @@
 ;;;
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2026-06-08 20:27:05 gwern"
+;;; When:  Time-stamp: "2026-06-16 19:33:22 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -68,13 +68,17 @@
                   (" significance" 0 'taylor-special-words-warning t)
               ))
               (setq show-trailing-whitespace t)
+              (highlight-changes-mode)
               ))
 (add-hook 'html-mode-hook
-            (lambda ()
-              (font-lock-add-keywords nil '(
-                  (" significant" 0 'taylor-special-words-warning t)
-                  (" significance" 0 'taylor-special-words-warning t)
-              ))))
+          (lambda ()
+            (font-lock-add-keywords nil '(
+                                          (" significant" 0 'taylor-special-words-warning t)
+                                          (" significance" 0 'taylor-special-words-warning t)
+                                          ))
+            (highlight-changes-mode)
+            )
+)
 
 ;I like unusual semantic punctuation!
 (defun interrobang () (interactive) (insert-char ?‽ 1)) ;; interrobang: ‽ for replacing "?!"\"!?"

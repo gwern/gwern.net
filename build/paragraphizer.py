@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using LLM API
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2025-12-30 11:48:10 gwern"
+# When:  Time-stamp: "2026-06-15 16:47:31 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -769,6 +769,11 @@ We show that the building of the Autobahn network in Nazi Germany boosted popula
 Direct local economic benefits are unlikely to explain the effect.
 Instead, it reflects successful propaganda: The regime portrayed the Autobahn as a symbol of recovery and the end of austerity. Support rose particularly strongly where highway construction coincided with greater radio availability and in politically unstable regions.
 Our findings suggest that visible infrastructure projects can raise support for autocratic regimes when voters are led to associate them with economic progress and an end to political instability.
+- <abstract>The Supplemental Security Income (SSI) program uses a birthweight cutoff at 1200 grams to determine eligibility. Using birth certificates linked to administrative records, we find low-income families of infants born just below the cutoff receive higher monthly cash benefits (equal to 27% of family income) at ages 0-2, and smaller but statistically significant positive effects on transfers through age 10. Yet, we detect no improvements in health care use and mortality in infancy, nor in health and human capital outcomes as observed through young adulthood for these infants. We also find no improvements for their older siblings.</abstract>
+The Supplemental Security Income (SSI) program uses a birthweight cutoff at 1200 grams to determine eligibility.
+Using birth certificates linked to administrative records, we find:
+low-income families of infants born just below the cutoff receive higher monthly cash benefits (equal to 27% of family income) at ages 0-2, and smaller but statistically significant positive effects on transfers through age 10. Yet, we detect no improvements in health care use and mortality in infancy, nor in health and human capital outcomes as observed through young adulthood for these infants.
+We also find no improvements for their older siblings.
 
 [End of examples. Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 

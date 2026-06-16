@@ -975,6 +975,7 @@ canonicals = setLike
   , ("gleech", "Gavin Leech")
   , ("Fable", "Claude-5-Fable")
   , ("Mythos", "Claude-5-Mythos")
+  , ("Eneasz", "Eneasz Brodski")
   ]
 
 -- tests: unique; none are URLs
@@ -1030,7 +1031,7 @@ canonicalsWithInitials = setLike
   , "M. Saiful Bari", "Robert A. Freitas", "Roland G. Fryer", "Leslie Stephen Coles", "Mathew John Wedel"
   , "Ralph S. Baric", "Jack D. Cowan", "Paul C. Bressloff", "Claire N. Spottiswoode", "Clemens L. Winter"
   , "Hervey M. Cleckley", "Miriam A. Mosing", "Murray B. Stein", "David Samuel Margoliouth", "Guy L. Steele"
-  , "Nabeel S. Qureshi", "Robert E. Forsythe", "Alexander Strudwick Young", "George H. Estabrooks", "David L. Waltz"]
+  , "Nabeel S. Qureshi", "Robert E. Forsythe", "Alexander Strudwick Young", "George H. Estabrooks", "David L. Waltz", "Stephen A. Ross"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -2323,6 +2324,8 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("Jacob Drori", "https://www.lesswrong.com/users/jacob_drori")
     , ("Neoma", "https://substack.com/@phenoatypical")
     , ("Ed Zitron", "https://www.wired.com/story/ai-pr-ed-zitron-profile/")
+    , ("Jack Galler", "https://jackgaller.com/")
+    , ("Andy Tockman", "https://tck.mn/about/")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole

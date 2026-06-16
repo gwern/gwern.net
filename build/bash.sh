@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-05-31 20:09:17 gwern"
+# When:  Time-stamp: "2026-06-13 12:41:46 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -1776,6 +1776,7 @@ is_downloading () {
     is_downloading "$file" "$min_size_kb"
   fi
 }
+export -f is_downloading
 
 # shortcut for handling link-archiving review:
 # `mvuri`: takes a filename with a URI encoding

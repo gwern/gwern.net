@@ -4,7 +4,7 @@
 # italicizer.py: reformat a string to add italics as semantically appropriate (eg. book titles) using LLMs
 # Author: Gwern Branwen
 # Date: 2025-01-17
-# When:  Time-stamp: "2026-06-10 18:05:52 gwern"
+# When:  Time-stamp: "2026-06-16 23:21:03 gwern"
 # License: CC-0
 #
 # Usage: $ echo [...] | OPENAI_API_KEY="sk-XXX" python italicizer.py
@@ -1514,6 +1514,10 @@ The <em>Mashiach</em> Clause—To Whom It May Concern
 <em>Hypnosis Comes of Age</em>
 - <text>List of Nadia: The Secret of Blue Water characters § Nadia</text>
 List of <em>Nadia: The Secret of Blue Water</em> characters § Nadia
+- <text>The View from Lighthaven</text>
+""
+- <text>Working in Glass</text>
+""
 
 [End of examples. Reminder: your only task is to add missing italics you are SURE of.]
 
