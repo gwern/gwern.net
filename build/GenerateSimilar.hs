@@ -440,18 +440,35 @@ readEmbeddingsPath p = do
     else do
       eE <- DB.decodeFileOrFail p
       case eE of
-        Right e  -> return e
+        Right e  -> return (validateEmbeddings p e)
         Left err -> error $ show err
+
+validateEmbeddings :: FilePath -> Embeddings -> Embeddings
+validateEmbeddings source es =
+  case bad of
+    [] -> es
+    xs ->
+      error $
+        "GenerateSimilar.validateEmbeddings: invalid embeddings in " ++
+        show source ++ ":\n" ++
+        unlines (map show (take 20 xs))
+ where
+  bad =
+    [ (i, p)
+    | (i, (p, _, _, _, _)) <- zip [(0::Int)..] es
+    , null p
+    ]
 
 -- called in 'app/generateSimilar.hs'
 writeEmbeddings :: Embeddings -> IO ()
 writeEmbeddings es = do
-  tempf <- emptySystemTempFile "hakyll-embeddings"
-  DB.encodeFile tempf es
-  es' <- readEmbeddingsPath tempf
-  if length es' /= length es
-    then error "Embeddings corrupted! Not writing out."
-    else renameFile tempf C.embeddingsPath
+   let !es'checked = validateEmbeddings "<writeEmbeddings>" es
+   tempf <- emptySystemTempFile "hakyll-embeddings"
+   DB.encodeFile tempf es'checked
+   es' <- readEmbeddingsPath tempf
+   if length es' /= length es'checked
+     then error "Embeddings corrupted! Not writing out."
+     else renameFile tempf C.embeddingsPath
 
 -- | Remove embeddings without a corresponding metadata entry.
 -- This generally means that it is a 'stale' embedding, corresponding to an outdated
@@ -574,11 +591,12 @@ embed edb mdb bdb i@(p, _) =
  where
   new = takeBaseName p
   olds = filter
-    (\(pold, _, _, _, _) ->
-       if head pold == '/'
-         then new == takeBaseName pold
-         else dehttp new == dehttp pold)
-    edb
+   (\(pold, _, _, _, _) ->
+     case pold of
+       ""      -> False
+       '/':_   -> new == takeBaseName pold
+       _       -> dehttp new == dehttp pold)
+   edb
   dehttp = deleteMany ["http://", "https://"]
 
 -- | Shell out to static/build/embed.sh for curl + JSON processing.

@@ -184,4 +184,3 @@ similarMatches ix path =
   in if null hitsSorted
        then Nothing
        else Just (path, hitsSorted)
-

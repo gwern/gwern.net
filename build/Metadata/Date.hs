@@ -51,6 +51,8 @@ isValidDate format str = case parseTimeM True defaultTimeLocale format str :: Ma
 -- > guessDateFromLocalSchema "http://cnn.com" ""
 -- → ""
 guessDateFromLocalSchema :: String -> String -> String
+guessDateFromLocalSchema ""  ""   = error "Date.guessDateFromLocalSchema: empty path *and* date passed in! This should definitely never happen."
+guessDateFromLocalSchema ""  dt   = error $ "Date.guessDateFromLocalSchema: empty path passed in! This should never happen. Non-empty date input was: " ++ show dt
 guessDateFromLocalSchema url date = if head url /= '/' || date /= "" then date
                                     else let f = takeBaseName url in
                                            if not (head f == '1' || head f == '2') -- I don't have any documents from the future or from <1000 AD, so all viable matches start with '1' or '2', I think...

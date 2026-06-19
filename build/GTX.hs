@@ -2,7 +2,7 @@
 
 Author: Gwern Branwen
 Date: 2024-02-28
-When:  Time-stamp: "2025-12-14 18:30:50 gwern"
+When:  Time-stamp: "2026-06-18 22:03:57 gwern"
 License: CC-0
 
 A 'GTX' (short for 'Gwern text' until I come up with a better name) text file is a UTF-8 text file
@@ -113,9 +113,10 @@ readGTXSlow :: FilePath -> IO MetadataList
 readGTXSlow path = do C.cd
                       allTags <- listTagsAll
                       results <- fmap (map (postprocessing allTags)) $ readGTX path
+                      validateGTXPaths path results
                       results' <- mapM fixDate results
-                      let badEntries = filter (\(p,_) -> p `elem` ["---", "---.md", ""]) results'
-                      if null badEntries then return results' else error ("GTX.readGTXSlow: invalid entries found in " ++ path ++ ": " ++ show badEntries)
+                      validateGTXPaths path results'
+                      return results'
      where postprocessing :: [FilePath] -> ((FilePath, MetadataItem) -> (FilePath, MetadataItem))
            postprocessing allTags' (u, (t, a, d, dc, kvs, ts, s)) = (stripUnicodeWhitespace u,
                                                      (reformatTitle t, cleanAuthors a,guessDateFromLocalSchema u d, dc, sort kvs,
@@ -123,6 +124,19 @@ readGTXSlow path = do C.cd
            stripUnicodeWhitespace, reformatTitle :: String -> String
            stripUnicodeWhitespace = replace "⁄" "/" . filter (not . isSpace)
            reformatTitle = sed "“(.*)”" "‘\\1’"-- we avoid double-quotes in titles because they are usually being substituted into double-quote wrappers blindly, so you wind up with problems like `““Foo” Bar Baz”`. We do not substitute anything but double-curly quotes, because there are way too many edge-cases and other ways to use quotes (eg. citation HTML fragments in titles).
+
+validateGTXPaths :: FilePath -> MetadataList -> IO ()
+validateGTXPaths source xs =
+  let badEntries =
+        [ (i, p, item)
+        | (i, (p, item)) <- zip [(1 :: Int)..] xs
+        , p `elem` ["---", "---.md", ""]
+        ]
+  in if null badEntries
+       then return ()
+       else error $
+         "GTX.validateGTXPaths: invalid entries found in " ++
+         source ++ ":\n" ++ ppShow badEntries
 
 fixDate :: (Path, MetadataItem) -> IO (Path, MetadataItem)
 fixDate x@(_,(_,_,"",_,_,_,_))             = return x
