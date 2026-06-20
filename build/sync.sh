@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-06-05 14:24:31 gwern"
+# When:  Time-stamp: "2026-06-19 21:34:01 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -757,7 +757,7 @@ else
     # 3. add hair space ( U+200A   HAIR SPACE (HTML &#8202; • &hairsp;)) in slash-separated links or quotes, to avoid overlap of '/' with curly-quote
                                # -e 's/\([a-zA-Z‘’-]\)[   ]et[   ]al[   ]\([1-2][0-9][0-9a-z]\+\)/\1 <span class="etal"><span class="etalMarker">et al<\/span> <span class="etalYear">\2<\/span><\/span>/g' \
                            # -e 's/\([A-Z][a-zA-Z]\+\)[   ]\&[   ]\([A-Z][a-zA-Z]\+\)[   ]\([1-2][0-9][0-9a-z]\+\)/\1 \& \2 <span class="etalYear">\3<\/span>/g' \
-    # bold "Adding non-breaking spaces…"
+    # bold "Adding non-breaking spaces…" ## TODO: rewrite <https://github.com/gwern/gwern.net/issues/55>
     # nonbreakSpace () { sed -i -e 's/\([a-zA-Z]\) et al \([1-2]\)/\1 et al \2/g' \
     #                           -e 's/\([A-Z][a-zA-Z]\+\) \([1-2]\)/\1 \2/g' \
     #                           `# "Foo & Quux 2020" Markdown → "Foo &amp; Quux 2020" HTML` \

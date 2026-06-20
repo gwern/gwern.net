@@ -976,6 +976,7 @@ canonicals = setLike
   , ("Fable", "Claude-5-Fable")
   , ("Mythos", "Claude-5-Mythos")
   , ("Eneasz", "Eneasz Brodski")
+  , ("Ryan Moultano", "Ryan Moulton")
   ]
 
 -- tests: unique; none are URLs
@@ -2326,6 +2327,8 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("Ed Zitron", "https://www.wired.com/story/ai-pr-ed-zitron-profile/")
     , ("Jack Galler", "https://jackgaller.com/")
     , ("Andy Tockman", "https://tck.mn/about/")
+    , ("Arun Venkatesan", "https://arun.is/")
+    , ("In The Weights", "https://www.intheweights.com/about")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole

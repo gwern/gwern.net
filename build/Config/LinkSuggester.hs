@@ -244,6 +244,7 @@ whiteList = setLike [ ( "/crop#hands"
       , "PALM: The PALM Anime Location Model And Dataset"
       ]
     )
+  , ("https://en.wikipedia.org/wiki/Crowdsourcing", ["crowdsourcing"])
   , ("https://en.wikipedia.org/wiki/Seth_Godin", ["Seth Godin"])
   , ("https://openai.com/gpt-5/", ["GPT-5"])
   , ("https://en.wikipedia.org/wiki/Metropolitan_Opera_Live_in_HD", ["Met HD"])

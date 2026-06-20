@@ -2,7 +2,7 @@
 ;;;
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2026-06-16 19:33:22 gwern"
+;;; When:  Time-stamp: "2026-06-19 23:07:29 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -1813,7 +1813,11 @@ Mostly string search-and-replace to enforce house style in terms of format."
        (query-replace "].(" ".](" nil begin end)
        (replace-all "\n\n\n" "\n\n")
 
-       (query-replace-regexp "\\(\\[[^][]+\\]\\)[^](]" "[\\1]{.editorial} " nil begin end) ; add '<span class="editorial">' to bracketed comments in annotations, eg '5 underlying genomic [factors](!W) [Compulsive, Schizophrenia-bipolar, Neurodevelopmental, Internalizing, Substance-use] that explained' → 5 underlying genomic [factors](!W) [\[Compulsive, Schizophrenia-bipolar, Neurodevelopmental, Internalizing, Substance-use\]]{.editorial} that explained
+       ; add '<span class="editorial">' to bracketed comments in annotations, eg '5 underlying genomic [factors](!W) [Compulsive, Schizophrenia-bipolar, Neurodevelopmental, Internalizing, Substance-use] that explained' → 5 underlying genomic [factors](!W) [\[Compulsive, Schizophrenia-bipolar, Neurodevelopmental, Internalizing, Substance-use\]]{.editorial} that explained. Complication: handling Markdown links, which also contain brackets...
+       ;; Pass 1 — bracketed-link citations:  [[text](URL)] -> [\[[text](URL)\]]{.editorial}
+       (query-replace-regexp "\\[\\(\\[[^][]+\\]([^()]+)\\)\\]" "[\\\\[\\1\\\\]]{.editorial}" nil begin end)
+       ;; Pass 2 — bare editorial brackets:   [text] -> [\[text\]]{.editorial}
+       (query-replace-regexp "\\[\\([^][()]+\\)\\] " "[\\\\[\\1\\\\]]{.editorial} " nil begin end)
 
        (pdf-fix-spaced-words begin end)
 
