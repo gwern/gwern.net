@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using LLM API
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2026-06-15 16:47:31 gwern"
+# When:  Time-stamp: "2026-06-20 19:08:46 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -774,6 +774,11 @@ The Supplemental Security Income (SSI) program uses a birthweight cutoff at 1200
 Using birth certificates linked to administrative records, we find:
 low-income families of infants born just below the cutoff receive higher monthly cash benefits (equal to 27% of family income) at ages 0-2, and smaller but statistically significant positive effects on transfers through age 10. Yet, we detect no improvements in health care use and mortality in infancy, nor in health and human capital outcomes as observed through young adulthood for these infants.
 We also find no improvements for their older siblings.
+- <abstract>Why do our eyes face forward, and why do many mammals have eyes facing sideways? Here, we describe results suggesting that the degree of binocular convergence is selected to maximize how much the mammal can see in its environment. Mammals in non-cluttered environments can see the most around them with panoramic, laterally directed eyes. Mammals in cluttered environments, however, can see best when their eyes face forward, for binocularity has the power of “seeing through” clutter out in the world. Evidence across mammals closely fits the predictions of this “X-ray” hypothesis.</abstract>
+Why do our eyes face forward, and why do many mammals have eyes facing sideways?
+Here, we describe results suggesting that the degree of binocular convergence is selected to maximize how much the mammal can see in its environment.
+Mammals in non-cluttered environments can see the most around them with panoramic, laterally directed eyes. Mammals in cluttered environments, however, can see best when their eyes face forward, for binocularity has the power of “seeing through” clutter out in the world.
+Evidence across mammals closely fits the predictions of this “X-ray” hypothesis.
 
 [End of examples. Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 

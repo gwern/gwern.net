@@ -2,9 +2,10 @@
                     then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts,
                     abstracts, article introductions etc., and make life much more pleasant for the reader—hover over
                     link, popup, read, decide whether to go to link.
+                    The popups are stored as HTML snippets. (TODO: turn into JSON snippets <https://github.com/gwern/gwern.net/issues/56>)
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2026-05-10 22:34:06 gwern"
+When:  Time-stamp: "2026-06-20 23:35:53 gwern"
 License: CC-0
 -}
 
