@@ -977,6 +977,8 @@ canonicals = setLike
   , ("Mythos", "Claude-5-Mythos")
   , ("Eneasz", "Eneasz Brodski")
   , ("Ryan Moultano", "Ryan Moulton")
+  , ("bcherny", "Boris Cherny")
+  , ("nosilverv", "Guy")
   ]
 
 -- tests: unique; none are URLs
@@ -2329,6 +2331,8 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("Andy Tockman", "https://tck.mn/about/")
     , ("Arun Venkatesan", "https://arun.is/")
     , ("In The Weights", "https://www.intheweights.com/about")
+    , ("Forest Gregg", "https://bunkum.us/2026/06/18/cocktail-ingredients-milp")
+    , ("Boris Cherny", "https://borischerny.com/about/")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3635,4 +3639,4 @@ authorWpLinkDB = setLike
     , "Richard A. Howard", "George H. Estabrooks", "Danny Hillis", "David L. Waltz", "Margaret E. Roberts"
     , "Solomon Messing", "Katha Pollitt", "Dai Mahou Touge", "Irina Blok", "Dwarkesh Patel", "Karol Hausman", "Andy Zeng"
     , "William Sims Bainbridge", "Kat Rosenfield", "M. Anthony Lewis", "Giorgio Parisi", "Arthur Machen", "Dan Tawfik"
-    , "Benton J. Underwood"]
+    , "Benton J. Underwood", "Woodkid", "Frank C. Garland"]
