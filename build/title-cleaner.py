@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-06-18 18:43:06 gwern"
+# When:  Time-stamp: "2026-06-28 23:18:01 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -979,8 +979,10 @@ Notes from inside China’s AI labs
 “Covered Mirrors”, a very short story by Jorge Luis Borges
 - "https://drive.google.com/file/d/1WDCFt-8lGWlTAX-yI4cFx6WHx8nqn0FY/view 20.PDF"
 ""
-- https://paulbuchheit.blogspot.com/2010/02/if-your-product-is-great-it-doesnt-need.html Paul Buchheit: If your product is Great, it doesn’t need to be Good."
+- "https://paulbuchheit.blogspot.com/2010/02/if-your-product-is-great-it-doesnt-need.html Paul Buchheit: If your product is Great, it doesn’t need to be Good."
 "If your product is Great, it doesn’t need to be Good"
+- "https://www.britishorigami.org/cp-lister-list/the-1955-exhibition-by-akira-yoshizawa/ The 1955 Exhibition By Akira Yoshizawa British Origami
+"The 1955 Exhibition By Akira Yoshizawa"
 
 """
 
