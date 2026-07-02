@@ -2,7 +2,7 @@
 ;;;
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2026-06-19 23:07:29 gwern"
+;;; When:  Time-stamp: "2026-07-01 19:59:43 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -2427,9 +2427,12 @@ Compiled by Interwiki.hs to the equivalent (usually) of `<a href=\"https://en.wi
 \(Implemented as a special `<span>` class.\)
 This creates marginal glosses (in the left margin) as counterparts to sidenotes.
 These margin-notes are used as very abbreviated italicized summaries of the
- paragraph \(like very small inlined section headers\)."
+ paragraph \(like very small inlined section headers\).
+Leading/trailing whitespace in the selection is excluded from the note."
   (interactive)
+  (gwern--shrink-region-to-content) ; exclude leading/trailing whitespace from the note
   (surround-region-or-word "[" "]{.margin-note}"))
+
 (defun html-insert-margin-note ()
   "Surround selected region FOO BAR (or word FOO) with a `margin-note`.
 \(Implemented as a special `<span>` HTML class.\)
@@ -2438,8 +2441,10 @@ These margin-notes are used as very abbreviated italicized summaries of the
  paragraph \(like very small inlined section headers\).
 When inserting margin-notes into HTML snippets, that usually means an annotation
 and the margin-note is an editorial insertion, which are denoted by paired `[]` brackets.
-To save typing effort, we add those as well if not present."
+To save typing effort, we add those as well if not present.
+Leading/trailing whitespace in the selection is excluded from the span."
   (interactive)
+  (gwern--shrink-region-to-content) ; exclude leading/trailing whitespace from the span
   (let ((content (if (use-region-p)
                      (buffer-substring-no-properties (region-beginning) (region-end))
                    (thing-at-point 'word t))))
@@ -2458,7 +2463,10 @@ Multi-line regions use a HTML div:
 
 <div class=editorial>
 FOO
-</div>"
+</div>
+
+Leading/trailing whitespace in the selection is excluded from the
+wrapped content; whitespace-only selections are rejected."
   (interactive)
   (let* ((beg (if (use-region-p)
                   (region-beginning)
@@ -2469,31 +2477,44 @@ FOO
                   (region-end)
                 (save-excursion
                   (forward-word 1)
-                  (point))))
-         (multiline (and (use-region-p)
-                         (not (= (line-number-at-pos beg)
-                                 (line-number-at-pos end)))))
-         (indent (and multiline
-                      (save-excursion
-                        (goto-char beg)
-                        (make-string (current-indentation) ?\s))))
-         (content (buffer-substring-no-properties beg end)))
-    (delete-region beg end)
-    (goto-char beg)
-    (if multiline
-        (progn
-          (insert indent "<div class=editorial>\n" content)
-          (unless (string-suffix-p "\n" content)
-            (insert "\n"))
-          (insert indent "</div>\n"))
-      (let ((escaped
-             (if (and (>= (length content) 2)
-                      (eq (aref content 0) ?\[)
-                      (eq (aref content (1- (length content))) ?\]))
-                 (concat "\\[" (substring content 1 -1) "\\]")
-               content)))
-        (insert "[" escaped "]{.editorial}")))
-    (deactivate-mark)))
+                  (point)))))
+    ;; Exclude leading/trailing whitespace from the wrapped content:
+    ;; selecting '[foo] ' should yield '[foo]{.editorial} ',
+    ;; not '[foo ]{.editorial}'.
+    (save-excursion
+      (goto-char beg)
+      (skip-chars-forward " \t\n" end)
+      (setq beg (point))
+      (goto-char end)
+      (skip-chars-backward " \t\n" beg)
+      (setq end (point)))
+    (when (>= beg end)
+      (user-error "Selection is whitespace-only; nothing to wrap"))
+    (let* ((multiline (and (use-region-p)
+                           (not (= (line-number-at-pos beg)
+                                   (line-number-at-pos end)))))
+           (indent (and multiline
+                        (save-excursion
+                          (goto-char beg)
+                          (make-string (current-indentation) ?\s))))
+           (content (buffer-substring-no-properties beg end)))
+      (delete-region beg end)
+      (goto-char beg)
+      (if multiline
+          (progn
+            (insert indent "<div class=editorial>\n" content)
+            (unless (string-suffix-p "\n" content)
+              (insert "\n"))
+            (insert indent "</div>\n"))
+        (let ((escaped
+               (if (and (>= (length content) 2)
+                        (eq (aref content 0) ?\[)
+                        (eq (aref content (1- (length content))) ?\]))
+                   (concat "\\[" (substring content 1 -1) "\\]")
+                 content)))
+          (insert "[" escaped "]{.editorial}")))
+      (deactivate-mark))))
+
 (defun html-insert-editorial-note ()
   "Surround selected region FOO BAR (or word FOO) with an `editorial note`.
 Inline selections use a `<span class=editorial>…</span>`.
@@ -2505,6 +2526,7 @@ that usually means an annotation and
  the editorial-note is an editorial insertion,
 which are denoted by paired `[]` brackets.
 To save typing effort, we add those as well if not present.
+Leading/trailing whitespace in the selection is excluded from the span/div.
 See also margin-notes (‘html-insert-margin-note’, ‘markdown-insert-margin-note’)."
   (interactive)
   ;; `surround-region-or-word' treats repeated invocations specially by looking at
@@ -2524,6 +2546,7 @@ See also margin-notes (‘html-insert-margin-note’, ‘markdown-insert-margin-
                 nil))))
     (if repeat-end-tag
         (surround-region-or-word "" repeat-end-tag)
+      (gwern--shrink-region-to-content) ; exclude leading/trailing whitespace from the span/div
       (let* ((beg (when (use-region-p) (region-beginning)))
              (end (when (use-region-p) (region-end)))
              (multiline (and beg end
