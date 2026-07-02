@@ -2,7 +2,7 @@
 ;;;
 ;;; Copyright (C) 2009 by Gwern Branwen
 ;;; License: CC-0
-;;; When:  Time-stamp: "2026-07-01 19:59:43 gwern"
+;;; When:  Time-stamp: "2026-07-03 14:13:00 gwern"
 ;;; Words: GNU Emacs, Markdown, HTML, GTX, Gwern.net, typography
 ;;;
 ;;; Commentary:
@@ -2568,6 +2568,27 @@ See also margin-notes (‘html-insert-margin-note’, ‘markdown-insert-margin-
                  (string-suffix-p "]" trimmed))
             (surround-region-or-word open close)
           (surround-region-or-word open-brack close-brack))))))
+
+(defun gwern--shrink-region-to-content ()
+  "If the region is active, shrink it to exclude leading/trailing whitespace.
+Adjusts point & mark so subsequent region-based commands (eg.
+`surround-region-or-word') wrap only the actual content, leaving
+surrounding whitespace outside the inserted markup.
+Does nothing if there is no active region, or if the region is
+whitespace-only (degenerate; left untouched)."
+  (when (use-region-p)
+    (let ((beg (region-beginning))
+          (end (region-end)))
+      (save-excursion
+        (goto-char beg)
+        (skip-chars-forward " \t\n" end)
+        (setq beg (point))
+        (goto-char end)
+        (skip-chars-backward " \t\n" beg)
+        (setq end (point)))
+      (when (< beg end)
+        (set-mark beg)
+        (goto-char end)))))
 
 ;; keybindings:
 ;;; Markdown:

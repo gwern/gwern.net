@@ -488,6 +488,12 @@ printRedIO :: String -> a -> a
 printRedIO msg x = unsafePerformIO (printRed msg >> return x)
 {-# NOINLINE printRedIO #-}
 
+-- Print a green warning from pure code, then return the supplied value unchanged.
+-- This is intended for trace-like authoring diagnostics/messages.
+printGreenIO :: String -> a -> a
+printGreenIO msg x = unsafePerformIO (printGreen msg >> return x)
+{-# NOINLINE printGreenIO #-}
+
 putStrStdErr :: String -> IO ()
 putStrStdErr = hPutStr stderr
 

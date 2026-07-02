@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# When:  Time-stamp: "2026-05-08 15:46:50 gwern"
-# see https://gwern.net/about#markdown-checker
+# When:  Time-stamp: "2026-07-03 22:00:53 gwern"
+# See <https://gwern.net/about#markdown-checker>
+# NOTE: markdown-lint.sh is obsolete and deprecated.
+# TODO: All checks should be moved into sync.sh if not already present, or possibly 'LinkMetadata.readLinkMetadataAndCheck', or something. This historical shell script is retained only for this refactoring purpose.
 
 set +x
 

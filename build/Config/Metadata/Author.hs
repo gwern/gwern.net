@@ -979,6 +979,8 @@ canonicals = setLike
   , ("Ryan Moultano", "Ryan Moulton")
   , ("bcherny", "Boris Cherny")
   , ("nosilverv", "Guy")
+  , ("Claude-5-Sonnet", "Claude-5-sonnet")
+  , ("dwillis", "Derek Willis")
   ]
 
 -- tests: unique; none are URLs
@@ -2250,6 +2252,7 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("Claude-4.8-opus", "https://www.anthropic.com/news/claude-opus-4-8")
     , ("Claude-5-Mythos", "https://www-cdn.anthropic.com/3edfc1a7f947aa81841cf88305cb513f184c36ae.pdf")
     , ("Claude-5-Fable", "https://www.anthropic.com/news/claude-fable-5-mythos-5")
+    , ("Claude-5-sonnet", "https://www.anthropic.com/news/claude-sonnet-5")
     , ("Vishal Prasad", "https://substack.com/@vishalprasad1")
     , ("GPT-5.3-Codex", "https://openai.com/index/introducing-gpt-5-3-codex/")
     , ("GPT-5.5 Pro", "https://openai.com/index/introducing-gpt-5-5/#pro")
@@ -2334,6 +2337,8 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("In The Weights", "https://www.intheweights.com/about")
     , ("Forest Gregg", "https://bunkum.us/2026/06/18/cocktail-ingredients-milp")
     , ("Boris Cherny", "https://borischerny.com/about/")
+    , ("Casey Baseel", "https://soranews24.com/author/casey-baseel/")
+    , ("Derek Willis", "https://thescoop.org/about/")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3640,4 +3645,4 @@ authorWpLinkDB = setLike
     , "Richard A. Howard", "George H. Estabrooks", "Danny Hillis", "David L. Waltz", "Margaret E. Roberts"
     , "Solomon Messing", "Katha Pollitt", "Dai Mahou Touge", "Irina Blok", "Dwarkesh Patel", "Karol Hausman", "Andy Zeng"
     , "William Sims Bainbridge", "Kat Rosenfield", "M. Anthony Lewis", "Giorgio Parisi", "Arthur Machen", "Dan Tawfik"
-    , "Benton J. Underwood", "Woodkid", "Frank C. Garland", "Sidney Coleman"]
+    , "Benton J. Underwood", "Woodkid", "Frank C. Garland", "Sidney Coleman", "Christopher Sorrentino", "Sol LeWitt"]

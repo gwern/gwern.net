@@ -648,6 +648,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("ai/nn/transformer/gpt/inner-monologue",    "inner monologue (AI)")
   , ("ai/nn/transformer/gpt/nonfiction",        "GPT non-fiction")
   , ("ai/nn/transformer/gpt",                    "GPT")
+  , ("ai/fiction/unslop", "Unslop AI fiction contest")
   , ("ai/fiction", "fiction by AI")
   , ("ai/nn/gan/stylegan/anime", "StyleGAN anime")
   , ("ai/nn/gan/stylegan", "StyleGAN")
