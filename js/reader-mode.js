@@ -469,6 +469,7 @@ ReaderMode = { ...ReaderMode,
 			document.removeEventListener("keydown", ReaderMode.altKeyDownOrUp);
 			document.removeEventListener("keyup", ReaderMode.altKeyDownOrUp);
 			ReaderMode.altKeyDownOrUp = null;
+		}
 
 		//	Fire event.
 		GW.notificationCenter.fireEvent("ReaderMode.didDeactivate");
@@ -476,7 +477,6 @@ ReaderMode = { ...ReaderMode,
 		//	Re-layout sidenotes.
 		if (window.Sidenotes)
 			Sidenotes.updateSidenotePositionsIfNeeded();
-		}
 	},
 
 	/****************/
