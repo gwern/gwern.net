@@ -74,8 +74,8 @@ foreach ($icon_file_paths as $path) {
 	## the file.
 	if (isset($icon_attributes['transform'])) {
 		$svg_contents = "<g transform=\"{$icon_attributes['transform']}\">"
-					  + $svg_contents
-					  + "</g>";
+					  . $svg_contents
+					  . "</g>";
 		unset($icon_attributes['transform']);
 	}
 
