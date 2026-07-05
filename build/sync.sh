@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-06-19 21:34:01 gwern"
+# When:  Time-stamp: "2026-07-05 14:46:11 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -2000,6 +2000,9 @@ cleanClasses () {
            echo "$errors"
         fi'; }
     wrap λ "Some MP4 files are invalid?" &
+
+    λ(){ everyNDays 365 && find . -type f -name "*.xz" -exec xz --test {} \; }
+    wrap λ "Some XZ archives are corrupted?" &
 
     λ(){ find . -type f -name "*.gwtar.html" | parallel --jobs "$N" --max-args=500 grep --files-without-match --fixed-strings -e "PAR2"; }
     wrap λ "Gwtar archive file found which likely does not contain any PAR2 FEC (no hit for the string 'PAR2')? Add PAR2 to it."

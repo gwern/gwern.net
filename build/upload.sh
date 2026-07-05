@@ -3,7 +3,7 @@
 # upload: convenience script for uploading PDFs, images, and other files to gwern.net. Handles naming & reformatting.
 # Author: Gwern Branwen
 # Date: 2021-01-01
-# When:  Time-stamp: "2026-05-09 19:55:18 gwern"
+# When:  Time-stamp: "2026-07-05 12:57:48 gwern"
 # License: CC-0
 #
 # Upload files to Gwern.net conveniently, either temporary working files or permanent additions.
@@ -25,10 +25,41 @@ set -e
 if [ ! -f "$1" ] || [ ! -s "$1" ]; then red "l25: '$1' is not a file or is empty‽" && exit 1; fi
 
 # Check for required dependencies upfront
-for cmd in firefox chromium exiftool fold rsync curl git compressPDF cloudflare-expire png2JPGQualityCheck convert locate; do
+for cmd in firefox chromium exiftool fold rsync curl git compressPDF cloudflare-expire png2JPGQualityCheck convert locate sha256sum ssh xz; do
     command -v "$cmd" >/dev/null 2>&1 || { missing="${missing:+$missing, }$cmd"; }
 done
 [ -n "$missing" ] && { red "Missing required tools: $missing"; exit 2; }
+
+# Refuse to upload corrupt XZ archives: `xz --test` verifies the archive's internal integrity checks
+# (CRC64/SHA-256), catching both corrupt source files and any corruption introduced by earlier
+# processing steps in this script. No-op for non-.xz files.
+check_xz() {
+    if [[ "$1" =~ \.xz$ ]] && ! xz --test -- "$1"; then
+        red "Error: '$1' failed \`xz --test\` integrity check; refusing to upload corrupt archive!"
+        return 13
+    fi
+    return 0
+}
+
+# Verify upload integrity: compare local SHA-256 hash against the on-server hash (computed remotely via SSH),
+# to rule out corruption during transfer. Prints both hashes on mismatch for debugging.
+verify_upload() {
+    local local_file="$1" remote_file="$2"
+    local local_hash remote_hash
+    local_hash=$(sha256sum -- "$local_file" | cut --delimiter=' ' --fields=1)
+    remote_hash=$(ssh gwern@176.9.41.242 "sha256sum -- '$remote_file'" | cut --delimiter=' ' --fields=1)
+    if [[ -z "$remote_hash" ]]; then
+        red "SHA-256 verification FAILED: could not hash remote file '$remote_file'!"
+        return 12
+    elif [[ "$local_hash" != "$remote_hash" ]]; then
+        red "SHA-256 MISMATCH after upload of '$local_file'‽ Possible corruption in transit!"
+        red "  local:  $local_hash"
+        red "  remote: $remote_hash"
+        return 12
+    else
+        bold "SHA-256 verified ($local_hash)"
+    fi
+}
 
 # the fundamental function which does all the real work. Jump to the bottom for the actual argument-handling loop of `upload`.
 _upload() {
@@ -164,17 +195,20 @@ _upload() {
           fi
       fi
       TARGET=$(basename "$FILENAME")
-      if [[ "$TARGET" =~ .*\.jpg || "$TARGET" =~ .*\.png ]]; then exiftool -overwrite_original -All="" "$FILENAME"; fi # strip potentially dangerous metadata from scrap images
+      if [[ "$TARGET" =~ \.jpg$ || "$TARGET" =~ \.png$ ]]; then exiftool -overwrite_original -All="" "$FILENAME"; fi # strip potentially dangerous metadata from scrap images
       # format Markdown/text files for more readability
       TEMPFILE=$(mktemp /tmp/text.XXXXX)
       # 'prettier' is not installed and I don't like Pandoc's default formatting choices for text or Markdown, so we'll just do a simple 'fold' to avoid unreadably-long newlines:
-      if [[ "$FILENAME" =~ .*\.md || "$FILENAME" =~ .*\.txt ]]; then fold --spaces --width=80 "$FILENAME" >> "$TEMPFILE" && mv "$TEMPFILE" "$FILENAME"; fi
+      if [[ "$FILENAME" =~ \.md$ || "$FILENAME" =~ \.txt$ ]]; then fold --spaces --width=80 "$FILENAME" >> "$TEMPFILE" && mv "$TEMPFILE" "$FILENAME"; fi
 
       mv "$FILENAME" ~/wiki/doc/www/misc/
       cd ~/wiki/ || exit 4
       TARGET2="./doc/www/misc/$TARGET"
+      check_xz "$TARGET2" || return 13
+      bold "Uploading: $TARGET ($(numfmt --to=iec-i --suffix=B $(stat --format=%s "$TARGET2")))"
       rsync --chmod='a+r' --quiet "$TARGET2" gwern@176.9.41.242:"/home/gwern/gwern.net/doc/www/misc/" || \
           rsync --chmod='a+r' --verbose "$TARGET2" gwern@176.9.41.242:"/home/gwern/gwern.net/doc/www/misc/"
+      verify_upload "$TARGET2" "/home/gwern/gwern.net/doc/www/misc/$TARGET"
       URL="https://gwern.net/doc/www/misc/$TARGET"
       echo "$URL" && "$BROWSER" "$URL" 2> /dev/null &
   else
@@ -198,7 +232,7 @@ _upload() {
           if [ -a "$FILENAME" ]; then
               ## automatically rename a file like 'benter1994.pdf' (Libgen) or 'Deutsch-1991.pdf' to '1994-benter.pdf' (gwern.net):
               FILE="$FILENAME"
-              if [[ "$FILE" =~ ([a-zA-Z-]+)([0-9][0-9][0-9][0-9])\.pdf ]];
+              if [[ "$FILE" =~ ([a-zA-Z-]+)([0-9][0-9][0-9][0-9])\.pdf$ ]];
               then
                   SWAP="${BASH_REMATCH[2]}-${BASH_REMATCH[1]}.pdf"
                   SWAP=$(echo "$SWAP" | tr 'A-Z' 'a-z') ## eg '1979-Svorny.pdf' → '1979-svorny.pdf'
@@ -218,13 +252,13 @@ _upload() {
                   mv "$FILE" ~/wiki/"$TARGET"
                   cd ~/wiki/ || return 9
                   chmod a+r "$TARGET"
-                  if [[ "$TARGET" =~ .*\.pdf ]]; then
+                  if [[ "$TARGET" =~ \.pdf$ ]]; then
                       METADATA=$(crossref "$TARGET") && echo "$METADATA" & # background for speed, but print it out mostly-atomically to avoid being mangled & impeding copy-paste of the annotation metadata
                       # run ocrmypdf to try to shrink the PDF w/JBIG2, convert it to PDF/A format for archival longevity, and otherwise generally ensure its validity; we modify the PDF only if it saves X% size to avoid excessive churn from trivial improvements like 1% file size savings (or even getting *larger*!).
                       compressPDF "$TARGET" || true; # sometimes PDFs error out in `ocrmypdf` and yield a size of 0, so we explicitly ignore errors from the 'compressPDF' wrapper
                       chmod a+r "$TARGET";
                   fi
-                  if [[ "$TARGET" =~ .*\.mp4 ]]; then
+                  if [[ "$TARGET" =~ \.mp4$ ]]; then
                       # recompress poorly-bitrated MP4s (publisher supplementary materials, iPhone footage, etc.)
                       # to H.265+Opus; `compressVideo` preserves the original if savings fall below the
                       # size-reduction threshold (default 20%), so this is safe to run unconditionally.
@@ -235,7 +269,7 @@ _upload() {
                   fi
 
                 # if a ≥7MB HTML page, let's convert it to Gwtar for lazy-loading efficiency (see </gwtar>); this renames "foo.html" → "foo.gwtar.html".
-                if [[ "$TARGET" =~ .*\.html ]] && [[ $(stat --format=%s "$TARGET") -ge 7000000 ]]; then
+                if [[ "$TARGET" =~ \.html$ ]] && [[ $(stat --format=%s "$TARGET") -ge 7000000 ]]; then
                     GWTAR_TARGET="${TARGET%.html}.gwtar.html"
                     bold "Large HTML ($(numfmt --to=iec-i --suffix=B $(stat --format=%s "$TARGET"))), converting to gwtar..."
                     if php ~/wiki/static/build/deconstruct_singlefile.php --create-gwtar "$TARGET"; then
@@ -261,8 +295,11 @@ _upload() {
                       bold "Added large file /$TARGET to '.gitignore' (size: $(numfmt --to=iec-i --suffix=B $FILESIZE))"
                   }
 
-                  (rsync --chmod='a+r' --mkpath --quiet "$TARGET" gwern@176.9.41.242:"/home/gwern/gwern.net/$TARGET_DIR/" || \
+                  bold "Uploading: /$TARGET ($(numfmt --to=iec-i --suffix=B $FILESIZE))"
+                  (check_xz "$TARGET" || return 13
+                  rsync --chmod='a+r' --mkpath --quiet "$TARGET" gwern@176.9.41.242:"/home/gwern/gwern.net/$TARGET_DIR/" || \
                       rsync --chmod='a+r' --mkpath --verbose "$TARGET" gwern@176.9.41.242:"/home/gwern/gwern.net/$TARGET_DIR/"
+                  verify_upload "$TARGET" "/home/gwern/gwern.net/$TARGET_DIR/$(basename "$TARGET")"
                   URL="https://gwern.net/$TARGET_DIR/$(basename "$TARGET")"
                   curl --head --max-filesize 200000000 "$URL" > /dev/null # verify it's downloadable
                   echo ""
@@ -270,7 +307,7 @@ _upload() {
 
                   # Check PNG and preview in browser only for small files
                   $IS_SMALL_FILE && {
-                      [[ "$TARGET" =~ .*\.png ]] && png2JPGQualityCheck ~/wiki/"$TARGET"
+                      [[ "$TARGET" =~ \.png$ ]] && png2JPGQualityCheck ~/wiki/"$TARGET"
                       cloudflare-expire "$TARGET_DIR/$(basename "$FILE")" > /dev/null # expire any possible 404s from previous failure or similar cache staleness
                       ("$BROWSER" "$URL" 2> /dev/null) &
                   } || bold "File is too large to preview in browser ($(numfmt --to=iec-i --suffix=B $FILESIZE)). Access directly at $URL"
