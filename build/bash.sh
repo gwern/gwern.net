@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-06-13 12:41:46 gwern"
+# When:  Time-stamp: "2026-07-05 19:01:54 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -70,7 +70,22 @@ gev () { ge --invert-match "$@"; }
 gf  () { grep --fixed-strings "$@"; }
 gfc  () { gf --color=always "$@"; }
 gfv () { gf --invert-match "$@"; }
-export -f bold red wrap ge gec gev gf gfc gfv
+# Reverse-argument grep: file first, patterns after. Useful for partial application: when we grep a single file with many different queries. regular grep argument order makes that painful to edit by hand.
+# Usage: gr foo.txt -e bar -e baz [--color=always ...]
+gr () {
+    local file="$1"
+    shift
+    if [ ! -r "$file" ]; then
+        echo "G: cannot read file: $file" >&2
+        return 1
+    fi
+    grep "$@" -- "$file"
+}
+# 'grep all': recursive grep.
+ga () { local LC_ALL=C; find . -type f -print0 | \
+            parallel --null  --max-args=50 -m \
+                     grep -F --ignore-case --color=always --with-filename --line-number --fixed-strings \""$@"\" -- {}; }
+export -f bold red wrap ge gec gev gf gfc gfv gr ga
 
 file2Path () { echo "$1" | sed -e 's/~\/wiki//' -e 's/\/home\/gwern\/wiki\//\//' -e 's/\.\//\//' -e 's/https:\/\/gwern\.net//g' -e 's/^/\//' -e 's/^\/\//\//'; }
 path2File () {

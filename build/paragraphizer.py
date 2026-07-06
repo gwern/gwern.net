@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using LLM API
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2026-06-20 19:08:46 gwern"
+# When:  Time-stamp: "2026-07-06 10:33:38 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -779,6 +779,12 @@ Why do our eyes face forward, and why do many mammals have eyes facing sideways?
 Here, we describe results suggesting that the degree of binocular convergence is selected to maximize how much the mammal can see in its environment.
 Mammals in non-cluttered environments can see the most around them with panoramic, laterally directed eyes. Mammals in cluttered environments, however, can see best when their eyes face forward, for binocularity has the power of “seeing through” clutter out in the world.
 Evidence across mammals closely fits the predictions of this “X-ray” hypothesis.
+- <abstract>While the language modeling objective has been shown to be deeply connected with compression, it is surprising that modern LLMs are not employed in practical text compression systems. In this paper, we provide an in-depth analysis of neural network and transformer-based compression techniques to answer this question. We compare traditional text compression systems with neural network and LLM-based text compression methods. Although LLM-based system famously outperform conventional compression methods, they are highly impractical. Specifically, LLMZip, a recent text compression system using Llama3-8B requires 9.5 days to compress just 10 MB of text, although with huge improvements in compression ratios. To overcome this, we present FineZip—a novel LLM-based text compression system that combines ideas of online memorization and dynamic context to reduce the compression time immensely. FineZip can compress the above corpus in ~4 hours compared to 9.5 days, a 54× improvement over LLMZip and comparable performance. FineZip outperforms traditional algorithmic compression methods with a large margin, improving compression ratios by ~50%. With this work, we take the first step towards making lossless text compression with LLMs a reality. While FineZip presents a step in that direction, LLMs are still not a viable solution for large-scale text compression. We hope our work paves the way for future research and innovation to solve this problem.</abstract>
+While the language modeling objective has been shown to be deeply connected with compression, it is surprising that modern LLMs are not employed in practical text compression systems. In this paper, we provide an in-depth analysis of neural network and transformer-based compression techniques to answer this question.
+We compare traditional text compression systems with neural network and LLM-based text compression methods. Although LLM-based systems famously outperform conventional compression methods, they are highly impractical. Specifically, LLMZip, a recent text compression system using Llama3-8B requires 9.5 days to compress just 10 MB of text, although with huge improvements in compression ratios.
+To overcome this, we present FineZip—a novel LLM-based text compression system that combines ideas of online memorization and dynamic context to reduce the compression time immensely.
+FineZip can compress the above corpus in ~4 hours compared to 9.5 days, a 54× improvement over LLMZip and comparable performance. FineZip outperforms traditional algorithmic compression methods with a large margin, improving compression ratios by ~50%.
+With this work, we take the first step towards making lossless text compression with LLMs a reality. While FineZip presents a step in that direction, LLMs are still not a viable solution for large-scale text compression. We hope our work paves the way for future research and innovation to solve this problem.
 
 [End of examples. Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 
