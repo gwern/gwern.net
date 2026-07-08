@@ -1158,8 +1158,8 @@ function updatePageTOC(container = document.main) {
 
     container.querySelectorAll("#markdownBody section").forEach(section => {
         //  If this section already has a TOC entry, return.
-        if (TOC.querySelector([ `a#toc-${section.id}`, 
-        						`a[href$='#${(CSS.escape(fixedEncodeURIComponent(section.id)))}']` 
+        if (TOC.querySelector([ `a#toc-${section.id}`,
+        						`a[href$='#${(CSS.escape(fixedEncodeURIComponent(section.id)))}']`
         						].join(", ")) != null)
             return;
 
@@ -2694,7 +2694,7 @@ doWhenPageLayoutComplete(GW.pageLayoutCompleteHashHandlingSetup = (info) => {
 /********************/
 
 if (location.hash > "") {
-	/*	This implements the `data-redirect-from-id` link attribute, which 
+	/*	This implements the `data-redirect-from-id` link attribute, which
 		indicates that the client should be redirected to the target of the link
 		if the URL hash is matches the value of the attribute (e.g., is `#foo`
 		if the attribute value is `foo`).
@@ -2710,9 +2710,9 @@ if (location.hash > "") {
 			location = newLocation;
 	}, `[data-redirect-from-id="${selectorFromHash(location.hash).slice(1)}"]`);
 
-	/*	This implements the special empty-string / null case of the 
-		`data-redirect-from-id` link attribute, which indicates that the client 
-		should be redirected to the target of the link if the URL hash matches 
+	/*	This implements the special empty-string / null case of the
+		`data-redirect-from-id` link attribute, which indicates that the client
+		should be redirected to the target of the link if the URL hash matches
 		the ID of immediately containing section of the link (i.e., is `#foo`
 		if the containing section id is `foo`).
 
@@ -2735,3 +2735,50 @@ if (location.hash > "") {
 		}
 	}, selectorFromHash(location.hash));
 }
+
+// marble-screensaver.js — idle-timeout loader for `paper-marble.js` screensaver easter egg
+// Author: Gwern Branwen, Claude-5-Fable (Anthropic)
+// Date: 2026-07-07
+// When:  Time-stamp: "2026-07-07 17:37:20 gwern"
+// License: CC-0
+//
+// After 1 hour with no user activity in a visible top-level tab, lazily load
+// </static/js/paper-marble.js>, which marbles the page on load ([left-click] /
+// [tap / [ESC] restores it; see that file). Designed to cost little for
+// active users:
+//  - the activity handlers are passive and do ONE timestamp assignment
+//    (no timer churn per event);
+//  - idleness is checked by a 60-second interval, i.e. ~0.0003% duty cycle;
+//  - paper-marble.js is not fetched until the moment it is needed, and
+//    repeat triggers re-execute it from the HTTP cache.
+// Honors `prefers-reduced-motion` (never triggers), never triggers in hidden
+// tabs or iframes, and never triggers while a previous marbling is running.
+(function () {
+    'use strict';
+    if (window !== window.top) return;   // not inside iframes/popups
+    if (window.matchMedia
+        && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var IDLE_MS  = 60 * 60 * 1000;       // 1 hour
+    var CHECK_MS = 60 * 1000;
+    var SRC = '/static/js/paper-marble.js';
+    var lastActivity = Date.now();
+
+    function activity() { lastActivity = Date.now(); }
+    ['pointermove', 'pointerdown', 'keydown', 'wheel', 'scroll', 'touchstart']
+        .forEach(function (ev) {
+            window.addEventListener(ev, activity, { passive: true, capture: true });
+        });
+    document.addEventListener('visibilitychange', activity);
+
+    setInterval(function () {
+        if (document.hidden                    // background tab: rAF is asleep anyway
+            || window.__marbleStop             // already marbling
+            || Date.now() - lastActivity < IDLE_MS) return;
+        lastActivity = Date.now();             // re-arm for the next idle hour
+        var s = document.createElement('script');
+        s.src = SRC;
+        s.async = true;
+        document.head.appendChild(s);          // paper-marble.js runs on load
+    }, CHECK_MS);
+})();
