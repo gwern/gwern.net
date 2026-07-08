@@ -1,7 +1,7 @@
 // paper-marble.js: ink-marble the current web page (an idle 'screensaver' toy).
 // Author: Gwern Branwen, Claude-5-Fable
 // Date: 2026-07-07
-// When:  Time-stamp: "2026-07-07 18:08:14 gwern"
+// When:  Time-stamp: "2026-07-08 11:19:53 gwern"
 // License: CC-0 (except the vendored html-to-image library: MIT, notice below)
 //
 // Turns the current viewport into a sheet of paper being marbled (<https://en.wikipedia.org/wiki/Paper_marbling>).
@@ -19,24 +19,25 @@
 // are ever displayed. Palettes rotate every minute as a hard whole-bath
 // recolor; every 10 minutes the print is pulled and a fresh sheet begins.
 //
-// USE—three ways:
-//  (a) Run now: paste this entire file into the DevTools console of any page,
+// USE: 3 ways (fully self-contained: no network access required in any mode):
+//  (1) Run now: paste this entire file into the DevTools console of any page,
 //      or include it as a plain `<script src=...>`: it marbles on load.
-//  (b) PRODUCTION idle screensaver (the Gwern.net deployment): do NOT
+//  (2) PRODUCTION idle screensaver (the Gwern.net deployment): do NOT
 //      reference this file from any HTML. Instead, inline the tiny companion
 //      stub (`marble-screensaver.js`, ~40 lines) into the site's existing JS
 //      bundle; after 1 idle hour it injects a plain
 //      `<script src="/static/js/paper-marble.js">`, which runs on load per
-//      (a). Regular readers thus pay a few hundred gzipped bytes of stub and
+//      (1). Regular readers thus pay a few hundred gzipped bytes of stub and
 //      never download or parse this file at all.
-//  (c) Single-file idle screensaver, for pages that do not mind the weight:
+//  (3) Single-file idle screensaver, for pages that do not mind the weight:
 //          <script src="/static/js/paper-marble.js" data-screensaver async></script>
 //      arms a 1-hour no-activity timer instead of running (visible top-level
 //      tabs only; honors `prefers-reduced-motion`, re-checked at trigger
 //      time). NB: `async` only unblocks parsing—this still DOWNLOADS and
 //      parses the whole file on every page view, so prefer (b) for any
 //      production site. See the DISPATCHER comment at the end of this file.
-// Fully self-contained: no network access required in any mode.
+//  (4) Run anywhere in DevTools console: `document.head.appendChild(Object.assign(document.createElement('script'), {src: 'https://gwern.net/static/js/paper-marble.js'}));`;
+//      then `__marbleStart()` to reset.
 //
 // CONTROLS: [drag mouse] = rake; [right-click] (touch: [long-press]) = drop pigment;
 // [left-click] (touch: [tap]) / [ESC] / `window.__marbleStop()` = stop & restore.
@@ -61,6 +62,46 @@
 //   toroidal map sampling are documented in the design notes below.
 // - html-to-image (W.Y., MIT), vendored below, for page rasterization via
 //   SVG `<foreignObject>`: <https://github.com/bubkoo/html-to-image>.
+//
+//
+// Prior art (or: why this had to be written): every ingredient existed
+// separately; the combination did not.
+// - Marbling simulators on blank canvases are well-trodden in JS: Shiffman's
+//   Coding Train challenge #183 (2024)
+//   <https://thecodingtrain.com/challenges/183-mathematical-marbling/> and
+//   Walker's "Marblizer" (2016)
+//   <https://nickwalker.us/assets/projects/marblizer/marblizer-report.pdf>
+//   both implement the same Lu-Jaffer drop & tine operators—but as VECTOR
+//   graphics: a drop is a polygon whose vertices the closed-form transforms
+//   displace. A web page is a raster; it has no polygons to displace, so
+//   those architectures cannot consume it. Hence the raster coordinate-map
+//   engine here, which transports arbitrary pixels instead of shapes.
+// - The closest technical relative is Ghassaei's WebGL "Digital Marbling"
+//   (2022) <https://blog.amandaghassaei.com/2022/10/25/digital-marbling/>
+//   (the Nervous System marbling puzzles), which *is* raster-based and
+//   independently hit the same wall we did: semi-Lagrangian color
+//   advection (Stam's Stable Fluids) blurs immiscible inks into soup. She
+//   solved crisp boundaries with a GPU bidirectional-mapping fluid solver
+//   (BiMocq2: Qu et al 2019,
+//   <https://www.seas.upenn.edu/~ziyinq/static/files/bimocq.pdf>); this file
+//   solves it with a CPU backward coordinate map, seam-aware sampling, and
+//   adaptive commits—cousins in the same mapping-method family. But hers
+//   is an art tool: a blank bath, full Navier-Stokes, no page input, no
+//   deployment story.
+// - Page-as-raster effects (the screenshot-then-distort tradition:
+//   liquid-glass demos, displacement-map hover toys, destruction
+//   bookmarklets) apply static warps, lenses, or physics gags to the
+//   captured page; none run a conservative fluid transport on it, so
+//   content smears or shatters rather than marbling.
+// - Web "screensaver" idle libraries (`scsaver.js`, giuseppeg/screensaver,
+//   idlejs) overlay generic content after a timeout; none consume the page
+//   they interrupt.
+//
+// What appears to be new is the intersection: the page itself as the ink,
+// kept immiscible under transport; palettes lifted from scans of historical
+// marbled papers, swapped as hard whole-bath recolors; a sheet lifecycle
+// (drop → comb → filament → pull the print); and an idle-screensaver
+// deployment contract that costs ordinary readers nothing.
 //
 // Structure of this file: (1) vendored html-to-image v1.11.11 (minified UMD,
 // shadow-wrapped so it always attaches to `globalThis`, even on AMD pages);
