@@ -981,6 +981,7 @@ canonicals = setLike
   , ("nosilverv", "Guy")
   , ("Claude-5-Sonnet", "Claude-5-sonnet")
   , ("dwillis", "Derek Willis")
+  , ("allTheYud", "Eliezer Yudkowsky")
   ]
 
 -- tests: unique; none are URLs
@@ -2257,7 +2258,7 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("GPT-5.3-Codex", "https://openai.com/index/introducing-gpt-5-3-codex/")
     , ("GPT-5.5 Pro", "https://openai.com/index/introducing-gpt-5-5/#pro")
     , ("GPT-5.5 Thinking", "https://openai.com/index/introducing-gpt-5-5/#thinking")
-    , ("GPT-5.6 Sol", "https://openai.com/index/previewing-gpt-5-6-sol/")
+    , ("GPT-5.6 Sol", "https://openai.com/index/gpt-5-6/")
     , ("Leslie Stephen Coles", "https://en.wikipedia.org/wiki/L._Stephen_Coles")
     , ("Coral Osborne", "https://substack.com/@coralosborne")
     , ("Jacob Bacharach", "https://jacobbacharach.com/")

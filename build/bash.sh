@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-07-05 19:01:54 gwern"
+# When:  Time-stamp: "2026-07-07 19:03:17 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -561,17 +561,23 @@ invert-error-report () { for URL in "$@"; do
 
 # add white pixels to an image which has been cropped too tightly to look good:
 pad () {
+    local FILE
+
     for FILE in "$@"; do
-        mogrify -bordercolor white -border 30 "$(path2File "$FILE")"
+        mogrify -bordercolor white -border '5%x5%' "$(path2File "$FILE")"
     done
 }
 alias pad-white="pad"
+
 pad-black () {
+    local FILE
+
     for FILE in "$@"; do
         # NOTE: the color is not 'black', to match the current Gwern.net dark-mode's black background, which is not full-black but slightly grayed to avoid excessive contrast:
-        mogrify -bordercolor "#161616" -border 30 "$(path2File "$FILE")"
+        mogrify -bordercolor '#161616' -border '5%x5%' "$(path2File "$FILE")"
     done
 }
+
 crop-pad () { crop "$@" && pad "$@"; }
 crop-pad-black () { crop "$@" && pad-black "$@"; }
 

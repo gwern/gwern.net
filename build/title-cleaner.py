@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-06-28 23:18:01 gwern"
+# When:  Time-stamp: "2026-07-08 16:50:09 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -982,7 +982,13 @@ Notes from inside China’s AI labs
 - "https://paulbuchheit.blogspot.com/2010/02/if-your-product-is-great-it-doesnt-need.html Paul Buchheit: If your product is Great, it doesn’t need to be Good."
 "If your product is Great, it doesn’t need to be Good"
 - "https://www.britishorigami.org/cp-lister-list/the-1955-exhibition-by-akira-yoshizawa/ The 1955 Exhibition By Akira Yoshizawa British Origami
-"The 1955 Exhibition By Akira Yoshizawa"
+"The 1955 Exhibition By Akira Yoshizawa
+- "https://freesystems.substack.com/p/ai-is-the-democratic-partys-next AI is the Democratic Party’s Next Villain - by Andy Hall""
+"AI is the Democratic Party’s Next Villain"
+- "https://talyarkoni.org/blog/2018/10/02/no-its-not-the-incentives-its-you/ No, it’s not The Incentives’”it’s you—[citation needed]"
+"No, it’s not The Incentives—it’s you"
+- "https://www.southernwoodenboatsailing.com/news/we-the-navigators-at-fifty ’œWe the Navigators’? at Fifty" # book title
+"<em>We The Navigators</em> at Fifty"
 
 """
 
