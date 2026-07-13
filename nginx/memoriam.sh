@@ -3,7 +3,7 @@
 # memoriam.sh: generate a `X-Clacks-Overhead` HTTP header nginx configuration line based on day-of-year & list of deceased.
 # Author: Gwern Branwen
 # Date: 2024-02-24
-# When:  Time-stamp: "2026-03-20 09:30:21 gwern"
+# When:  Time-stamp: "2026-07-12 20:41:12 gwern"
 # License: CC-0
 #
 # memoriam.sh is intended for generating HTTP headers (<https://en.wikipedia.org/wiki/List_of_HTTP_header_fields>) which memorialize a dead person.
@@ -21,8 +21,8 @@
 # (nginx doesn't seem to have a reasonable 'native' way to do it, and shelling out to an executable like a Perl would cost
 # at least 50ms.) The nginx header looks like `add_header X-Clacks-Overhead "$AUTHOR";`, and the call is
 # `include /etc/nginx/conf.d/memoriam.conf;`.
-# The separate memorial configuration file is simply overwritten each day by a root cron job, and nginx restarted:
-# `0 5 * * * rm /etc/nginx/conf.d/memoriam.conf && /home/gwern/gwern.net/static/nginx/memoriam.sh > /etc/nginx/conf.d/memoriam.conf && systemctl reload nginx`.
+# The separate memorial configuration file is simply overwritten each day by a root cron job, and nginx config reloaded:
+# `0 5 * * * rm /etc/nginx/conf.d/memoriam.conf ; /home/gwern/gwern.net/static/nginx/memoriam.sh > /etc/nginx/conf.d/memoriam.conf && systemctl reload nginx`.
 #
 # Thus, the header will change each day at 0 runtime cost while still being fairly straightforward to implement.
 # The actual database/selection/overwriting is done by this Bash script.
@@ -32,9 +32,11 @@
 # $ bash memoriam.sh
 # add_header X-Clacks-Overhead "Claude Shannon";
 #
-# Requires: bash.
+# Requires: bash > 4.2.
+#
+# Default configuration is for Gwern Branwen, listing major influences on him.
 
-set -eo pipefail
+set -euo pipefail
 
 # Define an associative array with MM-DD as keys and names separated by ", " as values
 declare -A memorials=(
@@ -56,12 +58,13 @@ declare -A memorials=(
     ["01-28"]="W. B. Yeats"
     ["01-31"]="A. A. Milne"
     ["02-02"]="Bertrand Russell"
+    ["02-04"]="James Reason"
     ["02-06"]="Raymond Smullyan"
     ["02-07"]="Alan Perlis"
     ["02-08"]="John von Neumann"
     ["02-09"]="Herbert A. Simon"
     ["02-11"]="Frank Herbert"
-    ["02-14"]="Julian Huxley"
+    ["02-14"]="Julian Huxley, Paul Meehl"
     ["02-15"]="Richard Feynman"
     ["02-19"]="Umberto Eco, Deng Xiaoping"
     ["02-21"]="Baruch Spinoza, Dan Simmons"
@@ -73,9 +76,9 @@ declare -A memorials=(
     ["03-04"]="Gary Gygax"
     ["03-07"]="W. D. Hamilton"
     ["03-13"]="David Rumelhart"
-    ["03-18"]="R. A. Lafferty"
+    ["03-18"]="R. A. Lafferty, Norbert Wiener, Harold Jeffreys"
     ["03-19"]="Richard Bellman, Chuck Norris"
-    ["03-20"]="Vernor Vinge"
+    ["03-20"]="Vernor Vinge, Philip K. Dick"
     ["03-23"]="Pierre-Simon Laplace"
     ["03-24"]="Gordon Moore"
     ["03-27"]="Stanisław Lem, Daniel Kahneman"
@@ -86,26 +89,27 @@ declare -A memorials=(
     ["04-09"]="Francis Bacon"
     ["04-11"]="John Conway"
     ["04-14"]="Gene Wolfe"
-    ["04-19"]="Charles Darwin, Daniel Dennett"
-    ["04-22"]="Damien Broderick"
+    ["04-19"]="Charles Darwin, Daniel Dennett, Damien Broderick"
+    ["04-26"]="Seth Roberts"
     ["04-27"]="Karl Pearson"
-    ["04-28"]="Terry Pratchett"
+    ["03-12"]="Terry Pratchett"
     ["04-29"]="Ludwig Wittgenstein"
     ["04-30"]="E. T. Jaynes"
-    ["05-01"]="James Reason"
     ["05-05"]="Ritsuko Okazaki"
+    ["05-06"]="Donald T. Campbell"
     ["05-07"]="John Stuart Mill"
     ["05-11"]="Douglas Adams"
     ["05-14"]="Walter Pitts"
     ["05-19"]="Stanislav Petrov"
     ["05-28"]="Phil Hartman"
-    ["06-02"]="Alexander Shulgin"
+    ["06-02"]="Alexander Shulgin, Amos Tversky"
     ["06-07"]="Alan Turing"
+    ["06-09"]="Iain M. Banks"
     ["06-14"]="Jorge Luis Borges, G. K. Chesterton"
     ["06-16"]="Daniel Ellsberg"
     ["07-02"]="Douglas Engelbart"
     ["07-07"]="Arthur Conan Doyle"
-    ["07-08"]="Howard Raiffa"
+    ["07-08"]="Howard Raiffa, David Blackwell"
     ["07-11"]="Frank Rosenblatt"
     ["07-19"]="James C. Scott"
     ["07-20"]="Bruno de Finetti, Neil Armstrong"
@@ -124,37 +128,30 @@ declare -A memorials=(
     ["09-26"]="Fujiwara no Teika"
     ["10-01"]="Robert Bakewell"
     ["10-07"]="Peter H. Rossi"
+    ["10-12"]="Dennis Ritchie"
     ["10-19"]="Jonathan Swift"
-    ["10-20"]="Andrey Kolmogorov"
-    ["10-20"]="Richard Francis Burton"
+    ["10-20"]="Andrey Kolmogorov, Richard Francis Burton"
     ["10-22"]="Arthur Jensen"
     ["10-24"]="John McCarthy"
     ["11-01"]="L. J. Savage, Yehuda Yudkowsky"
     ["11-17"]="Fred Brooks"
+    ["11-28"]="Matsuo Bashō"
     ["11-29"]="Tom Stoppard"
     ["12-07"]="Ray Solomonoff"
+    ["12-13"]="Thomas Schelling"
     ["12-26"]="Charles Babbage"
     ["12-28"]="Ian Murdock"
 )
 # Validate configuration data: Check for unique values and key-value pairs
 declare -A value_check=()
-declare -A pair_check=()
 for key in "${!memorials[@]}"; do
     value="${memorials[$key]}"
     # Check for unique value
-    if [[ -n "${value_check[$value]}" ]]; then
+    if [[ -n "${value_check[$value]:-}" ]]; then
         echo "Duplicate value found: $value" >&2
         exit 1
     else
         value_check["$value"]=1
-    fi
-    # Check for unique key-value pair
-    pair="$key: $value"
-    if [[ -n "${pair_check[$pair]}" ]]; then
-        echo "Duplicate key-value pair found: $pair" >&2
-        exit 1
-    else
-        pair_check["$pair"]=1
     fi
 done
 
@@ -165,7 +162,7 @@ pick_random_name() {
     # Replace ", " with newline; this assumes ", " does not appear within names themselves
     local names_string="${1//, /$'\n'}"
     # Read names into an array, splitting on newline
-    IFS=$'\n' read -r -d '' -a NAMES <<< "$names_string"
+    mapfile -t NAMES <<< "$names_string"
     # Pick a random name from the array
     echo "${NAMES[$RANDOM % ${#NAMES[@]}]}"
 }
