@@ -2340,6 +2340,7 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("Boris Cherny", "https://borischerny.com/about/")
     , ("Casey Baseel", "https://soranews24.com/author/casey-baseel/")
     , ("Derek Willis", "https://thescoop.org/about/")
+    , ("Theia", "https://vgel.me/")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3646,4 +3647,4 @@ authorWpLinkDB = setLike
     , "Richard A. Howard", "George H. Estabrooks", "Danny Hillis", "David L. Waltz", "Margaret E. Roberts"
     , "Solomon Messing", "Katha Pollitt", "Dai Mahou Touge", "Irina Blok", "Dwarkesh Patel", "Karol Hausman", "Andy Zeng"
     , "William Sims Bainbridge", "Kat Rosenfield", "M. Anthony Lewis", "Giorgio Parisi", "Arthur Machen", "Dan Tawfik"
-    , "Benton J. Underwood", "Woodkid", "Frank C. Garland", "Sidney Coleman", "Christopher Sorrentino", "Sol LeWitt"]
+    , "Benton J. Underwood", "Woodkid", "Frank C. Garland", "Sidney Coleman", "Christopher Sorrentino", "Sol LeWitt", "Nathan Keyfitz"]
