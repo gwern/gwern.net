@@ -135,7 +135,7 @@ writeOutBlogEntry (filepath, p,mi) = do
     writeUpdatedFile prefix filepath $ T.pack $ annotation2Markdown p mi
 
 annotation2Markdown :: Path -> MetadataItem -> String
-annotation2Markdown _url (title, author, dateCreated, dateModified, kvs, _, abst) =
+annotation2Markdown url (title, author, dateCreated, dateModified, kvs, _, abst) =
   let get k defalt = fromMaybe defalt (lookup k kvs)
       description = get "description"   "N/A"
       status      = get "status"         "finished"
@@ -159,7 +159,7 @@ annotation2Markdown _url (title, author, dateCreated, dateModified, kvs, _, abst
        , "importance: "          ++ importance
        , "confidence: "          ++ confidence
        , "css-extension: "       ++ cssExt
-       , "backlink: False"
+       , if head url == '/' then "backlink: True" else "backlink: False"
        , "..."
        , ""
        -- double-parsing like `xclip -o | pandoc -f markdown -w html | pandoc -f html -w markdown` *seems* to fully convert our HTML GTX annotations into reasonably clean Markdown that gets our full AST compilation workflow...

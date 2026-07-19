@@ -982,6 +982,7 @@ canonicals = setLike
   , ("Claude-5-Sonnet", "Claude-5-sonnet")
   , ("dwillis", "Derek Willis")
   , ("allTheYud", "Eliezer Yudkowsky")
+  , ("ben_r_hoffman", "Ben R. Hoffman")
   ]
 
 -- tests: unique; none are URLs
@@ -1037,7 +1038,7 @@ canonicalsWithInitials = setLike
   , "M. Saiful Bari", "Robert A. Freitas", "Roland G. Fryer", "Leslie Stephen Coles", "Mathew John Wedel"
   , "Ralph S. Baric", "Jack D. Cowan", "Paul C. Bressloff", "Claire N. Spottiswoode", "Clemens L. Winter"
   , "Hervey M. Cleckley", "Miriam A. Mosing", "Murray B. Stein", "David Samuel Margoliouth", "Guy L. Steele"
-  , "Nabeel S. Qureshi", "Robert E. Forsythe", "Alexander Strudwick Young", "George H. Estabrooks", "David L. Waltz", "Stephen A. Ross"]
+  , "Nabeel S. Qureshi", "Robert E. Forsythe", "Alexander Strudwick Young", "George H. Estabrooks", "David L. Waltz", "Stephen A. Ross", "Adolf Leo Oppenheim"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -3647,4 +3648,4 @@ authorWpLinkDB = setLike
     , "Richard A. Howard", "George H. Estabrooks", "Danny Hillis", "David L. Waltz", "Margaret E. Roberts"
     , "Solomon Messing", "Katha Pollitt", "Dai Mahou Touge", "Irina Blok", "Dwarkesh Patel", "Karol Hausman", "Andy Zeng"
     , "William Sims Bainbridge", "Kat Rosenfield", "M. Anthony Lewis", "Giorgio Parisi", "Arthur Machen", "Dan Tawfik"
-    , "Benton J. Underwood", "Woodkid", "Frank C. Garland", "Sidney Coleman", "Christopher Sorrentino", "Sol LeWitt", "Nathan Keyfitz"]
+    , "Benton J. Underwood", "Woodkid", "Frank C. Garland", "Sidney Coleman", "Christopher Sorrentino", "Sol LeWitt", "Nathan Keyfitz", "Adolf Leo Oppenheim", "Elijah Millgram", "Gary Larson", "Colin Furze"]
