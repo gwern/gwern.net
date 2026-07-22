@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-07-15 12:06:44 gwern"
+# When:  Time-stamp: "2026-07-20 17:12:00 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -989,8 +989,10 @@ Notes from inside China’s AI labs
 "No, it’s not The Incentives—it’s you"
 - "https://www.southernwoodenboatsailing.com/news/we-the-navigators-at-fifty ’œWe the Navigators’? at Fifty" # book title
 "<em>We The Navigators</em> at Fifty"
-- https://notnottalmud.substack.com/p/things-you-cant-buy-in-the-usa-and things you can’t buy in the USA (and why) - by Daniel Frank"
+- "https://notnottalmud.substack.com/p/things-you-cant-buy-in-the-usa-and things you can’t buy in the USA (and why) - by Daniel Frank"
 "you can’t buy in the USA (and why)"
+- "https://www.seriouseats.com/sous-vide-101-all-about-eggs Internal Server Error"
+""
 
 """
 

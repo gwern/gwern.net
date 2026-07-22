@@ -725,6 +725,7 @@ EXAMPLES: list[ExampleRow] = [
     ("/newsletter/2022/index", "2022"),
     ("/doc/cs/2014-deoliveira.pdf", "2014"),
     ("/doc/ai/scaling/2020-bell.pdf#facebook", "2020"),
+    ("https://thespinoff.co.nz/business/06-07-2026/nz-inc-is-going-all-in-on-ai-data-centres", "2026-07-06"),
 
     # Exact-only verified dates.
     # These are in EXAMPLES so there is no separate metadata file, but they are hidden from the prompt.
