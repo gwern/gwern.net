@@ -983,6 +983,15 @@ canonicals = setLike
   , ("dwillis", "Derek Willis")
   , ("allTheYud", "Eliezer Yudkowsky")
   , ("ben_r_hoffman", "Ben R. Hoffman")
+  , ("TMI", "Thinking Machines Inc")
+  , ("Thinking Machines", "Thinking Machines Inc")
+  , ("Thinking Machines Incorporated", "Thinking Machines Inc")
+  , ("Thinking Machines Inc.", "Thinking Machines Inc")
+  , ("Thinky", "Thinking Machines Inc")
+  , ("Thinky Machines", "Thinking Machines Inc")
+  , ("enricobottazzi", "Enrico Bottazzi")
+  , ("E Schwitzgebel", "Eric Schwitzgebel")
+  , ("fabiensanglard", "Fabien Sanglard")
   ]
 
 -- tests: unique; none are URLs

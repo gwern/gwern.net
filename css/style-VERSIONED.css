@@ -25,7 +25,7 @@
 	font-family: 'Source Serif 4';
 	font-weight: 200;
 	font-style: normal;
-	src: url('/static/font/ssf4/SourceSerif4-Text-BASIC-ExtraLight.otf?v=1776492806') format('opentype');
+	src: url('/static/font/ssf4/SourceSerif4-Text-BASIC-ExtraLight.otf?v=1776498654') format('opentype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+0100-0107, U+010C-010D, U+0112-0113, U+0118-011B, U+011E-011F, U+012A-012B, U+0130-0131, U+0141-0146, U+014A-014F, U+0150-0153, U+0158-015B, U+0160-0161, U+016A-016B, U+016E-016F, U+0178-017A, U+017D-017F, U+018F, U+0192, U+01CD-01CE, U+01CF-01D0, U+01D3-01D4, U+0218-0219, U+0259, U+02C6-02CC, U+02D8-02DD, U+0300-0304, U+0306-030C, U+0327, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+1E46-1E47, U+1E60-1E63, U+2002-2007, U+2009-200B, U+2011-2015, U+2018-201A, U+201C-201E, U+2020-2022, U+2025-2026, U+202F, U+2030, U+2032-2033, U+2039-203A, U+203C, U+2044, U+2047-2049, U+2122, U+2190-2193, U+2196-2199, U+2202, U+2206, U+2212, U+2215, U+221A, U+221E, U+2248, U+2260, U+2264-2265, U+25A0, U+25B2-25B3, U+25B6-25B7, U+25BC-25BD, U+25C0-25C1, U+25C6, U+25C9, U+2752, U+2E3A-2E3B;
 }
@@ -33,7 +33,7 @@
 	font-family: 'Source Serif 4';
 	font-weight: 200;
 	font-style: italic;
-	src: url('/static/font/ssf4/SourceSerif4-Text-BASIC-ExtraLightItalic.otf?v=1776492806') format('opentype');
+	src: url('/static/font/ssf4/SourceSerif4-Text-BASIC-ExtraLightItalic.otf?v=1776498654') format('opentype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+0100-0107, U+010C-010D, U+0112-0113, U+0118-011B, U+011E-011F, U+012A-012B, U+0130-0131, U+0141-0146, U+014A-014F, U+0150-0153, U+0158-015B, U+0160-0161, U+016A-016B, U+016E-016F, U+0178-017A, U+017D-017F, U+018F, U+0192, U+01CD-01CE, U+01CF-01D0, U+01D3-01D4, U+0218-0219, U+0259, U+02C6-02CC, U+02D8-02DD, U+0300-0304, U+0306-030C, U+0327, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+1E46-1E47, U+1E60-1E63, U+2002-2007, U+2009-200B, U+2011-2015, U+2018-201A, U+201C-201E, U+2020-2022, U+2025-2026, U+202F, U+2030, U+2032-2033, U+2039-203A, U+203C, U+2044, U+2047-2049, U+2122, U+2190-2193, U+2196-2199, U+2202, U+2206, U+2212, U+2215, U+221A, U+221E, U+2248, U+2260, U+2264-2265, U+25A0, U+25B2-25B3, U+25B6-25B7, U+25BC-25BD, U+25C0-25C1, U+25C6, U+25C9, U+2752, U+2E3A-2E3B;
 }
@@ -41,7 +41,7 @@
 	font-family: 'Source Serif 4';
 	font-weight: 300;
 	font-style: normal;
-	src: url('/static/font/ssf4/SourceSerif4-Text-BASIC-Light.otf?v=1776492806') format('opentype');
+	src: url('/static/font/ssf4/SourceSerif4-Text-BASIC-Light.otf?v=1776498654') format('opentype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+0100-0107, U+010C-010D, U+0112-0113, U+0118-011B, U+011E-011F, U+012A-012B, U+0130-0131, U+0141-0146, U+014A-014F, U+0150-0153, U+0158-015B, U+0160-0161, U+016A-016B, U+016E-016F, U+0178-017A, U+017D-017F, U+018F, U+0192, U+01CD-01CE, U+01CF-01D0, U+01D3-01D4, U+0218-0219, U+0259, U+02C6-02CC, U+02D8-02DD, U+0300-0304, U+0306-030C, U+0327, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+1E46-1E47, U+1E60-1E63, U+2002-2007, U+2009-200B, U+2011-2015, U+2018-201A, U+201C-201E, U+2020-2022, U+2025-2026, U+202F, U+2030, U+2032-2033, U+2039-203A, U+203C, U+2044, U+2047-2049, U+2122, U+2190-2193, U+2196-2199, U+2202, U+2206, U+2212, U+2215, U+221A, U+221E, U+2248, U+2260, U+2264-2265, U+25A0, U+25B2-25B3, U+25B6-25B7, U+25BC-25BD, U+25C0-25C1, U+25C6, U+25C9, U+2752, U+2E3A-2E3B;
 }
@@ -49,7 +49,7 @@
 	font-family: 'Source Serif 4';
 	font-weight: 300;
 	font-style: italic;
-	src: url('/static/font/ssf4/SourceSerif4-Text-BASIC-LightItalic.otf?v=1776492806') format('opentype');
+	src: url('/static/font/ssf4/SourceSerif4-Text-BASIC-LightItalic.otf?v=1776498654') format('opentype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+0100-0107, U+010C-010D, U+0112-0113, U+0118-011B, U+011E-011F, U+012A-012B, U+0130-0131, U+0141-0146, U+014A-014F, U+0150-0153, U+0158-015B, U+0160-0161, U+016A-016B, U+016E-016F, U+0178-017A, U+017D-017F, U+018F, U+0192, U+01CD-01CE, U+01CF-01D0, U+01D3-01D4, U+0218-0219, U+0259, U+02C6-02CC, U+02D8-02DD, U+0300-0304, U+0306-030C, U+0327, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+1E46-1E47, U+1E60-1E63, U+2002-2007, U+2009-200B, U+2011-2015, U+2018-201A, U+201C-201E, U+2020-2022, U+2025-2026, U+202F, U+2030, U+2032-2033, U+2039-203A, U+203C, U+2044, U+2047-2049, U+2122, U+2190-2193, U+2196-2199, U+2202, U+2206, U+2212, U+2215, U+221A, U+221E, U+2248, U+2260, U+2264-2265, U+25A0, U+25B2-25B3, U+25B6-25B7, U+25BC-25BD, U+25C0-25C1, U+25C6, U+25C9, U+2752, U+2E3A-2E3B;
 }
@@ -57,7 +57,7 @@
 	font-family: 'Source Serif 4';
 	font-weight: 400;
 	font-style: normal;
-	src: url('/static/font/ssf4/SourceSerif4-Text-BASIC-Regular.otf?v=1776492806') format('opentype');
+	src: url('/static/font/ssf4/SourceSerif4-Text-BASIC-Regular.otf?v=1776498654') format('opentype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+0100-0107, U+010C-010D, U+0112-0113, U+0118-011B, U+011E-011F, U+012A-012B, U+0130-0131, U+0141-0146, U+014A-014F, U+0150-0153, U+0158-015B, U+0160-0161, U+016A-016B, U+016E-016F, U+0178-017A, U+017D-017F, U+018F, U+0192, U+01CD-01CE, U+01CF-01D0, U+01D3-01D4, U+0218-0219, U+0259, U+02C6-02CC, U+02D8-02DD, U+0300-0304, U+0306-030C, U+0327, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+1E46-1E47, U+1E60-1E63, U+2002-2007, U+2009-200B, U+2011-2015, U+2018-201A, U+201C-201E, U+2020-2022, U+2025-2026, U+202F, U+2030, U+2032-2033, U+2039-203A, U+203C, U+2044, U+2047-2049, U+2122, U+2190-2193, U+2196-2199, U+2202, U+2206, U+2212, U+2215, U+221A, U+221E, U+2248, U+2260, U+2264-2265, U+25A0, U+25B2-25B3, U+25B6-25B7, U+25BC-25BD, U+25C0-25C1, U+25C6, U+25C9, U+2752, U+2E3A-2E3B;
 }
@@ -65,7 +65,7 @@
 	font-family: 'Source Serif 4';
 	font-weight: 400;
 	font-style: italic;
-	src: url('/static/font/ssf4/SourceSerif4-Text-BASIC-RegularItalic.otf?v=1776492806') format('opentype');
+	src: url('/static/font/ssf4/SourceSerif4-Text-BASIC-RegularItalic.otf?v=1776498654') format('opentype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+0100-0107, U+010C-010D, U+0112-0113, U+0118-011B, U+011E-011F, U+012A-012B, U+0130-0131, U+0141-0146, U+014A-014F, U+0150-0153, U+0158-015B, U+0160-0161, U+016A-016B, U+016E-016F, U+0178-017A, U+017D-017F, U+018F, U+0192, U+01CD-01CE, U+01CF-01D0, U+01D3-01D4, U+0218-0219, U+0259, U+02C6-02CC, U+02D8-02DD, U+0300-0304, U+0306-030C, U+0327, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+1E46-1E47, U+1E60-1E63, U+2002-2007, U+2009-200B, U+2011-2015, U+2018-201A, U+201C-201E, U+2020-2022, U+2025-2026, U+202F, U+2030, U+2032-2033, U+2039-203A, U+203C, U+2044, U+2047-2049, U+2122, U+2190-2193, U+2196-2199, U+2202, U+2206, U+2212, U+2215, U+221A, U+221E, U+2248, U+2260, U+2264-2265, U+25A0, U+25B2-25B3, U+25B6-25B7, U+25BC-25BD, U+25C0-25C1, U+25C6, U+25C9, U+2752, U+2E3A-2E3B;
 }
@@ -73,7 +73,7 @@
 	font-family: 'Source Serif 4';
 	font-weight: 600;
 	font-style: normal;
-	src: url('/static/font/ssf4/SourceSerif4-Text-BASIC-Semibold.otf?v=1776492806') format('opentype');
+	src: url('/static/font/ssf4/SourceSerif4-Text-BASIC-Semibold.otf?v=1776498654') format('opentype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+0100-0107, U+010C-010D, U+0112-0113, U+0118-011B, U+011E-011F, U+012A-012B, U+0130-0131, U+0141-0146, U+014A-014F, U+0150-0153, U+0158-015B, U+0160-0161, U+016A-016B, U+016E-016F, U+0178-017A, U+017D-017F, U+018F, U+0192, U+01CD-01CE, U+01CF-01D0, U+01D3-01D4, U+0218-0219, U+0259, U+02C6-02CC, U+02D8-02DD, U+0300-0304, U+0306-030C, U+0327, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+1E46-1E47, U+1E60-1E63, U+2002-2007, U+2009-200B, U+2011-2015, U+2018-201A, U+201C-201E, U+2020-2022, U+2025-2026, U+202F, U+2030, U+2032-2033, U+2039-203A, U+203C, U+2044, U+2047-2049, U+2122, U+2190-2193, U+2196-2199, U+2202, U+2206, U+2212, U+2215, U+221A, U+221E, U+2248, U+2260, U+2264-2265, U+25A0, U+25B2-25B3, U+25B6-25B7, U+25BC-25BD, U+25C0-25C1, U+25C6, U+25C9, U+2752, U+2E3A-2E3B;
 }
@@ -81,7 +81,7 @@
 	font-family: 'Source Serif 4';
 	font-weight: 600;
 	font-style: italic;
-	src: url('/static/font/ssf4/SourceSerif4-Text-BASIC-SemiboldItalic.otf?v=1776492806') format('opentype');
+	src: url('/static/font/ssf4/SourceSerif4-Text-BASIC-SemiboldItalic.otf?v=1776498654') format('opentype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+0100-0107, U+010C-010D, U+0112-0113, U+0118-011B, U+011E-011F, U+012A-012B, U+0130-0131, U+0141-0146, U+014A-014F, U+0150-0153, U+0158-015B, U+0160-0161, U+016A-016B, U+016E-016F, U+0178-017A, U+017D-017F, U+018F, U+0192, U+01CD-01CE, U+01CF-01D0, U+01D3-01D4, U+0218-0219, U+0259, U+02C6-02CC, U+02D8-02DD, U+0300-0304, U+0306-030C, U+0327, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+1E46-1E47, U+1E60-1E63, U+2002-2007, U+2009-200B, U+2011-2015, U+2018-201A, U+201C-201E, U+2020-2022, U+2025-2026, U+202F, U+2030, U+2032-2033, U+2039-203A, U+203C, U+2044, U+2047-2049, U+2122, U+2190-2193, U+2196-2199, U+2202, U+2206, U+2212, U+2215, U+221A, U+221E, U+2248, U+2260, U+2264-2265, U+25A0, U+25B2-25B3, U+25B6-25B7, U+25BC-25BD, U+25C0-25C1, U+25C6, U+25C9, U+2752, U+2E3A-2E3B;
 }
@@ -89,7 +89,7 @@
 	font-family: 'Source Serif 4';
 	font-weight: 700;
 	font-style: normal;
-	src: url('/static/font/ssf4/SourceSerif4-Text-BASIC-Bold.otf?v=1776492806') format('opentype');
+	src: url('/static/font/ssf4/SourceSerif4-Text-BASIC-Bold.otf?v=1776498654') format('opentype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+0100-0107, U+010C-010D, U+0112-0113, U+0118-011B, U+011E-011F, U+012A-012B, U+0130-0131, U+0141-0146, U+014A-014F, U+0150-0153, U+0158-015B, U+0160-0161, U+016A-016B, U+016E-016F, U+0178-017A, U+017D-017F, U+018F, U+0192, U+01CD-01CE, U+01CF-01D0, U+01D3-01D4, U+0218-0219, U+0259, U+02C6-02CC, U+02D8-02DD, U+0300-0304, U+0306-030C, U+0327, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+1E46-1E47, U+1E60-1E63, U+2002-2007, U+2009-200B, U+2011-2015, U+2018-201A, U+201C-201E, U+2020-2022, U+2025-2026, U+202F, U+2030, U+2032-2033, U+2039-203A, U+203C, U+2044, U+2047-2049, U+2122, U+2190-2193, U+2196-2199, U+2202, U+2206, U+2212, U+2215, U+221A, U+221E, U+2248, U+2260, U+2264-2265, U+25A0, U+25B2-25B3, U+25B6-25B7, U+25BC-25BD, U+25C0-25C1, U+25C6, U+25C9, U+2752, U+2E3A-2E3B;
 }
@@ -97,7 +97,7 @@
 	font-family: 'Source Serif 4';
 	font-weight: 700;
 	font-style: italic;
-	src: url('/static/font/ssf4/SourceSerif4-Text-BASIC-BoldItalic.otf?v=1776492805') format('opentype');
+	src: url('/static/font/ssf4/SourceSerif4-Text-BASIC-BoldItalic.otf?v=1776498654') format('opentype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+0100-0107, U+010C-010D, U+0112-0113, U+0118-011B, U+011E-011F, U+012A-012B, U+0130-0131, U+0141-0146, U+014A-014F, U+0150-0153, U+0158-015B, U+0160-0161, U+016A-016B, U+016E-016F, U+0178-017A, U+017D-017F, U+018F, U+0192, U+01CD-01CE, U+01CF-01D0, U+01D3-01D4, U+0218-0219, U+0259, U+02C6-02CC, U+02D8-02DD, U+0300-0304, U+0306-030C, U+0327, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+1E46-1E47, U+1E60-1E63, U+2002-2007, U+2009-200B, U+2011-2015, U+2018-201A, U+201C-201E, U+2020-2022, U+2025-2026, U+202F, U+2030, U+2032-2033, U+2039-203A, U+203C, U+2044, U+2047-2049, U+2122, U+2190-2193, U+2196-2199, U+2202, U+2206, U+2212, U+2215, U+221A, U+221E, U+2248, U+2260, U+2264-2265, U+25A0, U+25B2-25B3, U+25B6-25B7, U+25BC-25BD, U+25C0-25C1, U+25C6, U+25C9, U+2752, U+2E3A-2E3B;
 }
@@ -105,7 +105,7 @@
 	font-family: 'Source Serif 4';
 	font-weight: 900;
 	font-style: normal;
-	src: url('/static/font/ssf4/SourceSerif4-Text-BASIC-Black.otf?v=1776492806') format('opentype');
+	src: url('/static/font/ssf4/SourceSerif4-Text-BASIC-Black.otf?v=1776498654') format('opentype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+0100-0107, U+010C-010D, U+0112-0113, U+0118-011B, U+011E-011F, U+012A-012B, U+0130-0131, U+0141-0146, U+014A-014F, U+0150-0153, U+0158-015B, U+0160-0161, U+016A-016B, U+016E-016F, U+0178-017A, U+017D-017F, U+018F, U+0192, U+01CD-01CE, U+01CF-01D0, U+01D3-01D4, U+0218-0219, U+0259, U+02C6-02CC, U+02D8-02DD, U+0300-0304, U+0306-030C, U+0327, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+1E46-1E47, U+1E60-1E63, U+2002-2007, U+2009-200B, U+2011-2015, U+2018-201A, U+201C-201E, U+2020-2022, U+2025-2026, U+202F, U+2030, U+2032-2033, U+2039-203A, U+203C, U+2044, U+2047-2049, U+2122, U+2190-2193, U+2196-2199, U+2202, U+2206, U+2212, U+2215, U+221A, U+221E, U+2248, U+2260, U+2264-2265, U+25A0, U+25B2-25B3, U+25B6-25B7, U+25BC-25BD, U+25C0-25C1, U+25C6, U+25C9, U+2752, U+2E3A-2E3B;
 }
@@ -113,7 +113,7 @@
 	font-family: 'Source Serif 4';
 	font-weight: 900;
 	font-style: italic;
-	src: url('/static/font/ssf4/SourceSerif4-Text-BASIC-BlackItalic.otf?v=1776492805') format('opentype');
+	src: url('/static/font/ssf4/SourceSerif4-Text-BASIC-BlackItalic.otf?v=1776498654') format('opentype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+0100-0107, U+010C-010D, U+0112-0113, U+0118-011B, U+011E-011F, U+012A-012B, U+0130-0131, U+0141-0146, U+014A-014F, U+0150-0153, U+0158-015B, U+0160-0161, U+016A-016B, U+016E-016F, U+0178-017A, U+017D-017F, U+018F, U+0192, U+01CD-01CE, U+01CF-01D0, U+01D3-01D4, U+0218-0219, U+0259, U+02C6-02CC, U+02D8-02DD, U+0300-0304, U+0306-030C, U+0327, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+1E46-1E47, U+1E60-1E63, U+2002-2007, U+2009-200B, U+2011-2015, U+2018-201A, U+201C-201E, U+2020-2022, U+2025-2026, U+202F, U+2030, U+2032-2033, U+2039-203A, U+203C, U+2044, U+2047-2049, U+2122, U+2190-2193, U+2196-2199, U+2202, U+2206, U+2212, U+2215, U+221A, U+221E, U+2248, U+2260, U+2264-2265, U+25A0, U+25B2-25B3, U+25B6-25B7, U+25BC-25BD, U+25C0-25C1, U+25C6, U+25C9, U+2752, U+2E3A-2E3B;
 }
@@ -126,7 +126,7 @@
 	font-family: 'Source Sans 3';
 	font-weight: 200;
 	font-style: normal;
-	src: url('/static/font/ss3/SourceSans3-BASIC-ExtraLight.otf?v=1747251195') format('opentype');
+	src: url('/static/font/ss3/SourceSans3-BASIC-ExtraLight.otf?v=1747259438') format('opentype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+0152, U+0153, U+017F, U+018F, U+0192, U+0259, U+02C6-02CC, U+02D8-02DD, U+0300-030C, U+0327, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+2007, U+2009-200B, U+2011-2015, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+202F, U+2030-2031, U+2032-2033, U+2039-203A, U+203C-203D, U+2044, U+2047-2049, U+2190-2199, U+21D0-21D3, U+2200, U+2202-2203, U+2206, U+2212, U+2215, U+221A, U+221E, U+2248, U+2260, U+2261, U+2264-2265, U+2318, U+2325-2326, U+232B, U+25A0-25A1, U+25AA-25AB, U+25B2-25BA, U+25BC-25C4, U+25C6, U+25C9-25CC, U+25CF, U+25D8-25D9, U+25E6, U+2610-2611, U+263A-263C, U+263F-2642, U+2660, U+2663, U+2665, U+2666, U+266A-266B, U+2752, U+275B-2760, U+2E18, U+2E3A, U+2E3B;
 }
@@ -134,7 +134,7 @@
 	font-family: 'Source Sans 3';
 	font-weight: 200;
 	font-style: italic;
-	src: url('/static/font/ss3/SourceSans3-BASIC-ExtraLightItalic.otf?v=1747251196') format('opentype');
+	src: url('/static/font/ss3/SourceSans3-BASIC-ExtraLightItalic.otf?v=1747259438') format('opentype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+0152, U+0153, U+017F, U+018F, U+0192, U+0259, U+02C6-02CC, U+02D8-02DD, U+0300-030C, U+0327, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+2007, U+2009-200B, U+2011-2015, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+202F, U+2030-2031, U+2032-2033, U+2039-203A, U+203C-203D, U+2044, U+2047-2049, U+2190-2199, U+21D0-21D3, U+2200, U+2202-2203, U+2206, U+2212, U+2215, U+221A, U+221E, U+2248, U+2260, U+2261, U+2264-2265, U+2318, U+2325-2326, U+232B, U+25A0-25A1, U+25AA-25AB, U+25B2-25BA, U+25BC-25C4, U+25C6, U+25C9-25CC, U+25CF, U+25D8-25D9, U+25E6, U+2610-2611, U+263A-263C, U+263F-2642, U+2660, U+2663, U+2665, U+2666, U+266A-266B, U+2752, U+275B-2760, U+2E18, U+2E3A, U+2E3B;
 }
@@ -142,7 +142,7 @@
 	font-family: 'Source Sans 3';
 	font-weight: 300;
 	font-style: normal;
-	src: url('/static/font/ss3/SourceSans3-BASIC-Light.otf?v=1747251196') format('opentype');
+	src: url('/static/font/ss3/SourceSans3-BASIC-Light.otf?v=1747259438') format('opentype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+0152, U+0153, U+017F, U+018F, U+0192, U+0259, U+02C6-02CC, U+02D8-02DD, U+0300-030C, U+0327, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+2007, U+2009-200B, U+2011-2015, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+202F, U+2030-2031, U+2032-2033, U+2039-203A, U+203C-203D, U+2044, U+2047-2049, U+2190-2199, U+21D0-21D3, U+2200, U+2202-2203, U+2206, U+2212, U+2215, U+221A, U+221E, U+2248, U+2260, U+2261, U+2264-2265, U+2318, U+2325-2326, U+232B, U+25A0-25A1, U+25AA-25AB, U+25B2-25BA, U+25BC-25C4, U+25C6, U+25C9-25CC, U+25CF, U+25D8-25D9, U+25E6, U+2610-2611, U+263A-263C, U+263F-2642, U+2660, U+2663, U+2665, U+2666, U+266A-266B, U+2752, U+275B-2760, U+2E18, U+2E3A, U+2E3B;
 }
@@ -150,7 +150,7 @@
 	font-family: 'Source Sans 3';
 	font-weight: 300;
 	font-style: italic;
-	src: url('/static/font/ss3/SourceSans3-BASIC-LightItalic.otf?v=1747251196') format('opentype');
+	src: url('/static/font/ss3/SourceSans3-BASIC-LightItalic.otf?v=1747259438') format('opentype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+0152, U+0153, U+017F, U+018F, U+0192, U+0259, U+02C6-02CC, U+02D8-02DD, U+0300-030C, U+0327, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+2007, U+2009-200B, U+2011-2015, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+202F, U+2030-2031, U+2032-2033, U+2039-203A, U+203C-203D, U+2044, U+2047-2049, U+2190-2199, U+21D0-21D3, U+2200, U+2202-2203, U+2206, U+2212, U+2215, U+221A, U+221E, U+2248, U+2260, U+2261, U+2264-2265, U+2318, U+2325-2326, U+232B, U+25A0-25A1, U+25AA-25AB, U+25B2-25BA, U+25BC-25C4, U+25C6, U+25C9-25CC, U+25CF, U+25D8-25D9, U+25E6, U+2610-2611, U+263A-263C, U+263F-2642, U+2660, U+2663, U+2665, U+2666, U+266A-266B, U+2752, U+275B-2760, U+2E18, U+2E3A, U+2E3B;
 }
@@ -158,7 +158,7 @@
 	font-family: 'Source Sans 3';
 	font-weight: 400;
 	font-style: normal;
-	src: url('/static/font/ss3/SourceSans3-BASIC-Regular.otf?v=1747251196') format('opentype');
+	src: url('/static/font/ss3/SourceSans3-BASIC-Regular.otf?v=1747259438') format('opentype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+0152, U+0153, U+017F, U+018F, U+0192, U+0259, U+02C6-02CC, U+02D8-02DD, U+0300-030C, U+0327, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+2007, U+2009-200B, U+2011-2015, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+202F, U+2030-2031, U+2032-2033, U+2039-203A, U+203C-203D, U+2044, U+2047-2049, U+2190-2199, U+21D0-21D3, U+2200, U+2202-2203, U+2206, U+2212, U+2215, U+221A, U+221E, U+2248, U+2260, U+2261, U+2264-2265, U+2318, U+2325-2326, U+232B, U+25A0-25A1, U+25AA-25AB, U+25B2-25BA, U+25BC-25C4, U+25C6, U+25C9-25CC, U+25CF, U+25D8-25D9, U+25E6, U+2610-2611, U+263A-263C, U+263F-2642, U+2660, U+2663, U+2665, U+2666, U+266A-266B, U+2752, U+275B-2760, U+2E18, U+2E3A, U+2E3B;
 }
@@ -166,7 +166,7 @@
 	font-family: 'Source Sans 3';
 	font-weight: 400;
 	font-style: italic;
-	src: url('/static/font/ss3/SourceSans3-BASIC-RegularItalic.otf?v=1747251196') format('opentype');
+	src: url('/static/font/ss3/SourceSans3-BASIC-RegularItalic.otf?v=1747259438') format('opentype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+0152, U+0153, U+017F, U+018F, U+0192, U+0259, U+02C6-02CC, U+02D8-02DD, U+0300-030C, U+0327, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+2007, U+2009-200B, U+2011-2015, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+202F, U+2030-2031, U+2032-2033, U+2039-203A, U+203C-203D, U+2044, U+2047-2049, U+2190-2199, U+21D0-21D3, U+2200, U+2202-2203, U+2206, U+2212, U+2215, U+221A, U+221E, U+2248, U+2260, U+2261, U+2264-2265, U+2318, U+2325-2326, U+232B, U+25A0-25A1, U+25AA-25AB, U+25B2-25BA, U+25BC-25C4, U+25C6, U+25C9-25CC, U+25CF, U+25D8-25D9, U+25E6, U+2610-2611, U+263A-263C, U+263F-2642, U+2660, U+2663, U+2665, U+2666, U+266A-266B, U+2752, U+275B-2760, U+2E18, U+2E3A, U+2E3B;
 }
@@ -174,7 +174,7 @@
 	font-family: 'Source Sans 3';
 	font-weight: 500;
 	font-style: normal;
-	src: url('/static/font/ss3/SourceSans3-BASIC-Medium.otf?v=1747251196') format('opentype');
+	src: url('/static/font/ss3/SourceSans3-BASIC-Medium.otf?v=1747259438') format('opentype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+0152, U+0153, U+017F, U+018F, U+0192, U+0259, U+02C6-02CC, U+02D8-02DD, U+0300-030C, U+0327, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+2007, U+2009-200B, U+2011-2015, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+202F, U+2030-2031, U+2032-2033, U+2039-203A, U+203C-203D, U+2044, U+2047-2049, U+2190-2199, U+21D0-21D3, U+2200, U+2202-2203, U+2206, U+2212, U+2215, U+221A, U+221E, U+2248, U+2260, U+2261, U+2264-2265, U+2318, U+2325-2326, U+232B, U+25A0-25A1, U+25AA-25AB, U+25B2-25BA, U+25BC-25C4, U+25C6, U+25C9-25CC, U+25CF, U+25D8-25D9, U+25E6, U+2610-2611, U+263A-263C, U+263F-2642, U+2660, U+2663, U+2665, U+2666, U+266A-266B, U+2752, U+275B-2760, U+2E18, U+2E3A, U+2E3B;
 }
@@ -182,7 +182,7 @@
 	font-family: 'Source Sans 3';
 	font-weight: 500;
 	font-style: italic;
-	src: url('/static/font/ss3/SourceSans3-BASIC-MediumItalic.otf?v=1747251196') format('opentype');
+	src: url('/static/font/ss3/SourceSans3-BASIC-MediumItalic.otf?v=1747259438') format('opentype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+0152, U+0153, U+017F, U+018F, U+0192, U+0259, U+02C6-02CC, U+02D8-02DD, U+0300-030C, U+0327, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+2007, U+2009-200B, U+2011-2015, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+202F, U+2030-2031, U+2032-2033, U+2039-203A, U+203C-203D, U+2044, U+2047-2049, U+2190-2199, U+21D0-21D3, U+2200, U+2202-2203, U+2206, U+2212, U+2215, U+221A, U+221E, U+2248, U+2260, U+2261, U+2264-2265, U+2318, U+2325-2326, U+232B, U+25A0-25A1, U+25AA-25AB, U+25B2-25BA, U+25BC-25C4, U+25C6, U+25C9-25CC, U+25CF, U+25D8-25D9, U+25E6, U+2610-2611, U+263A-263C, U+263F-2642, U+2660, U+2663, U+2665, U+2666, U+266A-266B, U+2752, U+275B-2760, U+2E18, U+2E3A, U+2E3B;
 }
@@ -190,7 +190,7 @@
 	font-family: 'Source Sans 3';
 	font-weight: 600;
 	font-style: normal;
-	src: url('/static/font/ss3/SourceSans3-BASIC-Semibold.otf?v=1747251196') format('opentype');
+	src: url('/static/font/ss3/SourceSans3-BASIC-Semibold.otf?v=1747259438') format('opentype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+0152, U+0153, U+017F, U+018F, U+0192, U+0259, U+02C6-02CC, U+02D8-02DD, U+0300-030C, U+0327, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+2007, U+2009-200B, U+2011-2015, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+202F, U+2030-2031, U+2032-2033, U+2039-203A, U+203C-203D, U+2044, U+2047-2049, U+2190-2199, U+21D0-21D3, U+2200, U+2202-2203, U+2206, U+2212, U+2215, U+221A, U+221E, U+2248, U+2260, U+2261, U+2264-2265, U+2318, U+2325-2326, U+232B, U+25A0-25A1, U+25AA-25AB, U+25B2-25BA, U+25BC-25C4, U+25C6, U+25C9-25CC, U+25CF, U+25D8-25D9, U+25E6, U+2610-2611, U+263A-263C, U+263F-2642, U+2660, U+2663, U+2665, U+2666, U+266A-266B, U+2752, U+275B-2760, U+2E18, U+2E3A, U+2E3B;
 }
@@ -198,7 +198,7 @@
 	font-family: 'Source Sans 3';
 	font-weight: 600;
 	font-style: italic;
-	src: url('/static/font/ss3/SourceSans3-BASIC-SemiboldItalic.otf?v=1747251196') format('opentype');
+	src: url('/static/font/ss3/SourceSans3-BASIC-SemiboldItalic.otf?v=1747259438') format('opentype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+0152, U+0153, U+017F, U+018F, U+0192, U+0259, U+02C6-02CC, U+02D8-02DD, U+0300-030C, U+0327, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+2007, U+2009-200B, U+2011-2015, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+202F, U+2030-2031, U+2032-2033, U+2039-203A, U+203C-203D, U+2044, U+2047-2049, U+2190-2199, U+21D0-21D3, U+2200, U+2202-2203, U+2206, U+2212, U+2215, U+221A, U+221E, U+2248, U+2260, U+2261, U+2264-2265, U+2318, U+2325-2326, U+232B, U+25A0-25A1, U+25AA-25AB, U+25B2-25BA, U+25BC-25C4, U+25C6, U+25C9-25CC, U+25CF, U+25D8-25D9, U+25E6, U+2610-2611, U+263A-263C, U+263F-2642, U+2660, U+2663, U+2665, U+2666, U+266A-266B, U+2752, U+275B-2760, U+2E18, U+2E3A, U+2E3B;
 }
@@ -206,7 +206,7 @@
 	font-family: 'Source Sans 3';
 	font-weight: 700;
 	font-style: normal;
-	src: url('/static/font/ss3/SourceSans3-BASIC-Bold.otf?v=1747251195') format('opentype');
+	src: url('/static/font/ss3/SourceSans3-BASIC-Bold.otf?v=1747259438') format('opentype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+0152, U+0153, U+017F, U+018F, U+0192, U+0259, U+02C6-02CC, U+02D8-02DD, U+0300-030C, U+0327, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+2007, U+2009-200B, U+2011-2015, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+202F, U+2030-2031, U+2032-2033, U+2039-203A, U+203C-203D, U+2044, U+2047-2049, U+2190-2199, U+21D0-21D3, U+2200, U+2202-2203, U+2206, U+2212, U+2215, U+221A, U+221E, U+2248, U+2260, U+2261, U+2264-2265, U+2318, U+2325-2326, U+232B, U+25A0-25A1, U+25AA-25AB, U+25B2-25BA, U+25BC-25C4, U+25C6, U+25C9-25CC, U+25CF, U+25D8-25D9, U+25E6, U+2610-2611, U+263A-263C, U+263F-2642, U+2660, U+2663, U+2665, U+2666, U+266A-266B, U+2752, U+275B-2760, U+2E18, U+2E3A, U+2E3B;
 }
@@ -214,7 +214,7 @@
 	font-family: 'Source Sans 3';
 	font-weight: 700;
 	font-style: italic;
-	src: url('/static/font/ss3/SourceSans3-BASIC-BoldItalic.otf?v=1747251195') format('opentype');
+	src: url('/static/font/ss3/SourceSans3-BASIC-BoldItalic.otf?v=1747259438') format('opentype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+0152, U+0153, U+017F, U+018F, U+0192, U+0259, U+02C6-02CC, U+02D8-02DD, U+0300-030C, U+0327, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+2007, U+2009-200B, U+2011-2015, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+202F, U+2030-2031, U+2032-2033, U+2039-203A, U+203C-203D, U+2044, U+2047-2049, U+2190-2199, U+21D0-21D3, U+2200, U+2202-2203, U+2206, U+2212, U+2215, U+221A, U+221E, U+2248, U+2260, U+2261, U+2264-2265, U+2318, U+2325-2326, U+232B, U+25A0-25A1, U+25AA-25AB, U+25B2-25BA, U+25BC-25C4, U+25C6, U+25C9-25CC, U+25CF, U+25D8-25D9, U+25E6, U+2610-2611, U+263A-263C, U+263F-2642, U+2660, U+2663, U+2665, U+2666, U+266A-266B, U+2752, U+275B-2760, U+2E18, U+2E3A, U+2E3B;
 }
@@ -222,7 +222,7 @@
 	font-family: 'Source Sans 3';
 	font-weight: 900;
 	font-style: normal;
-	src: url('/static/font/ss3/SourceSans3-BASIC-Black.otf?v=1747251195') format('opentype');
+	src: url('/static/font/ss3/SourceSans3-BASIC-Black.otf?v=1747259438') format('opentype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+0152, U+0153, U+017F, U+018F, U+0192, U+0259, U+02C6-02CC, U+02D8-02DD, U+0300-030C, U+0327, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+2007, U+2009-200B, U+2011-2015, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+202F, U+2030-2031, U+2032-2033, U+2039-203A, U+203C-203D, U+2044, U+2047-2049, U+2190-2199, U+21D0-21D3, U+2200, U+2202-2203, U+2206, U+2212, U+2215, U+221A, U+221E, U+2248, U+2260, U+2261, U+2264-2265, U+2318, U+2325-2326, U+232B, U+25A0-25A1, U+25AA-25AB, U+25B2-25BA, U+25BC-25C4, U+25C6, U+25C9-25CC, U+25CF, U+25D8-25D9, U+25E6, U+2610-2611, U+263A-263C, U+263F-2642, U+2660, U+2663, U+2665, U+2666, U+266A-266B, U+2752, U+275B-2760, U+2E18, U+2E3A, U+2E3B;
 }
@@ -230,7 +230,7 @@
 	font-family: 'Source Sans 3';
 	font-weight: 900;
 	font-style: italic;
-	src: url('/static/font/ss3/SourceSans3-BASIC-BlackItalic.otf?v=1747251195') format('opentype');
+	src: url('/static/font/ss3/SourceSans3-BASIC-BlackItalic.otf?v=1747259438') format('opentype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00FF, U+0152, U+0153, U+017F, U+018F, U+0192, U+0259, U+02C6-02CC, U+02D8-02DD, U+0300-030C, U+0327, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+2007, U+2009-200B, U+2011-2015, U+2018-201A, U+201C-201E, U+2020-2022, U+2026, U+202F, U+2030-2031, U+2032-2033, U+2039-203A, U+203C-203D, U+2044, U+2047-2049, U+2190-2199, U+21D0-21D3, U+2200, U+2202-2203, U+2206, U+2212, U+2215, U+221A, U+221E, U+2248, U+2260, U+2261, U+2264-2265, U+2318, U+2325-2326, U+232B, U+25A0-25A1, U+25AA-25AB, U+25B2-25BA, U+25BC-25C4, U+25C6, U+25C9-25CC, U+25CF, U+25D8-25D9, U+25E6, U+2610-2611, U+263A-263C, U+263F-2642, U+2660, U+2663, U+2665, U+2666, U+266A-266B, U+2752, U+275B-2760, U+2E18, U+2E3A, U+2E3B;
 }
@@ -243,28 +243,28 @@
 	font-family: 'IBM Plex Mono';
 	font-weight: normal;
 	font-style: normal;
-	src: url('/static/font/ibm-plex-mono/IBMPlexMono-Regular.otf?v=1606177027') format('opentype');
+	src: url('/static/font/ibm-plex-mono/IBMPlexMono-Regular.otf?v=1606177723') format('opentype');
 	font-display: swap;
 }
 @font-face {
 	font-family: 'IBM Plex Mono';
 	font-weight: normal;
 	font-style: italic;
-	src: url('/static/font/ibm-plex-mono/IBMPlexMono-RegularItalic.otf?v=1606177027') format('opentype');
+	src: url('/static/font/ibm-plex-mono/IBMPlexMono-RegularItalic.otf?v=1606177723') format('opentype');
 	font-display: swap;
 }
 @font-face {
 	font-family: 'IBM Plex Mono';
 	font-weight: bold;
 	font-style: normal;
-	src: url('/static/font/ibm-plex-mono/IBMPlexMono-Bold.otf?v=1606177026') format('opentype');
+	src: url('/static/font/ibm-plex-mono/IBMPlexMono-Bold.otf?v=1606177723') format('opentype');
 	font-display: swap;
 }
 @font-face {
 	font-family: 'IBM Plex Mono';
 	font-weight: bold;
 	font-style: italic;
-	src: url('/static/font/ibm-plex-mono/IBMPlexMono-BoldItalic.otf?v=1606177027') format('opentype');
+	src: url('/static/font/ibm-plex-mono/IBMPlexMono-BoldItalic.otf?v=1606177723') format('opentype');
 	font-display: swap;
 }
 
@@ -276,7 +276,7 @@
 	font-family: 'Nimbus Mono';
 	font-weight: normal;
 	font-style: normal;
-	src: url('/static/font/nimbus-mono/NimbusMonoLUN-BASIC-Regular.ttf?v=1775772017') format('truetype');
+	src: url('/static/font/nimbus-mono/NimbusMonoLUN-BASIC-Regular.ttf?v=1775809706') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00A1, U+00A7, U+00B6, U+00BF, U+00C0-00CB, U+00DE, U+00E0-00EB, U+00F6, U+00FE, U+014C-014D, U+016A-016B, U+02C6-02DD, U+2013-2026, U+2039-203A, U+2122, U+2212, U+221A, U+221E, U+EA11-EA6A;
 }
@@ -284,7 +284,7 @@
 	font-family: 'Nimbus Mono';
 	font-weight: normal;
 	font-style: italic;
-	src: url('/static/font/nimbus-mono/NimbusMonoLUN-BASIC-RegularItalic.ttf?v=1775772017') format('truetype');
+	src: url('/static/font/nimbus-mono/NimbusMonoLUN-BASIC-RegularItalic.ttf?v=1775809706') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00A1, U+00A7, U+00B6, U+00BF, U+00C0-00CB, U+00DE, U+00E0-00EB, U+00F6, U+00FE, U+014C-014D, U+016A-016B, U+02C6-02DD, U+2013-2026, U+2039-203A, U+2122, U+2212, U+221A, U+221E, U+EA11-EA6A;
 }
@@ -292,7 +292,7 @@
 	font-family: 'Nimbus Mono';
 	font-weight: bold;
 	font-style: normal;
-	src: url('/static/font/nimbus-mono/NimbusMonoLUN-BASIC-Bold.ttf?v=1775772017') format('truetype');
+	src: url('/static/font/nimbus-mono/NimbusMonoLUN-BASIC-Bold.ttf?v=1775809706') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00A1, U+00A7, U+00B6, U+00BF, U+00C0-00CB, U+00DE, U+00E0-00EB, U+00F6, U+00FE, U+014C-014D, U+016A-016B, U+02C6-02DD, U+2013-2026, U+2039-203A, U+2122, U+2212, U+221A, U+221E, U+EA11-EA6A;
 }
@@ -300,7 +300,7 @@
 	font-family: 'Nimbus Mono';
 	font-weight: bold;
 	font-style: italic;
-	src: url('/static/font/nimbus-mono/NimbusMonoLUN-BASIC-BoldItalic.ttf?v=1775772017') format('truetype');
+	src: url('/static/font/nimbus-mono/NimbusMonoLUN-BASIC-BoldItalic.ttf?v=1775809706') format('truetype');
 	font-display: swap;
 	unicode-range: U+0020-007E, U+00A0-00A1, U+00A7, U+00B6, U+00BF, U+00C0-00CB, U+00DE, U+00E0-00EB, U+00F6, U+00FE, U+014C-014D, U+016A-016B, U+02C6-02DD, U+2013-2026, U+2039-203A, U+2122, U+2212, U+221A, U+221E, U+EA11-EA6A;
 }
@@ -312,7 +312,7 @@
 @font-face {
 	font-family: 'Quivira';
 	font-weight: normal;
-	src: url('/static/font/quivira/Quivira-SUBSETTED.otf?v=1775772274') format('opentype');
+	src: url('/static/font/quivira/Quivira-SUBSETTED.otf?v=1775809706') format('opentype');
 	font-display: swap;
 }
 
@@ -323,7 +323,7 @@
 @font-face {
 	font-family: 'Noto Emoji';
 	font-weight: normal;
-	src: url('/static/font/noto-emoji/NotoEmoji-Bold-SUBSETTED.ttf?v=1775770403') format('truetype');
+	src: url('/static/font/noto-emoji/NotoEmoji-Bold-SUBSETTED.ttf?v=1775809706') format('truetype');
 	font-display: swap;
 }
 
@@ -333,157 +333,157 @@
 
 @font-face {
 	font-family: 'Deutsche Zierschrift';
-	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-A.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-A.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0041;
 }
 @font-face {
 	font-family: 'Deutsche Zierschrift';
-	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-B.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-B.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0042;
 }
 @font-face {
 	font-family: 'Deutsche Zierschrift';
-	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-C.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-C.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0043;
 }
 @font-face {
 	font-family: 'Deutsche Zierschrift';
-	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-D.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-D.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0044;
 }
 @font-face {
 	font-family: 'Deutsche Zierschrift';
-	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-E.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-E.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0045;
 }
 @font-face {
 	font-family: 'Deutsche Zierschrift';
-	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-F.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-F.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0046;
 }
 @font-face {
 	font-family: 'Deutsche Zierschrift';
-	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-G.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-G.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0047;
 }
 @font-face {
 	font-family: 'Deutsche Zierschrift';
-	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-H.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-H.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0048;
 }
 @font-face {
 	font-family: 'Deutsche Zierschrift';
-	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-I.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-I.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0049;
 }
 @font-face {
 	font-family: 'Deutsche Zierschrift';
-	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-J.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-J.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004A;
 }
 @font-face {
 	font-family: 'Deutsche Zierschrift';
-	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-K.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-K.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004B;
 }
 @font-face {
 	font-family: 'Deutsche Zierschrift';
-	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-L.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-L.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004C;
 }
 @font-face {
 	font-family: 'Deutsche Zierschrift';
-	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-M.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-M.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004D;
 }
 @font-face {
 	font-family: 'Deutsche Zierschrift';
-	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-N.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-N.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004E;
 }
 @font-face {
 	font-family: 'Deutsche Zierschrift';
-	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-O.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-O.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004F;
 }
 @font-face {
 	font-family: 'Deutsche Zierschrift';
-	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-P.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-P.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0050;
 }
 @font-face {
 	font-family: 'Deutsche Zierschrift';
-	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-Q.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-Q.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0051;
 }
 @font-face {
 	font-family: 'Deutsche Zierschrift';
-	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-R.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-R.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0052;
 }
 @font-face {
 	font-family: 'Deutsche Zierschrift';
-	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-S.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-S.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0053;
 }
 @font-face {
 	font-family: 'Deutsche Zierschrift';
-	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-T.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-T.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0054;
 }
 @font-face {
 	font-family: 'Deutsche Zierschrift';
-	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-U.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-U.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0055;
 }
 @font-face {
 	font-family: 'Deutsche Zierschrift';
-	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-V.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-V.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0056;
 }
 @font-face {
 	font-family: 'Deutsche Zierschrift';
-	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-W.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-W.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0057;
 }
 @font-face {
 	font-family: 'Deutsche Zierschrift';
-	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-X.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-X.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0058;
 }
 @font-face {
 	font-family: 'Deutsche Zierschrift';
-	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-Y.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-Y.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0059;
 }
 @font-face {
 	font-family: 'Deutsche Zierschrift';
-	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-Z.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/de-zs/DeutscheZierschrift-Z.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+005A;
 }
@@ -494,157 +494,157 @@
 
 @font-face {
 	font-family: 'Yinit';
-	src: url('/static/font/dropcap/yinit/Yinit-A.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/yinit/Yinit-A.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0041;
 }
 @font-face {
 	font-family: 'Yinit';
-	src: url('/static/font/dropcap/yinit/Yinit-B.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/yinit/Yinit-B.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0042;
 }
 @font-face {
 	font-family: 'Yinit';
-	src: url('/static/font/dropcap/yinit/Yinit-C.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/yinit/Yinit-C.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0043;
 }
 @font-face {
 	font-family: 'Yinit';
-	src: url('/static/font/dropcap/yinit/Yinit-D.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/yinit/Yinit-D.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0044;
 }
 @font-face {
 	font-family: 'Yinit';
-	src: url('/static/font/dropcap/yinit/Yinit-E.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/yinit/Yinit-E.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0045;
 }
 @font-face {
 	font-family: 'Yinit';
-	src: url('/static/font/dropcap/yinit/Yinit-F.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/yinit/Yinit-F.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0046;
 }
 @font-face {
 	font-family: 'Yinit';
-	src: url('/static/font/dropcap/yinit/Yinit-G.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/yinit/Yinit-G.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0047;
 }
 @font-face {
 	font-family: 'Yinit';
-	src: url('/static/font/dropcap/yinit/Yinit-H.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/yinit/Yinit-H.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0048;
 }
 @font-face {
 	font-family: 'Yinit';
-	src: url('/static/font/dropcap/yinit/Yinit-I.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/yinit/Yinit-I.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0049;
 }
 @font-face {
 	font-family: 'Yinit';
-	src: url('/static/font/dropcap/yinit/Yinit-J.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/yinit/Yinit-J.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004A;
 }
 @font-face {
 	font-family: 'Yinit';
-	src: url('/static/font/dropcap/yinit/Yinit-K.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/yinit/Yinit-K.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004B;
 }
 @font-face {
 	font-family: 'Yinit';
-	src: url('/static/font/dropcap/yinit/Yinit-L.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/yinit/Yinit-L.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004C;
 }
 @font-face {
 	font-family: 'Yinit';
-	src: url('/static/font/dropcap/yinit/Yinit-M.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/yinit/Yinit-M.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004D;
 }
 @font-face {
 	font-family: 'Yinit';
-	src: url('/static/font/dropcap/yinit/Yinit-N.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/yinit/Yinit-N.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004E;
 }
 @font-face {
 	font-family: 'Yinit';
-	src: url('/static/font/dropcap/yinit/Yinit-O.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/yinit/Yinit-O.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004F;
 }
 @font-face {
 	font-family: 'Yinit';
-	src: url('/static/font/dropcap/yinit/Yinit-P.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/yinit/Yinit-P.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0050;
 }
 @font-face {
 	font-family: 'Yinit';
-	src: url('/static/font/dropcap/yinit/Yinit-Q.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/yinit/Yinit-Q.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0051;
 }
 @font-face {
 	font-family: 'Yinit';
-	src: url('/static/font/dropcap/yinit/Yinit-R.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/yinit/Yinit-R.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0052;
 }
 @font-face {
 	font-family: 'Yinit';
-	src: url('/static/font/dropcap/yinit/Yinit-S.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/yinit/Yinit-S.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0053;
 }
 @font-face {
 	font-family: 'Yinit';
-	src: url('/static/font/dropcap/yinit/Yinit-T.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/yinit/Yinit-T.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0054;
 }
 @font-face {
 	font-family: 'Yinit';
-	src: url('/static/font/dropcap/yinit/Yinit-U.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/yinit/Yinit-U.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0055;
 }
 @font-face {
 	font-family: 'Yinit';
-	src: url('/static/font/dropcap/yinit/Yinit-V.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/yinit/Yinit-V.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0056;
 }
 @font-face {
 	font-family: 'Yinit';
-	src: url('/static/font/dropcap/yinit/Yinit-W.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/yinit/Yinit-W.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0057;
 }
 @font-face {
 	font-family: 'Yinit';
-	src: url('/static/font/dropcap/yinit/Yinit-X.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/yinit/Yinit-X.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0058;
 }
 @font-face {
 	font-family: 'Yinit';
-	src: url('/static/font/dropcap/yinit/Yinit-Y.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/yinit/Yinit-Y.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0059;
 }
 @font-face {
 	font-family: 'Yinit';
-	src: url('/static/font/dropcap/yinit/Yinit-Z.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/yinit/Yinit-Z.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+005A;
 }
@@ -655,157 +655,157 @@
 
 @font-face {
 	font-family: 'Goudy Initialen';
-	src: url('/static/font/dropcap/goudy/GoudyInitialen-A.ttf?v=1734481576') format('truetype');
+	src: url('/static/font/dropcap/goudy/GoudyInitialen-A.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0041;
 }
 @font-face {
 	font-family: 'Goudy Initialen';
-	src: url('/static/font/dropcap/goudy/GoudyInitialen-B.ttf?v=1734481576') format('truetype');
+	src: url('/static/font/dropcap/goudy/GoudyInitialen-B.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0042;
 }
 @font-face {
 	font-family: 'Goudy Initialen';
-	src: url('/static/font/dropcap/goudy/GoudyInitialen-C.ttf?v=1734481576') format('truetype');
+	src: url('/static/font/dropcap/goudy/GoudyInitialen-C.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0043;
 }
 @font-face {
 	font-family: 'Goudy Initialen';
-	src: url('/static/font/dropcap/goudy/GoudyInitialen-D.ttf?v=1734481576') format('truetype');
+	src: url('/static/font/dropcap/goudy/GoudyInitialen-D.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0044;
 }
 @font-face {
 	font-family: 'Goudy Initialen';
-	src: url('/static/font/dropcap/goudy/GoudyInitialen-E.ttf?v=1734481576') format('truetype');
+	src: url('/static/font/dropcap/goudy/GoudyInitialen-E.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0045;
 }
 @font-face {
 	font-family: 'Goudy Initialen';
-	src: url('/static/font/dropcap/goudy/GoudyInitialen-F.ttf?v=1734481576') format('truetype');
+	src: url('/static/font/dropcap/goudy/GoudyInitialen-F.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0046;
 }
 @font-face {
 	font-family: 'Goudy Initialen';
-	src: url('/static/font/dropcap/goudy/GoudyInitialen-G.ttf?v=1734481576') format('truetype');
+	src: url('/static/font/dropcap/goudy/GoudyInitialen-G.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0047;
 }
 @font-face {
 	font-family: 'Goudy Initialen';
-	src: url('/static/font/dropcap/goudy/GoudyInitialen-H.ttf?v=1734481576') format('truetype');
+	src: url('/static/font/dropcap/goudy/GoudyInitialen-H.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0048;
 }
 @font-face {
 	font-family: 'Goudy Initialen';
-	src: url('/static/font/dropcap/goudy/GoudyInitialen-I.ttf?v=1734481576') format('truetype');
+	src: url('/static/font/dropcap/goudy/GoudyInitialen-I.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0049;
 }
 @font-face {
 	font-family: 'Goudy Initialen';
-	src: url('/static/font/dropcap/goudy/GoudyInitialen-J.ttf?v=1734481576') format('truetype');
+	src: url('/static/font/dropcap/goudy/GoudyInitialen-J.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004A;
 }
 @font-face {
 	font-family: 'Goudy Initialen';
-	src: url('/static/font/dropcap/goudy/GoudyInitialen-K.ttf?v=1734481576') format('truetype');
+	src: url('/static/font/dropcap/goudy/GoudyInitialen-K.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004B;
 }
 @font-face {
 	font-family: 'Goudy Initialen';
-	src: url('/static/font/dropcap/goudy/GoudyInitialen-L.ttf?v=1734481576') format('truetype');
+	src: url('/static/font/dropcap/goudy/GoudyInitialen-L.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004C;
 }
 @font-face {
 	font-family: 'Goudy Initialen';
-	src: url('/static/font/dropcap/goudy/GoudyInitialen-M.ttf?v=1734481576') format('truetype');
+	src: url('/static/font/dropcap/goudy/GoudyInitialen-M.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004D;
 }
 @font-face {
 	font-family: 'Goudy Initialen';
-	src: url('/static/font/dropcap/goudy/GoudyInitialen-N.ttf?v=1734481576') format('truetype');
+	src: url('/static/font/dropcap/goudy/GoudyInitialen-N.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004E;
 }
 @font-face {
 	font-family: 'Goudy Initialen';
-	src: url('/static/font/dropcap/goudy/GoudyInitialen-O.ttf?v=1734481576') format('truetype');
+	src: url('/static/font/dropcap/goudy/GoudyInitialen-O.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004F;
 }
 @font-face {
 	font-family: 'Goudy Initialen';
-	src: url('/static/font/dropcap/goudy/GoudyInitialen-P.ttf?v=1734481576') format('truetype');
+	src: url('/static/font/dropcap/goudy/GoudyInitialen-P.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0050;
 }
 @font-face {
 	font-family: 'Goudy Initialen';
-	src: url('/static/font/dropcap/goudy/GoudyInitialen-Q.ttf?v=1734481576') format('truetype');
+	src: url('/static/font/dropcap/goudy/GoudyInitialen-Q.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0051;
 }
 @font-face {
 	font-family: 'Goudy Initialen';
-	src: url('/static/font/dropcap/goudy/GoudyInitialen-R.ttf?v=1734481576') format('truetype');
+	src: url('/static/font/dropcap/goudy/GoudyInitialen-R.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0052;
 }
 @font-face {
 	font-family: 'Goudy Initialen';
-	src: url('/static/font/dropcap/goudy/GoudyInitialen-S.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/goudy/GoudyInitialen-S.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0053;
 }
 @font-face {
 	font-family: 'Goudy Initialen';
-	src: url('/static/font/dropcap/goudy/GoudyInitialen-T.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/goudy/GoudyInitialen-T.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0054;
 }
 @font-face {
 	font-family: 'Goudy Initialen';
-	src: url('/static/font/dropcap/goudy/GoudyInitialen-U.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/goudy/GoudyInitialen-U.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0055;
 }
 @font-face {
 	font-family: 'Goudy Initialen';
-	src: url('/static/font/dropcap/goudy/GoudyInitialen-V.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/goudy/GoudyInitialen-V.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0056;
 }
 @font-face {
 	font-family: 'Goudy Initialen';
-	src: url('/static/font/dropcap/goudy/GoudyInitialen-W.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/goudy/GoudyInitialen-W.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0057;
 }
 @font-face {
 	font-family: 'Goudy Initialen';
-	src: url('/static/font/dropcap/goudy/GoudyInitialen-X.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/goudy/GoudyInitialen-X.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0058;
 }
 @font-face {
 	font-family: 'Goudy Initialen';
-	src: url('/static/font/dropcap/goudy/GoudyInitialen-Y.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/goudy/GoudyInitialen-Y.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0059;
 }
 @font-face {
 	font-family: 'Goudy Initialen';
-	src: url('/static/font/dropcap/goudy/GoudyInitialen-Z.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/goudy/GoudyInitialen-Z.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+005A;
 }
@@ -816,157 +816,157 @@
 
 @font-face {
 	font-family: 'Cheshire Initials';
-	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-A.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-A.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0041;
 }
 @font-face {
 	font-family: 'Cheshire Initials';
-	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-B.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-B.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0042;
 }
 @font-face {
 	font-family: 'Cheshire Initials';
-	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-C.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-C.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0043;
 }
 @font-face {
 	font-family: 'Cheshire Initials';
-	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-D.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-D.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0044;
 }
 @font-face {
 	font-family: 'Cheshire Initials';
-	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-E.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-E.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0045;
 }
 @font-face {
 	font-family: 'Cheshire Initials';
-	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-F.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-F.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0046;
 }
 @font-face {
 	font-family: 'Cheshire Initials';
-	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-G.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-G.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0047;
 }
 @font-face {
 	font-family: 'Cheshire Initials';
-	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-H.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-H.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0048;
 }
 @font-face {
 	font-family: 'Cheshire Initials';
-	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-I.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-I.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0049;
 }
 @font-face {
 	font-family: 'Cheshire Initials';
-	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-J.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-J.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004A;
 }
 @font-face {
 	font-family: 'Cheshire Initials';
-	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-K.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-K.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004B;
 }
 @font-face {
 	font-family: 'Cheshire Initials';
-	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-L.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-L.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004C;
 }
 @font-face {
 	font-family: 'Cheshire Initials';
-	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-M.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-M.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004D;
 }
 @font-face {
 	font-family: 'Cheshire Initials';
-	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-N.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-N.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004E;
 }
 @font-face {
 	font-family: 'Cheshire Initials';
-	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-O.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-O.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004F;
 }
 @font-face {
 	font-family: 'Cheshire Initials';
-	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-P.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-P.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0050;
 }
 @font-face {
 	font-family: 'Cheshire Initials';
-	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-Q.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-Q.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0051;
 }
 @font-face {
 	font-family: 'Cheshire Initials';
-	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-R.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-R.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0052;
 }
 @font-face {
 	font-family: 'Cheshire Initials';
-	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-S.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-S.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0053;
 }
 @font-face {
 	font-family: 'Cheshire Initials';
-	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-T.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-T.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0054;
 }
 @font-face {
 	font-family: 'Cheshire Initials';
-	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-U.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-U.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0055;
 }
 @font-face {
 	font-family: 'Cheshire Initials';
-	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-V.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-V.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0056;
 }
 @font-face {
 	font-family: 'Cheshire Initials';
-	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-W.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-W.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0057;
 }
 @font-face {
 	font-family: 'Cheshire Initials';
-	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-X.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-X.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0058;
 }
 @font-face {
 	font-family: 'Cheshire Initials';
-	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-Y.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-Y.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0059;
 }
 @font-face {
 	font-family: 'Cheshire Initials';
-	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-Z.ttf?v=1734481573') format('truetype');
+	src: url('/static/font/dropcap/cheshire/Cheshire-Initials-Z.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+005A;
 }
@@ -977,157 +977,157 @@
 
 @font-face {
 	font-family: 'Kanzlei Initialen';
-	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-A.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-A.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0041;
 }
 @font-face {
 	font-family: 'Kanzlei Initialen';
-	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-B.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-B.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0042;
 }
 @font-face {
 	font-family: 'Kanzlei Initialen';
-	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-C.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-C.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0043;
 }
 @font-face {
 	font-family: 'Kanzlei Initialen';
-	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-D.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-D.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0044;
 }
 @font-face {
 	font-family: 'Kanzlei Initialen';
-	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-E.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-E.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0045;
 }
 @font-face {
 	font-family: 'Kanzlei Initialen';
-	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-F.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-F.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0046;
 }
 @font-face {
 	font-family: 'Kanzlei Initialen';
-	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-G.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-G.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0047;
 }
 @font-face {
 	font-family: 'Kanzlei Initialen';
-	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-H.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-H.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0048;
 }
 @font-face {
 	font-family: 'Kanzlei Initialen';
-	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-I.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-I.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0049;
 }
 @font-face {
 	font-family: 'Kanzlei Initialen';
-	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-J.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-J.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004A;
 }
 @font-face {
 	font-family: 'Kanzlei Initialen';
-	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-K.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-K.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004B;
 }
 @font-face {
 	font-family: 'Kanzlei Initialen';
-	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-L.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-L.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004C;
 }
 @font-face {
 	font-family: 'Kanzlei Initialen';
-	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-M.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-M.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004D;
 }
 @font-face {
 	font-family: 'Kanzlei Initialen';
-	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-N.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-N.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004E;
 }
 @font-face {
 	font-family: 'Kanzlei Initialen';
-	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-O.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-O.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+004F;
 }
 @font-face {
 	font-family: 'Kanzlei Initialen';
-	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-P.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-P.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0050;
 }
 @font-face {
 	font-family: 'Kanzlei Initialen';
-	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-Q.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-Q.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0051;
 }
 @font-face {
 	font-family: 'Kanzlei Initialen';
-	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-R.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-R.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0052;
 }
 @font-face {
 	font-family: 'Kanzlei Initialen';
-	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-S.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-S.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0053;
 }
 @font-face {
 	font-family: 'Kanzlei Initialen';
-	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-T.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-T.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0054;
 }
 @font-face {
 	font-family: 'Kanzlei Initialen';
-	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-U.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-U.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0055;
 }
 @font-face {
 	font-family: 'Kanzlei Initialen';
-	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-V.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-V.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0056;
 }
 @font-face {
 	font-family: 'Kanzlei Initialen';
-	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-W.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-W.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0057;
 }
 @font-face {
 	font-family: 'Kanzlei Initialen';
-	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-X.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-X.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0058;
 }
 @font-face {
 	font-family: 'Kanzlei Initialen';
-	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-Y.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-Y.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+0059;
 }
 @font-face {
 	font-family: 'Kanzlei Initialen';
-	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-Z.ttf?v=1734481577') format('truetype');
+	src: url('/static/font/dropcap/kanzlei/Kanzlei-Initialen-Z.ttf?v=1604162284') format('truetype');
 	font-display: swap;
 	unicode-range: U+005A;
 }
@@ -1139,7 +1139,7 @@
 @font-face {
 	font-family: 'Great Primer Uncials';
 	font-weight: normal;
-	src: url('/static/font/blackletter/GreatPrimerUncials.otf?v=1734481573') format('opentype');
+	src: url('/static/font/blackletter/GreatPrimerUncials.otf?v=1711844591') format('opentype');
 	font-display: swap;
 }
 @charset "UTF-8";
@@ -2949,18 +2949,18 @@ ul.interview li.exchange ol > li p:not(.first-graf) {
 }
 
 .admonition.tip::before {
-    background-image: url('/static/img/icon/icons.svg?v=1776036153#info-circle-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1784843634#info-circle-regular');
 }
 .admonition.note::before {
-    background-image: url('/static/img/icon/icons.svg?v=1776036153#hand-point-right-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1784843634#hand-point-right-regular');
     filter: invert(1);
 }
 .admonition.warning::before {
-    background-image: url('/static/img/icon/icons.svg?v=1776036153#triangle-exclamation-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1784843634#triangle-exclamation-regular');
     filter: invert(1);
 }
 .admonition.error::before {
-    background-image: url('/static/img/icon/icons.svg?v=1776036153#skull-crossbones-solid');
+    background-image: url('/static/img/icon/icons.svg?v=1784843634#skull-crossbones-solid');
     padding: 0.75em;
     top: 0;
     filter: invert(1);
@@ -6001,7 +6001,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popup .popframe-loading-spinner-view::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1776036153#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1784843634#circle-notch-light');
     animation: fa-spin 2s infinite linear;
     position: absolute;
     width: calc(100% - 1em);
@@ -6187,7 +6187,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
     */
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1776036153#xmark-regular');
+    background-image: url('/static/img/icon/icons.svg?v=1784843634#xmark-regular');
     background-position: center;
     box-sizing: border-box;
     margin: 8px;
@@ -6711,7 +6711,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 .popover .popframe-loading-spinner-view::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1776036153#circle-notch-light');
+    background-image: url('/static/img/icon/icons.svg?v=1784843634#circle-notch-light');
     animation: fa-spin 2s infinite linear;
     position: absolute;
     width: calc(100% - 1em);
@@ -7747,7 +7747,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 
 #image-focus-overlay .help-overlay::after {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1776036153#question');
+    background-image: url('/static/img/icon/icons.svg?v=1784843634#question');
     background-origin: content-box;
     background-clip: content-box;
     position: absolute;
@@ -7951,7 +7951,7 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 .image-wrapper.focusable.small-image::after {
     content: "";
     background-color: var(--SA-image-focus-image-hover-tooltip-inverted-background-color);
-    background-image: url('/static/img/icon/icons.svg?v=1776036153#magnifying-glass-plus-light');
+    background-image: url('/static/img/icon/icons.svg?v=1784843634#magnifying-glass-plus-light');
     background-size: 56px 56px;
     background-origin: content-box;
     background-repeat: no-repeat;
@@ -8490,7 +8490,7 @@ a.include-loading-failed:empty {
 }
 
 a.include-loading.include-spinner {
-    --spinner-image: url('/static/img/icon/icons.svg?v=1776036153#circle-notch-solid');
+    --spinner-image: url('/static/img/icon/icons.svg?v=1784843634#circle-notch-solid');
 
     pointer-events: none;
 }
@@ -8571,7 +8571,7 @@ a.include-loading.include-spinner[data-link-icon]:not(:empty)::after {
 .markdownBody div.block-context-highlighted .block-context-highlight-here::before,
 .markdownBody :not(a) > span.block-context-highlighted:empty::before {
     content: "";
-    background-image: url('/static/img/icon/icons.svg?v=1776036153#manicule-right');
+    background-image: url('/static/img/icon/icons.svg?v=1784843634#manicule-right');
     background-origin: content-box;
     background-clip: content-box;
     background-repeat: no-repeat;
