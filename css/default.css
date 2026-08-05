@@ -2640,8 +2640,17 @@ script {
 	 */
 	@supports (-moz-appearance: none) {
 		p.has-dropcap span.dropcap {
-			--top-margin-adjust: 0.075em;
+			--top-margin-adjust: 0em;
         	--bottom-margin-adjust: 0em;
+		}
+		/*	Special styles for special browsers on special platforms
+			(Firefox on macOS).
+		 */
+		@supports (-moz-osx-font-smoothing: auto) {
+			p.has-dropcap span.dropcap {
+				--top-margin-adjust: 0.075em;
+				--bottom-margin-adjust: 0em;
+			}
 		}
 	}
 	/*	Extra-special styles for extra-special browsers (Safari).
