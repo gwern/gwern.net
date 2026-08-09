@@ -194,6 +194,7 @@ tagsShort2LongRewrites =
    , ("physucs", "physics"), ("illusoin", "illusion"), ("opetry", "poetry"), ("poem", "poetry"), ("poet", "poetry"), ("typogrpahy", "typography"), ("bipolar-energy", "bipolar/energy"), ("clade-4", "claude/4"), ("discrete-diffusion", "diffusion/discrete"), ("discrete/diffusion", "diffusion/discrete"), ("working-memory", "dnb")
    , ("ai/nn/transformer/gpt/non-fiction", "ai/nn/transformer/gpt/nonfiction"), ("ai/nn/transformer/gpt/5/4-5", "ai/nn/transformer/gpt/4-5"), ("non-fiction", "nonfiction"), ("nonfiction" , "ai/nn/transformer/gpt/nonfiction"), ("piblication-bias", "statistics/bias/publication"), ("embryo-selection", "selection/artificial"), ("embryo/selection", "selection/artificial"), ("selection/embryo", "selection/artificial"), ("multiagent", "multi-agent"), ("stegranoaphy", "steganography"), ("dpeeseek", "deepseek"), ("tokeniation", "tokenization"), ("mythis", "mythos"), ("myths", "mythos"), ("pindaric", "pindar"), ("time-travle", "time-travel"), ("cs/cryptography/time-lock", "cs/cryptography/timelock"), ("psychology/illusion-of-depth", "psychology/cognitive-bias/illusion-of-depth"), ("comic", "comics"), ("55", "5-5"), ("poenness", "openness"), ("instructiontuning", "instruction-tuning"), ("senolytics", "senolytic"), ("automatiom", "automation"), ("retratrutide", "retatrutide")
    , ("fable", "mythos"), ("llt", "lllt"), ("lllt", "quantified-self"), ("meomry", "memory"), ("distilation", "distillation")
+   , ("GA", "guardian-angel"), ("ga", "guardian-angel"), ("guardianangel", "guardian-angel"), ("guardianangle", "guardian-angel"), ("guardian-angle", "guardian-angel"), ("guardian", "guardian-angel"), ("angel", "guardian-angel"), ("gai", "guardian-angel")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
@@ -528,6 +529,7 @@ tagsLong2Short = reverse [ -- priority: first one wins. so sub-directories shoul
   , ("reinforcement-learning/safe", "AI safety")
   , ("reinforcement-learning/robot", "robotics")
   , ("reinforcement-learning/multi-agent", "MARL")
+  , ("reinforcement-learning/preference-learning/guardian-angel", "Guardian Angel")
   , ("reinforcement-learning/preference-learning/mode-collapse", "AI mode collapse")
   , ("reinforcement-learning/preference-learning", "preference learning")
   , ("reinforcement-learning/meta-learning/continual-learning", "continual learning")

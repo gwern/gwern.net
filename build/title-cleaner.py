@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-07-20 17:12:00 gwern"
+# When:  Time-stamp: "2026-08-08 14:38:34 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -993,6 +993,8 @@ Notes from inside China’s AI labs
 "you can’t buy in the USA (and why)"
 - "https://www.seriouseats.com/sous-vide-101-all-about-eggs Internal Server Error"
 ""
+- "https://www.scifijapan.com/godzilla-toho/studio-ghiblis-the-tale-of-the-princess-kaguya-production-notes SciFi Japan—Studio Ghibli`s THE TALE OF THE PRINCESS KAGUYA Production Notes"
+"Studio Ghibli’s <em>The Tale Of The Princess Kaguya</em> Production Notes"
 
 """
 

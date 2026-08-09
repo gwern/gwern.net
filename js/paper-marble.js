@@ -1,7 +1,7 @@
 // paper-marble.js: ink-marble the current web page (an idle 'screensaver' toy).
 // Author: Gwern Branwen, Claude-5-Fable, GPT-5.6 Sol
 // Date: 2026-07-07
-// When:  Time-stamp: "2026-07-09 22:33:38 gwern"
+// When:  Time-stamp: "2026-08-08 14:55:37 gwern"
 // License: CC-0 (except the vendored html-to-image library: MIT, notice below)
 //
 // Turns the current viewport into a sheet of paper being marbled (<https://en.wikipedia.org/wiki/Paper_marbling>).
@@ -109,6 +109,9 @@
 // captured into a private lexical binding without touching host globals);
 // (2) the marbling widget and `window.paperMarble` API; (3) a dispatcher that
 // either runs immediately or arms the idle-screensaver timer.
+//
+// BUGS:
+// - may not work correctly on Safari web browsers?
 
 (function () {
     'use strict';

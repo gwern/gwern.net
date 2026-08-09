@@ -992,6 +992,10 @@ canonicals = setLike
   , ("enricobottazzi", "Enrico Bottazzi")
   , ("E Schwitzgebel", "Eric Schwitzgebel")
   , ("fabiensanglard", "Fabien Sanglard")
+  , ("anderssandberg", "Anders Sandberg")
+  , ("JohnWittle", "John Wittle")
+  , ("ClementDelangue", "Clement Delangue")
+  , ("tenobrus", "Tenobrus")
   ]
 
 -- tests: unique; none are URLs
@@ -2351,6 +2355,8 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("Casey Baseel", "https://soranews24.com/author/casey-baseel/")
     , ("Derek Willis", "https://thescoop.org/about/")
     , ("Theia", "https://vgel.me/")
+    , ("Paul Elliott", "https://en.wikipedia.org/wiki/Paul_Elliott_(epidemiologist)")
+    , ("Stuart Armstrong", "https://scholar.google.com/citations?user=bSJaYzgAAAAJ")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3657,4 +3663,6 @@ authorWpLinkDB = setLike
     , "Richard A. Howard", "George H. Estabrooks", "Danny Hillis", "David L. Waltz", "Margaret E. Roberts"
     , "Solomon Messing", "Katha Pollitt", "Dai Mahou Touge", "Irina Blok", "Dwarkesh Patel", "Karol Hausman", "Andy Zeng"
     , "William Sims Bainbridge", "Kat Rosenfield", "M. Anthony Lewis", "Giorgio Parisi", "Arthur Machen", "Dan Tawfik"
-    , "Benton J. Underwood", "Woodkid", "Frank C. Garland", "Sidney Coleman", "Christopher Sorrentino", "Sol LeWitt", "Nathan Keyfitz", "Adolf Leo Oppenheim", "Elijah Millgram", "Gary Larson", "Colin Furze", "Emmanuel Candès", "Jose Camacho-Collados"]
+    , "Benton J. Underwood", "Woodkid", "Frank C. Garland", "Sidney Coleman", "Christopher Sorrentino", "Sol LeWitt"
+    , "Nathan Keyfitz", "Adolf Leo Oppenheim", "Elijah Millgram", "Gary Larson", "Colin Furze", "Emmanuel Candès"
+    , "Jose Camacho-Collados", "Jakub Pachocki", "Kanaka Rajan", "J. David Bleich"]
