@@ -6291,12 +6291,12 @@ body.page-dnm-arrest .table-wrapper#data-table td:last-of-type {
 /*= Hover styles =*/
 /*=--------------=*/
 
-.markdownBody img.focusable:hover {
+img.focusable:hover {
 /*     filter: drop-shadow(0 0 3px var(--SA-image-focus-image-hover-drop-shadow-color)); */
     cursor: zoom-in;
     box-shadow: 0 0 10px 0 var(--SA-image-focus-image-hover-drop-shadow-color);
 }
-.markdownBody img.focusable:active {
+img.focusable:active {
     transform: scale(0.975);
 }
 

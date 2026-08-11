@@ -1762,6 +1762,44 @@ figure.width-full {
     max-width: unset;
 }
 
+/*  Figure in the page TOC.
+ */
+.TOC .page-thumbnail-figure {
+    max-width: unset;
+}
+@media all and (max-width: 900px) {
+    .TOC .page-thumbnail-figure {
+        max-width: 50%;
+    }
+}
+
+.TOC .page-thumbnail-figure.at-start {
+	margin-bottom: 1.5em;
+}
+.TOC .page-thumbnail-figure.at-end {
+	margin-top: 1.5em;
+}
+
+@media all and (max-width: 900px) {
+	.TOC .page-thumbnail-figure.at-start .figure-outer-wrapper::before {
+		/*	TOC top padding. */
+		height: 0.625em;
+		margin-top: -0.625em;
+	}
+	.TOC .page-thumbnail-figure.at-end .figure-outer-wrapper::after {
+		/*	TOC bottom padding. */
+		height: 0.75em;
+		margin-bottom: -0.75em;
+	}
+	.TOC .page-thumbnail-figure.at-start .figure-outer-wrapper::before,
+	.TOC .page-thumbnail-figure.at-end .figure-outer-wrapper::after {
+		content: "";
+		display: block;
+		background-color: var(--background-color);
+		width: 100%;
+	}
+}
+
 
 /****************/
 /* MARGIN NOTES */

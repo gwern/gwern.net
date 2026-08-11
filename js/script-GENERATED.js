@@ -22346,7 +22346,8 @@ ImageFocus = {
      ****************/
 
     contentImagesSelector: [
-        ".markdownBody figure img"
+        ".markdownBody figure img",
+        ".TOC .page-thumbnail-figure img"
     ].join(", "),
 
     excludedContainerElementsSelector: [

@@ -494,8 +494,47 @@ function injectThumbnailIntoPageAbstract(pageAbstract, pageThumbnailAttributes, 
 	return pageThumbnail;
 }
 
-/************************************************************************/
-/*	Inject the page thumbnail into the page abstract, when such is found.
+/*********************************************************************/
+/*	Inject the page thumbnail image into the page TOC (or the TOC of a 
+	full-page pop-frame). (Returns the thumbnail image element.)
+
+	Available option fields:
+
+	atEnd (boolean)
+		If true (the default), thumbnail figure placed at end, after all other
+		content in the TOC. If false, placed at start, before all else.
+ */
+function injectThumbnailIntoPageTOC(pageTOC, pageThumbnailAttributes, options) {
+	options = Object.assign({
+		atEnd: true
+	}, options);
+
+	//	Check if the page thumbnail has already been injected.
+	if (pageTOC.querySelector(".page-thumbnail-figure") != null)
+		return null;
+
+	//	Except logo.
+	if (URLFromString(pageThumbnailAttributes.src).pathname.startsWith("/static/img/logo/"))
+		return null;
+
+	//	Construct.
+	let pageThumbnail = newElement("IMG", pageThumbnailAttributes);
+	let pageThumbnailWrapper = newElement("SPAN", {
+		class: "image-wrapper img"
+	});
+	let pageThumbnailFigure = newElement("FIGURE", {
+		class: "page-thumbnail-figure " + (options.atEnd ? "at-end" : "at-start")
+	});
+	pageThumbnailFigure.appendChild(pageThumbnailWrapper).appendChild(pageThumbnail);
+
+	//	Inject.
+	pageTOC.insertBefore(pageThumbnailFigure, (options.atEnd ? null : pageTOC.firstElementChild));
+
+	return pageThumbnail;
+}
+
+/*******************************************************************/
+/*	Inject the page thumbnail into the page TOC, when such is found.
  */
 if (location.pathname.endsWithAnyOf([ "/", "/index" ]) == false) {
 	let pageThumbnailAttributes;
@@ -503,22 +542,34 @@ if (location.pathname.endsWithAnyOf([ "/", "/index" ]) == false) {
 		pageThumbnailAttributes = pageThumbnailAttributesFromDocument(document);
 		doAjax({ location: URLFromString(pageThumbnailAttributes.src) });
 	});
-	doWhenElementExists((firstAfterAbstract) => {
+	doWhenElementExists((markdownBody) => {
 		//	Get page abstract.
-		let pageAbstract = firstAfterAbstract.previousElementSibling.firstElementChild;
-
-		//	Designate page abstract.
-		pageAbstract.classList.add("page-abstract");
+		let pageTOC = markdownBody.closest("article").querySelector("#TOC");
+		if (pageTOC == null)
+			return;
 
 		//	Inject page thumbnail into page abstract.
-		injectThumbnailIntoPageAbstract(pageAbstract, pageThumbnailAttributes, { atEnd: true });
-	}, "#markdownBody > .abstract:first-child + *");
+		injectThumbnailIntoPageTOC(pageTOC, pageThumbnailAttributes, { atEnd: true });
+	}, "#markdownBody");
 }
 
 
 /***************************/
 /* ADDITIONAL EARLY LAYOUT */
 /***************************/
+
+/***************************/
+/*	Designate page abstract.
+ */
+if (location.pathname.endsWithAnyOf([ "/", "/index" ]) == false) {
+	doWhenElementExists((firstAfterAbstract) => {
+		//	Get page abstract.
+		let pageAbstract = firstAfterAbstract.previousElementSibling.firstElementChild;
+
+		//	Designate page abstract.
+		pageAbstract.classList.add("page-abstract");
+	}, "#markdownBody > .abstract:first-child + *");
+}
 
 /*************************************************/
 /*	Placeholder page for ID-based content loading.
