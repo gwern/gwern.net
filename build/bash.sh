@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-07-07 19:03:17 gwern"
+# When:  Time-stamp: "2026-08-17 12:05:33 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -1538,13 +1538,53 @@ gw () {
     if (( $# == 0 )); then red "Missing search query." >&2 && return 2; fi
 
     QUERY=$(echo "$*" | tr -d '\n') # remove newlines, which are usually spurious (and also not supported by grep by default?) thanks to browsers injecting newlines everywhere when copy-pasting...
-    RESULTS=$( (find ~/wiki/ -type f -name "*.md";
-         ls ~/.emacs ~/*.md;
-         find ~/wiki/metadata/ ~/wiki/haskell/ -name "*.hs" -or -name "*.gtx" | grep --fixed-strings -v -e 'metadata/listsortedmagic.hs' -e 'metadata/listname.hs';
-         find ~/wiki/static/ -type f -name "*.js" -or -name "*.css" -or -name "*.hs" -or -name "*.conf" -or -name "*.gtx" -or -name "*.py" -or -name "*.sh" -or -name "*.el";
-         find ~/wiki/ -type f -name "*.html" -not -wholename "*/doc/*" ) | \
-           grep --fixed-strings -v -e '.#' -e 'auto.hs' -e doc/link-bibliography/ -e metadata/annotation/ -e _site/ -e _cache/ | sort --unique  | \
-           xargs grep --fixed-strings --color=always --ignore-case --with-filename -- "$QUERY" | cut -c 1-2548);
+    # Construct the filename list as NUL-delimited records throughout the
+    # find/filter/sort/xargs pipeline. Pathnames may contain spaces, tabs,
+    # quotes, backslashes, or even literal newlines—so ordinary xargs would
+    # split a single pathname into several arguments. Accordingly, every stage
+    # must agree on NUL delimiters: `find -print0`, `grep -z`, `sort -z`, and `xargs -0`.
+    # The NULs do not enter $RESULTS, since xargs consumes them before the final
+    # grep emits ordinary line-oriented matches (and Bash variables cannot
+    # contain NUL bytes anyway). Also parenthesize find's `-name` alternatives so
+    # that predicates such as `-type f` apply to every listed extension.
+	RESULTS=$(
+	    (
+	        find "$HOME/wiki/" -type f -name '*.md' -print0
+
+	        printf '%s\0' "$HOME/.emacs"
+	        find "$HOME/" -maxdepth 1 -type f -name '*.md' -print0
+
+	        find "$HOME/wiki/metadata/" "$HOME/wiki/haskell/" -type f \
+	            \( -name '*.hs' -o -name '*.gtx' \) -print0
+
+	        find "$HOME/wiki/static/" -type f \
+	            \( -name '*.js'   -o \
+	               -name '*.css'  -o \
+	               -name '*.hs'   -o \
+	               -name '*.conf' -o \
+	               -name '*.gtx'  -o \
+	               -name '*.py'   -o \
+	               -name '*.sh'   -o \
+	               -name '*.el' \) -print0
+
+	        find "$HOME/wiki/" -type f -name '*.html' \
+	            -not -wholename '*/doc/*' -print0
+	    ) |
+	        grep --null-data --fixed-strings --invert-match \
+	            -e '.#' \
+	            -e 'auto.hs' \
+	            -e 'doc/link-bibliography/' \
+	            -e 'metadata/annotation/' \
+	            -e 'metadata/listsortedmagic.hs' \
+	            -e 'metadata/listname.hs' \
+	            -e '_site/' \
+	            -e '_cache/' |
+	        sort --zero-terminated --unique |
+	        xargs --null --no-run-if-empty \
+	            grep --fixed-strings --color=always --ignore-case \
+	                --with-filename -- "$QUERY" |
+	        cut -c 1-2548
+	)
     if [ -z "$RESULTS" ]; then
         gwl "$QUERY" # fall back to double-checking IRC logs
     else

@@ -28,13 +28,13 @@
 //  (2) PRODUCTION idle screensaver (the Gwern.net deployment): do NOT
 //      reference this file from any HTML. Instead, inline the tiny companion
 //      stub (`marble-screensaver.js`) into the site's existing JS bundle;
-//      after 1 idle hour it injects
+//      after 24 idle hours it injects
 //      `<script src="/static/js/paper-marble.js" data-marble-idle-start>`,
 //      which cancels startup if the reader returns during asynchronous capture.
 //      Regular readers never download or parse this file.
 //  (3) Single-file idle screensaver, for pages that do not mind the weight:
 //          <script src="/static/js/paper-marble.js" data-screensaver async></script>
-//      arms a 1-hour no-activity timer instead of running (visible top-level
+//      arms a 24-hour no-activity timer instead of running (visible top-level
 //      tabs only; honors `prefers-reduced-motion`, re-checked at trigger
 //      time). NB: `async` only unblocks parsing—this still DOWNLOADS and
 //      parses the whole file on every page view, so prefer (b) for any
@@ -161,7 +161,7 @@ const MARBLE_HTML_TO_IMAGE = (function () {
 }).call(globalThis);
 
 /* ==========================================================================
- * THE MARBLING WIDGET, v10
+ * THE MARBLING WIDGET, v11
  * ========================================================================== */
 /* DESIGN NOTES & CHANGELOG =================================================
  *
@@ -260,6 +260,9 @@ const MARBLE_HTML_TO_IMAGE = (function () {
  * with simulation area. Discrete semi-Lagrangian resampling means exact pixel
  * census conservation is not promised, despite the non-diffusive color model.
  *
+ * v11 (bounded runtime):
+ *  - Pause after `runMinutes` of visible animation; mouse movement resumes it.
+ *
  * v10 (documentation repair):
  *  - Restored this section after the v8 structural rewrite accidentally
  *    omitted it. The old block was not copied verbatim because several claims
@@ -338,6 +341,7 @@ const MARBLE_DEFAULT_CONFIG = {
     tineSpacing:  0.20,     // 0 is one closed toroidal tine
     tineStrokeSec: 1.2,     // 0 applies the stroke immediately
     resetMinutes: 10,
+    runMinutes:   60,       // visible runtime before pausing; mouse movement resumes; 0 disables
     rubrication: '#cc0000',
     tintPage: true,
     paletteSeconds: 60,
@@ -386,6 +390,7 @@ function marbleValidateConfig(c) {
     finite('tineSpacing', v => v >= 0);
     finite('tineStrokeSec', v => v >= 0);
     finite('resetMinutes', v => v >= 0);
+    finite('runMinutes', v => v >= 0);
     finite('paletteSeconds', v => v > 0);
     for (const name of ['smooth', 'antialias', 'pixelated', 'tintPage']) {
         if (typeof c[name] !== 'boolean') throw new TypeError('marble: CONFIG.' + name + ' must be boolean');
@@ -1367,6 +1372,7 @@ async function marbleRun(token, options) {
 
     function onPointerMove(event) {
         consume(event);
+        if (event.pointerType === 'mouse') resumeFromRuntimePause(performance.now());
         const gesture = gestures.get(event.pointerId);
         if (gesture) {
             gesture.x = event.clientX;
@@ -1489,6 +1495,8 @@ async function marbleRun(token, options) {
 
     let lastSim = startT;
     let hiddenAt = document.hidden ? startT : null;
+    let runtimePaused = false;
+    let runUntil = Infinity;
     let pausedMs = 0;
 
     function resumeFromHidden(now) {
@@ -1505,16 +1513,26 @@ async function marbleRun(token, options) {
         paletteAt += hiddenDuration;
         sheetAt += hiddenDuration;
         pausedMs += hiddenDuration;
+        if (Number.isFinite(runUntil)) runUntil += hiddenDuration;
         if (stroke) stroke.t0 += hiddenDuration;
         if (fadeUntil > pauseStarted) fadeUntil += hiddenDuration;
         lastSim = now;
+    }
+
+    function resumeFromRuntimePause(now) {
+        if (!runtimePaused || stopped || document.hidden) return;
+        runtimePaused = false;
+        resumeFromHidden(now);
+        runUntil = now + CONFIG.runMinutes * 60000;
+        record('resume', { reason: 'pointermove' }, now);
+        if (running) raf = requestAnimationFrame(frame);
     }
 
     function onVisibilityChange() {
         const now = performance.now();
         if (document.hidden) {
             if (hiddenAt === null) hiddenAt = now;
-        } else {
+        } else if (!runtimePaused) {
             resumeFromHidden(now);
         }
     }
@@ -1625,6 +1643,13 @@ async function marbleRun(token, options) {
             return;
         }
         resumeFromHidden(now);
+        if (CONFIG.runMinutes > 0 && now >= runUntil) {
+            runtimePaused = true;
+            hiddenAt = now;
+            raf = 0;
+            record('pause', { reason: 'runtime-limit' }, now);
+            return;
+        }
         try {
             if (now - lastSim >= 1000 / CONFIG.fps - 2) runFrame(now);
         } catch (error) {
@@ -1716,11 +1741,13 @@ async function marbleRun(token, options) {
             dimensions: { viewportWidth: vw, viewportHeight: vh, simulationWidth: sw, simulationHeight: sh, scale },
             seed: seedUsed,
             events,
-            get running() { return running; }
+            get running() { return running; },
+            get paused() { return runtimePaused; }
         };
         MARBLE_STATE.active = controller;
         stopAliasRestore = marbleInstallTemporaryAlias('__marbleStop', stop);
         running = true;
+        runUntil = CONFIG.runMinutes > 0 ? performance.now() + CONFIG.runMinutes * 60000 : Infinity;
         record('start', { seed: seedUsed, sw, sh, scale }, performance.now());
         console.log('marble: running at ' + sw + 'x' + sh + ' (scale ' + scale.toFixed(2)
             + ', ' + CONFIG.fps + 'fps cap), seed ' + seedUsed + '. Move/drag = rake; '
@@ -1796,7 +1823,7 @@ function marbleDispatch(script) {
     if (window !== window.top || MARBLE_STATE.idleArmed) return;
     MARBLE_STATE.idleArmed = true;
 
-    const IDLE_MS = 60 * 60 * 1000;
+    const IDLE_MS = 24 * 60 * 60 * 1000;
     const CHECK_MS = 60 * 1000;
     let lastActivity = Date.now();
     let activityEpoch = 0;

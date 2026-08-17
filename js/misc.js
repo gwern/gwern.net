@@ -2742,7 +2742,7 @@ if (location.hash > "") {
 // When:  Time-stamp: "2026-07-07 17:37:20 gwern"
 // License: CC-0
 //
-// After 1 hour with no user activity in a visible top-level tab, lazily load
+// After 24 hours with no user activity in a visible top-level tab, lazily load
 // </static/js/paper-marble.js>, which marbles the page on load ([left-click] /
 // [tap / [ESC] restores it; see that file). Designed to cost little for
 // active users:
@@ -2759,7 +2759,7 @@ if (location.hash > "") {
     if (window.matchMedia
         && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    var IDLE_MS  = 60 * 60 * 1000;       // 1 hour
+    var IDLE_MS  = 24 * 60 * 60 * 1000;  // 24 hours
     var CHECK_MS = 60 * 1000;
     var SRC = '/static/js/paper-marble.js';
     var lastActivity = Date.now();
@@ -2775,7 +2775,7 @@ if (location.hash > "") {
         if (document.hidden                    // background tab: rAF is asleep anyway
             || window.__marbleStop             // already marbling
             || Date.now() - lastActivity < IDLE_MS) return;
-        lastActivity = Date.now();             // re-arm for the next idle hour
+        lastActivity = Date.now();             // re-arm for the next 24 idle hours
         var s = document.createElement('script');
         s.src = SRC;
         s.async = true;
