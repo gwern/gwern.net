@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using LLM API
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2026-07-06 10:33:38 gwern"
+# When:  Time-stamp: "2026-08-30 11:01:00 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -785,6 +785,10 @@ We compare traditional text compression systems with neural network and LLM-base
 To overcome this, we present FineZip—a novel LLM-based text compression system that combines ideas of online memorization and dynamic context to reduce the compression time immensely.
 FineZip can compress the above corpus in ~4 hours compared to 9.5 days, a 54× improvement over LLMZip and comparable performance. FineZip outperforms traditional algorithmic compression methods with a large margin, improving compression ratios by ~50%.
 With this work, we take the first step towards making lossless text compression with LLMs a reality. While FineZip presents a step in that direction, LLMs are still not a viable solution for large-scale text compression. We hope our work paves the way for future research and innovation to solve this problem.
+- <abstract>Managerial behavior that is rational and profit-maximizing sometimes will seem to be overly conservative. If the valuation of innovations contains white noise and the status quo would be preferred to random innovation, then any innovation that does not appear substantially better than the status quo should be rejected, for reasons arising from regression toward the mean. The more successful the firm, the higher is the optimal acceptance threshold and conservative bias. Other things equal, more successful firms will spend less on research, adopt fewer innovations, and be less likely to advance the industry's best practice.</abstract>
+Managerial behavior that is rational and profit-maximizing sometimes will seem to be overly conservative.
+If the valuation of innovations contains white noise and the status quo would be preferred to random innovation, then any innovation that does not appear substantially better than the status quo should be rejected, for reasons arising from regression toward the mean.
+The more successful the firm, the higher is the optimal acceptance threshold and conservative bias. Other things equal, more successful firms will spend less on research, adopt fewer innovations, and be less likely to advance the industry's best practice.
 
 [End of examples. Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 

@@ -79,7 +79,7 @@ badStrings = setLike ["", " ", "Quanta Magazine", "OSF", "CAIDA Resource Catalog
      , "The Anime Cafe", "life in a monospace typeface", "News Details", "GlyphDrawing.Club -blog"
      , "Informasi Resmi Game Online Terkini Cuan", "Zotero", "Sign in - Google Accounts", "Virgin and Child"
      , "Michael Wolf", "L.B.Stanza", "Blog Post - Alex Litzenberger", "The American Society of Cinematographers"
-     , "archiveofourown.org", "Reddit - Please wait for verification", "Newsletter", "429 Too Many Requests", "Health", "ISRCTN", "Epic Research", "Internal Server Error"]
+     , "archiveofourown.org", "Reddit - Please wait for verification", "Newsletter", "429 Too Many Requests", "Health", "ISRCTN", "Epic Research", "Internal Server Error", "Surya Narreddi", "Plain Form", "Security Verification"]
 
 -- A list of bad substrings to remove. Note this is used with `Utils.deleteMixedMany` to specialize down to either prefix or suffix deletion based on the trailing vs leading space (respectively). This should greatly reduce the risk of unintended deletions.
 -- Testing: unique list
@@ -197,4 +197,4 @@ stringDelete = setLike [" - The Public Domain Review"
             , " - Unsung", " - The Shamblog", " - Felix Krause", " - apenwarr", "—Clear Language, Clear Mind", " - Project Play"
             , "Haskell for all: ", " | Health &amp; wellbeing", " | Health & wellbeing", " - Project Zero", " - Armand D’Angour"
             , "God Plays Dice: ", " - by Benjamin Grayzel - Benjamin’s Substack", " - by Beau Watson", " - To Whom It May Concern"
-            , " - Ars Technica", "XBOW - ", " :: Himanshu Anand :: Threat Notes", "Literary Hub - ", "Dinosaur Comics - ", " - awesome fun times!", " - David Oks", " - by Nathan Lambert", " - Biblioklept", "Paul Buchheit: ", " - by Andy Hall", " - by Daniel Frank", "SciFi Japan - ", " - The Linchpin"]
+            , " - Ars Technica", "XBOW - ", " :: Himanshu Anand :: Threat Notes", "Literary Hub - ", "Dinosaur Comics - ", " - awesome fun times!", " - David Oks", " - by Nathan Lambert", " - Biblioklept", "Paul Buchheit: ", " - by Andy Hall", " - by Daniel Frank", "SciFi Japan - ", " - The Linchpin", " - The Trail of Bits Blog"]

@@ -996,6 +996,7 @@ canonicals = setLike
   , ("JohnWittle", "John Wittle")
   , ("ClementDelangue", "Clement Delangue")
   , ("tenobrus", "Tenobrus")
+  , ("RyanGreenblatt", "Ryan Greenblatt")
   ]
 
 -- tests: unique; none are URLs
@@ -2273,6 +2274,7 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("GPT-5.5 Pro", "https://openai.com/index/introducing-gpt-5-5/#pro")
     , ("GPT-5.5 Thinking", "https://openai.com/index/introducing-gpt-5-5/#thinking")
     , ("GPT-5.6 Sol", "https://openai.com/index/gpt-5-6/")
+    , ("GPT-6 Astra", "https://openai.com/index/gpt-6-astra/")
     , ("Leslie Stephen Coles", "https://en.wikipedia.org/wiki/L._Stephen_Coles")
     , ("Coral Osborne", "https://substack.com/@coralosborne")
     , ("Jacob Bacharach", "https://jacobbacharach.com/")
@@ -2357,6 +2359,7 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("Theia", "https://vgel.me/")
     , ("Paul Elliott", "https://en.wikipedia.org/wiki/Paul_Elliott_(epidemiologist)")
     , ("Stuart Armstrong", "https://scholar.google.com/citations?user=bSJaYzgAAAAJ")
+    , ("Surya Narreddi", "https://surya.website/rling-qwen-to-paint-with-code")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3665,4 +3668,5 @@ authorWpLinkDB = setLike
     , "William Sims Bainbridge", "Kat Rosenfield", "M. Anthony Lewis", "Giorgio Parisi", "Arthur Machen", "Dan Tawfik"
     , "Benton J. Underwood", "Woodkid", "Frank C. Garland", "Sidney Coleman", "Christopher Sorrentino", "Sol LeWitt"
     , "Nathan Keyfitz", "Adolf Leo Oppenheim", "Elijah Millgram", "Gary Larson", "Colin Furze", "Emmanuel Candès"
-    , "Jose Camacho-Collados", "Jakub Pachocki", "Kanaka Rajan", "J. David Bleich", "Caroline S. Wagner", "Helen Margetts"]
+    , "Jose Camacho-Collados", "Jakub Pachocki", "Kanaka Rajan", "J. David Bleich", "Caroline S. Wagner", "Helen Margetts"
+    , "Matt Thomson", "Kathleen McKeown", "Eric Rasmusen", "Chi Wang"]

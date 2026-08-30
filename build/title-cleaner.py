@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-08-17 14:12:54 gwern"
+# When:  Time-stamp: "2026-08-30 11:00:25 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -997,6 +997,16 @@ Notes from inside China’s AI labs
 "Studio Ghibli’s <em>The Tale Of The Princess Kaguya</em> Production Notes"
 - "https://linch.substack.com/p/youre-absolutely-right You’re Absolutely Right—The Linchpin"
 "You’re Absolutely Right"
+- "https://surya.website/rling-qwen-to-paint-with-code Surya Narreddi"
+""
+- "https://plain-form.com/typefaces/ferro Plain Form"
+""
+- "https://blog.trailofbits.com/2026/08/26/vms-wont-contain-cyber-capable-agents/ VMs won’t contain cyber-capable agents - The Trail of Bits Blog"
+"VMs won’t contain cyber-capable agents"
+- "https://www.ft.com/content/7117ff02-d495-4936-8f05-fa73a7a5c669 Security Verification"
+""
+- "Managerial Conservatismand Rational Information Acquisition"
+"Managerial Conservatism and Rational Information Acquisition"
 
 """
 
