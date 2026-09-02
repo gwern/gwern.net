@@ -1,15 +1,16 @@
 module Annotation.Arxiv (arxiv, processArxivAbstract) where
 
+import Control.Concurrent (threadDelay)
 import Data.List (intercalate, isInfixOf, isSuffixOf)
 import qualified Data.Text as T (pack, unpack)
 import Data.FileStore.Utils (runShellCommand)
-import qualified Data.ByteString.Lazy.UTF8 as U (toString, ByteString) -- TODO: why doesn't using U.toString fix the Unicode problems?
+import qualified Data.ByteString.Lazy.UTF8 as U (fromString, toString, ByteString) -- TODO: why doesn't using U.toString fix the Unicode problems?
 import Text.Show.Pretty (ppShow)
-import System.Exit (ExitCode(ExitFailure))
+import System.Exit (ExitCode(ExitFailure, ExitSuccess))
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, HTMLMathMethod(MathJax),
                     defaultMathJaxURL, def, readLaTeX, writeHtml5String, WrapOption(WrapNone), runPure, pandocExtensions)
 import Text.Pandoc.Walk (walk)
-import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, Tag(TagText))
+import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, renderTags, Tag(TagText, TagOpen, TagClose))
 import System.IO.Unsafe (unsafePerformIO)
 
 import LinkMetadataTypes (Failure(..), Metadata, MetadataItem, Path)
@@ -51,8 +52,39 @@ arxivDownload url = do
                                  then deleteMany ["https://arxiv.org/pdf/", ".pdf"] url
                                  else delete "https://arxiv.org/abs/" url
                -- <https://info.arxiv.org/help/api/user-manual.html#_query_interface>
-               (a,_,c) <- runShellCommand "./" Nothing "curl" ["--location","--silent","https://export.arxiv.org/api/query?id_list="++arxivid, "--user-agent", "gwern+arxivscraping@gwern.net"]
-               return (a,c,arxivid)
+               (a,c) <- fetch $ "https://export.arxiv.org/api/query?id_list=" ++ arxivid
+               if a == ExitSuccess && not (null $ fst $ element "entry" $ parseTags $ U.toString c)
+                 then return (a,c,arxivid)
+                 else do
+                   printRed ("Arxiv API failed; trying abstract page: " ++ arxivid ++ "; " ++ take 200 (U.toString c))
+                   threadDelay 3000000
+                   (b,page) <- fetch $ "https://export.arxiv.org/abs/" ++ arxivid
+                   let soup = parseTags $ U.toString page
+                       meta n = [v | TagOpen "meta" attrs <- soup,
+                                     lookup "name" attrs == Just ("citation_" ++ n),
+                                     Just v <- [lookup "content" attrs]]
+                       value = concat . meta
+                       wrap n ts = TagOpen n [] : ts ++ [TagClose n]
+                       field n v = wrap n [TagText v]
+                       author s = case break (==',') s of
+                                    (surname, ',':given) -> dropWhile (==' ') given ++ " " ++ surname
+                                    _ -> s
+                       entry = wrap "entry" $
+                           field "title" (value "title") ++
+                           concatMap (wrap "author" . field "name" . author) (meta "author") ++
+                           field "published" (replace "/" "-" $ value "date") ++
+                           field "arxiv:doi" (value "doi") ++
+                           field "summary" (value "abstract")
+                   if b /= ExitSuccess then return (b,page,arxivid)
+                     else if any (null . value) ["title","author","date","abstract"]
+                       then return (ExitFailure 1,page,arxivid)
+                       else return (b,U.fromString $ renderTags entry,arxivid)
+  where
+    fetch u = do
+      (status,err,body) <- runShellCommand "./" Nothing "curl"
+          ["--location","--silent","--show-error","--fail","--connect-timeout","10","--max-time","30",
+           "--user-agent","gwern+arxivscraping@gwern.net",u]
+      return (status, if status == ExitSuccess then body else err)
 
 -- NOTE: we inline Tagsoup convenience code from Network.Api.Arxiv (<https://hackage.haskell.org/package/arxiv-0.0.1/docs/src/Network-Api-Arxiv.html>); because that library is unmaintained & silently corrupts data (<https://github.com/toschoo/Haskell-Libs/issues/1>), we keep the necessary code close at hand so at least we can easily patch it when errors come up
 -- Get the content of a 'TagText'
