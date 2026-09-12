@@ -2736,7 +2736,7 @@ if (location.hash > "") {
 	}, selectorFromHash(location.hash));
 }
 
-// marble-screensaver.js — idle-timeout loader for `paper-marble.js` screensaver easter egg
+// Idle-timeout loader for `paper-marble.js` (included in the site's JS bundle).
 // Author: Gwern Branwen, Claude-5-Fable (Anthropic)
 // Date: 2026-07-07
 // When:  Time-stamp: "2026-07-07 17:37:20 gwern"
@@ -2746,8 +2746,8 @@ if (location.hash > "") {
 // </static/js/paper-marble.js>, which marbles the page on load ([left-click] /
 // [tap / [ESC] restores it; see that file). Designed to cost little for
 // active users:
-//  - the activity handlers are passive and do ONE timestamp assignment
-//    (no timer churn per event);
+//  - the activity handlers are passive and update a timestamp / invalidate
+//    a pending launch ticket (no timer churn per event);
 //  - idleness is checked by a 60-second interval, i.e. ~0.0003% duty cycle;
 //  - paper-marble.js is not fetched until the moment it is needed, and
 //    repeat triggers re-execute it from the HTTP cache.
@@ -2762,9 +2762,17 @@ if (location.hash > "") {
     var IDLE_MS  = 24 * 60 * 60 * 1000;  // 24 hours
     var CHECK_MS = 60 * 1000;
     var SRC = '/static/js/paper-marble.js';
+    var RUNTIME_KEY = Symbol.for('gwern.paper-marble.runtime');
+    var IDLE_TICKET_KEY = Symbol.for('gwern.paper-marble.idle-ticket');
     var lastActivity = Date.now();
+    var loading = false;
 
-    function activity() { lastActivity = Date.now(); }
+    function activity() {
+        lastActivity = Date.now();
+        // Cover activity during the download, before the widget can listen.
+        var ticket = globalThis[IDLE_TICKET_KEY];
+        if (ticket) ticket.valid = false;
+    }
     ['pointermove', 'pointerdown', 'keydown', 'wheel', 'scroll', 'touchstart']
         .forEach(function (ev) {
             window.addEventListener(ev, activity, { passive: true, capture: true });
@@ -2772,13 +2780,31 @@ if (location.hash > "") {
     document.addEventListener('visibilitychange', activity);
 
     setInterval(function () {
+        var runtime = globalThis[RUNTIME_KEY];
+        if (loading || (runtime && (runtime.active || runtime.starting))) {
+            // Input inside the marbling iframe does not reach this window.
+            // Keep the idle delay rearmed until the screensaver is dismissed.
+            lastActivity = Date.now();
+            return;
+        }
         if (document.hidden                    // background tab: rAF is asleep anyway
-            || window.__marbleStop             // already marbling
+            || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)
             || Date.now() - lastActivity < IDLE_MS) return;
         lastActivity = Date.now();             // re-arm for the next 24 idle hours
+        var ticket = { valid: true };
+        globalThis[IDLE_TICKET_KEY] = ticket;
+        loading = true;
         var s = document.createElement('script');
         s.src = SRC;
         s.async = true;
+        s.dataset.marbleIdleStart = '';
+        s.onload = s.onerror = function (event) {
+            loading = false;
+            if (event.type === 'error' && globalThis[IDLE_TICKET_KEY] === ticket) {
+                delete globalThis[IDLE_TICKET_KEY];
+            }
+            s.remove();
+        };
         document.head.appendChild(s);          // paper-marble.js runs on load
     }, CHECK_MS);
 })();

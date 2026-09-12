@@ -26,8 +26,8 @@
 //  (1) Run now: paste this entire file into the DevTools console of any page,
 //      or include it as a plain `<script src=...>`: it marbles on load.
 //  (2) PRODUCTION idle screensaver (the Gwern.net deployment): do NOT
-//      reference this file from any HTML. Instead, inline the tiny companion
-//      stub (`marble-screensaver.js`) into the site's existing JS bundle;
+//      reference this file from any HTML. The tiny idle loader at the end of
+//      `js/misc.js` is included in the site's existing JS bundle;
 //      after 24 idle hours it injects
 //      `<script src="/static/js/paper-marble.js" data-marble-idle-start>`,
 //      which cancels startup if the reader returns during asynchronous capture.
@@ -594,7 +594,20 @@ async function marbleRun(token, options) {
         return canvas;
     }
 
-    const snap = await snapshotViewport();
+    // Bound the wait even if a resource never settles. The timeout cannot
+    // interrupt synchronous cloning or abort the vendor's outstanding work;
+    // invalidate this launch so a late capture cannot display an overlay.
+    let captureTimer;
+    const snap = await Promise.race([
+        snapshotViewport(),
+        new Promise(resolve => {
+            captureTimer = setTimeout(() => {
+                if (alive()) console.warn('marble: page capture timed out; startup cancelled.');
+                if (MARBLE_STATE.generation === token) MARBLE_STATE.generation++;
+                resolve(null);
+            }, 30 * 1000);
+        })
+    ]).finally(() => clearTimeout(captureTimer));
     if (!snap || !alive()) return null;
 
     let sim = document.createElement('canvas');
@@ -1090,8 +1103,10 @@ async function marbleRun(token, options) {
                 });
             };
             for (const element of [document.documentElement, document.body]) {
-                setImportant(element, 'overflow', 'hidden');
-                setImportant(element, 'overscroll-behavior', 'none');
+                setImportant(element, 'overflow-x', 'hidden');
+                setImportant(element, 'overflow-y', 'hidden');
+                setImportant(element, 'overscroll-behavior-x', 'none');
+                setImportant(element, 'overscroll-behavior-y', 'none');
                 setImportant(element, 'touch-action', 'none');
             }
 
