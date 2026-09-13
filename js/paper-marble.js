@@ -930,7 +930,8 @@ async function marbleRun(token, options) {
     const TAU = Math.PI * 2;
     for (let i = 0; i < CONFIG.waves; i++) {
         const angle = rand() * TAU;
-        const targetK = CONFIG.waveScale * (0.5 + rand());
+        // Let broad folds carry smaller curls without adding wave modes.
+        const targetK = CONFIG.waveScale * (0.5 + rand()) * (i % 2 ? 1.8 : 0.65);
         let nx = Math.round(Math.cos(angle) * targetK * sw / TAU);
         let ny = Math.round(Math.sin(angle) * targetK * sh / TAU);
         if (!nx && !ny) {
