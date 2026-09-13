@@ -1576,7 +1576,20 @@ async function marbleRun(token, options) {
             if (operation.kind === 'tine' && stroke) { index++; continue; }
             opQueue.splice(index, 1);
             if (operation.kind === 'drop') {
-                applyDrop(operation.x, operation.y, operation.r, operation.pigment);
+                // Three concentric deposits, with approximately the same total
+                // deposited area as the original single drop. Use existing slots.
+                const outer = parseHex(bandHex[operation.pigment]);
+                let contrast = 1, bestDistance = -1;
+                for (let slot = 1; slot < SLOTS; slot++) {
+                    const rgb = parseHex(bandHex[slot]);
+                    const distance = Math.abs((rgb[0] - outer[0]) * 77
+                        + (rgb[1] - outer[1]) * 151 + (rgb[2] - outer[2]) * 28);
+                    if (distance > bestDistance) { bestDistance = distance; contrast = slot; }
+                }
+                const radius = operation.r / Math.sqrt(1 + 0.64 ** 2 + 0.34 ** 2);
+                applyDrop(operation.x, operation.y, radius, operation.pigment);
+                applyDrop(operation.x, operation.y, radius * 0.64, contrast);
+                applyDrop(operation.x, operation.y, radius * 0.34, operation.pigment);
                 if (operation.pigment === 0 && rubricationPending) rubricationPending = false;
                 record('drop', {
                     pigment: operation.pigment,
