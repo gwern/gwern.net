@@ -336,7 +336,7 @@ const MARBLE_DEFAULT_CONFIG = {
     rainMargin:   0.12,
     tineMean:     25,
     tineFirst:    18,
-    tineShift:    0.30,
+    tineShift:    0.16,
     tineFalloff:  0.05,
     tineSpacing:  0.20,     // 0 is one closed toroidal tine
     tineStrokeSec: 1.2,     // 0 applies the stroke immediately
