@@ -705,6 +705,14 @@ async function marbleRun(token, options) {
         const n = sw * sh * 4;
         for (let i = 0; i < n; i += 4) {
             const v = (orig[i] * 77 + orig[i + 1] * 151 + orig[i + 2] * 28) >> 8;
+            // Keep the source paper and darkest ink as tonal anchors.
+            if (v >= 244 || v <= 24) {
+                srcPix[i] = orig[i];
+                srcPix[i + 1] = orig[i + 1];
+                srcPix[i + 2] = orig[i + 2];
+                srcPix[i + 3] = 255;
+                continue;
+            }
             srcPix[i] = lut[v * 3];
             srcPix[i + 1] = lut[v * 3 + 1];
             srcPix[i + 2] = lut[v * 3 + 2];
