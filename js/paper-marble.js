@@ -339,7 +339,7 @@ const MARBLE_DEFAULT_CONFIG = {
     tineShift:    0.16,
     tineFalloff:  0.05,
     tineSpacing:  0.20,     // 0 is one closed toroidal tine
-    tineStrokeSec: 1.2,     // 0 applies the stroke immediately
+    tineStrokeSec: 3.6,     // 0 applies the stroke immediately
     resetMinutes: 10,
     runMinutes:   60,       // visible runtime before pausing; mouse movement resumes; 0 disables
     rubrication: '#cc0000',
