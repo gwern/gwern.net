@@ -895,7 +895,9 @@ async function marbleRun(token, options) {
             + geometry.ny * (y - geometry.y) / sh;
         const phaseDistance = phase - Math.round(phase);
         const distance = Math.abs(phaseDistance) / geometry.gmag;
-        return amount * lambda / (distance + lambda);
+        // Round the tooth-center cusp; retain the periodic tangent shear.
+        const relativeDistance = distance / lambda;
+        return amount / (1 + relativeDistance * relativeDistance);
     }
 
     function applyTine(geometry, amount, lambda) {
