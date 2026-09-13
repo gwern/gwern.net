@@ -346,8 +346,10 @@ const MARBLE_DEFAULT_CONFIG = {
     tintPage: true,
     paletteSeconds: 60,
     palettes: [
-        // Designed palette; subsequent entries retain their historical sources.
+        // Designed opening palettes, followed by historical scan palettes.
         ['porcelain-rubrication', ['#111d32', '#f4f7fc', '#80b4d6', '#c52c46', '#326b9b', '#c8dce9']],
+        ['graphite-rubrication', ['#101825', '#f7f9fc', '#96a8be', '#7f243d', '#3b526e', '#d8e2ee']],
+        ['indigo-paper', ['#1e183d', '#f6f3ff', '#aaa4e0', '#a02d67', '#5b54a0', '#dcd8f1']],
         ['french-curl-1735',   ['#717574', '#c8a186', '#e2bc9d', '#97403e', '#b77259', '#d69852']],
         ['english-spot-1830',  ['#313f4e', '#8b4739', '#ae937b', '#a76c4f', '#6c5f59', '#55342f']],
         ['french-curl-1880',   ['#520a0d', '#6e2a20', '#844c2d', '#4d4632', '#36627c', '#c16538']],
