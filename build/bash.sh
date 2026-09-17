@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-08-17 12:05:33 gwern"
+# When:  Time-stamp: "2026-09-12 14:49:17 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -117,9 +117,10 @@ path2File () {
 export -f path2File
 
 cloudflare-expire () {
+    local ARGS FILE URL
     ARGS=$(path2File "$@")
     for FILE in $(realpath $ARGS); do
-        URL="$(echo $FILE | sed -e 's/\.md//' -e 's/\/home\/gwern\/wiki\/\(.*\)/https:\/\/gwern\.net\/\1/g' -e 's/\.md//g' | sort )"
+        URL="$(echo $FILE | sed -e 's/\.md$//' -e 's/\/home\/gwern\/wiki\/\(.*\)/https:\/\/gwern.net\/\1/g' | sort )"
         echo -n "Expiring: $FILE → $URL : "
         curl --silent --request POST "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_TARGET/purge_cache" \
             --header "X-Auth-Email:gwern@gwern.net" \

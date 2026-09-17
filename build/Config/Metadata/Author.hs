@@ -997,6 +997,12 @@ canonicals = setLike
   , ("ClementDelangue", "Clement Delangue")
   , ("tenobrus", "Tenobrus")
   , ("RyanGreenblatt", "Ryan Greenblatt")
+  , ("antonhowes", "Anton Howes")
+  , ("rubenarslan", "Ruben Arslan")
+  , ("JimDMiller", "Jim D. Miller")
+  , ("JensenHuang", "Jensen Huang")
+  , ("David Kristjanson Duvenaud", "David Duvenaud")
+  , ("Eric Anthony Mitchell", "Eric Mitchell")
   ]
 
 -- tests: unique; none are URLs
@@ -1052,7 +1058,7 @@ canonicalsWithInitials = setLike
   , "M. Saiful Bari", "Robert A. Freitas", "Roland G. Fryer", "Leslie Stephen Coles", "Mathew John Wedel"
   , "Ralph S. Baric", "Jack D. Cowan", "Paul C. Bressloff", "Claire N. Spottiswoode", "Clemens L. Winter"
   , "Hervey M. Cleckley", "Miriam A. Mosing", "Murray B. Stein", "David Samuel Margoliouth", "Guy L. Steele"
-  , "Nabeel S. Qureshi", "Robert E. Forsythe", "Alexander Strudwick Young", "George H. Estabrooks", "David L. Waltz", "Stephen A. Ross", "Adolf Leo Oppenheim", "Caroline S. Wagner"]
+  , "Nabeel S. Qureshi", "Robert E. Forsythe", "Alexander Strudwick Young", "George H. Estabrooks", "David L. Waltz", "Stephen A. Ross", "Adolf Leo Oppenheim", "Caroline S. Wagner", "Cassandra Cybele Raver", "A. Douglas Stone"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -2359,7 +2365,11 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("Theia", "https://vgel.me/")
     , ("Paul Elliott", "https://en.wikipedia.org/wiki/Paul_Elliott_(epidemiologist)")
     , ("Stuart Armstrong", "https://scholar.google.com/citations?user=bSJaYzgAAAAJ")
-    , ("Surya Narreddi", "https://surya.website/rling-qwen-to-paint-with-code")
+    , ("Surya Narreddi", "https://surya.website/")
+    , ("David Duvenaud", "https://www.cs.toronto.edu/~duvenaud/")
+    , ("Eric Mitchell", "https://ericmitchell.ai/")
+    , ("Sharan Narang", "https://scholar.google.com/citations?user=CWOixywAAAAJ")
+    , ("Dan Garrette", "https://www.dhgarrette.com/")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3669,4 +3679,6 @@ authorWpLinkDB = setLike
     , "Benton J. Underwood", "Woodkid", "Frank C. Garland", "Sidney Coleman", "Christopher Sorrentino", "Sol LeWitt"
     , "Nathan Keyfitz", "Adolf Leo Oppenheim", "Elijah Millgram", "Gary Larson", "Colin Furze", "Emmanuel Candès"
     , "Jose Camacho-Collados", "Jakub Pachocki", "Kanaka Rajan", "J. David Bleich", "Caroline S. Wagner", "Helen Margetts"
-    , "Matt Thomson", "Kathleen McKeown", "Eric Rasmusen", "Chi Wang"]
+    , "Matt Thomson", "Kathleen McKeown", "Eric Rasmusen", "Chi Wang", "Jensen Huang", "Cassandra Cybele Raver"
+    , "A. Douglas Stone", "Steven Girvin", "Logan Wright", "Edward Adelson", "Pawan Sinha"]
+

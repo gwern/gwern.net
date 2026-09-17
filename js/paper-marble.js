@@ -1,7 +1,7 @@
 // paper-marble.js: ink-marble the current web page (an idle 'screensaver' toy).
 // Author: Gwern Branwen, Claude-5-Fable, GPT-5.6 Sol
 // Date: 2026-07-07
-// When:  Time-stamp: "2026-08-08 14:55:37 gwern"
+// When:  Time-stamp: "2026-09-12 20:39:53 gwern"
 // License: CC-0 (except the vendored html-to-image library: MIT, notice below)
 //
 // Turns the current viewport into a sheet of paper being marbled (<https://en.wikipedia.org/wiki/Paper_marbling>).
