@@ -2311,6 +2311,7 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("ChatGPT-3.5", "https://openai.com/blog/chatgpt/")
     , ("GPT-3.5", "https://platform.openai.com/docs/models/gpt-3")
     , ("ChatGPT Images-2.0", "https://openai.com/index/introducing-chatgpt-images-2-0/")
+    , ("ChatGPT Images-2.5", "https://openai.com/index/introducing-chatgpt-images-2-5/")
     , ("Clemens L. Winter", "https://clemenswinter.com/")
     , ("Christopher Berner", "https://www.cberner.com/about/")
     , ("Mateusz Litwin", "https://scholar.google.com/citations?user=YTPyXHAAAAAJ")
@@ -2370,6 +2371,7 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("Eric Mitchell", "https://ericmitchell.ai/")
     , ("Sharan Narang", "https://scholar.google.com/citations?user=CWOixywAAAAJ")
     , ("Dan Garrette", "https://www.dhgarrette.com/")
+    , ("theahura", "https://substack.com/@theahura")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3680,5 +3682,5 @@ authorWpLinkDB = setLike
     , "Nathan Keyfitz", "Adolf Leo Oppenheim", "Elijah Millgram", "Gary Larson", "Colin Furze", "Emmanuel Candès"
     , "Jose Camacho-Collados", "Jakub Pachocki", "Kanaka Rajan", "J. David Bleich", "Caroline S. Wagner", "Helen Margetts"
     , "Matt Thomson", "Kathleen McKeown", "Eric Rasmusen", "Chi Wang", "Jensen Huang", "Cassandra Cybele Raver"
-    , "A. Douglas Stone", "Steven Girvin", "Logan Wright", "Edward Adelson", "Pawan Sinha"]
+    , "A. Douglas Stone", "Steven Girvin", "Logan Wright", "Edward Adelson", "Pawan Sinha", "Michelle Monje"]
 
