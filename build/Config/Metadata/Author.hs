@@ -980,6 +980,9 @@ canonicals = setLike
   , ("bcherny", "Boris Cherny")
   , ("nosilverv", "Guy")
   , ("Claude-5-Sonnet", "Claude-5-sonnet")
+  , ("Claude-5.5-Opus", "Claude-5.5-opus")
+  , ("Claude-Opus-5.5", "Claude-5.5-opus")
+  , ("Claude-opus-5.5", "Claude-5.5-opus")
   , ("dwillis", "Derek Willis")
   , ("allTheYud", "Eliezer Yudkowsky")
   , ("ben_r_hoffman", "Ben R. Hoffman")
@@ -1058,7 +1061,8 @@ canonicalsWithInitials = setLike
   , "M. Saiful Bari", "Robert A. Freitas", "Roland G. Fryer", "Leslie Stephen Coles", "Mathew John Wedel"
   , "Ralph S. Baric", "Jack D. Cowan", "Paul C. Bressloff", "Claire N. Spottiswoode", "Clemens L. Winter"
   , "Hervey M. Cleckley", "Miriam A. Mosing", "Murray B. Stein", "David Samuel Margoliouth", "Guy L. Steele"
-  , "Nabeel S. Qureshi", "Robert E. Forsythe", "Alexander Strudwick Young", "George H. Estabrooks", "David L. Waltz", "Stephen A. Ross", "Adolf Leo Oppenheim", "Caroline S. Wagner", "Cassandra Cybele Raver", "A. Douglas Stone"]
+  , "Nabeel S. Qureshi", "Robert E. Forsythe", "Alexander Strudwick Young", "George H. Estabrooks", "David L. Waltz"
+  , "Stephen A. Ross", "Adolf Leo Oppenheim", "Caroline S. Wagner", "Cassandra Cybele Raver", "A. Douglas Stone", "Paul L. McEuen"]
 
 -- Config tests: unique all, no loops, all values are URLs, no overlap between the non-canonical rewrites & the canonicals, no '&' present in key (usually means a corrupted HTML entity which should be replaced by a Unicode literal)
 authorLinkDB :: M.Map T.Text T.Text
@@ -2275,12 +2279,15 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("Claude-5-Mythos", "https://www-cdn.anthropic.com/3edfc1a7f947aa81841cf88305cb513f184c36ae.pdf")
     , ("Claude-5-Fable", "https://www.anthropic.com/news/claude-fable-5-mythos-5")
     , ("Claude-5-sonnet", "https://www.anthropic.com/news/claude-sonnet-5")
+    , ("Claude-5.5-opus", "https://www.anthropic.com/claude-opus-5-5")
     , ("Vishal Prasad", "https://substack.com/@vishalprasad1")
     , ("GPT-5.3-Codex", "https://openai.com/index/introducing-gpt-5-3-codex/")
     , ("GPT-5.5 Pro", "https://openai.com/index/introducing-gpt-5-5/#pro")
     , ("GPT-5.5 Thinking", "https://openai.com/index/introducing-gpt-5-5/#thinking")
     , ("GPT-5.6 Sol", "https://openai.com/index/gpt-5-6/")
     , ("GPT-6 Astra", "https://openai.com/index/gpt-6-astra/")
+    , ("GPT-6 Sol", "https://openai.com/index/introducing-gpt-6-sol-and-luna/#sol")
+    , ("GPT-6 Luna", "https://openai.com/index/introducing-gpt-6-sol-and-luna/#luna")
     , ("Leslie Stephen Coles", "https://en.wikipedia.org/wiki/L._Stephen_Coles")
     , ("Coral Osborne", "https://substack.com/@coralosborne")
     , ("Jacob Bacharach", "https://jacobbacharach.com/")
@@ -3682,5 +3689,6 @@ authorWpLinkDB = setLike
     , "Nathan Keyfitz", "Adolf Leo Oppenheim", "Elijah Millgram", "Gary Larson", "Colin Furze", "Emmanuel Candès"
     , "Jose Camacho-Collados", "Jakub Pachocki", "Kanaka Rajan", "J. David Bleich", "Caroline S. Wagner", "Helen Margetts"
     , "Matt Thomson", "Kathleen McKeown", "Eric Rasmusen", "Chi Wang", "Jensen Huang", "Cassandra Cybele Raver"
-    , "A. Douglas Stone", "Steven Girvin", "Logan Wright", "Edward Adelson", "Pawan Sinha", "Michelle Monje"]
+    , "A. Douglas Stone", "Steven Girvin", "Logan Wright", "Edward Adelson", "Pawan Sinha", "Michelle Monje"
+    , "Michael Freedman", "Paul L. McEuen"]
 

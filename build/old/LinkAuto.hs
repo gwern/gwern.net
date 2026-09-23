@@ -1104,7 +1104,7 @@ custom = setLike [
         , ("[Mm]ono no aware", "https://en.wikipedia.org/wiki/Mono_no_aware")
         , ("[Mm]ultiple comparisons?", "https://en.wikipedia.org/wiki/Multiple_comparisons_problem")
         , ("[Mm]ultiple discover(y|ies)", "https://en.wikipedia.org/wiki/Multiple_discovery")
-        , ("([Gg]enerali([zs]ed)? [Ll]inear [Mm]odels?|GLMs)", "https://en.wikipedia.org/wiki/Generalized_linear_model") -- exclude 'GLM' because that's https://arxiv.org/abs/2210.02414#baai
+        , ("([Gg]enerali([zs]ed)? [Ll]inear [Mm]odels?|GLMs)", "https://en.wikipedia.org/wiki/Generalized_linear_model") -- exclude 'GLM' because that's https://arxiv.org/abs/2210.02414#zhipu
         , ("[Mm]ultivariate linear model", "https://en.wikipedia.org/wiki/Multivariate_linear_model")
         , ("([Mm]utation load|[Gg]enetic load)", "https://en.wikipedia.org/wiki/Genetic_load")
         , ("([Nn]-grams?|<em>[Nn]</em>-gram?)", "https://en.wikipedia.org/wiki/N-grams")
