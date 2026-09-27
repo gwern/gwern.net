@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-09-12 14:49:17 gwern"
+# When:  Time-stamp: "2026-09-26 13:21:47 gwern"
 # License: CC-0
 #
 # Bash helper functions for Gwern.net wiki use.
@@ -76,12 +76,12 @@ gr () {
     local file="$1"
     shift
     if [ ! -r "$file" ]; then
-        echo "G: cannot read file: $file" >&2
+        echo "G: cannot read file: $file; did you mean to use 'ga' ('grep all'/recursive grep)?" >&2
         return 1
     fi
     grep "$@" -- "$file"
 }
-# 'grep all': recursive grep.
+# 'grep all': recursive grep. (Previously named 'gr'.)
 ga () { local LC_ALL=C; find . -type f -print0 | \
             parallel --null  --max-args=50 -m \
                      grep -F --ignore-case --color=always --with-filename --line-number --fixed-strings \""$@"\" -- {}; }
@@ -1548,44 +1548,44 @@ gw () {
     # grep emits ordinary line-oriented matches (and Bash variables cannot
     # contain NUL bytes anyway). Also parenthesize find's `-name` alternatives so
     # that predicates such as `-type f` apply to every listed extension.
-	RESULTS=$(
-	    (
-	        find "$HOME/wiki/" -type f -name '*.md' -print0
+    RESULTS=$(
+        (
+            find "$HOME/wiki/" -type f -name '*.md' -print0
 
-	        printf '%s\0' "$HOME/.emacs"
-	        find "$HOME/" -maxdepth 1 -type f -name '*.md' -print0
+            printf '%s\0' "$HOME/.emacs"
+            find "$HOME/" -maxdepth 1 -type f -name '*.md' -print0
 
-	        find "$HOME/wiki/metadata/" "$HOME/wiki/haskell/" -type f \
-	            \( -name '*.hs' -o -name '*.gtx' \) -print0
+            find "$HOME/wiki/metadata/" "$HOME/wiki/haskell/" -type f \
+                \( -name '*.hs' -o -name '*.gtx' \) -print0
 
-	        find "$HOME/wiki/static/" -type f \
-	            \( -name '*.js'   -o \
-	               -name '*.css'  -o \
-	               -name '*.hs'   -o \
-	               -name '*.conf' -o \
-	               -name '*.gtx'  -o \
-	               -name '*.py'   -o \
-	               -name '*.sh'   -o \
-	               -name '*.el' \) -print0
+            find "$HOME/wiki/static/" -type f \
+                \( -name '*.js'   -o \
+                   -name '*.css'  -o \
+                   -name '*.hs'   -o \
+                   -name '*.conf' -o \
+                   -name '*.gtx'  -o \
+                   -name '*.py'   -o \
+                   -name '*.sh'   -o \
+                   -name '*.el' \) -print0
 
-	        find "$HOME/wiki/" -type f -name '*.html' \
-	            -not -wholename '*/doc/*' -print0
-	    ) |
-	        grep --null-data --fixed-strings --invert-match \
-	            -e '.#' \
-	            -e 'auto.hs' \
-	            -e 'doc/link-bibliography/' \
-	            -e 'metadata/annotation/' \
-	            -e 'metadata/listsortedmagic.hs' \
-	            -e 'metadata/listname.hs' \
-	            -e '_site/' \
-	            -e '_cache/' |
-	        sort --zero-terminated --unique |
-	        xargs --null --no-run-if-empty \
-	            grep --fixed-strings --color=always --ignore-case \
-	                --with-filename -- "$QUERY" |
-	        cut -c 1-2548
-	)
+            find "$HOME/wiki/" -type f -name '*.html' \
+                -not -wholename '*/doc/*' -print0
+        ) |
+            grep --null-data --fixed-strings --invert-match \
+                -e '.#' \
+                -e 'auto.hs' \
+                -e 'doc/link-bibliography/' \
+                -e 'metadata/annotation/' \
+                -e 'metadata/listsortedmagic.hs' \
+                -e 'metadata/listname.hs' \
+                -e '_site/' \
+                -e '_cache/' |
+            sort --zero-terminated --unique |
+            xargs --null --no-run-if-empty \
+                grep --fixed-strings --color=always --ignore-case \
+                    --with-filename -- "$QUERY" |
+            cut -c 1-2548
+    )
     if [ -z "$RESULTS" ]; then
         gwl "$QUERY" # fall back to double-checking IRC logs
     else
