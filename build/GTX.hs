@@ -120,7 +120,7 @@ readGTXSlow path = do C.cd
      where postprocessing :: [FilePath] -> ((FilePath, MetadataItem) -> (FilePath, MetadataItem))
            postprocessing allTags' (u, (t, a, d, dc, kvs, ts, s)) = (stripUnicodeWhitespace u,
                                                      (reformatTitle t, cleanAuthors a,guessDateFromLocalSchema u d, dc, sort kvs,
-                                                      map (guessTagFromShort ts allTags') $ uniqTags $ pages2Tags u $ tag2TagsWithDefault u (unwords ts), s))
+                                                      uniqTags $ map (guessTagFromShort ts allTags') $ pages2Tags u $ tag2TagsWithDefault u (unwords ts), s))
            stripUnicodeWhitespace, reformatTitle :: String -> String
            stripUnicodeWhitespace = replace "⁄" "/" . filter (not . isSpace)
            reformatTitle = sed "“(.*)”" "‘\\1’"-- we avoid double-quotes in titles because they are usually being substituted into double-quote wrappers blindly, so you wind up with problems like `““Foo” Bar Baz”`. We do not substitute anything but double-curly quotes, because there are way too many edge-cases and other ways to use quotes (eg. citation HTML fragments in titles).
@@ -159,7 +159,7 @@ tupleize x@(f:t:a:d:dc:kvs:tags:abstract) = (T.unpack f,
                                          T.unpack d,
                                          T.unpack dc,
                                          doiOrIDorKV x $ T.unpack kvs,
-                                         map T.unpack $ T.words tags,
+                                         nubOrd $ map T.unpack $ T.words tags,
                                          if abstract==[""] then "" else T.unpack $ T.unlines abstract))
 tupleize [] = error   "GTX.tuplize: empty list"
 tupleize x  = error $ "GTX.tuplize: missing mandatory list entries: " ++ show x
