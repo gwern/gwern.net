@@ -54,7 +54,7 @@ pngOne () {
     case "$mime_type" in
         image/jpeg)
             red "compressPNG called on JPEG data in '$1'!"
-            warn "Continuing by using 'compressJPG' without changing the extension…"
+            warn "Continuing by using 'compressJPG'…"
             run_compressJPG "$1"
             return
             ;;
@@ -68,6 +68,16 @@ pngOne () {
 
     command -v pngnq > /dev/null
     command -v optipng > /dev/null
+
+    local normalized="${1%.*}.png"
+    if [ "$1" != "$normalized" ]; then
+        mv --no-clobber --no-target-directory -- "$1" "$normalized" || return 2
+        if [[ -e "$1" || -L "$1" ]]; then
+            red "Error: refusing to overwrite $normalized" >&2
+            return 3
+        fi
+        set -- "$normalized" "${@:2}"
+    fi
 
     local orig_size new_size temp_file optimized_file diff
     orig_size=$(stat --printf="%s" "$1") # in bytes
@@ -117,7 +127,7 @@ else
             pngOne "$ITEM" &
         elif [ -d "$ITEM" ]; then
             command -v parallel > /dev/null
-            find "$ITEM" -type f -name "*.png" | sort | parallel --jobs "$N" -- pngOne
+            find "$ITEM" -type f -iname "*.png" | sort | parallel --jobs "$N" -- pngOne
         fi
     done
     wait

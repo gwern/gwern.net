@@ -50,7 +50,7 @@ else
         case "$MIME_TYPE" in
             image/png)
                 red "compressJPG was called on PNG data in '$FILE'!"
-                warn "Continuing by using 'compressPNG' without changing the extension…"
+                warn "Continuing by using 'compressPNG'…"
                 run_compressPNG "$FILE"
                 continue
                 ;;
@@ -63,6 +63,16 @@ else
                 continue
                 ;;
         esac
+
+        NORMALIZED="${FILE%.*}.jpg"
+        if [ "$FILE" != "$NORMALIZED" ]; then
+            mv --no-clobber --no-target-directory -- "$FILE" "$NORMALIZED" || exit 2
+            if [[ -e "$FILE" || -L "$FILE" ]]; then
+                red "Error: refusing to overwrite $NORMALIZED" >&2
+                continue
+            fi
+            FILE="$NORMALIZED"
+        fi
 
         JPG_OLD="$(mktemp /tmp/XXXXXX-original.jpg)"
         TMP_NEW="$(mktemp /tmp/XXXXXX-temp.jpg)"

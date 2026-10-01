@@ -35,9 +35,18 @@ else
            return
          fi
          # Skip non-GIF files
-         if [[ ! "$gif" =~ \.(gif|GIF)$ ]]; then
+         if [[ ! "$gif" =~ \.[gG][iI][fF]$ ]]; then
            red "Skipping non-GIF file: $gif"
            return
+         fi
+         local normalized="${gif%.*}.gif"
+         if [ "$gif" != "$normalized" ]; then
+           mv --no-clobber --no-target-directory -- "$gif" "$normalized" || return 1
+           if [[ -e "$gif" || -L "$gif" ]]; then
+             printf 'Error: refusing to overwrite %s\n' "$normalized" >&2
+             return 2
+           fi
+           gif="$normalized"
          fi
          local temp_gif
          temp_gif="$(mktemp /tmp/XXXXXX.gif)"

@@ -9,6 +9,16 @@
 
 set -e
 
+NORMALIZED="${1%.*}.pdf"
+if [ "$1" != "$NORMALIZED" ]; then
+    mv --no-clobber --no-target-directory -- "$1" "$NORMALIZED" || exit 2
+    if [[ -e "$1" || -L "$1" ]]; then
+        echo "Error: refusing to overwrite $NORMALIZED" >&2
+        exit 3
+    fi
+    set -- "$NORMALIZED" "${@:2}"
+fi
+
 # 1. check PDFs for PDFs which could use `ocrmypdf` to save space: read in on stdin, read smaller or original back out on stdout
 ## custom installation of JBIG2 & ocrmypdf
 PDF=$(mktemp /tmp/XXXXXX-original.pdf)
