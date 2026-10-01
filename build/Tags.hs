@@ -184,7 +184,7 @@ guessTagFromShort raw l s = fixedPoint (f l) (replace "=" "-" s)
                                                                -- add more rewrites here
                                                                ]
                                             tryRewrites :: [String -> String] -> String
-                                            tryRewrites []             = case findClosestTagByDistance C.tagTypoMaxDistance allTags t of
+                                            tryRewrites []             = case findClosestTagByDistance C.tagTypoMaxDistance (allTags ++ map fst C.tagsShort2Long) t of
                                                                            Just closestTag -> closestTag
                                                                            Nothing -> s
                                             tryRewrites (rewrite:rest) = let rewritten = rewrite s in
