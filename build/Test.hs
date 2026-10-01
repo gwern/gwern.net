@@ -37,6 +37,7 @@ import Tags (testTags)
 import Typography (titleCaseTest, abstractBlockquotesTest, completionProgressInline)
 import Metadata.Author (authorCollapseTest, cleanAuthorsTest, extractTwitterUsername, authorDB)
 import GenerateSimilar (generateSimilarTestSuite)
+import RedirectGuesser (redirectGuesserTest)
 
 -- test the tests as configuration files for duplicates etc.:
 import qualified Config.GenerateSimilar (blackListURLs)
@@ -295,5 +296,8 @@ testAll = do Config.Misc.cd
                printRed "Interwiki disambig or non-existence checks failed?"
 
              generateSimilarTestSuite
+
+             unless (null redirectGuesserTest) $
+               printRed ("Redirect guesser tests have errors in: " ++ show redirectGuesserTest)
 
              printGreen ("Testing finished." :: String)

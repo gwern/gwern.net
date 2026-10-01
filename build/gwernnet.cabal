@@ -118,6 +118,7 @@ library
       Metadata.Title
       Paragraph
       Query
+      RedirectGuesser
       Tags
       Test
       Text.Regex
@@ -177,7 +178,8 @@ executable linkTitler
 executable redirectGuesser
   import: exe-common
   main-is: redirectGuesser.hs
-  ghc-options: -threaded -rtsopts
+  build-depends: parallel
+  ghc-options: -O2 -threaded -rtsopts
 
 executable linkSuggester
   import: exe-common
