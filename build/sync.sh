@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-07-22 19:33:14 gwern"
+# When:  Time-stamp: "2026-10-01 23:10:42 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -2058,7 +2058,7 @@ cleanClasses () {
              gfv -e ' secs,' -e 'it :: [T.Text]' -e '[]' || true; }
     wrap λ "Site-of-the-day: check for recommendations?" &
 
-    λ() { (cd ./static/build/ && find ./ -type f -name "*.hs" -exec ghc -package random -O0 -Wall -Werror -fno-code {} \; ) >/dev/null; }
+    λ() { (cd ./static/build/ && find ./ -type f -name "*.hs" -exec ghc -package random -package parallel -O0 -Wall -Werror -fno-code {} \; ) >/dev/null; }
     wrap λ "Test-compilation of all Haskell files in static/build: something fail?" &
 
     λ() { find . -type f -name "*.hs" | gfv -e 'static/' -e 'metadata/' | xargs hlint | gfv 'No hints'; }

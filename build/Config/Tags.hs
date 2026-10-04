@@ -179,7 +179,7 @@ tagsShort2LongRewrites =
    , ("non-fiction", "nonfiction"), ("nonfiction" , "ai/nn/transformer/gpt/nonfiction"), ("embryo-selection", "selection/artificial"), ("selection/embryo", "selection/artificial"), ("multiagent", "multi-agent"), ("tokeniation", "tokenization"), ("mythis", "mythos"), ("pindaric", "pindar"), ("psychology/illusion-of-depth", "psychology/cognitive-bias/illusion-of-depth"), ("55", "5-5"), ("automatiom", "automation")
    , ("fable", "mythos"), ("lllt", "quantified-self"), ("distilation", "distillation")
    , ("GA", "guardian-angel"), ("guardianangel", "guardian-angel"), ("gai", "guardian-angel")
-   , ("modelfree", "model-free"), ("evangelion", "anime/eva"), ("gpt6", "ai/nn/transformer/gpt/6"), ("astra", "ai/nn/transformer/gpt/6"), ("starcraft", "alphastar")
+   , ("modelfree", "model-free"), ("evangelion", "anime/eva"), ("gpt6", "ai/nn/transformer/gpt/6"), ("astra", "ai/nn/transformer/gpt/6"), ("starcraft", "alphastar"), ("legal", "law")
    ]
    -- , ("genetics/artificial", "genetics/selection/artificial"), ("artificial", "ai"),  ("genetics/selection/artificial/apple-breeding","genetics/selection/artificial/apple"), ("apples", "genetics/selection/artificial/apple"),
 
@@ -1592,4 +1592,5 @@ shortTagTestSuite = setLike
  , ("wrtigin", "psychology/writing")
  , ("xrisk", "existential-risk")
  , ("xz", "cs/algorithm/information/compression")
+ , ("ai", "ai")
  ]

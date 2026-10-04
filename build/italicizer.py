@@ -4,7 +4,7 @@
 # italicizer.py: reformat a string to add italics as semantically appropriate (eg. book titles) using LLMs
 # Author: Gwern Branwen
 # Date: 2025-01-17
-# When:  Time-stamp: "2026-08-17 17:24:53 gwern"
+# When:  Time-stamp: "2026-10-01 12:12:19 gwern"
 # License: CC-0
 #
 # Usage: $ echo [...] | OPENAI_API_KEY="sk-XXX" python italicizer.py
@@ -1546,6 +1546,8 @@ Woodkid Says Hideo Kojima Changed <em>Death Stranding 2</em> to Be ‘Polarizing
 <em>Doom</em>, compiled into a transformer
 - <text>Your Book Review: The Escape Artist</text>
 Your Book Review: <em>The Escape Artist</em>
+- <text>How Andor Got its Backstory from a Tabletop RPG</text>
+How <em>Andor</em> Got its Backstory from a Tabletop RPG
 
 [End of examples. Reminder: your only task is to add missing italics you are SURE of.]
 

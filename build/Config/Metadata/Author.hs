@@ -3690,5 +3690,5 @@ authorWpLinkDB = setLike
     , "Jose Camacho-Collados", "Jakub Pachocki", "Kanaka Rajan", "J. David Bleich", "Caroline S. Wagner", "Helen Margetts"
     , "Matt Thomson", "Kathleen McKeown", "Eric Rasmusen", "Chi Wang", "Jensen Huang", "Cassandra Cybele Raver"
     , "A. Douglas Stone", "Steven Girvin", "Logan Wright", "Edward Adelson", "Pawan Sinha", "Michelle Monje"
-    , "Michael Freedman", "Paul L. McEuen", "Don Norman", "Liang Zhao", "Jane C. Ginsburg"]
+    , "Michael Freedman", "Paul L. McEuen", "Don Norman", "Liang Zhao", "Jane C. Ginsburg", "Martyn Amos"]
 
