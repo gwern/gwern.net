@@ -2842,6 +2842,33 @@ ul.interview li.exchange ol > li p:not(.first-graf) {
     overflow-x: auto;
 }
 
+/*	Line-numbered poems (forward and reverse).
+ */
+.poem[class*='line-numbered'] {
+	--line-number-column-width: 3.5em;
+
+	padding-left: var(--line-number-column-width);
+	counter-reset: line-number;
+}
+.poem[class*='line-numbered'] p {
+	position: relative;
+}
+.poem[class*='line-numbered'] p::before {
+	content: counter(line-number) ".";
+	position: absolute;
+	width: var(--line-number-column-width);
+	text-indent: 0;
+	text-align: right;
+	right: 100%;
+	padding-right: 0.75em;
+}
+.poem.line-numbered p {
+	counter-increment: line-number 1;
+}
+.poem.line-numbered-reverse p {
+	counter-increment: line-number -1;
+}
+
 /*  Horizontal scroll bar styles (for WebKit/Blink).
  */
 .poem::-webkit-scrollbar {

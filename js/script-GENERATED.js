@@ -17114,6 +17114,17 @@ addContentLoadHandler("designateFirstAndLastLinesInPoemStanzas", (eventInfo) => 
 	});
 }, ">rewrite");
 
+/*****************************************************************************/
+/*	Make reverse-line-numbered poems (class .line-numbered-reverse), where the
+	line numbers count down from the total number of lines in the poem to 1,
+	work properly.
+ */
+addContentLoadHandler("countLinesInReverseLineNumberedPoems", (eventInfo) => {
+	eventInfo.container.querySelectorAll(".poem.line-numbered-reverse").forEach(poem => {
+		poem.style.setProperty("counter-reset", "line-number " + (poem.querySelectorAll("p").length + 1));
+	});
+}, ">rewrite");
+
 
 /*************/
 /* EPIGRAPHS */
