@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-10-01 23:10:42 gwern"
+# When:  Time-stamp: "2026-10-07 20:41:45 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -13,7 +13,7 @@
 
 # key dependencies: GHC, Hakyll, emacs, curl, tidy (HTML5 version), git, regex-compat-tdfa (Unicode Haskell regexps), urlencode
 # ('gridsite-clients' package), linkchecker, fdupes, ImageMagick, exiftool, mathjax-node-page (eg.
-# `npm i -g mathjax-node-page`), parallel, xargs, php-cli, php-xml, php-masterminds-html5, libreoffice, gifsicle, tidy, libxml2-utils…
+# `npm i -g mathjax-node-page`), parallel, xargs, php-cli, php-xml, php-masterminds-html5, libreoffice, gifsicle, tidy, libxml2-utils, nginx,libnginx-mod-http-lua…
 
 cd ~/wiki/
 # shellcheck source=~/wiki/static/build/bash.sh
@@ -23,7 +23,7 @@ DEPENDENCIES=(
   bc curl shuf dos2unix du elinks emacs exiftool fdupes feh ffmpeg file find firefox
   ghc ghci runghc hlint gifsicle git identify inotifywait jpegtran jq libreoffice
   linkchecker locate mogrify ocrmypdf pandoc parallel pdftk pdftotext img2pdf php ping
-  optipng rm rsync sed tidy urlencode x-www-browser xargs xmllint xprintidle
+  nginx openssl optipng rm rsync sed tidy urlencode x-www-browser xargs xmllint xprintidle
   anchor-checker.php openai chromium inkscape node pngnq advpng docker
   should_image_have_outline.php mp3val
 ) # ~/src/node_modules/mathjax-node-page/bin/mjpage, beautifulsoup-4
@@ -989,6 +989,7 @@ cleanClasses () {
             "link-bibliography-context" "extract-not" "fraction" "separator-inline" "dark-mode-invert" "dark-mode-enable-when-here" "dark-mode" "light-mode-re-enable-when-here"
             "prefetch" "prefetch-not" "poem" "poem-html" "redirect-from-id" "toc-not" "index" "editorial" "wrap-not" "display-not"
             "noscript-container" "filesize" "filesize-bytes" "filesize-percentage" "filesize-not"
+            "line-numbered" "line-numbered-reverse"
         )
         html_dataattributes_whitelist=("data-amount-current" "data-amount-original" "data-href-mobile" "data-image-height" "data-image-width" "data-include-selector-not" "data-include-template" "data-inflation" "data-link-content-type" "data-link-icon" "data-link-icon-color" "data-link-icon-type" "data-progress-percentage" "data-redirect-from-id" "data-target-id" "data-url-archive" "data-url-iframe" "data-url-original" "data-year-current" "data-year-original" "data-icon-x-position" "data-aspect-ratio" "data-demo-type" "data-doi" "data-id-ref")
         html_classes_regexpattern=$(IFS='|'; echo "${html_classes_whitelist[*]}" "${html_dataattributes_whitelist[*]}")
@@ -1519,6 +1520,7 @@ cleanClasses () {
 
     # Sync:
     set -e
+    bash ./static/build/nginx-check.sh
     ## make sure nginx user can list all directories (x) and read all files (r)
     chmod a+x $(find ./ -type d) &
     chmod --recursive a+r ./* &
