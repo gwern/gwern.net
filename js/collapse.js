@@ -871,6 +871,9 @@ addContentInjectHandler("activateCollapseBlockDisclosureButtons", (eventInfo) =>
 
 		updateDisclosureButtonState(collapseBlock);
 
+		//	Clear temp classes.
+		collapseBlock.classList.remove("just-clicked", "just-auto-expanded");
+
 		disclosureButton.addActivateEvent(disclosureButton.actionHandler = (event) => {
 			GWLog("Collapse.collapseBlockDisclosureButtonActivated", "collapse.js", 2);
 
