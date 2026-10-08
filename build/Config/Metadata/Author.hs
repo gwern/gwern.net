@@ -125,7 +125,7 @@ authorLinkBlacklist :: [T.Text]
 authorLinkBlacklist = setLike ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"] ++
                     ["1890\8211\&1974", "1902","1906","1916","1922","1928",":", "English Wikipedia", "Wiel", "Word", "Rau", "Qi"
                     , "Pontifex", "Postma", "Poinar", "Pier", "Pika", "van Buuren","van Os","van den Hurk", "van der Ploeg"
-                    , "Anonymous", "Et al", "et al"]
+                    , "Anonymous", "Et al", "et al", "Et alii"]
 
 -- Odd author names which look like a typo or error, but are real or the best that can be done. Used in `LinkMetadata.readLinkMetadataAndCheck`.
 -- Config tests: unique list
@@ -2280,6 +2280,7 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("Claude-5-Fable", "https://www.anthropic.com/news/claude-fable-5-mythos-5")
     , ("Claude-5-sonnet", "https://www.anthropic.com/news/claude-sonnet-5")
     , ("Claude-5.5-opus", "https://www.anthropic.com/claude-opus-5-5")
+    , ("Claude-5.5-haiku", "https://www.anthropic.com/claude-haiku-5-5")
     , ("Vishal Prasad", "https://substack.com/@vishalprasad1")
     , ("GPT-5.3-Codex", "https://openai.com/index/introducing-gpt-5-3-codex/")
     , ("GPT-5.5 Pro", "https://openai.com/index/introducing-gpt-5-5/#pro")
