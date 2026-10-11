@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-10-05 15:02:17 gwern"
+# When:  Time-stamp: "2026-10-11 14:48:24 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -1009,6 +1009,8 @@ Notes from inside China’s AI labs
 "Managerial Conservatism and Rational Information Acquisition"
 - "https://www.theguardian.com/education/2025/jul/06/1960s-schools-experiment-created-new-alphabet-thousands-children-unable-to-spell The radical 1960s schools experiment that created a whole new alphabet—and left thousands of children unable to spell | Education"
 "The radical 1960s schools experiment that created a whole new alphabet—and left thousands of children unable to spell"
+- "Your access has been blocked—<em>The Atlantic</em>"
+""
 
 """
 

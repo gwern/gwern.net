@@ -2206,6 +2206,7 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("Richard Polt", "https://site.xavier.edu/polt/typewriters/about.html")
     , ("Google Nano Banana Pro", "https://blog.google/innovation-and-ai/products/nano-banana-pro/")
     , ("Google Nano Banana 2", "https://blog.google/innovation-and-ai/technology/ai/nano-banana-2/")
+    , ("Google Nano Banana 2.1", "https://ai.google.dev/gemini-api/docs/models/gemini-nano-banana-2.1")
     , ("Richard E. Turner", "https://rich-turner-group.github.io/")
     , ("Cartoons Hate Her", "https://www.cartoonshateher.com/about")
     , ("Cendyne", "https://cendyne.dev/")
