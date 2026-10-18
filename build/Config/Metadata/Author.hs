@@ -1997,6 +1997,7 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("Gemini-2.5-pro-0325", "https://blog.google/technology/google-deepmind/gemini-model-thinking-updates-march-2025/")
     , ("Gemini-3-pro-preview", "https://blog.google/products/gemini/gemini-3/")
     , ("Gemini-3.1-pro-preview", "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-1-pro/")
+    , ("Gemini-4 Argon", "https://deepmind.google/models/gemini/")
     , ("Time Magazine", "https://en.wikipedia.org/wiki/Time_(magazine)")
     , ("Martha Duffy", "https://www.nytimes.com/1997/06/17/arts/martha-duffy-61-arts-editor-and-writer-at-time-magazine.html")
     , ("Sander Dieleman", "https://sander.ai/about/")
@@ -2381,6 +2382,7 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("Sharan Narang", "https://scholar.google.com/citations?user=CWOixywAAAAJ")
     , ("Dan Garrette", "https://www.dhgarrette.com/")
     , ("theahura", "https://substack.com/@theahura")
+    , ("Tim Kostolansky", "https://kostolans.ky/")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3692,5 +3694,5 @@ authorWpLinkDB = setLike
     , "Jose Camacho-Collados", "Jakub Pachocki", "Kanaka Rajan", "J. David Bleich", "Caroline S. Wagner", "Helen Margetts"
     , "Matt Thomson", "Kathleen McKeown", "Eric Rasmusen", "Chi Wang", "Jensen Huang", "Cassandra Cybele Raver"
     , "A. Douglas Stone", "Steven Girvin", "Logan Wright", "Edward Adelson", "Pawan Sinha", "Michelle Monje"
-    , "Michael Freedman", "Paul L. McEuen", "Don Norman", "Liang Zhao", "Jane C. Ginsburg", "Martyn Amos", "David Eisenberg"]
+    , "Michael Freedman", "Paul L. McEuen", "Don Norman", "Liang Zhao", "Jane C. Ginsburg", "Martyn Amos", "David Eisenberg", "Michael Kubovy"]
 
