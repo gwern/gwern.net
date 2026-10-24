@@ -716,8 +716,8 @@ else
               -e 's/<style type="text\/css">\.mjx-chtml/<style id="mathjax-styles" type="text\/css">.mjx-chtml/' >> "$TARGET";
 
       if [[ -s "$TARGET" ]]; then
-          mv "$TARGET" "$@" && echo "$@ succeeded";
-      else red "$@ failed MathJax compilation";
+          mv "$TARGET" "$@" && echo "$* succeeded";
+      else red "$* failed MathJax compilation";
       fi
     }
     export -f staticCompileMathJax
@@ -1054,21 +1054,21 @@ cleanClasses () {
     # check YAML metadata properties; properties should either have 1 or none, usually.
     # Upstream Pandoc will only warn on duplicate YAML keys (<https://github.com/jgm/pandoc/issues/10312>)
     # but we want to check more than that.
-    count       () { ge --count $@; }
+    count       () { ge --count "$@"; }
     moreThanOne () { gev -e ':1$' -e ':0$'; }
-    λ(){ count '^title: '          $PAGES | moreThanOne
-         count '^description: '    $PAGES | moreThanOne
-         count '^author: '         $PAGES | moreThanOne
-         count '^author: '         $PAGES | moreThanOne
-         count '^created: '        $PAGES | moreThanOne
-         count '^modified: '       $PAGES | moreThanOne
-         count '^status: '         $PAGES | moreThanOne
-         count '^thumbnail: '      $PAGES | moreThanOne
-         count '^thumbnail-text: ' $PAGES | moreThanOne
-         count '^thumbnail-css: '  $PAGES | moreThanOne
-         count '^confidence: '     $PAGES | moreThanOne
-         count '^importance: '     $PAGES | moreThanOne
-         count '^css-extension: '  $PAGES | moreThanOne
+    λ(){ count '^title:'           $PAGES | moreThanOne
+         count '^description:'     $PAGES | moreThanOne
+         count '^author:'          $PAGES | moreThanOne
+         count '^author:'          $PAGES | moreThanOne
+         count '^created:'         $PAGES | moreThanOne
+         count '^modified:'        $PAGES | moreThanOne
+         count '^status:'          $PAGES | moreThanOne
+         count '^thumbnail:'       $PAGES | moreThanOne
+         count '^thumbnail-text:'  $PAGES | moreThanOne
+         count '^thumbnail-css:'   $PAGES | moreThanOne
+         count '^confidence:'      $PAGES | moreThanOne
+         count '^importance:'      $PAGES | moreThanOne
+         count '^css-extension:'   $PAGES | moreThanOne
        }
     wrap λ "Essays with redundant or duplicate metadata fields (must have no more than one of any!)"
 
@@ -1922,7 +1922,7 @@ cleanClasses () {
                   -e 'See discussions, stats, and author profiles for this publication at: https://www.researchgate.net' \
                   -e 'This paper has been accepted for publication in '\
                   -e 'Online First Publication, ' )
-            if [ "$HEADER" != "" ]; then echo "Header: $@"; fi;
+            if [ "$HEADER" != "" ]; then echo "Header: $*"; fi;
         }
         export -f checkSpamHeader
         find ./doc/ -type f -mtime -31 -name "*.pdf" | gfv -e 'doc/www/' -e '2012-kirk.pdf' -e '1929-tolmachoff.pdf' -e '1920-courtierforster.pdf' | parallel checkSpamHeader
