@@ -1006,6 +1006,7 @@ canonicals = setLike
   , ("JensenHuang", "Jensen Huang")
   , ("David Kristjanson Duvenaud", "David Duvenaud")
   , ("Eric Anthony Mitchell", "Eric Mitchell")
+  , ("deanwball", "Dean W. Ball")
   ]
 
 -- tests: unique; none are URLs
@@ -3694,5 +3695,5 @@ authorWpLinkDB = setLike
     , "Jose Camacho-Collados", "Jakub Pachocki", "Kanaka Rajan", "J. David Bleich", "Caroline S. Wagner", "Helen Margetts"
     , "Matt Thomson", "Kathleen McKeown", "Eric Rasmusen", "Chi Wang", "Jensen Huang", "Cassandra Cybele Raver"
     , "A. Douglas Stone", "Steven Girvin", "Logan Wright", "Edward Adelson", "Pawan Sinha", "Michelle Monje"
-    , "Michael Freedman", "Paul L. McEuen", "Don Norman", "Liang Zhao", "Jane C. Ginsburg", "Martyn Amos", "David Eisenberg", "Michael Kubovy"]
+    , "Michael Freedman", "Paul L. McEuen", "Don Norman", "Liang Zhao", "Jane C. Ginsburg", "Martyn Amos", "David Eisenberg", "Michael Kubovy", "Dean W. Ball"]
 
