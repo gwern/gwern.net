@@ -24,19 +24,23 @@ export N="14"
 
 set -e
 
-bold () { echo -e "\033[1m$@\033[0m"; }
-red  () { echo -e "\e[41m$@\e[0m"; }
+# The color helpers use "$*" (one string; SC2145) and pin IFS to a space locally, so the output is
+# identical to the old `echo "...$@..."` even when a caller has changed IFS.
+bold () { local IFS=' '; echo -e "\033[1m$*\033[0m"; }
+red  () { local IFS=' '; echo -e "\e[41m$*\e[0m"; }
 # Green text (uses foreground color for success messages)
 green () {
   # \e[32m sets foreground to green
   # \e[0m resets all attributes
-  echo -e "\e[32m$@\e[0m"
+  local IFS=' '
+  echo -e "\e[32m$*\e[0m"
 }
 # Yellow text (uses foreground color for warnings)
 yellow () {
   # \e[33m sets foreground to yellow
   # \e[0m resets all attributes
-  echo -e "\e[33m$@\e[0m"
+  local IFS=' '
+  echo -e "\e[33m$*\e[0m"
 }
 ## function to wrap checks and print red-highlighted warning if non-zero output (self-documenting); if there is output and it takes >30s, the total elapsed time will be printed as well to help locate sub-optimal codes or hotspots in scripts:
 wrap () {
@@ -82,9 +86,10 @@ gr () {
     grep "$@" -- "$file"
 }
 # 'grep all': recursive grep. (Previously named 'gr'.)
-ga () { local LC_ALL=C; find . -type f -print0 | \
+# IFS is pinned to a space so "$*" hands parallel the words joined by spaces, as the old "$@" did, even if the caller changed IFS.
+ga () { local LC_ALL=C; local IFS=' '; find . -type f -print0 | \
             parallel --null  --max-args=50 -m \
-                     grep -F --ignore-case --color=always --with-filename --line-number --fixed-strings \""$@"\" -- {}; }
+                     grep -F --ignore-case --color=always --with-filename --line-number --fixed-strings \""$*"\" -- {}; }
 export -f bold red wrap ge gec gev gf gfc gfv gr ga
 
 file2Path () { echo "$1" | sed -e 's/~\/wiki//' -e 's/\/home\/gwern\/wiki\//\//' -e 's/\.\//\//' -e 's/https:\/\/gwern\.net//g' -e 's/^/\//' -e 's/^\/\//\//'; }
@@ -1633,7 +1638,7 @@ if (( $# == 1 )) && [[ $1 =~ \.png$ && $(cd ~/wiki/ && git ls-files --error-unma
    then gwmv "$1" "${1%.png}.jpg"
 else
     if (( $# != 2 )); then
-        red "Need two arguments: OLD file and NEW file! Only got: $@" >&2
+        red "Need two arguments: OLD file and NEW file! Only got: $(IFS=' '; printf '%s' "$*")" >&2
         return 2
     else
 
