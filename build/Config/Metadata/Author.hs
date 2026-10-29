@@ -1007,6 +1007,7 @@ canonicals = setLike
   , ("David Kristjanson Duvenaud", "David Duvenaud")
   , ("Eric Anthony Mitchell", "Eric Mitchell")
   , ("deanwball", "Dean W. Ball")
+  , ("Nic Cammarata", "Nick Cammarata")
   ]
 
 -- tests: unique; none are URLs
@@ -1999,6 +2000,7 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("Gemini-3-pro-preview", "https://blog.google/products/gemini/gemini-3/")
     , ("Gemini-3.1-pro-preview", "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-1-pro/")
     , ("Gemini-4 Argon", "https://deepmind.google/models/gemini/")
+    , ("Gemini-4 Carbon", "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-carbon/")
     , ("Time Magazine", "https://en.wikipedia.org/wiki/Time_(magazine)")
     , ("Martha Duffy", "https://www.nytimes.com/1997/06/17/arts/martha-duffy-61-arts-editor-and-writer-at-time-magazine.html")
     , ("Sander Dieleman", "https://sander.ai/about/")
@@ -3695,5 +3697,5 @@ authorWpLinkDB = setLike
     , "Jose Camacho-Collados", "Jakub Pachocki", "Kanaka Rajan", "J. David Bleich", "Caroline S. Wagner", "Helen Margetts"
     , "Matt Thomson", "Kathleen McKeown", "Eric Rasmusen", "Chi Wang", "Jensen Huang", "Cassandra Cybele Raver"
     , "A. Douglas Stone", "Steven Girvin", "Logan Wright", "Edward Adelson", "Pawan Sinha", "Michelle Monje"
-    , "Michael Freedman", "Paul L. McEuen", "Don Norman", "Liang Zhao", "Jane C. Ginsburg", "Martyn Amos", "David Eisenberg", "Michael Kubovy", "Dean W. Ball"]
-
+    , "Michael Freedman", "Paul L. McEuen", "Don Norman", "Liang Zhao", "Jane C. Ginsburg", "Martyn Amos"
+    , "David Eisenberg", "Michael Kubovy", "Dean W. Ball"]

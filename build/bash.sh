@@ -86,10 +86,17 @@ gr () {
     grep "$@" -- "$file"
 }
 # 'grep all': recursive grep. (Previously named 'gr'.)
-# IFS is pinned to a space so "$*" hands parallel the words joined by spaces, as the old "$@" did, even if the caller changed IFS.
-ga () { local LC_ALL=C; local IFS=' '; find . -type f -print0 | \
-            parallel --null  --max-args=50 -m \
-                     grep -F --ignore-case --color=always --with-filename --line-number --fixed-strings \""$*"\" -- {}; }
+# Join query words with spaces regardless of the caller's IFS. Pass the query through the
+# environment so neither the shell nor parallel interprets its contents as command syntax.
+ga () {
+    local LC_ALL=C
+    local IFS=' '
+    local -x _ga_pattern="$*"
+    # shellcheck disable=SC2016 # Expand the query only in the worker shell.
+    find . -type f -print0 | \
+        parallel --null --max-args=50 -m \
+            'grep --ignore-case --color=always --with-filename --line-number --fixed-strings -- "$_ga_pattern" {}'
+}
 export -f bold red wrap ge gec gev gf gfc gfv gr ga
 
 file2Path () { echo "$1" | sed -e 's/~\/wiki//' -e 's/\/home\/gwern\/wiki\//\//' -e 's/\.\//\//' -e 's/https:\/\/gwern\.net//g' -e 's/^/\//' -e 's/^\/\//\//'; }
@@ -1638,7 +1645,7 @@ if (( $# == 1 )) && [[ $1 =~ \.png$ && $(cd ~/wiki/ && git ls-files --error-unma
    then gwmv "$1" "${1%.png}.jpg"
 else
     if (( $# != 2 )); then
-        red "Need two arguments: OLD file and NEW file! Only got: $(IFS=' '; printf '%s' "$*")" >&2
+        (IFS=' '; red "Need two arguments: OLD file and NEW file! Only got: $*") >&2
         return 2
     else
 
