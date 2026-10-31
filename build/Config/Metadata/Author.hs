@@ -2386,6 +2386,12 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("Dan Garrette", "https://www.dhgarrette.com/")
     , ("theahura", "https://substack.com/@theahura")
     , ("Tim Kostolansky", "https://kostolans.ky/")
+    , ("Mohit Iyyer", "https://www.cs.umd.edu/~miyyer/")
+    , ("Teemu Palviainen", "https://scholar.google.com/citations?user=8VCrflkAAAAJ")
+    , ("Alex Ray", "https://scholar.google.com/scholar?as_sdt=0%2C5&q=author%3A%22A+Ray%22")
+    , ("Jonas Geiping", "https://jonasgeiping.github.io/")
+    , ("Kalyan Chatterjee", "https://en.wikipedia.org/wiki/Kalyan_Chatterjee_(economist)")
+    , ("William Samuelson", "https://scholar.google.com/citations?user=KHB44KEAAAAJ")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole
@@ -3698,4 +3704,4 @@ authorWpLinkDB = setLike
     , "Matt Thomson", "Kathleen McKeown", "Eric Rasmusen", "Chi Wang", "Jensen Huang", "Cassandra Cybele Raver"
     , "A. Douglas Stone", "Steven Girvin", "Logan Wright", "Edward Adelson", "Pawan Sinha", "Michelle Monje"
     , "Michael Freedman", "Paul L. McEuen", "Don Norman", "Liang Zhao", "Jane C. Ginsburg", "Martyn Amos"
-    , "David Eisenberg", "Michael Kubovy", "Dean W. Ball"]
+    , "David Eisenberg", "Michael Kubovy", "Dean W. Ball", "Suchir Balaji", "Margaret Mead"]

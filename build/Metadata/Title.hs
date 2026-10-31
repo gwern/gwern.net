@@ -1,6 +1,6 @@
 module Metadata.Title where
 
-import Data.List (isInfixOf, intercalate)
+import Data.List (intercalate)
 import Network.HTTP (urlDecode)
 import Data.FileStore.Utils (runShellCommand)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
@@ -56,10 +56,7 @@ htmlDownloadAndParseTitleClean u  = if not (isURL u) then error $ "Metadata.Titl
   if title' `elem` C.badStrings || anyInfix title' C.badStringPatterns || length title' < 5 || length title' > 500
   then return "" -- no need to shell out to an LLM for cleaning if it is a known-bad title
   else
-        do titleCleaned <- fmap cleanAbstractsHTML $ cleanTitleWithAI title'
-           return $ if titleCleaned == "" then "" else
-                     if titleCleaned /= title' && titleCleaned `isInfixOf` title' then titleCleaned
-                       else title'
+        cleanAbstractsHTML <$> cleanTitleWithAI title'
 
 -- shell out to `title-cleaner.py` to clean a title using LLMs:
 cleanTitleWithAI :: String -> IO String
@@ -68,8 +65,5 @@ cleanTitleWithAI title =
      (status,stderr,mb) <- runShellCommand "./" Nothing "static/build/title-cleaner.py" [title]
      case status of
        ExitFailure err -> printRed ("Exit Failure: " ++ intercalate " ::: " [show status, show err, show mb, show stderr]) >> return ""
-       -- NOTE: to avoid confabulations or mangled rewrites, we impose a further requirement:
-       -- that any changed title must be a strict substring of the original title,
-       -- to reflect that the title-cleaning script should only be returning " ",
-       -- the original title, or the title with ranges deleted but neither changed nor added to.
+       -- Accept the cleaner's punctuation, spelling, and markup normalizations.
        _ -> return $ trim $ U.toString mb
