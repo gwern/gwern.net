@@ -794,7 +794,7 @@ def normalize_model_output(raw: str) -> str:
 
 def ask_model(target: str, today: datetime) -> str:
     client = OpenAI()
-    model = os.environ.get("OPENAI_MODEL", "gpt-5-mini")
+    model = os.environ.get("OPENAI_MODEL", "gpt-6-luna")
     prompt = build_prompt(target, today)
 
     completion = client.chat.completions.create(
@@ -806,9 +806,7 @@ def ask_model(target: str, today: datetime) -> str:
             },
             {"role": "user", "content": prompt},
         ],
-        temperature=1,  # current OpenAI reasoning models require the default temperature
-        top_p=1,
-        seed=0,
+        extra_body={"reasoning_effort": "none"},
     )
 
     return normalize_model_output(completion.choices[0].message.content)

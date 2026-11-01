@@ -33,7 +33,8 @@ else:
     target = sys.argv[1]
 
 completion = client.chat.completions.create(
-  model="gpt-5.4-mini",
+  model="gpt-6-luna",
+  extra_body={"reasoning_effort": "none"},  # compatible with openai 1.12
   messages=[
     {"role": "system", "content": "You are a helpful research assistant."},
       {"role": "user", "content":

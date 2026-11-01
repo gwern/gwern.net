@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using LLM API
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2026-08-30 11:01:00 gwern"
+# When:  Time-stamp: "2026-10-31 21:18:39 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" echo [...] | python paragraphizer.py
@@ -62,7 +62,8 @@ if len(target) < 100:
     sys.stdout.write("\"\"")
     sys.exit(0)
 
-# Preserve numbers: the multiset of decimal numbers in the input must be a subset of the numbers in the output. (Prevents silent rewriting of quantities while allowing punctuation fixes and links.)
+# Preserve numeric values: each input decimal token must occur somewhere in the output.
+# Occurrences are not counted; this is not a lossless text-preservation check.
 def _numbers(s: str):
     # keep simple: decimal/percent-like tokens
     return re.findall(r"\d+(?:\.\d+)?", s)
@@ -88,9 +89,8 @@ def _looks_ok(original: str, candidate: str) -> bool:
 
 try:
     completion = client.chat.completions.create(
-  model="gpt-5.4-mini",
-  temperature=0,          # deterministic line-breaking
-  top_p=1,
+  model="gpt-6-luna",
+  extra_body={"reasoning_effort": "none"},
   messages=[
     {"role": "system", "content": "You are a helpful research assistant."},
       {"role": "user", "content":
@@ -789,6 +789,10 @@ With this work, we take the first step towards making lossless text compression 
 Managerial behavior that is rational and profit-maximizing sometimes will seem to be overly conservative.
 If the valuation of innovations contains white noise and the status quo would be preferred to random innovation, then any innovation that does not appear substantially better than the status quo should be rejected, for reasons arising from regression toward the mean.
 The more successful the firm, the higher is the optimal acceptance threshold and conservative bias. Other things equal, more successful firms will spend less on research, adopt fewer innovations, and be less likely to advance the industry's best practice.
+- <abstract>Large language models are pretrained on vast, uncurated corpora scraped from the public web. This creates a security risk from attackers who plant poisoned content in the pretraining data. We show for the first time that such poisoning can plant a remote code execution backdoor in an agent, causing it to execute attacker-chosen commands on the user’s machine. To measure the threat end to end, we pretrain Qwen3 models from scratch at sizes 0.6B, 1.7B, and 4B, and then post-train each into a CLI agent using a clean pipeline. Poisoning only 0.1</abstract>
+Large language models are pretrained on vast, uncurated corpora scraped from the public web. This creates a security risk from attackers who plant poisoned content in the pretraining data.
+We show for the first time that such poisoning can plant a remote code execution backdoor in an agent, causing it to execute attacker-chosen commands on the user’s machine. To measure the threat end to end, we pretrain Qwen3 models from scratch at sizes 0.6B, 1.7B, and 4B, and then post-train each into a CLI agent using a clean pipeline.
+Poisoning only 0.1
 
 [End of examples. Reminder: your primary task is to split into multiple logical paragraphs by topic.]
 

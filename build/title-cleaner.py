@@ -1025,9 +1025,8 @@ Notes from inside China’s AI labs
 prompt = PROMPT_PREFIX + "\nInput title to clean:\n\n- " + json.dumps(target, ensure_ascii=False) + "\n"
 
 completion = client.chat.completions.create(
-    temperature=1, # OA reasoning models do not support any temperature but 1, so 'temperature=0' is impossible
-    seed=0,
-    model="gpt-5.4-mini",
+    model="gpt-6-luna",
+    extra_body={"reasoning_effort": "none"},
     messages=[
     {"role": "system", "content": "You are a researcher and web developer, compiling a bibliography."},
     {"role": "user", "content": prompt }

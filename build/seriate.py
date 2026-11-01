@@ -28,10 +28,9 @@ from openai import OpenAI
 client = OpenAI()
 
 def is_permutation(a, b):
-    # word-multiset comparison under NFKC: robust to smart-quote/em-dash
-    # substitution and whitespace normalization, while still catching actual
-    # content loss. Loses sensitivity to pure punctuation changes but those
-    # are rarely the failure mode.
+    # Compare multisets of whitespace-delimited tokens after NFKC normalization.
+    # Token order and whitespace are ignored; multiplicity is preserved.
+    # Punctuation remains significant unless NFKC itself normalizes it.
     norm = lambda s: sorted(unicodedata.normalize('NFKC', s).split())
     return norm(a) == norm(b)
 
@@ -168,9 +167,9 @@ Input list to seriate:
 - <input>""" + target + "</input>\n<output>"
 
     completion = client.chat.completions.create(
-        model="gpt-5-mini",
+        model="gpt-6-luna",
         timeout=60,
-        seed=0,
+        extra_body={"reasoning_effort": "low"},
         messages=[
             {"role": "developer", "content": "You are an analyst and editor, reordering inputs logically."},
             {"role": "user", "content": prompt}

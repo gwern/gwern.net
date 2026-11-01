@@ -339,7 +339,8 @@ def lint(html: str) -> list[str]:
 
 def convert(client: OpenAI, target: str) -> str:
     completion = client.chat.completions.create(
-        model="gpt-5.4-mini",
+        model="gpt-6-luna",
+        extra_body={"reasoning_effort": "none"},
         messages=[
             {"role": "system", "content": "You are a skilled mathematician & tasteful typographer, expert in LaTeX."},
             {"role": "user", "content": prompt_preamble + target + "'\n"},

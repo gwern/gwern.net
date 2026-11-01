@@ -4,10 +4,11 @@
 # italicizer.py: reformat a string to add italics as semantically appropriate (eg. book titles) using LLMs
 # Author: Gwern Branwen
 # Date: 2025-01-17
-# When:  Time-stamp: "2026-10-28 12:16:44 gwern"
+# When:  Time-stamp: "2026-10-31 23:19:53 gwern"
 # License: CC-0
 #
 # Usage: $ echo [...] | OPENAI_API_KEY="sk-XXX" python italicizer.py
+# Test: OPENAI_MODEL=gpt-6.1-terra python3 italicizer.py --test --limit 32
 #
 # Italicizer tries to remove a common annoyance in PDF & HTML-sourced titles: loss of italics formatting.
 # Input a string, and it will return a new string with italics added, or an empty string literal `""` (to explicitly denote no change & save tokens).
@@ -29,36 +30,54 @@
 # $ OPENAI_API_KEY="sk-XYZ" italicizer.py "the musician Moby-Dick"
 # ""
 
+import argparse
+import os
+import random
+import re
 import sys
 import time
 from openai import OpenAI
 client = OpenAI()
 
-if len(sys.argv) == 1:
+# Retain a larger model here: smaller models have failed on obscure paper titles.
+MODEL = os.environ.get("OPENAI_MODEL", "gpt-6.1-terra")
+REASONING_EFFORT = os.environ.get("OPENAI_REASONING_EFFORT", "none")
+TEST_MODE = sys.argv[1:2] == ["--test"]
+
+if TEST_MODE:
+    target = ""
+elif len(sys.argv) == 1:
     target = sys.stdin.read().strip()
 else:
     target = " ".join(sys.argv[1:]).strip()
 
 # short-circuit empty input: avoid a billed API call & an ambiguous response
-if not target:
+if not target and not TEST_MODE:
     print("")
     sys.exit(0)
 
 # The whole task lives in a single user turn; a system message ("You are a Wikipedia
 # copyeditor; consult MOS:ITALIC <https://en.wikipedia.org/wiki/Wikipedia:Manual_of_Style/Text_formatting#Italic_type>")
 # was tried but did not help, so it is omitted.
+# self_test() holds out only "- <text>..." pairs. Reviewed "* <text>..."
+# reference pairs remain in every prompt and are excluded from scoring.
 prompt = f"""Task: Add HTML <em></em> italics to text according to formal English style.
 
-Italicize ONLY these specific categories:
+Conservative policy (takes priority over the category rules and examples): Unwanted italics are more costly than missed italics. Add italics only when you are confident both about the intended referent and that it requires italics. If uncertain about either, leave that span roman. Missing an italicizable title is preferable to introducing spurious italics; do not increase coverage by guessing.
 
-- Long works: novels, films, TV shows, plays, operas, musicals, video games, albums, book-length poems.
-- Periodicals: newspapers, magazines, academic journals, and named recurring blogs or newsletters treated as publications.
-- Visual works: paintings, sculptures, curated named art exhibitions.
-- Named individual vehicles: specific ships, aircraft, spacecraft, or automobiles identified by name (USS Enterprise, HMS Victory, Millennium Falcon, La Baleine). Not model or class names.
+When confident, italicize ONLY these specific categories:
+
+- Long works: books, novels, films, TV shows, plays, operas, musicals, albums, book-length poems, and formally named series of these works.
+- Published games: video games, board games, roleplaying games, and trading card games. Their titles remain italicized when discussed as software or technical subjects.
+- Comics: comic books, graphic novels, comic strips, and webcomics.
+- Collected volumes: conference proceedings published as a volume. Italicize the volume title, but not a conference name mentioned as an event.
+- Periodicals: newspapers, magazines, academic journals, and recurring blogs or newsletters with distinctive publication titles. A generic label such as a person's blog is not itself a publication title.
+- Visual works: paintings, prints, sculptures, curated named art exhibitions.
+- Named individual vehicles: specific ships, aircraft, spacecraft, or automobiles identified by name (USS Enterprise, HMS Victory, Millennium Falcon, La Baleine). Not model or class names. A prototype or concept-car model designation stays roman even if only one vehicle was built.
 - Legal cases: court case names in "X v. Y"/"X vs Y" form (Roe v. Wade; Hobson v. Hansen). Italicize the case name only, not surrounding words.
-- Scientific usage: binomial species names (Drosophila melanogaster); variables in running text (the r parameter; Nth-great-grandmother).
+- Scientific usage: binomial species names (Drosophila melanogaster); letters functioning as mathematical or statistical variables in running text (the r parameter; Nth-great-grandmother), including parameter letters in method descriptions such as k-means. First protect complete product/software identifiers and abbreviations: never insert italics inside them by interpreting component letters as variables.
 - Foreign words and phrases not naturalized into English; foreign-language titles in their native form.
-- Musical direction terms used descriptively (molto ritardando).
+- Musical direction phrases not naturalized into English (molto ritardando); familiar English loanwords such as allegro remain roman.
 
 Do NOT italicize (these are the most common over-italicization errors):
 
@@ -66,16 +85,21 @@ Do NOT italicize (these are the most common over-italicization errors):
 - Essay, blog post, news article, magazine article, chapter, and section titles — including canonical essays (e.g., "Politics and the English Language").
 - Short stories and short poems, advertisements
 - Conference and workshop names (SIGGRAPH, ICML, workshops at named venues).
+- Traditional games, sports, card games, and pencil-and-paper puzzles (chess, go, solitaire, sudoku), even when implemented as software or studied in research. Distinguish these from the titles of published games above.
+- Franchise or fandom labels and informal character-based groupings, rather than formal titles of works or series.
+- Descriptions or counts of artworks that you cannot confidently identify as a formally titled work or series.
 - Laws, statutes, treaties, constitutions, declarations (but court *case* names ARE italicized — see above).
-- Proper names of people, places, pets, buildings, businesses, or fictional characters — even when the name coincides with a work title or a foreign word (Hamnet = Shakespeare's son; Foss = a cat; Moby = a musician; Medieval Times = a restaurant chain).
-- Products, companies, websites, platforms, brands, services, AI models (OK Soda, iPhone, Bloomberg, Aeon, Suno, Veo, Gemini 3).
+- Proper names of people, places, pets, buildings, businesses, organizations, events, festivals, competitions, or fictional characters — even when the name coincides with a work title or a foreign word (Hamnet = Shakespeare's son; Foss = a cat; Moby = a musician; Medieval Times = a restaurant chain). Foreign origin or transliteration does not override this exclusion.
+- Products, companies, websites, platforms, brands, services, AI models (OK Soda, iPhone, Bloomberg, Aeon, Suno, Veo, Gemini 3), except when the reference is to a game or publication covered by the italicized categories above. Navigation and redirect labels refer to the website and do not automatically inherit a publication's italics.
 - Symphonies, concertos, numbered classical works (Symphony No. 5).
-- Software, databases, libraries, tools, programming languages, benchmarks, datasets.
+- Non-game software, databases, libraries, tools, programming languages, benchmarks, datasets. A game title remains italicized in technical discussions, but names of engines, tools, ports, and repositories do not inherit italics merely by containing a game name.
 - Font names.
-- Common foreign loanwords familiar to English readers (sushi, yoga, kung fu, faux pas, en route, sudoku, karaoke).
-- Acronyms and abbreviated forms, even when the expanded form would be italicized.
+- Common foreign loanwords familiar to English readers (sushi, yoga, kung fu, faux pas, en route, sudoku, karaoke, allegro, manqué).
+- Acronyms and abbreviated forms, even when the expanded form would be italicized. Keep compact scientific labels and interaction abbreviations roman as a whole; do not italicize their component letters as variables.
 
-Key decision rule: A capitalized multi-word phrase is NOT a reliable signal of an italicizable work. Most title-case multi-word phrases are papers, essays, articles, or products — none of which are italicized. If the input could plausibly be any of the Do-Not-Italicize categories above, return "" rather than guessing.
+Key decision rule: Capitalization or recognizing the name of a familiar book, film, game, or other italicized work is not enough. The same words may name an article, essay, person, product, or something else that stays roman. Do not assume the best-known work is the intended referent. If a roman interpretation is plausible and the supplied text or context does not resolve the ambiguity, leave that span roman. You may still italicize other spans you are sure of; if there are no confident additions, return "".
+
+Scope and boundaries: An article or short-story title stays roman as a whole, but may contain a confidently identified book, game, or other work title that independently qualifies for italics. A review, illustration, or discussion of a short story, article, or short poem does not make that referenced title italicizable. A review headline need not name a book at all; a phrase before a colon is not automatically the reviewed book's title. Do not expand a known title to include descriptive lead-ins such as "The Making of" unless you confidently identify the whole phrase as an independently italicizable title. When an initial article such as "The" belongs to a confirmed title, include it in that title's italics.
 
 Output format:
 - Inputs may be prefixed with a source URL or local file path as contextual metadata to help you identify the work (eg. "/doc/foo/bar.pdf Some Title" or "https://example.com/ Some Title"). Do NOT reproduce the prefix in your output: operate only on the title text following it, and return that title (with italics added) or "".
@@ -84,7 +108,7 @@ Output format:
 - Do not add quotes, correct spelling, or make other changes.
 - Do not explain.
 
-When in doubt, consult MOS:ITALIC <https://en.wikipedia.org/wiki/Wikipedia:Manual_of_Style/Text_formatting#Italic_type>.
+Style reference: MOS:ITALIC <https://en.wikipedia.org/wiki/Wikipedia:Manual_of_Style/Text_formatting#Italic_type>. Style rules do not resolve an ambiguous referent; if doubt remains, leave it roman.
 
 Examples:
 
@@ -100,8 +124,6 @@ Examples:
 ""
 - <text>Hamnet</text>
 "" # NOTE: this is a proper name, the name of Shakespeare's son, and so should not be italicized
-- <text>Dark Empire</text>
-<em>Dark Empire</em>
 - <text>Building Secure and Reliable Systems: Chapter 2: Understanding Adversaries § pg51</text>
 <em>Building Secure and Reliable Systems</em>: Chapter 2: Understanding Adversaries § pg51
 - <text>Going Rogue, Now Unavailable on Kindle: The publishing conspiracy that’s blocking an electronic version of Palin’s memoir</text>
@@ -128,8 +150,6 @@ I read <em>The New York Times</em> every morning
 ""
 - <text>Les Misérables by Victor Hugo</text>
 <em>Les Misérables</em> by Victor Hugo
-- <text>The Making of The Lord of the Rings</text>
-<em>The Making of The Lord of the Rings</em>
 - <text>A Review of Blade Runner</text>
 A Review of <em>Blade Runner</em>
 - <text>The Raven</text>
@@ -168,8 +188,6 @@ The <em>HMS Victory</em> is in Portsmouth
 ""
 - <text>In physics, we study quantum mechanics</text>
 ""
-- <text>Harry Potter and the Sorcerer's Stone is part of the Harry Potter series</text>
-<em>Harry Potter and the Sorcerer's Stone</em> is part of the Harry Potter series
 - <text>Born to Run from the album Born to Run</text>
 Born to Run from the album <em>Born to Run</em>
 - <text>The article "The Making of Star Wars" in The Atlantic</text>
@@ -186,8 +204,6 @@ Some conductors take it in strict allegro tempo; others take the liberty of a we
 The court ruled in <em>Roe vs Wade</em> that
 - <text>Monet's Water Lilies is displayed at MoMA</text>
 <em>Water Lilies</em> is displayed at MoMA
-- <text>The Making of Impressionism exhibition at the Met</text>
-<em>The Making of Impressionism</em> exhibition at the Met
 - <text>van Gogh's The Starry Night</text>
 van Gogh's <em>The Starry Night</em>
 - <text>Art After Dark: Experiencing The Night Watch</text>
@@ -232,8 +248,6 @@ Art After Dark: Experiencing <em>The Night Watch</em>
 ""
 - <text>Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your Nth-Great-Grandmother Into A Zombie</text>
 Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N</em>th-Great-Grandmother Into A Zombie
-- <text>I Am a Cat</text>
-<em>I Am a Cat</em>
 - <text>I am a cat</text>
 ""
 - <text>I am a cat.</text>
@@ -262,15 +276,11 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - <text>The Scaling Hypothesis § It From Byte</text>
 ""
-- <text>Drugs 2.0: Your Crack's in the Post</text>
-<em>Drugs 2.0</em>: Your Crack's in the Post
 - <text>What to Expect When You’re Expecting…GPT-4. What comes after ChatGPT? 7 predictions for 2023 § GPT-4</text>
 ""
 - <text>The Narrowing Circle</text>
 ""
 - <text>GPT-2 Howl</text>
-""
-- <text>Intelligence Explosion Microeconomics</text>
 ""
 - <text>Evolution of the Human Brain: From Matter to Mind</text>
 ""
@@ -284,8 +294,6 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - <text>Vectors 3.0: Even More Aphorisms and Ten-Second Essays</text>
 ""
-- <text>The Second Apocalypse: Freedom In An Unfree Universe</text>
-<em>The Second Apocalypse</em>: Freedom In An Unfree Universe
 - <text>Amusing Ourselves to Death? § Waller Et Al <span class=\"date-range\">1995<sub><span title=\"1995 was 29 years ago.\">29ya</span></sub></span>, ‘Occupational and Leisure Time Interests, and Personality’</text>
 ""
 - <text>The Kelly Coin-Flipping Game: Exact Solutions</text>
@@ -324,8 +332,6 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 ""
 - <text>Scents and Sensibility</text>
 ""
-- <text>Abandoned Footnotes</text>
-<em>Abandoned Footnotes</em>
 - <text>Major Crimes as Analogs to Potential Threats to Nuclear Facilities and Programs</text>
 ""
 - <text>The Perfect Heist: Recipes from Around the World [combined papers + slides]</text>
@@ -659,22 +665,18 @@ Maybe Your Zoloft Stopped Working Because A Liver Fluke Tried To Turn Your <em>N
 - <text>Moby the dick</text>
 ""
 - <text>Qitmir (dog)</text>
-<em>Qitmir</em> (dog)
+""
 - <text>How to install Linux on a dead badger</text>
 ""
 - <text>Haskell: A Great Procedural Language</text>
 ""
 - <text>AniSora: Exploring the Frontiers of Animation Video Generation in the Sora Era</text>
 ""
-- <text>The Smith v. Substack saga</text>
-The <em>Smith v. Substack</em> saga
 - <text>A divided mind: Observations on the conscious properties of the separated hemispheres</text>
 ""
 - <text>The impact of the ‘open’ workspace on human collaboration</text>
 ""
 - <text>What o3 Becomes by 2028</text>
-""
-- <text>Chimes at Midnight</text>
 ""
 - <text>Anomalous Tokens in DeepSeek-V3 and r1</text>
 ""
@@ -787,7 +789,7 @@ The <em>Smith v. Substack</em> saga
 - <text>Life in HD: An investigation of the <em>jhanas</em>’ impact on Jhourney retreat attendees</text>
 ""
 - <text>Osmothèque</text>
-<em>Osmothèque</em>
+""
 - <text>Robert Bunsen’s Sweet Tooth</text>
 ""
 - <text>How the World’s Heaviest Man Lost it All</text> # https://www.gq.com/story/how-the-worlds-heaviest-man-lost-it-all
@@ -816,8 +818,6 @@ The <em>Smith v. Substack</em> saga
 ""
 - <text>The Monk Who Thinks the World Is Ending</text>
 ""
-- <text>The Light upon the Candlestick</text>
-<em>The Light upon the Candlestick</em>
 - <text>Redirecting The Scholar’s Stage</text>
 ""
 - <text>Crossing the God Divide</text>
@@ -829,7 +829,7 @@ The <em>Smith v. Substack</em> saga
 - <text>Those White Plastic Chairs—The Monobloc and the Context-Free Object - Ethan Zuckerman</text>
 ""
 - <text>Illustration for Eurema’s Dam!</text>
-Illustration for <em>Eurema’s Dam</em>!
+""
 - <text>Kid Goth: Neil Gaiman’s Fantasies</text>
 ""
 - <text>A Theory of Usable Information Under Computational Constraints</text>
@@ -866,8 +866,6 @@ Illustration for <em>Eurema’s Dam</em>!
 ""
 - <text>/doc/fiction/gene-wolfe/2007-farrell.pdf The Distant Suns of Gene Wolfe</text>
 ""
-- <text>Nonexistent compounds : compounds of low stability</text>
-<em>Nonexistent compounds : compounds of low stability</em>
 - <text>13 Animals Made From 13 Circles</text>
 ""
 - <text>Igo Hatsuyōron</text> # https://en.wikipedia.org/wiki/Igo_Hatsuy%C5%8Dron
@@ -910,16 +908,12 @@ Pierre Menard, Author of the <em>Quixote</em>
 ""
 - <text>A New Refutation of Time</text>
 ""
-- <text>Celestial Emporium of Benevolent Knowledge</text>
-""
 - <text>The Influence of Predation on Primate and Early Human Evolution: Impetus for Cooperation</text>
 ""
 - <text>Cat Vs Printer (with the original sound)</text>
 ""
 - <text>The Return of the Eunuch</text>
 ""
-- <text>Kezurou-kai #39</text>
-<em>Kezurou-kai</em> #39
 - <text>Philip K. Dick. Return Match</text>
 ""
 - <text>Emigre: Oblong Font Family</text>
@@ -948,8 +942,6 @@ Pierre Menard, Author of the <em>Quixote</em>
 ""
 - <text>WIND ROSE—Diggy Diggy Hole (Official Video)</text> # https://www.youtube.com/watch?v=34CZjsEI1yU
 ""
-- <text>2005 interview I did with Gene Wolfe for Hellnotes</text>
-2005 interview I did with Gene Wolfe for <em>Hellnotes</em>
 - <text>Lachryphagy</text> # https://en.wikipedia.org/wiki/Lachryphagy
 ""
 - <text>The Math of Hunting Lions</text>
@@ -995,15 +987,15 @@ Creating <em>Bluey</em>: Tales from the Art Director
 - <text>Cursor---Rules</text>
 ""
 - <text>Testing AI’s GeoGuessr Genius</text>
-""
+Testing AI’s <em>GeoGuessr</em> Genius
 - <text>The Killer Tag</text>
 ""
 - <text>Is there a Half-Life for the Success Rates of AI Agents?</text>
 ""
 - <text>30 Weird Chess Algorithms: Elo World</text>
 ""
-- <text>Sonderkommando Elbe</text>
-<em>Sonderkommando Elbe</em>
+- <text>Sonderkommando Elbe</text> # "Sonderkommando Elbe" names a Luftwaffe unit. Foreign proper names normally remain in roman type.
+""
 - <text>Generating Physically Stable and Buildable LEGO Designs from Text</text>
 ""
 - <text>Nail (anatomy) § Growth</text>
@@ -1035,7 +1027,7 @@ Legacy of <em>Citizen Kane</em>
 - <text>Aeon</text> # a magazine but also a word and philosophy etc.
 ""
 - <text>Cagot</text>
-<em>Cagot</em>
+""
 - <text>Bloomberg</text> # <em>Bloomberg News</em>/<em>Bloomberg Businessweek</em> are italicized; the company or man is not.
 ""
 - <text>Comparative effectiveness of GLP-1 receptor agonists on glycaemic control, body weight, and lipid profile for type 2 diabetes: systematic review and network meta-analysis</text>
@@ -1075,7 +1067,7 @@ The Visual World of <em>Samurai Jack</em>
 - <text>Wikipedia:List of Wikipedian contradictions and paradoxes</text>
 ""
 - <text>FE-Schrift</text>
-<em>FE-Schrift</em>
+""
 - <text>Geoengineering (Wrong 2)</text>
 ""
 - <text>The Art of Hanakami, or Flower-Petal Folding</text>
@@ -1127,7 +1119,7 @@ The Art of <em>Hanakami</em>, or Flower-Petal Folding
 - <text>I Drank Every Cocktail</text>
 ""
 - <text>Show HN: Wordle-style game for Fermi questions</text>
-""
+Show HN: <em>Wordle</em>-style game for Fermi questions
 - <text>The arcane alphabets of Black Sabbath</text>
 ""
 - <text>Policie zabavila Jiřikovskému BMW, počítače i telefony</text> # https://web.archive.org/web/20250815222145/https://www.idnes.cz/zpravy/domaci/tomas-jirikovsky-ministerstvo-spravedlnosti-bitcoiny.A250815_120212_domaci_tty
@@ -1174,8 +1166,6 @@ The Art of <em>Hanakami</em>, or Flower-Petal Folding
 ""
 - <text>The Goon Squad, by Daniel Kolitz</text> # https://harpers.org/archive/2025/11/the-goon-squad-daniel-kolitz-porn-masturbation-loneliness/
 ""
-- <text>29. Kasina Practice</text>
-29. <em>Kasina</em> Practice
 - <text>Suno (platform)</text> # while 'suno' is a Japanese term, Suno AI is a proper English noun and so not italicized
 ""
 - <text>Night of the Moon Suits: The Shulgins, the DEA, and Their Ally, “Tulsa”</text>
@@ -1234,8 +1224,6 @@ The Art of <em>Hanakami</em>, or Flower-Petal Folding
 ""
 - <text>Star Wars</text>
 <em>Star Wars</em>
-- <text>The Official Star Wars Fan Film Awards</text>
-The Official <em>Star Wars</em> Fan Film Awards
 - <text>Weighting systems for linear functions of correlated variables when there is no dependent variable</text>
 ""
 - <text>Coming Home (advertisement)</text>
@@ -1246,8 +1234,6 @@ The Official <em>Star Wars</em> Fan Film Awards
 ""
 - <text>Tajwid</text> # foreign Arabic Quran term
 <em>Tajwid</em>
-- <text>Genesis B § Relationship with Paradise Lost</text>
-<em>Genesis B</em> § Relationship with <em>Paradise Lost</em>
 - <text>The Dice Lab Unique Designs</text>
 ""
 - <text>Capital in the 22<sup>nd</sup> Century</text>
@@ -1390,8 +1376,6 @@ Optimization lessons from a <em>Minecraft</em> structure locator
 ""
 - <text>Piezoelectric Bagworm Silk</text>
 ""
-- <text>Absolute Borderline: The Early Days of Evangelion Fandom, Part Three</text>
-""
 - <text>What I love about Scrooge: In praise of misers</text>
 ""
 - <text>The Most Important Woman in Kant’s Life - Daniel Andreas</text>
@@ -1399,7 +1383,7 @@ Optimization lessons from a <em>Minecraft</em> structure locator
 - <text>Claude Code Found a Linux Vulnerability Hidden for 23 Years</text>
 ""
 - <text>An Orgy, but with Reward Points: The arc of history is long but it bends towards Spreadsheet Simulator 2000</text>
-An Orgy, but with Reward Points: The arc of history is long but it bends towards <em>Spreadsheet Simulator 2000</em>
+""
 - <text>Pasteur et le choléra des poules: révision critique d’un récit historique</text>
 <em>Pasteur et le choléra des poules: révision critique d’un récit historique</em>
 - <text>Autoresearch vs Classical Hyperparameter Tuning</text>
@@ -1474,8 +1458,6 @@ An Orgy, but with Reward Points: The arc of history is long but it bends towards
 ""
 - <text>Workers Say Listening to Music Boosts Job Satisfaction, Productivity</text>
 ""
-- <text>Mercian hymns</text>
-<em>Mercian hymns</em>
 - <text>On Running a Real Business</text>
 ""
 - <text>Issues · gwern/gwern.net</text>
@@ -1544,40 +1526,188 @@ Woodkid Says Hideo Kojima Changed <em>Death Stranding 2</em> to Be ‘Polarizing
 ""
 - <text>Doom, compiled into a transformer</text>
 <em>Doom</em>, compiled into a transformer
-- <text>Your Book Review: The Escape Artist</text>
-Your Book Review: <em>The Escape Artist</em>
 - <text>How Andor Got its Backstory from a Tabletop RPG</text>
 How <em>Andor</em> Got its Backstory from a Tabletop RPG
 - <text>The Making Of Super Mario 64—full Giles Goddard interview (NGC)</text>
 The Making Of <em>Super Mario 64</em>—full Giles Goddard interview (NGC)
-- <text>Shichiri beach in Sagami Province (36 Views of Mount Fuji)</text>
-Shichiri beach in Sagami Province (<em>36 Views of Mount Fuji</em>)
 - <text>https://www.lesswrong.com/posts/JFYvJqMaLw9nhfrur/fermi-poker Fermi Poker</text>
 ""
+- <text>She Made Me Do It</text>
+""
 
-[End of examples. Reminder: your only task is to add missing italics you are SURE of.]
+Reviewed reference examples (notes explain the referents and house-style choices; never include notes in your output):
+
+Note: This example names Rayner Unwin's standalone booklet. The complete phrase, including The Making of, is its title.
+* <text>The Making of The Lord of the Rings</text>
+<em>The Making of The Lord of the Rings</em>
+
+Note: Italicize the legal case name in X v. Y form, leaving surrounding headline words roman.
+* <text>The Smith v. Substack saga</text>
+The <em>Smith v. Substack</em> saga
+
+Note: This names Geoffrey Hill's published poetry collection; preserve the supplied capitalization.
+* <text>Mercian hymns</text>
+<em>Mercian hymns</em>
+
+Note: Hellnotes is the named horror publication. The interview title itself stays roman.
+* <text>2005 interview I did with Gene Wolfe for Hellnotes</text>
+2005 interview I did with Gene Wolfe for <em>Hellnotes</em>
+
+Note: Kezurou-kai names a woodworking event and competition, not a foreign phrase requiring italics.
+* <text>Kezurou-kai #39</text>
+""
+
+Note: This is an article headline using a fandom label. Do not infer a reference to a specific italicizable work from Evangelion here.
+* <text>Absolute Borderline: The Early Days of Evangelion Fandom, Part Three</text>
+""
+
+Note: Genesis B is the Old English poem, not the biblical book of Genesis; Paradise Lost is also a long poem.
+* <text>Genesis B § Relationship with Paradise Lost</text>
+<em>Genesis B</em> § Relationship with <em>Paradise Lost</em>
+
+Note: This example names Natsume Soseki's novel; it is not an ordinary sentence about being a cat.
+* <text>I Am a Cat</text>
+<em>I Am a Cat</em>
+
+Note: This is W. E. Dasent's published book. Preserve the title's supplied capitalization and spacing.
+* <text>Nonexistent compounds : compounds of low stability</text>
+<em>Nonexistent compounds : compounds of low stability</em>
+
+Note: The Second Apocalypse names Bakker's formally titled fiction series inside an essay headline; the words after the colon stay roman.
+* <text>The Second Apocalypse: Freedom In An Unfree Universe</text>
+<em>The Second Apocalypse</em>: Freedom In An Unfree Universe
+
+Note: This example names the published comic miniseries.
+* <text>Dark Empire</text>
+<em>Dark Empire</em>
+
+Note: The first span is the individual print title; the parenthesized span names its print series. Both qualify for italics.
+* <text>Shichiri beach in Sagami Province (36 Views of Mount Fuji)</text>
+<em>Shichiri beach in Sagami Province</em> (<em>36 Views of Mount Fuji</em>)
+
+Note: This example names a recurring blog with its own publication title.
+* <text>Abandoned Footnotes</text>
+<em>Abandoned Footnotes</em>
+
+Note: Italicize the individual novel title. Under this house style, the informal character-based Harry Potter series label stays roman.
+* <text>Harry Potter and the Sorcerer's Stone is part of the Harry Potter series</text>
+<em>Harry Potter and the Sorcerer's Stone</em> is part of the Harry Potter series
+
+Note: Under this house style, preserve italics for the embedded Star Wars work/series title while leaving the surrounding awards name roman.
+* <text>The Official Star Wars Fan Film Awards</text>
+The Official <em>Star Wars</em> Fan Film Awards
+
+Note: The Escape Artist is the reviewed book; Your Book Review is a descriptive prefix outside its title.
+* <text>Your Book Review: The Escape Artist</text>
+Your Book Review: <em>The Escape Artist</em>
+
+Note: This bare label is also used for an article. A match to the film title does not resolve the referent; conservatively leave it roman.
+* <text>Chimes at Midnight</text>
+""
+
+Note: Drugs 2.0 is the referenced book. Your Crack's in the Post is not that book's subtitle; leave that part roman.
+* <text>Drugs 2.0: Your Crack's in the Post</text>
+<em>Drugs 2.0</em>: Your Crack's in the Post
+
+Note: Hypothetical exhibition-title example: The Making of Impressionism is stipulated to be the title, including The. Keep the generic descriptor and venue outside its italics.
+* <text>The Making of Impressionism exhibition at the Met</text>
+<em>The Making of Impressionism</em> exhibition at the Met
+
+Note: This bare label can denote Borges's taxonomy or the article discussing it. Do not assume the fictional encyclopedia is the intended work; conservatively leave it roman.
+* <text>Celestial Emporium of Benevolent Knowledge</text>
+""
+
+Note: This example names a separately published religious tract. Its title takes italics despite its short length.
+* <text>The Light upon the Candlestick</text>
+<em>The Light upon the Candlestick</em>
+
+Note: For this house style, Kasina is a non-naturalized meditation term inside a chapter heading. Italicize the term, leaving the generic word Practice and the number roman.
+* <text>29. Kasina Practice</text>
+29. <em>Kasina</em> Practice
+
+Note: This is MIRI research technical report 2013-1 by Eliezer Yudkowsky. Under this house style, research-report titles stay roman even when long or reprinted in a collected volume.
+* <text>Intelligence Explosion Microeconomics</text>
+""
+
+[End of examples. Reminder: add missing italics only when you are SURE they apply to the intended referent. Leave uncertain spans roman; if there are no confident additions, return "".]
 
 - <text>{target}</text>
 """
 
-# Query the API with a small bounded retry on transient errors (network, 429, 5xx),
-# per 'explicit failure handling': fail loudly to stderr with a nonzero exit, never silently.
-result = None
-for attempt in range(3):
-    try:
-        completion = client.chat.completions.create(
-          # temperature=0, # ignored: current models hardwire temperature=1
-          # seed=0,        # ignored by gpt-5.4-mini, so output is not deterministic
-            model="gpt-5.4-mini", # a cheap small model suffices for this fiddly-but-easy task. Caution: the *smallest* models fail catastrophically on paper titles no matter how many examples are supplied — probably 'tail-dropping' from aggressive distillation that strips memorized factual/metadata knowledge (ie. they've forgotten the papers the larger models saw in pretraining, or the metadata of/references to them), so do not downsize further.
-            messages=[{"role": "user", "content": prompt}],
-        )
-        result = completion.choices[0].message.content
-        break
-    except Exception as e:
-        if attempt == 2:
-            print(f"italicizer.py: API call failed after 3 attempts: {e}", file=sys.stderr)
-            sys.exit(1)
-        time.sleep(2 ** attempt)
+def ask(request_prompt):
+    # Keep the existing bounded retry; surface failures to the caller.
+    for attempt in range(3):
+        try:
+            completion = client.chat.completions.create(
+                model=MODEL,
+                extra_body={"reasoning_effort": REASONING_EFFORT},
+                messages=[{"role": "user", "content": request_prompt}],
+            )
+            result = completion.choices[0].message.content
+            if result is None:
+                raise ValueError("API returned no text")
+            return result
+        except Exception:
+            if attempt == 2:
+                raise
+            time.sleep(2 ** attempt)
 
-# guard against None content (refusal/empty completion); never emit the literal string "None"
-print(result or "")
+
+def self_test():
+    parser = argparse.ArgumentParser(description="Test italicization against prompt examples.")
+    parser.add_argument("--limit", type=int, default=32, help="number of cases; 0 means all")
+    parser.add_argument("--seed", type=int, default=0, help="reproducible case selection")
+    args = parser.parse_args(sys.argv[2:])
+    if args.limit < 0:
+        parser.error("--limit must be nonnegative")
+
+    # TEST_MODE supplied an empty target. Separate the final task from the examples.
+    prefix, suffix = prompt.rsplit("\n- <text></text>", 1)
+    pattern = re.compile(r"(?m)^- <text>([^\n]+)</text>\n([^\n]+)")
+    fixtures = {}
+    for match in pattern.finditer(prefix):
+        text, expected = match.groups()
+        expected = expected.strip()
+        if text != text.strip():
+            continue
+        if expected == '""':
+            expected = text
+        # Test only single-line examples satisfying the production preservation contract.
+        if expected.replace("<em>", "").replace("</em>", "") == text:
+            fixtures.setdefault(text, set()).add(expected)
+    cases = [(text, next(iter(outputs))) for text, outputs in sorted(fixtures.items())
+             if len(outputs) == 1]
+    random.Random(args.seed).shuffle(cases)
+    if args.limit:
+        cases = cases[:args.limit]
+    if not cases:
+        raise ValueError("No usable prompt examples found")
+
+    print(f"model={MODEL} reasoning={REASONING_EFFORT}; {len(cases)} cases", flush=True)
+    failures = 0
+    started = time.perf_counter()
+    for index, (text, expected) in enumerate(cases, 1):
+        # Remove every exact occurrence of this example before asking about its input.
+        test_prefix = pattern.sub(
+            lambda match: "" if match.group(1) == text else match.group(0), prefix
+        )
+        actual = ask(test_prefix + "\n- <text>" + text + "</text>" + suffix).strip()
+        if actual in ("", '""'):
+            actual = text
+        ok = actual == expected
+        failures += not ok
+        print(f"{index}/{len(cases)} {'PASS' if ok else 'FAIL'} {text!r}", flush=True)
+        if not ok:
+            print(f"  expected: {expected!r}\n  actual:   {actual!r}", flush=True)
+    elapsed = time.perf_counter() - started
+    print(f"{len(cases) - failures}/{len(cases)} passed; {elapsed:.1f}s", flush=True)
+    return int(bool(failures))
+
+
+try:
+    if TEST_MODE:
+        sys.exit(self_test())
+    print(ask(prompt))
+except Exception as error:
+    print(f"italicizer.py: {error}", file=sys.stderr)
+    sys.exit(1)
