@@ -2392,6 +2392,7 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("Jonas Geiping", "https://jonasgeiping.github.io/")
     , ("Kalyan Chatterjee", "https://en.wikipedia.org/wiki/Kalyan_Chatterjee_(economist)")
     , ("William Samuelson", "https://scholar.google.com/citations?user=KHB44KEAAAAJ")
+    , ("William Tobin", "https://en.wikipedia.org/wiki/William_Tobin_(astronomer)")
     ]
 
 -- Config tests: none, tested via `authorLinkDB` as a whole

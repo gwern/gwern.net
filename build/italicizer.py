@@ -4,7 +4,7 @@
 # italicizer.py: reformat a string to add italics as semantically appropriate (eg. book titles) using LLMs
 # Author: Gwern Branwen
 # Date: 2025-01-17
-# When:  Time-stamp: "2026-10-31 23:19:53 gwern"
+# When:  Time-stamp: "2026-11-04 14:27:24 gwern"
 # License: CC-0
 #
 # Usage: $ echo [...] | OPENAI_API_KEY="sk-XXX" python italicizer.py
@@ -1628,6 +1628,9 @@ Note: For this house style, Kasina is a non-naturalized meditation term inside a
 Note: This is MIRI research technical report 2013-1 by Eliezer Yudkowsky. Under this house style, research-report titles stay roman even when long or reprinted in a collected volume.
 * <text>Intelligence Explosion Microeconomics</text>
 ""
+
+* <text>Tallis, Spem in alium (40-voice motet)</text>
+<em>Tallis, Spem in alium</em> (40-voice motet)
 
 [End of examples. Reminder: add missing italics only when you are SURE they apply to the intended referent. Leave uncertain spans roman; if there are no confident additions, return "".]
 

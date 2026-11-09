@@ -3,7 +3,7 @@
 # png.sh: compress a PNG with pngnq & optipng if the savings are worthwhile.
 # Author: Gwern Branwen
 # Date: 2013-01-01
-# When: Time-stamp: "2026-05-08 17:33:41 gwern"
+# When: Time-stamp: "2026-11-03 18:52:00 gwern"
 # License: CC-0
 
 set -euo pipefail
