@@ -1008,6 +1008,7 @@ canonicals = setLike
   , ("Eric Anthony Mitchell", "Eric Mitchell")
   , ("deanwball", "Dean W. Ball")
   , ("Nic Cammarata", "Nick Cammarata")
+  , ("Richard Posner", "Richard A. Posner")
   ]
 
 -- tests: unique; none are URLs
@@ -2283,6 +2284,8 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("Claude-4.8-opus", "https://www.anthropic.com/news/claude-opus-4-8")
     , ("Claude-5-Mythos", "https://www-cdn.anthropic.com/3edfc1a7f947aa81841cf88305cb513f184c36ae.pdf")
     , ("Claude-5-Fable", "https://www.anthropic.com/news/claude-fable-5-mythos-5")
+    , ("Claude-5.2-Fable", "https://www.anthropic.com/claude-fable-and-mythos-5-2#fable")
+    , ("Claude-5.2-Mythos", "https://www.anthropic.com/claude-fable-and-mythos-5-2#mythos")
     , ("Claude-5-sonnet", "https://www.anthropic.com/news/claude-sonnet-5")
     , ("Claude-5.5-opus", "https://www.anthropic.com/claude-opus-5-5")
     , ("Claude-5.5-haiku", "https://www.anthropic.com/claude-haiku-5-5")

@@ -4,7 +4,7 @@
 # title-cleaner.py: remove cruft from titles of web pages like website name/domain or error messages
 # Author: Gwern Branwen
 # Date: 2024-06-11
-# When:  Time-stamp: "2026-10-20 23:12:30 gwern"
+# When:  Time-stamp: "2026-11-12 19:38:47 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXX" xclip -o | python title-cleaner.py
@@ -1017,8 +1017,10 @@ Notes from inside China’s AI labs
 "The Making Of Super Mario 64—full Giles Goddard interview (NGC)"
 - "https://www.tibane.net/research/ledger-nano-x-implant Tibane Labs—Solana R&D"
 ""
-- https://aerolamp.net/ Far UV 222nm Lamp—Germicidal Far UVC Light Room Sanitizer—Aerolamp"
+- "https://aerolamp.net/ Far UV 222nm Lamp—Germicidal Far UVC Light Room Sanitizer—Aerolamp"
 "Far UV 222nm Lamp—Germicidal Far UVC Light Room Sanitizer"
+- "https://devonestes.com/bad-ideas-that-arent-bad-anymore “”"
+""
 
 """
 
