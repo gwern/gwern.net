@@ -46,6 +46,7 @@ else
                 echo "$FILES" | stringReplace "$1" "$2";
                 stringReplace "$1" "$2" ~/wiki/metadata/archive.hs # for some reason, archive.hs doesn't seem to update properly with just one gwsed call; I'm not sure why.
                 gw () { ( find ~/wiki/ -type f -name "*.md"
+                          find ~/wiki/ -type f -name "*.md.txt"
                           find ~/wiki/metadata/ ~/wiki/haskell/ -type f -name "*.hs" -or -name "*.gtx"
                           find ~/wiki/static/ -type f -name "*.js" -or -name "*.css" -or -name "*.hs" -or -name "*.conf" -or -name "*.gtx"
                           find ~/wiki/ -type f -name "*.html" -not -wholename "*/doc/*" ) | \

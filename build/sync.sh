@@ -653,6 +653,10 @@ else
             FILENAME=$(basename -- "$FILE")
             EXTENSION="${FILENAME##*.}"
             LANGUAGE=${extensionToLanguage[$EXTENSION]}
+            # Highlight .md.txt as Markdown without treating it as an essay or changing its URL.
+            if [[ "$FILENAME" == *.md.txt ]]; then
+                LANGUAGE="${extensionToLanguage[md]}"
+            fi
             FILELENGTH=$(cat "$FILE" | wc --lines)
             (echo -e "~~~~~~~~~~~~~~~~~~~~~{.$LANGUAGE}"; # NOTE: excessively long tilde-line is necessary to override/escape any tilde-blocks inside Markdown files: <https://pandoc.org/MANUAL.html#fenced-code-blocks>
             if [ $EXTENSION == "md" ] || [ $EXTENSION == "txt" ] ; then # TODO: the very long lines would look bad in narrow popups, which should be handled by CSS.
