@@ -2,7 +2,7 @@
 
 # Author: Gwern Branwen
 # Date: 2016-10-01
-# When:  Time-stamp: "2026-10-28 15:00:15 gwern"
+# When:  Time-stamp: "2026-11-22 17:53:34 gwern"
 # License: CC-0
 #
 # sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A full build is intricate, and requires several passes like generating link-bibliographies/tag-directories, running two kinds of syntax-highlighting, stripping cruft etc.
@@ -1638,7 +1638,7 @@ cleanClasses () {
          cr 'https://gwern.net/Book-reviews' 'https://gwern.net/review/book'
          cr 'https://gwern.net/doc/ai/2019-10-21-gwern-gpt2-folkrnn-samples.ogg' 'https://gwern.net/doc/ai/music/2019-10-21-gwern-gpt2-folkrnn-samples.mp3';
          cr 'https://gwern.net/doc/sr/2013-06-07-premiumdutch-profile.htm' 'https://gwern.net/doc/darknet-market/silk-road/1/2013-06-07-premiumdutch-profile.html'
-         cr 'https://gwern.net/doc/elections/2012-gwern-notes.txt' 'https://gwern.net/doc/statistics/prediction/election/2012-gwern-notes.txt'
+         cr 'https://gwern.net/doc/elections/2012-gwern-notes.txt' 'https://gwern.net/doc/statistics/prediction/election/2012-gwern-notes.md.txt'
          cr 'https://gwern.net/doc/statistics/peerreview/1976-rosenthal-experimenterexpectancyeffects-ch3.pdf' 'https://gwern.net/doc/statistics/peer-review/1976-rosenthal-experimenterexpectancyeffects-ch3.pdf'
          cr 'https://gwern.net/doc/longnow/form990-longnowfoundation-2001-12.pdf' 'https://gwern.net/doc/long-now/form990-longnowfoundation-2001-12.pdf'
          cr 'https://gwern.net/doc/eva/2011-house' 'https://gwern.net/doc/anime/eva/2011-house'

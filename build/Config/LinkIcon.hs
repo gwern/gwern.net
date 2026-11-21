@@ -1032,7 +1032,7 @@ linkIconTestUnitsText = setLike
          , ("https://patrickcollison.com/labs", "PC", "text,sans", "#635bff")
          , ("https://press.stripe.com/the-art-of-doing-science-and-engineering", "S", "text,sans", "#635bff")
          , ("https://www.kaggle.com/datasets/ultrajack/modern-renaissance-poetry", "k", "text,sans", "#20beff")
-         , ("https://www.patreon.com/gwern",  "patreon","svg", "#f76159")
+         , ("https://www.patreon.com/cw/gwern",  "patreon","svg", "#f76159")
          , ("https://en.wikiquote.org/wiki/Talk:Edsger_W._Dijkstra#Telescope", "wikipedia","svg", "")
          , ("https://commons.wikimedia.org/wiki/File:Energy_density.svg",  "wikipedia","svg", "")
          , ("https://www.mediawiki.org/wiki/Multilingual_MediaWiki", "wikipedia","svg", "")

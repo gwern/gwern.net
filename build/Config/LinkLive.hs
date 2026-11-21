@@ -4204,7 +4204,7 @@ badLinks =  setLike ["https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Par
             , "https://www.overcomingbias.com/p/why-not-egg-futureshtml"
             , "https://www.overthinkingit.com/2012/11/08/my-little-pony-plato/"
             , "https://www.packtpub.com/en-us/product/exploring-gpt-3-9781800563193"
-            , "https://www.patreon.com/gwern"
+            , "https://www.patreon.com/cw/gwern"
             , "https://www.pbs.org/wgbh/nova/article/crispr-grapes/"
             , "https://www.pcworld.com/article/422832/italian-police-shutter-dark-web-marketplace.html"
             , "https://www.petcarerx.com/pcrx/ProductPages/Product.aspx?pid=10983"

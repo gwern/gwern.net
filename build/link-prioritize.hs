@@ -34,7 +34,7 @@ $ linkExtractor dnb-faq.md | runghc -istatic/build/ ./static/build/link-prioriti
 More complex use:
 
 $ find ~/wiki/ -name "*.md" -type f -print0 | parallel --null linkExtractor | grep -E '^http' | ./static/build/link-prioritize.hs
-65 https://www.patreon.com/gwern
+65 https://www.patreon.com/cw/gwern
 15 https://fis.fda.gov/sense/app/d10be6bb-494e-4cd2-82e4-0135608ddc13/sheet/45beeb74-30ab-46be-8267-5756582633b4/state/analysis
 12 http://forum.evageeks.org/viewtopic.php?p=366709#366709
 9 http://forum.evageeks.org/viewtopic.php?p=366717#366717

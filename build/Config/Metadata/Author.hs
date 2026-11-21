@@ -2002,6 +2002,7 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("Gemini-3.1-pro-preview", "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-1-pro/")
     , ("Gemini-4 Argon", "https://deepmind.google/models/gemini/")
     , ("Gemini-4 Carbon", "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-carbon/")
+    , ("Gemini-4 Neon", "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-neon/")
     , ("Time Magazine", "https://en.wikipedia.org/wiki/Time_(magazine)")
     , ("Martha Duffy", "https://www.nytimes.com/1997/06/17/arts/martha-duffy-61-arts-editor-and-writer-at-time-magazine.html")
     , ("Sander Dieleman", "https://sander.ai/about/")
@@ -2297,6 +2298,8 @@ authorLink = zip authorWpLinkDB (map toWikipediaEnURL authorWpLinkDB) ++ -- we p
     , ("GPT-6 Astra", "https://openai.com/index/gpt-6-astra/")
     , ("GPT-6 Sol", "https://openai.com/index/introducing-gpt-6-sol-and-luna/#sol")
     , ("GPT-6 Luna", "https://openai.com/index/introducing-gpt-6-sol-and-luna/#luna")
+    , ("GPT-6.2 Astra", "https://openai.com/index/introducing-gpt-6-2-astra-sol/#astra")
+    , ("GPT-6.2 Sol", "https://openai.com/index/introducing-gpt-6-2-astra-sol/#sol")
     , ("Leslie Stephen Coles", "https://en.wikipedia.org/wiki/L._Stephen_Coles")
     , ("Coral Osborne", "https://substack.com/@coralosborne")
     , ("Jacob Bacharach", "https://jacobbacharach.com/")
@@ -3708,4 +3711,4 @@ authorWpLinkDB = setLike
     , "Matt Thomson", "Kathleen McKeown", "Eric Rasmusen", "Chi Wang", "Jensen Huang", "Cassandra Cybele Raver"
     , "A. Douglas Stone", "Steven Girvin", "Logan Wright", "Edward Adelson", "Pawan Sinha", "Michelle Monje"
     , "Michael Freedman", "Paul L. McEuen", "Don Norman", "Liang Zhao", "Jane C. Ginsburg", "Martyn Amos"
-    , "David Eisenberg", "Michael Kubovy", "Dean W. Ball", "Suchir Balaji", "Margaret Mead"]
+    , "David Eisenberg", "Michael Kubovy", "Dean W. Ball", "Suchir Balaji", "Margaret Mead", "Lillian Schlissel"]
